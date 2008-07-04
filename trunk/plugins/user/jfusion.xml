@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="user">
+	<name>User - Jfusion</name>
+	<author>Marius van Rijnsoever</author>
+	<creationDate>December 2007</creationDate>
+	<author>JFusion Development Team</author>
+	<authorEmail>info@jfusion.org</authorEmail>
+	<authorUrl>http://www.jfusion.org</authorUrl>
+	<copyright>(C) 2007 All rights reserved.</copyright>
+	<license>GNU/GPL</license>
+	<version>1.0.5f</version>
+	<description>
+		This is the JFusion user plugin, that sets up the permissions of
+		the user upon login.
+	</description>
+	<files>
+		<filename plugin="jfusion">jfusion.php</filename>
+	</files>
+	<params>
+		<param name="autoregister" type="radio" default="1"
+			label="Auto Create Users" description="PARAMAUTOCREATEUSERS">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+	</params>
+</install>
+

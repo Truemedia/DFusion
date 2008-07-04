@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
+<install type="jfusion" version="1.5.0">
+	<name>mybb</name>
+	<author>JFusion Development Team</author>
+	<creationDate>June 2008</creationDate>
+	<copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>webmaster@jfusion.org</authorEmail>
+	<authorUrl>www.jfusion.org</authorUrl>
+	<version>1.0</version>
+	<description>myBB plugin for JFusion</description>
+	<files>
+		<filename>admin_forum.php</filename>
+	</files>
+  <params addpath="/administrator/components/com_jfusion/elements">
+		<param name="database_type" type="text" size="20" default=""
+			label="myBB Database Type (ig mysql)" description="DATABASE_TYPE" />
+		<param name="database_host" type="text" size="20" default=""
+			label="myBB Database Host (ig localhost)"
+			description="DATABASE_HOST" />
+		<param name="database_name" type="text" size="20" default=""
+			label="myBB Database Name" description="DATABASE_NAME" />
+		<param name="database_user" type="text" size="20" default=""
+			label="myBB Database Username" description="DATABASE_USER" />
+		<param name="database_password" type="text" size="20" default=""
+			label="myBB Database Password" description="DATABASE_PASSWORD" />
+		<param name="database_prefix" type="text" size="20"
+			default="mybb" label="myBB Table Prefix"
+			description="DATABASE_PREFIX" />
+		<param name="@spacer" type="spacer" default="" label=""
+			description="" />
+		<param name="source_url" type="text" size="40"
+			default="http://www.yourdomain.com/forums/"
+			label="The URL of your forum (include trailing slash)"
+			description="SOURCE_URL" />
+		<param name="cookie_domain" type="text" size="10" default=""
+			description="COOKIE_DOMAIN" />
+		<param name="cookie_path" type="text" size="40" default="/"
+			description="COOKIE_PATH" />
+					<param name="@spacer" type="spacer" default="" label=""
+			description="" />
+		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+	</params>
+
+</install>

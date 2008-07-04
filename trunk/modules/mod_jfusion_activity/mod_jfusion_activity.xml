@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="module">
+	<name>JFusion Activity Module</name>
+	<creationDate>December 2007</creationDate>
+	<author>JFusion Development Team</author>
+	<authorEmail>info@jfusion.org</authorEmail>
+	<authorUrl>http://www.jfusion.org</authorUrl>
+	<copyright>(C) 2007 All rights reserved.</copyright>
+	<license>GNU/GPL</license>
+	<version>1.0.5f</version>
+	<description>
+		This is the JFusion activity module, that displays the latest
+		posts from the integrated forum software.
+	</description>
+	<files>
+		<filename module="mod_jfusion_activity">
+			mod_jfusion_activity.php
+		</filename>
+	</files>
+	<params addpath="/administrator/components/com_jfusion/elements">
+		<param name="moduleclass_sfx" type="text" default=""
+			label="Module
+    Class Suffix"
+			description="A suffix to be applied to the css class
+    of the module (table.moduletable), this allows individual module
+    styling" />
+
+		<param name="@spacer" type="spacer" default="" label=""
+			description="" />
+
+		<param name="JFusionPlugins" type="JFusionPlugins" default=""
+			label="JFusion Plugin"
+			description="Which JFusion plugin should be used to display the activity for?" />
+
+		<param name="mode" type="list" default="0" label="Mode"
+			description="Mode of operation. What type of threads/posts to
+    show">
+			<option value="0">LAT (Last active topics)</option>
+			<option value="1">LCT (Last created topics)</option>
+			<option value="2">LCP (Last created postings)</option>
+		</param>
+
+		<param name="linktype" type="list" default="0" label="Link Type"
+			description="If Mode is LAT, show thread link or post link?">
+			<option value="0">Thread</option>
+			<option value="1">Post</option>
+		</param>
+
+		<param name="display_body" type="list" default="0"
+			label="Display
+    body instead of subject"
+			description="Mode of display. Do you want
+    the message subject to be replaced with the message body?">
+			<option value="0">Only if subject is empty</option>
+			<option value="1">Only if using LCP mode</option>
+			<option value="2">Always</option>
+			<option value="3">Never</option>
+		</param>
+
+		<param name="lxt_type" type="radio" default="0"
+			label="LAT/LCT
+	   Display First Topic Post or Last one?"
+			description="In LAT/LCT mode, do you
+	   want me to display the last post made to
+	   that topic, or from the topic post itself?">
+			<option value="0">First Topic Post</option>
+			<option value="1">Last Topic Post</option>
+		</param>
+
+		<param name="forum_mode" type="radio" default="0" label="Forums"
+			description="Select the mode which will be used when deciding which forums
+            to include in the activity search.">
+			<option value="0">All forums</option>
+			<option value="1">Selected forums</option>
+		</param>
+
+		<param name="selected_forums" type="forumlist" default=""
+			label="Forum selection"
+			description="Select the forums you wish to use for the activity module." />
+
+
+
+		<param name="@spacer" type="spacer" default="" label=""
+			description="" />
+
+		<param name="display_limit" type="text" size="5" default="150"
+			label="Display character limit"
+			description="How many characters
+    to display as subject or body. Use 0 for no limit (if you are
+    hardcore that is...)" />
+
+		<param name="result_limit" type="text" size="5" default="5"
+			label="Results" description="Number of results to show" />
+
+		<param name="custom_date" type="text" default=""
+			label="Custom date format string"
+			description="If you leave this blank,
+    the system date string from joomla will be used. If you don't want
+    that, enter a date format according to php's strftime() function" />
+
+		<param name="tz_offset" type="text" default="0"
+			label="Custom timezone offset"
+			description="This field describes
+    the offset from the phpbb database time in hours. For example if
+    your server is GMT and you are GMT+1, then you enter '1' here. If
+    your timezone and your server are alike, set this to '0'" />
+
+		<param name="result_order" type="radio" default="1"
+			label="Result
+    order"
+			description="Order of your resulting list. ASCending or
+    DESCending.">
+			<option value="0">ASC</option>
+			<option value="1">DESC</option>
+		</param>
+
+		<param name="showdate" type="radio" default="1"
+			label="Show date" description="Show the date of each thread">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+
+		<param name="showuser" type="radio" default="1"
+			label="Show user"
+			description="Show the name of the user who posted the thread">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+
+		<param name="userlink" type="radio" default="0"
+			label="Username
+           link type"
+			description="Link the displayed username to
+           phpbb user profile">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		<param name="debug" type="list" default=""
+			label="Show SQL debug information"
+			description="Show SQL debug information?">
+			<option value="">Normal Operating Mode</option>
+			<option value="1">Die with SQL debug</option>
+		</param>
+
+
+	</params>
+</install>
+
