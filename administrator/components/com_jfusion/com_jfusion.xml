@@ -14,6 +14,12 @@
 		Please ONLY install the JFusion user and authentication plugin after the JFusion component has been fully configured.
 	</description>
 
+    <params addpath="/administrator/components/com_jfusion/elements">
+		<param name="JFusionPlugin" type="JFusionPlugins" default=""
+			description="PLUGIN_PARAM" />
+
+    </params>
+
 	<install>
 		<sql>
 			<file driver="mysql" charset="utf8">sql/install.jfusion.sql</file>

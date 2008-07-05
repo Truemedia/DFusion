@@ -8,26 +8,45 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-defined('_JEXEC') or die('Restricted access'); ?>
+defined('_JEXEC') or die('Restricted access');
+?>
 
 
-<script language=\"javascript\" type=\"text/javascript\">
-function iFrameHeight() {
-var h = 0;
-if ( !document.all ) {
-h = document.getElementById('blockrandom').contentDocument.height;
-document.getElementById('blockrandom').style.height = h + 60 + 'px';
-} else if( document.all ) {
-h = document.frames('blockrandom').document.body.scrollHeight;
-document.all.blockrandom.style.height = h + 20 + 'px';
-}
-}
+<script language="javascript" type="text/javascript">
+    function getElement(aID)
+    {
+        return (document.getElementById) ?
+            document.getElementById(aID) : document.all[aID];
+    }
+
+    function getIFrameDocument(aID){
+        var rv = null;
+        var frame=getElement(aID);
+        // if contentDocument exists, W3C compliant (e.g. Mozilla)
+
+        if (frame.contentDocument)
+            rv = frame.contentDocument;
+        else // bad IE  ;)
+
+            rv = document.frames[aID].document;
+        return rv;
+    }
+
+    function adjustMyFrameHeight()
+    {
+        var frame = getElement("blockrandom");
+        var frameDoc = getIFrameDocument("blockrandom");
+        frame.height = frameDoc.body.offsetHeight;
+    }
+
+
+
 </script>
-<div class=\"contentpane\">
+<div class="contentpane">
 <iframe
 
-<?php if($params->get('wrapper_autoheight')) {?>
-onload="iFrameHeight()"
+<?php if($this->params->get('wrapper_autoheight')) {?>
+onload="'adjustMyFrameHeight();'"
 <?php }?>
 
 id="blockrandom"
@@ -37,20 +56,14 @@ width="<?php echo $this->params->get('wrapper_width'); ?>"
 height="<?php echo $this->params->get('wrapper_height'); ?>"
 scrolling="<?php echo $this->params->get('wrapper_scroll'); ?>"
 
-<?php if ($params->get('wrapper_transparency')) { ?>
+<?php if ($this->params->get('wrapper_transparency')) { ?>
 allowtransparency="true"
 <?php } else { ?>
 allowtransparency="false"
 <?php } ?>
 
-align="top"
-frameborder="0"
-class="wrapper">
-This option will not work correctly.
-Unfortunately, your browser does not support Inline Frames
+align="top" frameborder="0" class="wrapper">
+<?php echo JText::_('OLD_BROWSER');?>
 </iframe>
 </div>
-<div class="back_button">
-<a href='javascript:history.go(-1)'>
-[ Back ]</a>
-</div>
+

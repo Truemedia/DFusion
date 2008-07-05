@@ -31,12 +31,10 @@ class JFusionControllerFrontEnd extends JController
  */
 function wrapper()
 {
-JRequest::setVar('view', 'Wrapper');
-parent::display();
+	JRequest::setVar('view', 'wrapper');
+	parent::display();
 }
 
 
 }
 
-
-?>

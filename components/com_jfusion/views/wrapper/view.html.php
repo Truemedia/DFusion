@@ -22,18 +22,51 @@ class jfusionViewWrapper extends JView {
     function display($tpl = null)
     {
 
+        $db =& JFactory::getDBO();
+
         //get the forum url
         $wrap = urldecode(JRequest::getVar('wrap', '', 'get'));
         $jname = urldecode(JRequest::getVar('jname', '', 'get'));
 
+        if(!$jname) {
+        	//no plugin defined, therefore get the default plugin
+			$menuitemid = JRequest::getInt( 'Itemid' );
+	    	$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
+    		$menu_data = $db->loadResult();
+    	    $db->setQuery($query );
+            $menu_param = new JParameter($params, '');
+            $jname =  $$menu_param->get('JFusionPlugin');
+            if (!jname){
+            	//die gracefully as no plugin name was defined
+				echo JText::_('ERROR_NO_PLUGIN');
+                return false;
+            }
+        }
+
+        //check to see if the plugin is configured properly
+        $db =& JFactory::getDBO();
+    	$query = 'SELECT status from #__jfusion WHERE name = ' . $db->quote($jname);
+    	$db->setQuery($query );
+
+    	if ($db->loadResult() != 3) {
+            	//die gracefully as the plugin is not configured properly
+				echo JText::_('ERROR_PLUGIN_CONFIG');
+                return false;
+    	}
+
+		/**
+		* load the JFusion framework
+		*/
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+
+
         //get the URL to the forum
-        $params = JFusionFactory::getParams($jname);
-        $source_url = $params->get('source_url');
+        $params2 = JFusionFactory::getParams($jname);
+        $source_url = $params2->get('source_url');
 
         //check to see if url starts with http
-        $test_url = substr($source_url, 0, 4);
-        if ($test_url == 'http') {
-        } else {
+		if (substr($source_url, 0, 7) != 'http://' && substr($source_url, 0, 8) != 'https://') {
             $source_url = 'http://' . $source_url;
         }
 
@@ -45,15 +78,15 @@ class jfusionViewWrapper extends JView {
         }
         ;
 
-
         //print out results to user
         $this->assignRef('url', $url);
         $this->assignRef('params', $params);
+        $this->assignRef('jname', $jname);
         parent::display($tpl);
     }
 
 }
-?>
+
 
 
 
