@@ -44,8 +44,14 @@ $result_order = (intval($params->get('result_order'))) ? "DESC" : "ASC";
 $showdate = intval($params->get('showdate'));
 $showuser = intval($params->get('showuser'));
 $userlink = intval($params->get('userlink'));
+$view= $params->get('link_mode');
 
-// Create db connection using JFusion
+if ($params->get('new_window')) {
+	$new_window = '_blank';
+} else {
+    $new_window = '_self';
+}
+
 
 $jname = $params->get('JFusionPlugins');
 if ($jname) {
@@ -57,13 +63,6 @@ if ($jname) {
 
         $forum = JFusionFactory::getPlugin($jname);
         $db = JFusionFactory::getDatabase($jname);
-        $params2 = JFusionFactory::getParams('main');
-
-        if ($params2->get('new_window')) {
-            $new_window = '_blank';
-        } else {
-            $new_window = '_self';
-        }
 
         if (JError::isError($db)) {
             echo  JText::_('NO_DATABASE');
@@ -115,7 +114,12 @@ if ($jname) {
 
 			            //process user info
                         if ($showuser) {
-                            $user = $userlink ? '<a href="'. $forum->getProfileURL($result[$i][2], $result[$i][1]) . '" target="' . $new_window . '">'.$result[$i][1].'</a>' : $result[$i][1];
+                            if ($userlink) {
+								$user_url = JFusionfunction::createURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $jname, $view);
+								$user = '<a href="'. $user_url . '" target="' . $new_window . '">'.$result[$i][1].'</a>'; 								$user = '<a href="'. $user_url . '" target="' . $new_window . '">'.$result[$i][1].'</a>';
+                            } else {
+								$user = $result[$i][1];
+                            }
                             $user = " - <b>".$user."</b>";
                         }
 
@@ -131,7 +135,20 @@ if ($jname) {
                         $subject = empty($subject) ? JText::_('NO_SUBJECT') : $subject;
 
                         //combine all info into an urlstring
-                        $urlstring = ($mode == LCP) ? '<a href="'.  $forum->getPostURL($result[$i][5], $result[$i][0], $subject) . '" target="' . $new_window . '">'. $subject.'</a>' : (($mode == LCT) ? '<a href="'. $forum->getThreadURL($result[$i][0], $subject) . '" target="' . $new_window . '">' .$subject.'</a>' : (($linktype == LINKPOST) ? '<a href="'.  $forum->getPostURL($result[$i][5], $result[$i][0], $subject) . '" target="' . $new_window . '">'. $subject.'</a>' : '<a href="'. $forum->getThreadURL($result[$i][0], $subject) . '" target="' . $new_window . '">' .$subject.'</a>'));
+                        if ($mode == LCP) {
+							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0], $subject), $jname, $view);
+    	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">'. $subject.'</a>';
+                        } elseif ($mode == LCT) {
+							$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0], $subject), $jname, $view);
+							$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">' .$subject.'</a>';
+                        } elseif ($linktype == LINKPOST) {
+							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0], $subject), $jname, $view);
+							$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">'. $subject.'</a>';
+                        } else {
+                        	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0], $subject), $jname, $view);
+                        	$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">' .$subject.'</a>';
+                        }
+
                         //put it all together for output
                         echo '<li>'. $urlstring . '<b>'.$user.'</b>'.$date.'</li>';
 

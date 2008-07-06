@@ -278,17 +278,16 @@ class JFusionFunction{
 * @return string full URL to the filename passed to this function
 */
 
-    function createURL($url, $jname)
+    function createURL($url, $jname, $view)
     {
-        $params = JFusionFactory::getParams('joomla_int');
-        //check to see if they want to use the wrapper
-        if ($params->get('use_wrapper')) {
+        if ($view == 'wrapper') {
             $url_root = JURI::root();
-            $url = $url_root . 'index.php?option=com_jfusion&amp;wrap='. urlencode($url);
+            $url = $url_root . 'index.php?option=com_jfusion&amptask=wrapper&amp;wrap='. urlencode($url);
         } else {
-            $params2 = JFusionFactory::getParams($jname);
-            $url = $params2->get('source_url') . $url;
+            $params = JFusionFactory::getParams($jname);
+            $url = $params->get('source_url') . $url;
         }
+
         return $url;
 
     }

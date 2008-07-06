@@ -15,6 +15,11 @@
 	<files  folder="modules/mod_jfusion_activity">
 		<filename module="mod_jfusion_activity">mod_jfusion_activity.php</filename>
 	</files>
+
+	<languages folder="language/en-GB">
+		<language tag="en-GB">en-GB.mod_jfusion_activity.ini</language>
+	</languages>
+
 	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="moduleclass_sfx" type="text" default=""
 			label="MODULE_SUFFIX" description="MODULE_SUFFIX_DESCR" />
@@ -25,6 +30,18 @@
 		<param name="JFusionPlugins" type="JFusionPlugins" default=""
 			label="JFUSION_PLUGIN"
 			description="JFUSION_PLUGIN_DESCR" />
+
+		<param name="link_mode" type="list" default="direct" label="LINK_MODE"
+			description="LINK_MODE_DESCR">
+			<option value="wrapper">LINK_MODE_0</option>
+			<option value="direct">LINK_MODE_1</option>
+		</param>
+
+		<param name="link_type" type="list" default="0" label="LINK_TYPE"
+			description="LINK_TYPE_DESCR">
+			<option value="1">YES</option>
+			<option value="0">NO</option>
+		</param>
 
 		<param name="mode" type="list" default="0" label="MODE"
 			description="MODE_DESCR">

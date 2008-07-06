@@ -32,7 +32,7 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
 
     function getJname()
     {
-        return "phpbb3";
+        return 'phpbb3';
     }
 
     function getTablename()
@@ -114,42 +114,42 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
 
     function getRegistrationURL()
     {
-        return JFusionFunction::createURL('ucp.php?mode=register', $this->getJname());
+        return 'ucp.php?mode=register';
     }
 
     function getLostPasswordURL()
     {
-        return JFusionFunction::createURL('ucp.php?mode=sendpassword', $this->getJname());
+        return 'ucp.php?mode=sendpassword';
     }
 
     function getLostUsernameURL()
     {
-        return JFusionFunction::createURL('ucp.php?mode=sendpassword', $this->getJname());
+        return 'ucp.php?mode=sendpassword';
     }
 
     function getThreadURL($threadid)
     {
-        return  JFusionFunction::createURL('viewtopic.php?t=' . $threadid, $this->getJname());
+        return  'viewtopic.php?t=' . $threadid;
     }
 
     function getPostURL($threadid, $postid)
     {
-        return JFusionFunction::createURL('viewtopic.php?p='.$postid.'#p' . $postid, $this->getJname());
+        return 'viewtopic.php?p='.$postid.'#p' . $postid;
     }
 
     function getProfileURL($uid)
     {
-        return JFusionFunction::createURL('memberlist.php?mode=viewprofile&u='.$uid, $this->getJname());
+        return 'memberlist.php?mode=viewprofile&u='.$uid;
     }
 
     function getPrivateMessageURL()
     {
-        return JFusionFunction::createURL('ucp.php?i=pm&folder=inbox', $this->getJname());
+        return 'ucp.php?i=pm&folder=inbox';
     }
 
     function getViewNewMessagesURL()
     {
-        return JFusionFunction::createURL('search.php?search_id=newposts', $this->getJname());
+        return 'search.php?search_id=newposts';
     }
 
 

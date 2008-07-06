@@ -23,6 +23,6 @@
 			<option value="0">NO</option>
 		</param>
 		<param name="@spacer" type="spacer" default="" label="" description="" />
-		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="usergroup" default="Registered" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 	</params>
 </install>
