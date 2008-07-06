@@ -13,16 +13,14 @@
 		between this module and the standard Joomla module, is the
 		forgot password and register URL links.
 	</description>
-	<files>
-		<filename module="mod_jfusion_login">
-			mod_jfusion_login.php
-		</filename>
+	<files folder="modules/mod_jfusion_login">
+		<filename module="mod_jfusion_login">mod_jfusion_login.php</filename>
 		<filename>index.html</filename>
 		<filename>helper.php</filename>
 		<filename>tmpl/default.php</filename>
 		<filename>tmpl/index.html</filename>
 	</files>
-	<languages>
+	<languages folder="language/en-GB">
 		<language tag="en-GB">en-GB.mod_jfusion_login.ini</language>
 	</languages>
 	<params>

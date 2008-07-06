@@ -12,10 +12,8 @@
 		This is the JFusion activity module, that displays the latest
 		posts from the integrated forum software.
 	</description>
-	<files>
-		<filename module="mod_jfusion_activity">
-			mod_jfusion_activity.php
-		</filename>
+	<files  folder="modules/mod_jfusion_activity">
+		<filename module="mod_jfusion_activity">mod_jfusion_activity.php</filename>
 	</files>
 	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="moduleclass_sfx" type="text" default=""
@@ -42,8 +40,7 @@
 		</param>
 
 		<param name="display_body" type="list" default="0"
-			label="DISPLAY_BODY
-			description="DISPLAY_BODY_DESCR">
+			label="DISPLAY_BODY" description="DISPLAY_BODY_DESCR">
 			<option value="0">DISPLAY_BODY_0</option>
 			<option value="1">DISPLAY_BODY_1</option>
 			<option value="2">DISPLAY_BODY_2</option>
@@ -113,12 +110,10 @@
 		</param>
 		<param name="debug" type="list" default=""
 			label="DEBUG"
-			description=DEBUG_DESCR">
+			description="DEBUG_DESCR">
 			<option value="">DEBUG_0</option>
 			<option value="1">DEBUG_1</option>
 		</param>
-
-
 	</params>
 </install>
 
