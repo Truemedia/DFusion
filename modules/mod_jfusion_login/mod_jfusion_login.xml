@@ -14,8 +14,8 @@
 		forgot password and register URL links.
 	</description>
 	<files>
-		<filename module="mod_jfusionlogin">
-			mod_jfusionlogin.php
+		<filename module="mod_jfusion_login">
+			mod_jfusion_login.php
 		</filename>
 		<filename>index.html</filename>
 		<filename>helper.php</filename>
@@ -23,7 +23,7 @@
 		<filename>tmpl/index.html</filename>
 	</files>
 	<languages>
-		<language tag="en-GB">en-GB.mod_jfusionlogin.ini</language>
+		<language tag="en-GB">en-GB.mod_jfusion_login.ini</language>
 	</languages>
 	<params>
 		<param name="pretext" type="textarea" cols="20" rows="5"
