@@ -4,47 +4,25 @@
 	<name>joomla</name>
 	<author>JFusion Development Team</author>
 	<creationDate>June 2008</creationDate>
-	<copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
-	<version>1.0</version>
-	<description>Joomla!-Joomla! plugin for JFusion</description>
+	<version>1.00</version>
+	<description>internal Joomla plugin for JFusion</description>
 	<files>
-		<filename>admin_forum.php</filename>
+		<filename>auth.php</filename>
+		<filename>index.xml</filename>
+		<filename>jfusion.xml</filename>
+		<filename>jfusion_plugin.php</filename>
+		<filename>user.php</filename>
 	</files>
-  <params addpath="/administrator/components/com_jfusion/elements">
-	<param name="username_filter" type="list" default="1"
-			description="USERNAME_FILTER">
+	<params addpath="/administrator/components/com_jfusion/elements">
+		<param name="username_filter" type="list" default="1" description="USERNAME_FILTER">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
-		<param name="@spacer" type="spacer" default="" label=""
-			description="" />
-
-		<param name="wrapper_scroll" type="radio" default="auto"
-			description="WRAPPER_SCROLL">
-			<option value="no">NO</option>
-			<option value="yes">YES</option>
-			<option value="auto">AUTO</option>
-		</param>
-		<param name="wrapper_width" type="text" size="10" default="100%"
-			description="WRAPPER_HEIGHT" />
-		<param name="wrapper_height" type="text" size="10" default="500"
-			description="WRAPPER_WIDTH" />
-		<param name="wrapper_autoheight" type="radio" default="1"
-			description="WRAPPER_AUTOHEIGHT">
-			<option value="0">NO</option>
-			<option value="1">YES</option>
-		</param>
-		<param name="wrapper_transparency" type="radio" default="1"
-			description="WRAPPER_TRANSPARENCY">
-			<option value="0">NO</option>
-			<option value="1">YES</option>
-		</param>
-		<param name="@spacer" type="spacer" default="" label=""
-			description="" />
+		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
-
 	</params>
 </install>

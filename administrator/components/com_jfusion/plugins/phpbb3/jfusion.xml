@@ -4,45 +4,40 @@
 	<name>phpbb3</name>
 	<author>JFusion Development Team</author>
 	<creationDate>June 2008</creationDate>
-	<copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
 	<version>1.0</version>
 	<description>phpBB3 plugin for JFusion</description>
 	<files>
-		<filename>admin_forum.php</filename>
+		<filename>auth.php</filename>
+		<filename>case_fold_c.php</filename>
+		<filename>case_fold_f.php</filename>
+		<filename>case_fold_s.php</filename>
+		<filename>confusables.php</filename>
+		<filename>index.xml</filename>
+		<filename>jfusion.xml</filename>
+		<filename>jfusion_plugin.php</filename>
+		<filename>user.php</filename>
+		<filename>username_clean.php</filename>
 		<filename>PasswordHash.php</filename>
 	</files>
   <params addpath="/administrator/components/com_jfusion/elements">
-		<param name="database_type" type="text" size="20" default=""
-			description="DATABASE_TYPE" />
-		<param name="database_host" type="text" size="20" default=""
-			description="DATABASE_HOST" />
-		<param name="database_name" type="text" size="20" default=""
-			description="DATABASE_NAME" />
-		<param name="database_user" type="text" size="20" default=""
-			description="DATABASE_USER" />
-		<param name="database_password" type="text" size="20" default=""
-			description="DATABASE_PASSWORD" />
-		<param name="@spacer" type="spacer" default="" label=""
-			description="" />
-		<param name="database_prefix" type="text" size="20" default=""
-			description="DATABASE_PREFIX" />
-		<param name="source_url" type="text" size="100"
-			default="http://www.yourdomain.com/forums/" description="SOURCE_URL" />
-		<param name="source_path" type="text" size="100"
-			default="" description="SOURCE_PATH" />
-		<param name="cookie_path" type="text" size="40" default=""
-			description="COOKIE_PATH" />
-		<param name="cookie_prefix" type="text" size="10" default="bb"
-			description="COOKIE_PREFIX." />
-		<param name="cookie_domain" type="text" size="10" default="/"
-			description="COOKIE_DOMAIN" />
-		<param name="allow_autologin" type="text" size="10" default="/"
-			description="ALLOW_AUTOLOGIN" />
-					<param name="@spacer" type="spacer" default="" label=""
-			description="" />
+		<param name="database_type" type="text" size="20" default="" description="DATABASE_TYPE"/>
+		<param name="database_host" type="text" size="20" default="" description="DATABASE_HOST"/>
+		<param name="database_name" type="text" size="20" default="" description="DATABASE_NAME"/>
+		<param name="database_user" type="text" size="20" default="" description="DATABASE_USER"/>
+		<param name="database_password" type="text" size="20" default="" description="DATABASE_PASSWORD"/>
+		<param name="database_prefix" type="text" size="20" default="" description="DATABASE_PREFIX"/>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
+		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
+		<param name="cookie_domain" type="text" size="10" default="" description="COOKIE_DOMAIN" />
+		<param name="cookie_path" type="text" size="40" default="/" description="COOKIE_PATH" />
+		<param name="cookie_prefix" type="text" size="10" default="bb" description="COOKIE_PREFIX." />
+		<param name="allow_autologin" type="text" size="10" default="/" description="ALLOW_AUTOLOGIN" />
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 	</params>
 </install>

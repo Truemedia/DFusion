@@ -83,6 +83,7 @@ class JFusionPlugin_punbb extends JFusionPlugin{
 			$params['cookie_domain'] = $config['cookie_domain'];
 			$params['cookie_seed'] = $config['cookie_seed'];
 			$params['cookie_secure'] = $config['cookie_secure'];
+            $params['source_path'] = $forumPath;
 
             //find the path to PunBB, for this we need a database connection
             $host = $config['db_host'];

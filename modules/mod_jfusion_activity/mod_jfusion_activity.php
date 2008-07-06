@@ -151,5 +151,3 @@ if ($jname) {
     echo JText::_('NO_COMPONENT');
 }
 
-?>
-

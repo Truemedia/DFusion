@@ -69,6 +69,7 @@ class JFusionPlugin_joomla_ext extends JFusionPlugin
             $params['database_prefix'] = $config['dbprefix'];
             $params['database_type'] = $config['dbtype'];
 			$params['source_url'] = $config['live_site'];
+             $params['source_path'] = $forumPath;
             return $params;
         }
 

@@ -80,7 +80,7 @@ class jfusionViewWrapper extends JView {
 
         //print out results to user
         $this->assignRef('url', $url);
-        $this->assignRef('params', $params);
+        $this->assignRef('params', $menu_param);
         $this->assignRef('jname', $jname);
         parent::display($tpl);
     }

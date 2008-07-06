@@ -54,6 +54,7 @@ class JFusionPlugin_mybb extends JFusionPlugin{
          $params['database_password'] = $config['password'];
          $params['database_name'] = $config['database'];
          $params['database_prefix'] = $config['table_prefix'];
+         $params['source_path'] = $forumPath;
 
          //find the source url to mybb
          $driver = $config['dbtype'];

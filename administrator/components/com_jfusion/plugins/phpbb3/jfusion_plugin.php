@@ -98,6 +98,14 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
                 $params['allow_autologin'] =  $config['allow_autologin'];
                 $params['source_path'] = $forumPath;
             }
+
+            //check for trailing slash
+			if (substr($config['server_name'], -1) == '/') {
+                 $params['source_url'] = $config['server_name'] . $config['script_path'];
+			} else {
+                 $params['source_url'] = $config['server_name'] . '/' . $config['script_path'] ;
+			}
+
             //return the parameters so it can be saved permanently
             return $params;
         }

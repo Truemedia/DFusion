@@ -2,11 +2,12 @@
 <install type="module" version="1.5">
 	<name>JFusion Login Module</name>
 	<author>JFusion Development Team</author>
-	<authorEmail>info@jfusion.org</authorEmail>
-	<authorUrl>http://www.jfusion.org</authorUrl>
-	<copyright>(C) 2007 All rights reserved.</copyright>
-	<license>GNU/GPL</license>
-	<version>1.0.5f</version>
+	<creationDate>June 2008</creationDate>
+	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>webmaster@jfusion.org</authorEmail>
+	<authorUrl>www.jfusion.org</authorUrl>
+	<version>1.0.7</version>
 	<description>
 		This is the optional JFusion login module. The only difference
 		between this module and the standard Joomla module, is the
@@ -23,67 +24,66 @@
 	</files>
 	<languages>
 		<language tag="en-GB">en-GB.mod_jfusionlogin.ini</language>
-		<language tag="nb-NO">nb-NO.mod_jfusionlogin.ini</language>
 	</languages>
 	<params>
 		<param name="pretext" type="textarea" cols="20" rows="5"
-			default="" label="Pre-text" description="PARAMPRETEXT" />
+			default="" label="PRE_TEXT" description="PRE_TEXT_DESCR" />
 		<param name="posttext" type="textarea" cols="20" rows="5"
-			default="" label="Post-text" description="PARAMPOSTTEXT" />
+			default="" label="POST_TEXT" description="POST_TEXT_DESCR" />
 		<param name="login" type="menuitem" default=""
-			disable="separator" label="Login Redirection URL"
-			description="PARAMLOGINREDIRECTURL" />
+			disable="separator" label="LOGIN_REDIRECT"
+			description="LOGIN_REDIRECT_DESCR" />
 		<param name="logout" type="menuitem" default=""
-			disable="separator" label="Logout Redirection URL"
-			description="PARAMLOGOUTREDIRECTURL" />
+			disable="separator" label="LOGOUT_REDIRECT"
+			description="LOGOUT_REDIRECT_DESCR" />
 		<param name="name" type="list" default="0"
-			label="Name/Username">
-			<option value="0">Username</option>
-			<option value="1">Name</option>
+			label="DISPLAY_USERNAME_NAME" description="DISPLAY_NAME_USERNAME_DESCR">
+			<option value="0">USERNAME</option>
+			<option value="1">NAME</option>
 		</param>
 		<param name="usesecure" type="radio" default="0"
-			label="Encrypt Login Form"
-			description="Submit encrypted login data (requires SSL)">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+			label="ENCRYPT_FORM"
+			description="ENCRYPT_FORM_DESCR">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
 		</param>
 		<param name="show_lostpass" type="radio" default="1"
-			label="Lost password" description="PARAMLOSTPASSWORD">
-			<option value="0">Hide</option>
-			<option value="1">Show</option>
+			label="LOST_PASSWORD" description="LOST_PASSWORD_DESCR">
+			<option value="0">HIDE</option>
+			<option value="1">SHOW</option>
 		</param>
 		<param name="show_lostusername" type="radio" default="1"
-			label="Lost username" description="PARAMLOSTUSERNAME">
-			<option value="0">Hide</option>
-			<option value="1">Show</option>
+			label="LOST_USERNAME" description="LOST_USERNAME_DESCR">
+			<option value="0">HIDE</option>
+			<option value="1">SHOW</option>
 		</param>
 		<param name="show_newaccount" type="radio" default="1"
-			label="Create account" description="PARAMCREATEACCOUNT">
-			<option value="0">Hide</option>
-			<option value="1">Show</option>
+			label="CREATE_ACCOUNT" description="CREATE_ACCOUNT_DESCR">
+			<option value="0">HIDE</option>
+			<option value="1">SHOW</option>
 		</param>
 		<param name="@spacer" type="spacer" default="" label=""
 			description="" />
-		<param name="greeting" type="radio" default="1" label="Greeting"
-			description="Show/Hide the simple greeting text">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
+		<param name="greeting" type="radio" default="1" label="GREETING"
+			description="GREETING_DESCR">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
 		</param>
 		<param name="avatar" type="radio" default="1"
-			label="Avatar image" description="PARAMAVATARIMAGE">
-			<option value="0">Hide</option>
-			<option value="1">Show</option>
+			label="AVATAR_IMAGE" description="AVATAR_IMAGE_DESCR">
+			<option value="0">HIDE</option>
+			<option value="1">SHOW</option>
 		</param>
 		<param name="pmcount" type="radio" default="1"
-			label="Private message count"
-			description="PARAMPRIVATEMESSAGECOUNT">
-			<option value="0">Hide</option>
-			<option value="1">Show</option>
+			label="PM_COUNT"
+			description="PM_COUNT_DESCR">
+			<option value="0">HIDE</option>
+			<option value="1">SHOW</option>
 		</param>
 		<param name="viewnewmessages" type="radio" default="1"
-			label="New messages link" description="PARAMNEWMESSAGESLINK">
-			<option value="0">Hide</option>
-			<option value="1">Show</option>
+			label="PM_NEW_LINK" description="PM_NEW_LINK_DESCR">
+			<option value="0">HIDE</option>
+			<option value="1">SHOW</option>
 		</param>
 	</params>
 </install>

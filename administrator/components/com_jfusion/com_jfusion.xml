@@ -40,6 +40,10 @@
         <folder>views</folder>
 	</files>
 
+		<languages folder="language/en-GB">
+			<language tag="en-GB">en-GB.com_jfusion.ini</language>
+		</languages>
+
 	<administration>
 		<menu img="components/com_jfusion/images/jfusion.png">
 			jfusion
@@ -65,6 +69,7 @@
 		<files folder="administrator/components/com_jfusion">
 			<filename>index.html</filename>
 			<filename>admin.jfusion.php</filename>
+			<filename>config.xml</filename>
 
 			<filename>controllers/controller.jfusion.php</filename>
 			<filename>controllers/index.html</filename>

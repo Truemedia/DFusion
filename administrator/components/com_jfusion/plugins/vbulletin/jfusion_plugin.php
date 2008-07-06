@@ -83,6 +83,7 @@ class JFusionPlugin_vbulletin extends JFusionPlugin{
             $params['database_password'] = $config['MasterServer']['password'];
             $params['database_prefix'] = $config['Database']['tableprefix'];
             $params['cookie_prefix'] = $config['Misc']['cookieprefix'];
+         	$params['source_path'] = $forumPath;
 
             //find the path to vbulletin, for this we need a database connection
             $host = $config['MasterServer']['servername'];

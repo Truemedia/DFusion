@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <params addpath="/administrator/components/com_jfusion/elements">
+		<param name="wrapper_scroll" type="radio" default="auto"
+			description="WRAPPER_SCROLL">
+			<option value="no">NO</option>
+			<option value="yes">YES</option>
+			<option value="auto">AUTO</option>
+		</param>
+		<param name="wrapper_width" type="text" size="10" default="100%"
+			description="WRAPPER_HEIGHT" />
+		<param name="wrapper_height" type="text" size="10" default="500"
+			description="WRAPPER_WIDTH" />
+		<param name="wrapper_autoheight" type="radio" default="1"
+			description="WRAPPER_AUTOHEIGHT">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
+		<param name="wrapper_transparency" type="radio" default="1"
+			description="WRAPPER_TRANSPARENCY">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
+	</params>
+</config>

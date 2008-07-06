@@ -65,7 +65,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 	</p>
 	<?php if(JPluginHelper::isEnabled('system', 'remember')) : ?>
 	<p id="form-login-remember">
-		<label for="modlgn_remember"><?php echo JText::_('REMEMBER ME') ?></label>
+		<label for="modlgn_remember"><?php echo JText::_('REMEMBER_ME') ?></label>
 		<input id="modlgn_remember" type="checkbox" name="remember" class="inputbox" value="yes" alt="Remember Me" />
 	</p>
 	<?php endif; ?>

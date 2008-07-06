@@ -71,6 +71,7 @@ class JFusionPlugin_ipb extends JFusionPlugin
             $params['database_prefix'] = $config['sql_tbl_prefix'];
             $params['database_type'] = $config['sql_driver'];
             $params['source_url'] = $config['board_url'];
+            $params['source_path'] = $forumPath;
 
             return $params;
         }

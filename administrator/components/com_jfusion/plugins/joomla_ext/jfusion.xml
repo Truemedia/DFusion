@@ -4,33 +4,31 @@
 	<name>joomla</name>
 	<author>JFusion Development Team</author>
 	<creationDate>June 2008</creationDate>
-	<copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
+	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
 	<version>1.0</version>
 	<description>Joomla!-Joomla! plugin for JFusion</description>
-  <params addpath="/administrator/components/com_jfusion/elements">
-	<param name="database_type" type="text" size="20" default=""
-			description="DATABASE_TYPE" />
-		<param name="database_host" type="text" size="20" default=""
-			description="DATABASE_HOST" />
-		<param name="database_name" type="text" size="20" default=""
-			description="DATABASE_NAME" />
-		<param name="database_user" type="text" size="20" default=""
-			description="DATABASE_USER" />
-		<param name="database_password" type="text" size="20" default=""
-			description="DATABASE_PASSWORD" />
-		<param name="@spacer" type="spacer" default="" label=""
-			description="" />
-		<param name="database_prefix" type="text" size="20" default=""
-			description="DATABASE_PREFIX" />
-		<param name="source_url" type="text" size="40"
-			default="http://www.yourdomain.com/magento/"
-			description="SOURCE_URL" />
-		<param name="@spacer" type="spacer" default="" label=""
-			description="" />
-		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+	<files>
+		<filename>auth.php</filename>
+		<filename>index.xml</filename>
+		<filename>jfusion.xml</filename>
+		<filename>jfusion_plugin.php</filename>
+		<filename>user.php</filename>
+	</files>
 
+  <params addpath="/administrator/components/com_jfusion/elements">
+		<param name="database_type" type="text" size="20" default="" description="DATABASE_TYPE"/>
+		<param name="database_host" type="text" size="20" default="" description="DATABASE_HOST"/>
+		<param name="database_name" type="text" size="20" default="" description="DATABASE_NAME"/>
+		<param name="database_user" type="text" size="20" default="" description="DATABASE_USER"/>
+		<param name="database_password" type="text" size="20" default="" description="DATABASE_PASSWORD"/>
+		<param name="database_prefix" type="text" size="20" default="" description="DATABASE_PREFIX"/>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
+		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 	</params>
 </install>

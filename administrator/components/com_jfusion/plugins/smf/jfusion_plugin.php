@@ -74,6 +74,7 @@ class JFusionPlugin_smf extends JFusionPlugin{
             $params['database_prefix'] = $config['db_prefix'];
             $params['source_url'] = $config['boardurl'];
             $params['cookie_name'] = $config['cookiename'];
+            $params['source_path'] = $forumPath;
 
             JError::raiseNotice(0,JText::_('WIZARD_SUCCESS'));
             return $params;

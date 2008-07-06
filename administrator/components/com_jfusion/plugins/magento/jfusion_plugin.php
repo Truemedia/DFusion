@@ -71,6 +71,7 @@ class JFusionPlugin_magento extends JFusionPlugin
       $params['database_user'] = (string)$xml->global->resources->default_setup->connection->username;
       $params['database_password'] = (string)$xml->global->resources->default_setup->connection->password;
       $params['database_prefix'] =  (string)$xml->global->resources->db->table_prefix;
+      $params['source_path'] = $forumPath;
       return $params;
 
 	  } else {
