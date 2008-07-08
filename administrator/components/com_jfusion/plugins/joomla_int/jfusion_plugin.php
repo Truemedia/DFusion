@@ -22,6 +22,11 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 */
 class JFusionPlugin_joomla_int extends JFusionPlugin
 {
+    function getJname()
+    {
+        return 'joomla_int';
+    }
+
     function getTablename()
     {
         return 'users';
@@ -29,17 +34,17 @@ class JFusionPlugin_joomla_int extends JFusionPlugin
 
     function getRegistrationURL()
     {
-        return JFusionFunction::createURL('index.php?option=com_user&task=register', $this->getJname());
+        return 'index.php?option=com_user&task=register';
     }
 
     function getLostPasswordURL()
     {
-        return JFusionFunction::createURL('index.php?option=com_user&view=reset', $this->getJname());
+        return 'index.php?option=com_user&view=reset';
     }
 
     function getLostUsernameURL()
     {
-        return JFusionFunction::createURL('index.php?option=com_user&view=remind', $this->getJname());
+        return 'index.php?option=com_user&view=remind';
     }
 
 
@@ -108,9 +113,6 @@ class JFusionPlugin_joomla_int extends JFusionPlugin
         }
     }
 
-    function getJname()
-    {
-        return "joomla_int";
-    }
+
 
 }

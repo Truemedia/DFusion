@@ -24,6 +24,11 @@
 		<language tag="en-GB">en-GB.mod_jfusion_login.ini</language>
 	</languages>
 	<params>
+		<param name="link_mode" type="list" default="direct" label="LINK_MODE"
+			description="LINK_MODE_DESCR">
+			<option value="wrapper">LINK_MODE_0</option>
+			<option value="direct">LINK_MODE_1</option>
+		</param>
 		<param name="pretext" type="textarea" cols="20" rows="5"
 			default="" label="PRE_TEXT" description="PRE_TEXT_DESCR" />
 		<param name="posttext" type="textarea" cols="20" rows="5"

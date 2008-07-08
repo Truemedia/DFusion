@@ -129,7 +129,7 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
 
     function getThreadURL($threadid)
     {
-        return  'viewtopic.php?t=' . $threadid;
+        return 'viewtopic.php?t=' . $threadid;
     }
 
     function getPostURL($threadid, $postid)

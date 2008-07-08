@@ -19,7 +19,7 @@ $user =& JFactory::getUser();
 $params->def('greeting', 1);
 $type 	= modjfusionLoginHelper::getType();
 $return	= modjfusionLoginHelper::getReturnURL($params, $type);
-
+$view = $params->get('link_mode', 'direct');
 
 
 //check if the JFusion component is installed
@@ -46,10 +46,10 @@ if (file_exists($model_file) && file_exists($model_file)) {
 
 
         $JFusionPlugin = JFusionFactory::getPlugin($jname);
-        $allow_registration = $JFusionPlugin->allowRegistration();
-        $url_lostpass = $JFusionPlugin->getLostPasswordURL();
-        $url_lostuser = $JFusionPlugin->getLostUsernameURL();
-        $url_register = $JFusionPlugin->getRegistrationURL();
+        $allow_registration = JFusionFunction::createURL($JFusionPlugin->allowRegistration(), $jname, $view);
+        $url_lostpass = JFusionFunction::createURL($JFusionPlugin->getLostPasswordURL(), $jname, $view);
+        $url_lostuser = JFusionFunction::createURL($JFusionPlugin->getLostUsernameURL(), $jname, $view);
+        $url_register = JFusionFunction::createURL($JFusionPlugin->getRegistrationURL(), $jname, $view);
 
         $userlookup = JFusionFunction::lookupUser($jname, $user->get('id'));
 

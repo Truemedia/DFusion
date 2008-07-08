@@ -79,32 +79,32 @@ class JFusionPlugin_ipb extends JFusionPlugin
 
     function getRegistrationURL()
     {
-        return JFusionFunction::createURL('index.php?act=Reg&amp;CODE=00', $this->getJname());
+        return 'index.php?act=Reg&amp;CODE=00';
     }
 
     function getLostPasswordURL()
     {
-        return JFusionFunction::createURL('index.php?act=Reg&amp;CODE=10', $this->getJname());
+        return 'index.php?act=Reg&amp;CODE=10';
     }
 
     function getLostUsernameURL()
     {
-        return JFusionFunction::createURL('index.php?act=Reg&amp;CODE=10', $this->getJname());
+        return 'index.php?act=Reg&amp;CODE=10';
     }
 
     function getThreadURL($threadid, $subject)
     {
-        return JFusionFunction::createURL('index.php?showtopic=' . $threadid, $this->getJname());
+        return 'index.php?showtopic=' . $threadid);
     }
 
     function getPostURL($threadid, $postid, $subject)
     {
-        return JFusionFunction::createURL('index.php?showtopic=' . $threadid . '&amp;view=findpost&amp;p='.$postid, $this->getJname());
+        return 'index.php?showtopic=' . $threadid . '&amp;view=findpost&amp;p='.$postid;
     }
 
     function getProfileURL($uid, $uname)
     {
-        return JFusionFunction::createURL('index.php?showuser='.$uid, $this->getJname());
+        return 'index.php?showuser='.$uid;
     }
 
     function getQuery($usedforums, $result_order, $result_limit, $char_limit)
@@ -170,43 +170,75 @@ class JFusionPlugin_ipb extends JFusionPlugin
 
     function getPrivateMessageURL()
     {
-        return JFusionFunction::createURL('index.php?act=Msg&amp;CODE=01', $this->getJname());
+        return 'index.php?act=Msg&amp;CODE=01';
     }
 
     function getViewNewMessagesURL()
     {
-        return JFusionFunction::createURL('index.php?act=Search&amp;CODE=getnew', $this->getJname());
+        return 'index.php?act=Search&amp;CODE=getnew';
     }
 
 
     function getAvatar($userid)
     {
-        if ($userid) {
-            $params = JFusionFactory::getParams($this->getJname());
+
+       if ($userid)
+        {
+
+            // Get connection with forums database.
             $db = JFusionFactory::getDatabase($this->getJname());
 
-            $db->setQuery('SELECT avatar_location, avatar_type FROM #__member_extra WHERE id=' . $db->quote($userid));
-            $db->query();
-            $result = $db->loadObject();
+            // Set up the query for required avatar details.
+            $db->setQuery('SELECT avatar_location, avatar_type FROM #__member_extra WHERE id = '.$userid);
 
-            if (!empty($result)) {
-                if ($result->avatar_type == upload) {
-                    //Uploaded
-                    $url = $params->get('source_url').'uploads'.DS.$result->avatar_location;
-                } else if ($result->avatar_type == local && $result->avatar_location != noavatar) {
-                    //Gallery
-                    $url = $params->get('source_url').'style_avatars'.DS.$result->avatar_location;
-                } else if ($result->avatar_type == url) {
-                    //External
-                    $url = $result->avatar_location;
-                } else {
-                    $url = '';
-                }
+            // Load results from query.
+        	$avatar_info = $db->loadObject();
+
+            // Verify that we have results.
+            if (!empty($avatar_info))
+
+            {
+                // Handle Pre-installed avatars: Choose an avatar from one of our galleries option.
+       			if ($avatar_info->avatar_type == 'local') {
+
+                    // Set URL.
+          			$params = JFusionFactory::getParams($this->getJname());
+          			$forums_url = $params->get('source_url');
+                    $url =  $forums_url . 'style_avatars/' . $avatar_info->avatar_location;
+
+      			// Handle Your image avatars: Enter a URL to an online avatar image option.
+                } elseif ($avatar_info->avatar_type == 'url') {
+
+          			// Set URL.
+                    $url =  $avatar_info->avatar_location;
+
+      				// Handle Your image avatars: Upload a new image from your computer option.
+                } elseif ($avatar_info->avatar_type == 'upload') {
+
+          			// Set URL.
+          			$params = JFusionFactory::getParams($this->getJname());
+          			$forums_url = $params->get('source_url');
+                    $url =  $forums_url . 'uploads/' . $avatar_info->avatar_location;
+
+                 // Handle unexpected case.
+       			 } else {
+
+            		$url = '';
+        		}
+
+      			// Return the determined URL.
                 return $url;
+
             }
-        }
+
+        	return 0;
+
+    	}
+
         return 0;
-    }
+
+	}
+
 
     function getUserCount()
     {

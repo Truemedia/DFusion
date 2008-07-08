@@ -89,33 +89,33 @@ class JFusionPlugin_mybb extends JFusionPlugin{
 
     function getRegistrationURL()
     {
-       return JFusionFunction::createURL('member.php?action=register', $this->getJname());
+       return 'member.php?action=register';
     }
 
     function getLostPasswordURL()
     {
-       return JFusionFunction::createURL('member.php?action=lostpw', $this->getJname());
+       return 'member.php?action=lostpw';
     }
 
     function getLostUsernameURL()
     {
-       return JFusionFunction::createURL('member.php?action=lostpw', $this->getJname());
+       return 'member.php?action=lostpw';
     }
 
     function getThreadURL($threadid, $subject)
     {
-        return  JFusionFunction::createURL('showthread.php?tid='.$threadid, $this->getJname());
+       return  'showthread.php?tid='.$threadid;
 
     }
 
     function getPostURL($threadid, $postid, $subject)
     {
-        return  JFusionFunction::createURL('showthread.php?tid='.$threadid.'&amp;pid='.$postid.'#pid'.$postid, $this->getJname());
+        return  'showthread.php?tid='.$threadid.'&amp;pid='.$postid.'#pid'.$postid;
     }
 
     function getProfileURL($uid,$uname)
     {
-        return  JFusionFunction::createURL('member.php?action=profile&amp;uid'.$uid, $this->getJname());
+        return  'member.php?action=profile&amp;uid'.$uid;
     }
 
 
@@ -183,12 +183,12 @@ class JFusionPlugin_mybb extends JFusionPlugin{
 
     function getPrivateMessageURL()
     {
-        return JFusionFunction::createURL('private.php', $this->getJname());
+        return 'private.php';
     }
 
     function getViewNewMessagesURL()
     {
-        return JFusionFunction::createURL('search.php?action=getnew', $this->getJname());
+        return 'search.php?action=getnew';
     }
 
 

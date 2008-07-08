@@ -79,17 +79,17 @@ class JFusionPlugin_joomla_ext extends JFusionPlugin
 
     function getRegistrationURL()
     {
-       return AbstractForum::createURL('index.php?option=com_user&amp;task=register', $this->getJname());
+       return 'index.php?option=com_user&amp;task=register';
     }
 
     function getLostPasswordURL()
     {
-       return AbstractForum::createURL('index.php?option=com_user&amp;view=reset', $this->getJname());
+       return 'index.php?option=com_user&amp;view=reset';
     }
 
     function getLostUsernameURL()
     {
-       return AbstractForum::createURL('index.php?option=com_user&amp;view=remind', $this->getJname());
+       return 'index.php?option=com_user&amp;view=remind';
     }
 
     function getUserList()

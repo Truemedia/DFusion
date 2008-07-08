@@ -35,18 +35,18 @@ class JFusionPlugin_magento extends JFusionPlugin
 
 	function getRegistrationURL()
 	{
-		return AbstractForum::createURL('index.php'.DS.'customer'.DS.'account'.DS.'create'.DS , 'magento');
+		return 'index.php'.DS.'customer'.DS.'account'.DS.'create'.DS , 'magento';
 	}
 
 	function getLostPasswordURL()
 	{
-		return AbstractForum::createURL('index.php'.DS.'customer'.DS.'account'.DS.'forgotpassword'.DS ,'magento');
+		return 'index.php'.DS.'customer'.DS.'account'.DS.'forgotpassword'.DS ,'magento';
 	}
 
-	/* Magento doesn't have a url for this */
+
 	function getLostUsernameURL()
 	{
-		return AbstractForum::createURL('index.php'.DS.'customer'.DS.'account'.DS.'forgotpassword'.DS ,'magento');
+		return 'index.php'.DS.'customer'.DS.'account'.DS.'forgotpassword'.DS ,'magento';
 	}
 
   function setupFromPath($forumPath){

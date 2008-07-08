@@ -83,33 +83,33 @@ class JFusionPlugin_smf extends JFusionPlugin{
 
     function getRegistrationURL()
     {
-        return JFusionFunction::createURL('index.php?action=register', $this->getJname());
+        return 'index.php?action=register';
     }
 
     function getLostPasswordURL()
     {
-        return JFusionFunction::createURL('index.php?action=reminder', $this->getJname());
+        return 'index.php?action=reminder';
     }
 
     function getLostUsernameURL()
     {
-        return JFusionFunction::createURL('index.php?action=reminder', $this->getJname());
+        return 'index.php?action=reminder';
     }
 
     function getThreadURL($threadid, $subject)
     {
-        return  JFusionFunction::createURL('index.php?topic=' . $threadid, $this->getJname());
+        return  'index.php?topic=' . $threadid;
 
     }
 
     function getPostURL($threadid, $postid, $subject)
     {
-        return  JFusionFunction::createURL('index.php?topic=' . $threadid . 'msg'.$postid.'#msg' . $postid, $this->getJname());
+        return  'index.php?topic=' . $threadid . 'msg'.$postid.'#msg' . $postid;
     }
 
     function getProfileURL($uid,$uname)
     {
-        return  JFusionFunction::createURL('member.php?u='.$uid, $this->getJname());
+        return  'member.php?u='.$uid;
     }
 
 

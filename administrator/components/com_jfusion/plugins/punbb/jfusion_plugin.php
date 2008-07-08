@@ -131,33 +131,33 @@ class JFusionPlugin_punbb extends JFusionPlugin{
 
     function getRegistrationURL()
     {
-       return JFusionFunction::createURL('register.php', $this->getJname());
+       return 'register.php';
     }
 
     function getLostPasswordURL()
     {
-       return JFusionFunction::createURL('login.php?action=forget', $this->getJname());
+       return 'login.php?action=forget';
     }
 
     function getLostUsernameURL()
     {
-       return JFusionFunction::createURL('login.php?action=forget', $this->getJname());
+       return 'login.php?action=forget';
     }
 
     function getThreadURL($threadid, $subject)
     {
-        return  JFusionFunction::createURL('viewtopic.php?id=' . $threadid, $this->getJname());
+        return  'viewtopic.php?id=' . $threadid;
 
     }
 
     function getPostURL($threadid, $postid, $subject)
     {
-        return  JFusionFunction::createURL('viewtopic.php?id=' . $threadid . '#p' . $postid, $this->getJname());
+        return  'viewtopic.php?id=' . $threadid . '#p' . $postid;
     }
 
     function getProfileURL($uid,$uname)
     {
-        return  JFusionFunction::createURL('profile.php?id='.$uid, $this->getJname());
+        return  'profile.php?id='.$uid;
     }
 
     function getQuery($usedforums, $result_order, $result_limit)
