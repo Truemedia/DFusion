@@ -17,7 +17,7 @@
 		<filename>jfusion_plugin.php</filename>
 		<filename>user.php</filename>
 	</files>
-	<params>
+	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="database_type" type="text" size="20" default="" description="DATABASE_TYPE"/>
 		<param name="database_host" type="text" size="20" default="" description="DATABASE_HOST"/>
 		<param name="database_name" type="text" size="20" default="" description="DATABASE_NAME"/>

@@ -235,17 +235,18 @@ class JFusionController extends JController
 
 
     /**
-* Displays the usersync screen
+* Displays the usersync step 1 screen
 */
-
-    function usersync()
+    function sync1()
     {
-        JRequest::setVar('view', 'usersync');
+        JRequest::setVar('view', 'sync1');
         parent::display();
-
     }
 
-    function synccontroller()
+    /**
+* Start the usersync step 1 process
+*/
+    function sync1start()
     {
 
         //retrieve the submitted data
@@ -280,30 +281,23 @@ class JFusionController extends JController
         JFusionFunction::saveSyncdata($syncdata);
 
         //start the usersync
-        JFusionFunction::executeUsersync($syncdata);
+        JFusionFunction::SyncStep1($syncdata);
     }
 
 
 
     /**
-* Returns the current usersync status (used to updates on sync status using AJAX)
+* Returns the current usersync step 1 status
 */
 
     function usersyncresult()
     {
-        JRequest::setVar('view', 'usersyncstatus');
-        $view = &$this->getView('usersyncresult', 'html');
+        JRequest::setVar('view', 'sync1status');
+        $view = &$this->getView('sync1status', 'html');
         $view->setLayout('default');
         $result = $view->loadTemplate();
         die($result);
-
     }
-
-
-    /**
-* Performs the actual usersync actions
-*/
-
 
 
     /**

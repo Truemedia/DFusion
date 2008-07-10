@@ -94,7 +94,7 @@ class JFusionPlugin_ipb extends JFusionPlugin
 
     function getThreadURL($threadid, $subject)
     {
-        return 'index.php?showtopic=' . $threadid);
+        return 'index.php?showtopic=' . $threadid;
     }
 
     function getPostURL($threadid, $postid, $subject)
