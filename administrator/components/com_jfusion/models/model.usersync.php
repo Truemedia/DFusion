@@ -70,6 +70,7 @@ class JFusionUsersync{
 
             //get a list of users
             $slave_sync['jname'] = $jname;
+            if($jname){
             $SlavePlugin = & JFusionFactory::getPlugin($jname);
             $userlist = $SlavePlugin->getUserList();
 
@@ -106,6 +107,10 @@ class JFusionUsersync{
                     JFusionUsersync::saveSyncdata($syncdata);
                 }
             }
+            }
             //end of sync
         }
     }
+
+
+}

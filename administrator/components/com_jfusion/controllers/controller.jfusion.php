@@ -246,7 +246,7 @@ class JFusionController extends JController
     /**
 * Start the usersync step 1 process
 */
-    function sync1start()
+    function sync1status()
     {
 
 	/**
@@ -254,8 +254,21 @@ class JFusionController extends JController
 	*/
 	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
 
+	//check to see if the sync has already started
+    $syncid = JRequest::getVar('syncid', '', 'GET');
+    $db = & JFactory::getDBO();
+    $query = 'SELECT syncid FROM #__jfusion_sync WHERE syncid =' . $db->Quote($syncid);
+    $db->setQuery($query);
+    if ($db->loadResult()) {
+		//sync has started output the status
+        JRequest::setVar('view', 'sync1status');
+        $view = &$this->getView('sync1status', 'html');
+        $view->setLayout('default');
+        $result = $view->loadTemplate();
+        die($result);
 
-        //retrieve the submitted data
+    } else {
+    	//sync has not started, lets get going :)
         $slaves = JRequest::getVar('slave', '', 'GET');
 
         //lets find out which slaves need to be imported into the Master
@@ -289,20 +302,6 @@ class JFusionController extends JController
         //start the usersync
         JFusionUsersync::SyncStep1($syncdata);
     }
-
-
-
-    /**
-* Returns the current usersync step 1 status
-*/
-
-    function sync1status()
-    {
-        JRequest::setVar('view', 'sync1status');
-        $view = &$this->getView('sync1status', 'html');
-        $view->setLayout('default');
-        $result = $view->loadTemplate();
-        die($result);
     }
 
 
