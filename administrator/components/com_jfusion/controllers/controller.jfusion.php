@@ -249,6 +249,12 @@ class JFusionController extends JController
     function sync1start()
     {
 
+	/**
+	* 	Load usersync library
+	*/
+	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
+
         //retrieve the submitted data
         $slaves = JRequest::getVar('slave', '', 'GET');
 
@@ -278,10 +284,10 @@ class JFusionController extends JController
         $syncdata['slave_data'] = $slave_data;
 
         //save the submitted syndata in order for AJAX updates to work
-        JFusionFunction::saveSyncdata($syncdata);
+        JFusionUsersync::saveSyncdata($syncdata);
 
         //start the usersync
-        JFusionFunction::SyncStep1($syncdata);
+        JFusionUsersync::SyncStep1($syncdata);
     }
 
 
@@ -290,7 +296,7 @@ class JFusionController extends JController
 * Returns the current usersync step 1 status
 */
 
-    function usersyncresult()
+    function sync1status()
     {
         JRequest::setVar('view', 'sync1status');
         $view = &$this->getView('sync1status', 'html');

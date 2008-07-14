@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
 * @package JFusion
 */
 
-class jfusionViewUserSyncStatus extends JView {
+class jfusionViewsync1status extends JView {
 
     function display($tpl = null)
     {

@@ -160,7 +160,7 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
             $params = JFusionFactory::getParams($this->getJname());
             $db = JFusionFactory::getDatabase($this->getJname());
 
-            $db->setQuery("SELECT user_avatar, user_avatar_type FROM #__users WHERE user_id=".$puser_id);
+            $db->setQuery('SELECT user_avatar, user_avatar_type FROM #__users WHERE user_id='.$puser_id);
             $db->query();
             $result = $db->loadObject();
 
@@ -178,6 +178,9 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
                     } else {
                         $url = '';
                     }
+                } else if($result->user_avatar_type == 2) {
+                   // AVATAR REMOTE URL
+                   $url = $result->user_avatar;
                 } else {
                     $url = '';
                 }

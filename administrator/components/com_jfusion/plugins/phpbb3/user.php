@@ -250,7 +250,14 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $session_key = dechex(mt_rand()) . dechex(mt_rand());
 
             //Check for admin access
-            $admin_access = 0;
+            $query = 'SELECT a.group_name from #__groups as a INNER JOIN #__users as b ON a.group_id = b.group_id WHERE username_clean=' . $db->Quote($userinfo->username);
+	        $db->setQuery($query);
+    	    $usergroup = $db->loadResult();
+			if ($usergroup == 'ADMINISTRATORS') {
+            	$admin_access = 1;
+			} else {
+            	$admin_access = 0;
+			}
 
             $params = JFusionFactory::getParams($this->getJname());
             $phpbb_cookie_name = $params->get('cookie_prefix');

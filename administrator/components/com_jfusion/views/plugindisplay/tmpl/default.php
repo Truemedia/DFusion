@@ -198,23 +198,39 @@ echo "<td></td></tr>";
 <td><img src="images/publish_x.png" border="0" alt="Disabled" /> = <?php echo JText::_('DISABLED'); ?> </td>
 <td><img src="images/checked_out.png" border="0" alt="Unavailable" /> = <?php echo JText::_('UNAVAILABLE'); ?> </td>
 </tr></table></br>
-
-<table class="adminlist" cellspacing="1"><thead><tr><th class="title" >
+<br/><br/><br/>
+<table class="adminlist" cellspacing="1"><thead><tr><th colspan="2" class="title" >
 <?php echo JText::_('LEGEND'); ?>
 </th></td></thead><tr><td>
+<?php echo JText::_('MASTER'); ?>
+</td><td>
 <?php echo JText::_('LEGEND_MASTER'); ?>
+</td></tr><tr><td>
+<?php echo JText::_('SLAVE'); ?>
 </td><td>
 <?php echo JText::_('LEGEND_SLAVE'); ?>
+</td></tr><tr><td>
+<?php echo JText::_('CHECK_ENCRYPTION'); ?>
 </td><td>
 <?php echo JText::_('LEGEND_CHECK_ENCRYPTION'); ?>
+</td></tr><tr><td>
+<?php echo JText::_('DUAL_LOGIN'); ?>
 </td><td>
 <?php echo JText::_('LEGEND_DUAL_LOGIN'); ?>
+</td></tr><tr><td>
+<?php echo JText::_('STATUS'); ?>
 </td><td>
 <?php echo JText::_('LEGEND_STATUS'); ?>
+</td></tr><tr><td>
+<?php echo JText::_('USERS'); ?>
 </td><td>
 <?php echo JText::_('LEGEND_USERS'); ?>
+</td></tr><tr><td>
+<?php echo JText::_('REGISTRATION'); ?>
 </td><td>
 <?php echo JText::_('LEGEND_REGISTRATION'); ?>
+</td></tr><tr><td>
+<?php echo JText::_('DEFAULT_USERGROUP'); ?>
 </td><td>
 <?php echo JText::_('LEGEND_DEFAULT_USERGROUP'); ?>
 </td></tr></table>

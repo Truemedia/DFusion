@@ -54,13 +54,13 @@ window.addEvent('domready', function() {
 
 
     var url = '<? echo JURI::root() . 'administrator'. DS .'index.php'; ?>';
-    // refresh every 4 seconds
-    var timer = 4;
+    // refresh every 15 seconds
+    var timer = 15;
     // periodical and dummy variables for later use
     var periodical, dummy;
     var start = $('start'), stop = $('stop'), log = $('log_res');
 
-    /* our ajax istance */
+    /* our ajax istance for starting the sync */
     var ajax = new Ajax(url, {
         update: log,
         method: 'get',
@@ -77,10 +77,10 @@ window.addEvent('domready', function() {
             log.removeClass('ajax-loading');
         }
     }
+
     );
 
-    /* our refresh function: it sets a dummy to prevent
-caching of php and add the loader class */
+    /* our usersync status update function: */
     var refresh = (function() {
         // dummy to prevent caching of php
         //dummy = $time() + $random(0, 100);
@@ -88,13 +88,16 @@ caching of php and add the loader class */
         //log.empty().addClass('ajax-loading');
         // requests of our php plus dummy as query
         var sync_status = document.getElementById("log_res").innerHTML;
+
+        //we need to check to see if the usersync has completed
         if (sync_status.search(/http/) == -1) {
+        	document.getElementById("log_res").innerHTML = "test";
             alert('continue');
         } else {
             // let's stop our timed ajax
             $clear(periodical);
             // and let's stop our request in case it was waiting for a response
-            ajax.cancel();
+            ajax2.cancel();
         }
 
     }
@@ -169,7 +172,7 @@ caching of php and add the loader class */
 
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
-<input type="hidden" name="task" value="synccontroller" />
+<input type="hidden" name="task" value="sync1status" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
 <?php echo JText::_('NAME');
@@ -178,7 +181,7 @@ caching of php and add the loader class */
 <?php echo JText::_('TYPE');
 ?>
 </th><th width="50px">
-<?php echo JText::_('USERS_TOTAL');
+<?php echo JText::_('USERS');
 ?>
 </th><th width="200px">
 <?php echo JText::_('OPTIONS');

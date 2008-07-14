@@ -29,20 +29,22 @@ class JElementJFusionUsergroups extends JElement
     function fetchElement($name, $value, &$node, $control_name)
     {
         global $jname;
+		if ($jname){
+        	if (JFusionFunction::validPlugin($jname)) {
+            	$JFusionPlugin = JFusionFactory::getPlugin($jname);
+            	$usergroups = $JFusionPlugin->getUsergroupList();
 
-        if ($jname) {
-            $JFusionPlugin = JFusionFactory::getPlugin($jname);
-            $usergroups = $JFusionPlugin->getUsergroupList();
-
-            if (!empty($usergroups)) {
-                return JHTML::_('select.genericlist', $usergroups, $control_name.'['.$name.']', '',
-                'id', 'name', $value);
-            } else {
-                return '';
-            }
+            	if (!empty($usergroups)) {
+                	return JHTML::_('select.genericlist', $usergroups, $control_name.'['.$name.']', '',
+                	'id', 'name', $value);
+            	} else {
+                	return '';
+            	}
+        	} else {
+                return JText::_('SAVE_CONFIG_FIRST');
+        	}
         } else {
             return 'Programming error: You must define global $jname before the JParam object can be rendered';
-
         }
     }
 }

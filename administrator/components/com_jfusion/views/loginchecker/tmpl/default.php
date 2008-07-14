@@ -49,12 +49,18 @@ radioObj[i].checked = true;
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'login_checker.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('LOGIN_CHECKER'); ?></h2></td></tr></table><br/>
 
-<br><font size="2">
-<?php echo JText::_('LOGIN_CHECKER_TEXT'); ?>
-</font><br><br>
+<font size="2"><?php echo JText::_('LOGIN_CHECKER_TEXT'); ?></font>
+<br/><br/>
+<table class="adminlist" cellspacing="1"><thead><tr><th colspan="2" class="title" >
+<? echo JText::_('LOGIN_CHECKER'); ?>
+</th></td></thead><tr><td>
 <?php echo JText::_('USERNAME'); ?>
-<input type="text" name="check_username"><br>
+</td><td>
+<input type="text" name="check_username">
+</td></tr><tr><td>
 <?php echo JText::_('PASSWORD'); ?>
+</td><td>
 <input type="password" name="check_password">
+</td></tr></table>
 </form>
 

@@ -2,7 +2,7 @@
 <!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
 <install type="component" version="1.5">
 	<name>jfusion</name>
-	<creationDate>October 2007</creationDate>
+	<creationDate>July 2008</creationDate>
 	<author>JFusion Development Team</author>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>http://www.jfusion.org</authorUrl>
@@ -55,7 +55,7 @@
 			<menu img="components/com_jfusion/images/add.png" link="option=com_jfusion&amp;task=pluginmanager">
 				Plugin Manager
 			</menu>
-			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=usersync">
+			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=sync1">
 				User Synchronisation
 			</menu>
 			<menu img="components/com_jfusion/images/disconnect.png" link="option=com_jfusion&amp;task=loginchecker">

@@ -38,7 +38,7 @@ class JElementForumlist extends JElement
 
         $jname = $parametersInstance->get('JFusionPlugins');
 
-        if ($jname) {
+		if (JFusionFunction::validPlugin($jname)) {
 
             $JFusionPlugin = JFusionFactory::getPlugin($jname);
             $forumlist = $JFusionPlugin->getForumList();
