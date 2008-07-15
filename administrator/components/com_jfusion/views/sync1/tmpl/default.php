@@ -164,6 +164,8 @@ window.addEvent('domready', function() {
 ?>
 </h3><br/>
 
+<h3>Sorry the usersync function is not working in the current development version of JFusion. It has got my highest priority to get this function up and running asap in order to create a public JFusion release.</h3>
+
 <div id="ajax_bar"><b>
 <?php echo JText::_('SYNC_STEP1');
 ?>

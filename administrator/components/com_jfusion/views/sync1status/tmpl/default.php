@@ -31,7 +31,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 ?>
 </th></tr></thead>
 
-<?php foreach($this->syncdata['sync_into_master'] as $slave) {
+<?php foreach ($this->syncdata['sync_into_master'] as $slave) {
 ?>
 <tr><td>
 <?php echo $slave['jname'];?>
