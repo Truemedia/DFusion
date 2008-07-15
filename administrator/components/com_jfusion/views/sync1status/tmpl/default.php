@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die('Restricted access'); ?>
 
+<h2><?php echo JText::_('SYNC_STATUS');?></h2>
 
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
 <?php echo JText::_('NAME');
@@ -31,7 +32,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 ?>
 </th></tr></thead>
 
-<?php foreach ($this->syncdata['sync_into_master'] as $slave) {
+<?php foreach ($this->syncdata['slave_data'] as $slave) {
 ?>
 <tr><td>
 <?php echo $slave['jname'];?>

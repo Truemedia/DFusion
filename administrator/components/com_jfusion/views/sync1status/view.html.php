@@ -21,15 +21,6 @@ class jfusionViewsync1status extends JView {
 
     function display($tpl = null)
     {
-
-        //retrieve the syncid
-        $syncid = JRequest::getVar('syncid', '', 'GET');
-
-		//get the syncdata
-		$syncdata = JFusionFunction::getSyncdata($syncid);
-
-	    //print out results to user
-    	$this->assignRef('syncdata', $syncdata);
     	parent::display($tpl);
     }
 
