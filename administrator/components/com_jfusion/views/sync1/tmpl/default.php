@@ -55,9 +55,11 @@ window.addEvent('domready', function() {
 
     var url = '<? echo JURI::root() . 'administrator'. DS .'index.php'; ?>';
     // refresh every 15 seconds
-    var timer = 15;
+    var timer = 1;
+    var time_update = 10;
+    var counter = 10;
     // periodical and dummy variables for later use
-    var periodical, dummy;
+    var periodical, dummy, sub_vars;
     var start = $('start'), stop = $('stop'), log = $('log_res');
 
     /* our ajax istance for starting the sync */
@@ -82,23 +84,20 @@ window.addEvent('domready', function() {
 
     /* our usersync status update function: */
     var refresh = (function() {
-        // dummy to prevent caching of php
-        //dummy = $time() + $random(0, 100);
-        // we add out fancy spinner
-        //log.empty().addClass('ajax-loading');
-        // requests of our php plus dummy as query
-        var sync_status = document.getElementById("log_res").innerHTML;
 
-        //we need to check to see if the usersync has completed
-        if (sync_status.search(/http/) == -1) {
-        	document.getElementById("log_res").innerHTML = "test";
-            alert('continue');
-        } else {
-            // let's stop our timed ajax
-            $clear(periodical);
-            // and let's stop our request in case it was waiting for a response
-            ajax2.cancel();
-        }
+            //add another second to the counter
+            counter = counter - 1;
+            if (counter < 1) {
+            	counter = time_update;
+            	// dummy to prevent caching of php
+            	dummy = $time() + $random(0, 100);
+            	//generate the get variable for submission
+            	sub_vars = 'option=com_jfusion&task=sync1status&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
+	    	ajax.request(sub_vars);
+	    } else {
+		//update the counter
+        	document.getElementById("counter").innerHTML = '<b>Update in ' + counter + ' seconds</b>';
+	    }
 
     }
     );
@@ -113,7 +112,7 @@ window.addEvent('domready', function() {
         /* a bit of fancy styles */
         stop.setStyle('font-weight', 'normal');
         start.setStyle('font-weight', 'bold');
-        log.empty().addClass('ajax-loading');
+        //log.empty().addClass('ajax-loading');
         /* ********************* */
 
         //give the user a last chance to opt-out
@@ -122,7 +121,11 @@ window.addEvent('domready', function() {
 
             // when we press start we want to inform JFusion how to run the usersync
             var paramString = document.adminForm.toQueryString();
-            ajax.request(paramString);
+            alert(paramString);
+	new Ajax(url, {
+		method: 'get',
+		update: log
+	}).request(paramString);
 
             // then we want to refresh the progress window periodically
             periodical = refresh.periodical(timer * 1000, this);
@@ -164,18 +167,20 @@ window.addEvent('domready', function() {
 ?>
 </h3><br/>
 
-<h3>Sorry the usersync function is not working in the current development version of JFusion. It has got my highest priority to get this function up and running asap in order to create a public JFusion release.</h3>
-
 <div id="ajax_bar"><b>
 <?php echo JText::_('SYNC_STEP1');
 ?>
 </div>
 <br/>
 
+
+
+<div id="log_res">
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="sync1status" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
+
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
 <?php echo JText::_('NAME');
 ?>
@@ -227,8 +232,8 @@ window.addEvent('domready', function() {
 ?>
 
 
-</table></form>
-<br/><br/>
+</table></form></div>
+<br/><div id="counter"></div><br/>
 
 <div id="ajax_bar"><b><?php echo JText::_('SYNC_STEP1_INSTR');
 ?>
@@ -241,8 +246,6 @@ window.addEvent('domready', function() {
 </span>
 <a id="stop" href="#"><?php echo JText::_('STOP');
 ?></a>
-<div id="aspin"></div>
 </div><br/>
 
-<div id="log_res">
-</div>
+

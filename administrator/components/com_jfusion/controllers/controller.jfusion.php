@@ -263,10 +263,8 @@ class JFusionController extends JController
 		//sync has started output the status
         JRequest::setVar('view', 'sync1status');
         $view = &$this->getView('sync1status', 'html');
-
-		//get the syncdata
+//get the syncdata
 		$syncdata = JFusionUsersync::getSyncdata($syncid);
-	    //print out results to user
     	$view->assignRef('syncdata', $syncdata);
         $view->setLayout('default');
         $result = $view->loadTemplate();
@@ -276,7 +274,7 @@ class JFusionController extends JController
     } else {
     	//sync has not started, lets get going :)
         $slaves = JRequest::getVar('slave', '', 'GET');
-
+die(print_r($slaves));
         //lets find out which slaves need to be imported into the Master
         foreach($slaves as $jname => $slave) {
             if ($slave['sync_into_master']) {
@@ -383,5 +381,6 @@ class JFusionController extends JController
     }
 
 }
+
 
 
