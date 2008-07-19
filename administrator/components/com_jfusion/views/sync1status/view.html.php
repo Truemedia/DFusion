@@ -21,11 +21,13 @@ class jfusionViewsync1status extends JView {
 
     function display($tpl = null)
     {
+
+
     	parent::display($tpl);
     }
 
 }
-?>
+
 
 
 

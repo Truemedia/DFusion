@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package JFusion_Joomla_Ext
+ * @package JFusion_Magento
  * @version 1.0.7
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
@@ -17,7 +17,7 @@ defined('_JEXEC' ) or die('Restricted access' );
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractauth.php');
 
 /**
- * @package JFusion_Joomla_Ext
+ * @package JFusion_Magento
  */
 class JFusionAuth_magento extends JFusionAuth{
 

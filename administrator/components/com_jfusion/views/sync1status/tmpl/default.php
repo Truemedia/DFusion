@@ -8,7 +8,16 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-defined('_JEXEC') or die('Restricted access'); ?>
+defined('_JEXEC') or die('Restricted access');
+
+//check to see if there is anything to output
+
+if ($this->syncdata['slave_data']){
+	echo JText::_('SYNC_STATUS');
+	return true;
+}
+
+?>
 
 <h2><?php echo JText::_('SYNC_STATUS');?></h2>
 

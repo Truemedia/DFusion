@@ -274,7 +274,7 @@ class JFusionController extends JController
     } else {
     	//sync has not started, lets get going :)
         $slaves = JRequest::getVar('slave', '', 'GET');
-die(print_r($slaves));
+
         //lets find out which slaves need to be imported into the Master
         foreach($slaves as $jname => $slave) {
             if ($slave['sync_into_master']) {

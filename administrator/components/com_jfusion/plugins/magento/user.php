@@ -1,6 +1,6 @@
 <?php
 /**
- * @package JFusion_Joomla_Ext
+ * @package JFusion_Magento
  * @version 1.0.7
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
@@ -17,8 +17,8 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
 
 /**
- * JFusion plugin class for an external Joomla database
- * @package JFusion_Joomla_Ext
+ * JFusion user class for Magento
+ * @package JFusion_Magento
  */
 class JFusionUser_magento extends JFusionUser
 {

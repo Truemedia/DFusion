@@ -45,7 +45,7 @@
 		</languages>
 
 	<administration>
-		<menu img="components/com_jfusion/images/jfusion.png">
+		<menu img="components/com_jfusion/images/jfusion.png" link="option=com_jfusion&amp;task=plugindisplay">
 			jfusion
 		</menu>
 		<submenu>

@@ -27,7 +27,7 @@ class JFusionUsersync{
 
         //find out if the syncid already exists
         $db =& JFactory::getDBO();
-        $query = 'SELECT syncid FROM #__jfusion_sync WHERE syncid =' . $db->Quote($syncid);
+        $query = 'SELECT syncid FROM #__jfusion_sync WHERE syncid =' . $db->Quote($syncdata['syncid']);
         $db->setQuery($query);
         if ($db->loadResult()) {
             //run an update statement
@@ -59,7 +59,7 @@ class JFusionUsersync{
     {
 
         //setup some variables
-        $MasterPlugin = JFusionFactory::getPlugin($syncdata['master']);
+        $MasterPlugin = JFusionFactory::getUser($syncdata['master']);
         $sync_errors = array();
 
         //we should start with the import of slave users into the master
@@ -69,14 +69,15 @@ class JFusionUsersync{
             $count = 0;
 
             //get a list of users
-            $slave_sync['jname'] = $jname;
+            $jname = $slave_sync['jname'];
             if($jname){
             $SlavePlugin = & JFusionFactory::getPlugin($jname);
+            $SlaveUser = & JFusionFactory::getUser($jname);
             $userlist = $SlavePlugin->getUserList();
 
             //perform the actual sync
             foreach($userlist as $user) {
-                $userinfo = $SlavePlugin->getUser($user->username);
+                $userinfo = $SlaveUser->getUser($user->username);
                 $status = $MasterPlugin->updateUser($userinfo);
                 if ($status['error']) {
                     $sync_error = array();
@@ -100,7 +101,7 @@ class JFusionUsersync{
                 }
 
                 //update the database
-                ++$count;
+                $count = $count + 1;
                 if ($count > $update_count) {
                     //save the syncdata
                     $count = 0;
