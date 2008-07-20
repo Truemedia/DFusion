@@ -260,6 +260,24 @@ class JFusionController extends JController
     }
 
     /**
+* Displays the usersync step 2 screen
+*/
+    function sync2()
+    {
+        JRequest::setVar('view', 'sync2');
+        parent::display();
+    }
+
+    /**
+* Displays the usersync step 3 screen
+*/
+    function sync3()
+    {
+        JRequest::setVar('view', 'sync3');
+        parent::display();
+    }
+
+    /**
 * Start the usersync step 1 process
 */
     function sync1status()

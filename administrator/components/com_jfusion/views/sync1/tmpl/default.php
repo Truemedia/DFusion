@@ -245,6 +245,6 @@ window.addEvent('domready', function() {
 </span>
 <a id="stop" href="#"><?php echo JText::_('STOP');
 ?></a>
-</div><br/>
-
+</div><br/><br/><br/>
+<font size="2"><?php echo JText::_('SYNC_INSTR');?></font>
 

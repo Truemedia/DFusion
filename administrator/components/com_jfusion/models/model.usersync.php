@@ -108,6 +108,9 @@ class JFusionUsersync{
                             $count = 0;
                             JFusionUsersync::saveSyncdata($syncdata);
                         }
+                    //save the final data
+                    $syncdata['completed'] = 'true';
+                    JFusionUsersync::saveSyncdata($syncdata);
                     }
                 }
             }

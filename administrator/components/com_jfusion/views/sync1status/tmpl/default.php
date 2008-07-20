@@ -14,6 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 if (!$this->syncdata['slave_data']){
 	echo JText::_('STEP1_NODATA');
 	return true;
+} elseif ($this->syncdata['completed']) {
+	echo JText::_('STEP1_COMPLETED');
+	return true;
 }
 
 ?>
