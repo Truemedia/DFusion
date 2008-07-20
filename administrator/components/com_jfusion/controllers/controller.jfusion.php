@@ -77,8 +77,13 @@ class JFusionController extends JController
 
         //check to see if a integration was selected
         if ($jname) {
-            JRequest::setVar('view', 'wizard');
-            parent::display();
+        	if ($jname != 'joomla_int'){
+            	JRequest::setVar('view', 'wizard');
+            	parent::display();
+        	} else {
+            	JError::raiseWarning(500, JText::_('WIZARD_MANUAL'));
+        	}
+
 
         } else {
             JError::raiseWarning(500, JText::_('NONE_SELECTED'));
@@ -110,6 +115,8 @@ class JFusionController extends JController
             if ($params) {
                 //save the params first in order for elements to utilize data
                 JFusionFunction::saveParameters($jname, $params);
+                JFusionFunction::checkConfig($jname);
+
                 $parameters = JFusionFactory::getParams($jname);
                 $param2_output = $parameters->render();
 
@@ -183,6 +190,15 @@ class JFusionController extends JController
                 $db->setQuery($query );
                 $db->query();
             }
+
+            //auto enable the auth and dual login for newly enabled plugins
+            //disable a master when it is turned into a slave
+            if (($field_name == 'slave' || $field_name == 'master') && $field_value == '1') {
+                $query = 'UPDATE #__jfusion SET dual_login = 1, check_encryption = 1 WHERE name = ' . $db->quote($jname);
+                $db->setQuery($query );
+                $db->query();
+            }
+
         } else {
             JError::raiseWarning(500, JText::_('NONE_SELECTED'));
         }
@@ -263,7 +279,7 @@ class JFusionController extends JController
 		//sync has started output the status
         JRequest::setVar('view', 'sync1status');
         $view = &$this->getView('sync1status', 'html');
-//get the syncdata
+        //get the syncdata
 		$syncdata = JFusionUsersync::getSyncdata($syncid);
     	$view->assignRef('syncdata', $syncdata);
         $view->setLayout('default');

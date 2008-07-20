@@ -121,10 +121,9 @@ window.addEvent('domready', function() {
 
             // when we press start we want to inform JFusion how to run the usersync
             var paramString = document.adminForm.toQueryString();
-            alert(paramString);
+
 	new Ajax(url, {
 		method: 'get',
-		update: log
 	}).request(paramString);
 
             // then we want to refresh the progress window periodically

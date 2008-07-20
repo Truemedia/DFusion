@@ -11,9 +11,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 //check to see if there is anything to output
-
-if ($this->syncdata['slave_data']){
-	echo JText::_('SYNC_STATUS');
+if (!$this->syncdata['slave_data']){
+	echo JText::_('STEP1_NODATA');
 	return true;
 }
 

@@ -84,14 +84,16 @@ class JFusionPlugin_joomla_int extends JFusionPlugin
 
     function getDefaultUsergroup()
     {
-        $params = JFusionFactory::getParams($this->getJname());
-        $usergroup_id = $params->get('usergroup');
+        $row =& JTable::getInstance('component' );
+        $row->loadByOption('com_users' );
+        $parameters = JArrayHelper::fromObject($row );
+        $params = $parameters['params'];
+        $file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_user'.DS.'com_user.xml';
+        $parametersInstance = new JParameter($params, $file );
 
-        //we want to output the usergroup name
-        $db = & JFactory::getDBO();
-        $query = 'SELECT name from #__core_acl_aro_groups WHERE id = ' . $usergroup_id;
-        $db->setQuery($query );
-        return $db->loadResult();
+        $new_usertype = $parametersInstance->get('new_usertype');
+
+        return $new_usertype;
     }
 
 
@@ -106,7 +108,7 @@ class JFusionPlugin_joomla_int extends JFusionPlugin
         $file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_user'.DS.'com_user.xml';
         $parametersInstance = new JParameter($params, $file );
 
-        if ($parametersInstance->get(allowUserRegistration)) {
+        if ($parametersInstance->get('allowUserRegistration')) {
             return true;
         } else {
             return false;

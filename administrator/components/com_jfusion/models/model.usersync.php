@@ -63,51 +63,53 @@ class JFusionUsersync{
         $sync_errors = array();
 
         //we should start with the import of slave users into the master
-        foreach($syncdata['slave_data'] as $slave_sync) {
-            //update the database every x users
-            $update_count = 10;
-            $count = 0;
+        if ($syncdata['slave_data']) {
+            foreach($syncdata['slave_data'] as $slave_sync) {
+                //update the database every x users
+                $update_count = 10;
+                $count = 0;
 
-            //get a list of users
-            $jname = $slave_sync['jname'];
-            if($jname){
-            $SlavePlugin = & JFusionFactory::getPlugin($jname);
-            $SlaveUser = & JFusionFactory::getUser($jname);
-            $userlist = $SlavePlugin->getUserList();
+                //get a list of users
+                $jname = $slave_sync['jname'];
+                if ($jname) {
+                    $SlavePlugin = & JFusionFactory::getPlugin($jname);
+                    $SlaveUser = & JFusionFactory::getUser($jname);
+                    $userlist = $SlavePlugin->getUserList();
 
-            //perform the actual sync
-            foreach($userlist as $user) {
-                $userinfo = $SlaveUser->getUser($user->username);
-                $status = $MasterPlugin->updateUser($userinfo);
-                if ($status['error']) {
-                    $sync_error = array();
-                    $sync_error['master']['username'] = $status['userinfo']->username;
-                    $sync_error['master']['email'] = $status['userinfo']->email;
-                    $sync_error['slave']['username'] = $userinfo->username;
-                    $sync_error['slave']['email'] = $userinfo->email;
-                    //save the error for later
-                    $syncdata['slave_data'][$jname]['errors'][] = $sync_error;
+                    //perform the actual sync
+                    foreach($userlist as $user) {
+                        $userinfo = $SlaveUser->getUser($user->username);
+                        $status = $MasterPlugin->updateUser($userinfo);
+                        if ($status['error']) {
+                            $sync_error = array();
+                            $sync_error['master']['username'] = $status['userinfo']->username;
+                            $sync_error['master']['email'] = $status['userinfo']->email;
+                            $sync_error['slave']['username'] = $userinfo->username;
+                            $sync_error['slave']['email'] = $userinfo->email;
+                            //save the error for later
+                            $syncdata['slave_data'][$jname]['errors'][] = $sync_error;
 
-                    //update the counters
-                    $syncdata['slave_data'][$jname]['error'] += 1;
-                    $syncdata['slave_data'][$jname]['total'] -= 1;
-                } else {
-                    if ($status['action'] == 'created') {
-                        $syncdata['slave_data'][$jname]['created'] += 1;
-                    } else {
-                        $syncdata['slave_data'][$jname]['updated'] += 1;
+                            //update the counters
+                            $syncdata['slave_data'][$jname]['error'] += 1;
+                            $syncdata['slave_data'][$jname]['total'] -= 1;
+                        } else {
+                            if ($status['action'] == 'created') {
+                                $syncdata['slave_data'][$jname]['created'] += 1;
+                            } else {
+                                $syncdata['slave_data'][$jname]['updated'] += 1;
+                            }
+                            $syncdata['slave_data'][$jname]['total'] -= 1;
+                        }
+
+                        //update the database
+                        $count = $count + 1;
+                        if ($count > $update_count) {
+                            //save the syncdata
+                            $count = 0;
+                            JFusionUsersync::saveSyncdata($syncdata);
+                        }
                     }
-                    $syncdata['slave_data'][$jname]['total'] -= 1;
                 }
-
-                //update the database
-                $count = $count + 1;
-                if ($count > $update_count) {
-                    //save the syncdata
-                    $count = 0;
-                    JFusionUsersync::saveSyncdata($syncdata);
-                }
-            }
             }
             //end of sync
         }

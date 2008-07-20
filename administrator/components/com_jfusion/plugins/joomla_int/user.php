@@ -49,13 +49,14 @@ class JFusionUser_joomla_int extends JFusionUser{
         } else {
 
             //check for conlicting email addresses
-            $db->setQuery('SELECT id FROM #__users WHERE email='.$db->Quote($userinfo->email)) ;
-            $conflict_id = $db->loadResult();
+            $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.email='.$db->Quote($userinfo->email)) ;
+            $conflict_user = $db->loadObject();
 
-            if ($conflict_id) {
-                //TODO return details of the conflict
-                $status = new stdClass;
-                $status->error = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_id . ' JFusionPlugin:' . $this->getJname();
+            if ($conflict_user) {
+                $status = array();
+            	$status['userinfo'] = $conflict_user;
+                $status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_user->userid . ' JFusionPlugin:' . $this->getJname();
+
                 return $status;
             }
 

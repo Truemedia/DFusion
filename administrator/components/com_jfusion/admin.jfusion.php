@@ -31,9 +31,12 @@ $classname    = 'JFusionController'.$controller;
 $controller   = new $classname( );
 
 // Perform the Request task
-$controller->execute( JRequest::getVar( 'task', 'show_config' ) );
+$task = JRequest::getVar( 'task');
+if (!$task) {$task = 'plugindisplay';}
+
+$controller->execute( $task );
 
 // Redirect if set by the controller
 $controller->redirect();
 
-?>
+
