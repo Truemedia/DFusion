@@ -84,10 +84,12 @@ class JFusionUsersync{
                             $sync_error = array();
                             $sync_error['master']['username'] = $status['userinfo']->username;
                             $sync_error['master']['email'] = $status['userinfo']->email;
+                            $sync_error['master']['jname'] = $syncdata['master'];
                             $sync_error['slave']['username'] = $userinfo->username;
                             $sync_error['slave']['email'] = $userinfo->email;
+                            $sync_error['slave']['jname'] = $jname;
                             //save the error for later
-                            $syncdata['slave_data'][$jname]['errors'][] = $sync_error;
+                            $syncdata['errors'][] = $sync_error;
 
                             //update the counters
                             $syncdata['slave_data'][$jname]['error'] += 1;

@@ -257,6 +257,15 @@ class JFusionController extends JController
     }
 
     /**
+* Displays the usersync error screen
+*/
+    function syncerror()
+    {
+        JRequest::setVar('view', 'syncerror');
+        parent::display();
+    }
+
+    /**
 * Displays the usersync history screen
 */
     function synchistory()
@@ -302,8 +311,8 @@ class JFusionController extends JController
     $db->setQuery($query);
     if ($db->loadResult()) {
 		//sync has started output the status
-        JRequest::setVar('view', 'sync1status');
-        $view = &$this->getView('sync1status', 'html');
+        JRequest::setVar('view', 'syncstatus');
+        $view = &$this->getView('syncstatus', 'html');
         //get the syncdata
 		$syncdata = JFusionUsersync::getSyncdata($syncid);
     	$view->assignRef('syncdata', $syncdata);

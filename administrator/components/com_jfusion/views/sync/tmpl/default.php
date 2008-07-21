@@ -21,15 +21,15 @@ defined('_JEXEC') or die('Restricted access');
 <br/><br/>
 
 <table class="adminform"><tr><td>
-<a href="index.php?option=com_jfusion&task=sync1"><img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'syncmaster.png'; ?>" height="75px" width="75px"></a>
+<a href="index.php?option=com_jfusion&task=syncmaster"><img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'syncmaster.png'; ?>" height="75px" width="75px"></a>
 </td><td>
-<a href="index.php?option=com_jfusion&task=sync1"><?php echo JText::_('SYNC_MASTER');?></a>
+<a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a>
 </td></tr></table></br>
 
 <table class="adminform"><tr><td>
-<a href="index.php?option=com_jfusion&task=sync3"><img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'syncslave.png'; ?>" height="75px" width="75px"></a>
+<a href="index.php?option=com_jfusion&task=syncslave"><img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'syncslave.png'; ?>" height="75px" width="75px"></a>
 </td><td>
-<a href="index.php?option=com_jfusion&task=sync3"><?php echo JText::_('SYNC_SLAVE');?></a>
+<a href="index.php?option=com_jfusion&task=syncslave"><?php echo JText::_('SYNC_SLAVE');?></a>
 </td></tr></table></br>
 
 <table class="adminform"><tr><td>

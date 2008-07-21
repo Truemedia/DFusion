@@ -92,7 +92,7 @@ window.addEvent('domready', function() {
             	// dummy to prevent caching of php
             	dummy = $time() + $random(0, 100);
             	//generate the get variable for submission
-            	sub_vars = 'option=com_jfusion&task=sync1status&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
+            	sub_vars = 'option=com_jfusion&task=syncstatus&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
 	    	ajax.request(sub_vars);
 	    } else {
 		//update the counter
@@ -177,7 +177,7 @@ window.addEvent('domready', function() {
 <div id="log_res">
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
-<input type="hidden" name="task" value="sync1status" />
+<input type="hidden" name="task" value="syncstatus" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">

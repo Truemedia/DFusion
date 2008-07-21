@@ -11,93 +11,41 @@
 defined('_JEXEC') or die('Restricted access');
 ?>
 
+<form method="post" action="index2.php" name="adminForm">
+<input type="hidden" name="option" value="com_jfusion" />
+<input type="hidden" name="task" value="syncerror" />
+
 <table><tr><td width="100px">
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'usersync.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('RESOLVE_CONLFICTS'); ?></h2></td></tr></table><br/>
-<h3>
-<?php echo JText::_('SYNC_WARNING');
-?>
-</h3><br/>
-
-<div id="ajax_bar"><b>
-<?php echo JText::_('SYNC_STEP1');
-?>
-</div>
 <br/>
 
-<form method="post" action="index2.php" name="adminForm">
-<input type="hidden" name="option" value="com_jfusion" />
-<input type="hidden" name="task" value="synccontroller" />
-<input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
-<table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
-<?php echo JText::_('NAME');
-?>
-</th><th width="50px">
-<?php echo JText::_('TYPE');
-?>
-</th><th width="50px">
-<?php echo JText::_('USERS_TOTAL');
-?>
-</th><th width="200px">
-<?php echo JText::_('OPTIONS');
-?>
-</th></tr></thead>
-<tr><td>
-<?php echo $this->master_data['jname'];
-?>
-</td><td>
-<?php echo JText::_('MASTER') ?>
-<input type="hidden" name="master" value="<?php echo $this->master_data['jname'];
-?>" />
-</td><td>
-<?php echo $this->master_data['total'];
-?>
-</td><td></td></tr>
+<table class="adminlist" cellspacing="1"><thead><tr>
+<th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
+<th class="title" align="center"><?php echo JText::_('MASTER'); ?></th>
+<th class="title" align="center"><?php echo JText::_('SLAVE'); ?></th>
+<th class="title" align="center"><?php echo JText::_('IGNORE'); ?></th>
+</tr></thead><tbody>
 
-<?php foreach($this->slave_data as $slave) {
-    ?>
-    <tr><td>
-    <?php echo $slave['jname'];
-    ?>
-    <input type="hidden" name="slave[<?php echo $slave['jname'];
-    ?>]" value="<?php echo $slave['jname'];
-    ?>" />
-    </td><td>
-    <?php echo JText::_('SLAVE') ?>
-    </td><td>
-    <?php echo $slave['total'];
-    ?>
-    <input type="hidden" name="slave[<?php echo $slave['jname'];
-    ?>][total]" value="<?php echo $slave['total'];
-    ?>" />
-    </td><td>
-    <?php echo JText::_('SYNC_INTO_MASTER');
-    ?><input type="checkbox" name="slave[<?php echo $slave['jname'];
-    ?>][sync_into_master]" value="1">
-    </td></tr>
+<?php $row_count = 0;
 
-<?php }
+for ($i=0; $i<count($this->syncdata['errors']); $i++) {
+$error =  $this->syncdata['errors'][$i];
+
+	echo '<tr class="row' . $row_count .'">';
+	if ($row_count == 1){
+		$row_count = 0;
+	}	else {
+		$row_count = 1;
+	}
 ?>
+<td><?php echo $i; ?></td>
+<td><input type="radio" name="syncerror[<?php echo $i; ?>]" value="master"><?php echo JText::_('DELETE') . ' ' . $error['master']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['master']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['master']['email'] ; ?></td>
+<td><input type="radio" name="syncerror[<?php echo $i; ?>]" value="slave"><?php echo JText::_('DELETE') . ' ' . $error['slave']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['slave']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['slave']['email'] ; ?></td>
+<td><input type="radio" name="syncerror[<?php echo $i; ?>]" value="ignore" checked="checked"><?php echo JText::_('IGNORE') . ' ' . JText::_('USERSYNC') . ' ' . JText::_('ERROR'); ?></td>
+</tr>
+<?php } ?>
+</table>
 
-
-</table></form>
-<br/><br/>
-
-<div id="ajax_bar"><b><?php echo JText::_('SYNC_STEP1_INSTR');
-?>
-</b>&nbsp;
-&nbsp;
-&nbsp;
-<a id="start" href="#"><?php echo JText::_('START');
-?></a>
-<span class="border">&nbsp;
-</span>
-<a id="stop" href="#"><?php echo JText::_('STOP');
-?></a>
-<div id="aspin"></div>
-</div><br/>
-
-<div id="log_res">
-</div>
