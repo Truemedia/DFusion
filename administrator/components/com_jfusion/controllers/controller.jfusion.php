@@ -247,7 +247,23 @@ class JFusionController extends JController
 
     }
 
+    /**
+* Displays the usersync main screen
+*/
+    function sync()
+    {
+        JRequest::setVar('view', 'sync');
+        parent::display();
+    }
 
+    /**
+* Displays the usersync main screen
+*/
+    function synchistory()
+    {
+        JRequest::setVar('view', 'synchistory');
+        parent::display();
+    }
 
 
     /**
@@ -333,6 +349,7 @@ class JFusionController extends JController
         $syncdata['master'] = JRequest::getVar('master', '', 'GET');
         $syncdata['syncid'] = JRequest::getVar('syncid', '', 'GET');
         $syncdata['slave_data'] = $slave_data;
+        $syncdata['action'] = JText::_('SYNC_INTO_MASTER');
 
         //save the submitted syndata in order for AJAX updates to work
         JFusionUsersync::saveSyncdata($syncdata);

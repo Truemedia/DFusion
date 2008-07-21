@@ -38,7 +38,7 @@ class JFusionUsersync{
         } else {
             //run an insert statement
             $db =& JFactory::getDBO();
-            $query = 'INSERT INTO #__jfusion_sync (syncdata, syncid) VALUES (' . $db->quote($serialized) .', ' . $db->Quote($syncdata['syncid']) . ')';
+            $query = 'INSERT INTO #__jfusion_sync (syncdata, syncid, time_start, action) VALUES (' . $db->quote($serialized) .', ' . $db->Quote($syncdata['syncid']) . ', ' . $db->quote(time()). ', ' . $db->Quote($syncdata['action']) . ')';
             $db->setQuery($query );
             $db->query();
         }
@@ -111,6 +111,13 @@ class JFusionUsersync{
                     //save the final data
                     $syncdata['completed'] = 'true';
                     JFusionUsersync::saveSyncdata($syncdata);
+
+                    //update the finish time
+            		$db =& JFactory::getDBO();
+            		$query = 'UPDATE #__jfusion_sync SET time_end = ' . $db->quote(time()) .' WHERE syncid =' . $db->Quote($syncdata['syncid']);
+            		$db->setQuery($query );
+            		$db->query();
+
                     }
                 }
             }

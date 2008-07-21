@@ -53,11 +53,9 @@ CREATE TABLE IF NOT EXISTS #__jfusion_users_plugin (
 
 CREATE TABLE IF NOT EXISTS #__jfusion_sync (
   syncid varchar(10),
-  status text,
+  action varchar(255),
   syncdata text,
-  jname varchar(50) NOT NULL,
-  time_start timestamp NOT NULL default CURRENT_TIMESTAMP,
-  time_end timestamp NOT NULL default '0000-00-00 00:00:00',
-  errors text,
+  time_start int(8),
+  time_end int(8),
   PRIMARY KEY  (`syncid`)
 );

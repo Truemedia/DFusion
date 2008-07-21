@@ -55,7 +55,7 @@
 			<menu img="components/com_jfusion/images/add.png" link="option=com_jfusion&amp;task=pluginmanager">
 				Plugin Manager
 			</menu>
-			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=sync1">
+			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=sync">
 				User Synchronisation
 			</menu>
 			<menu img="components/com_jfusion/images/disconnect.png" link="option=com_jfusion&amp;task=loginchecker">
