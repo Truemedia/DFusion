@@ -23,7 +23,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 * @package JFusion
 */
 
-class jfusionViewsync3 extends JView {
+class jfusionViewsyncslave extends JView {
 
     function display($tpl = null)
     {

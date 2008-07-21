@@ -257,7 +257,7 @@ class JFusionController extends JController
     }
 
     /**
-* Displays the usersync main screen
+* Displays the usersync history screen
 */
     function synchistory()
     {
@@ -267,36 +267,27 @@ class JFusionController extends JController
 
 
     /**
-* Displays the usersync step 1 screen
+* Displays the usersync into slave screen
 */
-    function sync1()
+    function syncslave()
     {
-        JRequest::setVar('view', 'sync1');
+        JRequest::setVar('view', 'syncslave');
         parent::display();
     }
 
     /**
-* Displays the usersync step 2 screen
+* Displays the usersync into master screen
 */
-    function sync2()
+    function syncmaster()
     {
-        JRequest::setVar('view', 'sync2');
+        JRequest::setVar('view', 'syncmaster');
         parent::display();
     }
 
     /**
-* Displays the usersync step 3 screen
+* Displays the usersync status
 */
-    function sync3()
-    {
-        JRequest::setVar('view', 'sync3');
-        parent::display();
-    }
-
-    /**
-* Start the usersync step 1 process
-*/
-    function sync1status()
+    function syncstatus()
     {
 
 	/**
