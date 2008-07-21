@@ -75,6 +75,8 @@
 			<filename>controllers/index.html</filename>
 
     		<folder>images</folder>
+    		<folder>js</folder>
+    		<folder>css</folder>
     		<folder>models</folder>
 	    	<folder>views</folder>
 		    <folder>elements</folder>

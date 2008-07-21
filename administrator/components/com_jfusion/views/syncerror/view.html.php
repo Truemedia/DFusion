@@ -1,4 +1,5 @@
 <?php
+
 /**
 * @package JFusion
 * @subpackage Views
@@ -10,22 +11,23 @@
 
 defined('_JEXEC' ) or die('Restricted access' );
 
+/**
+* Load the JFusion framework
+*/
 jimport('joomla.application.component.view');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 
 /**
 * Renders the main admin screen that shows the configuration overview of all integrations
 * @package JFusion
 */
 
-class jfusionViewsync1status extends JView {
+class jfusionViewsync2 extends JView {
 
     function display($tpl = null)
     {
-    	parent::display($tpl);
+            parent::display($tpl);
     }
-
 }
-
-
-
 

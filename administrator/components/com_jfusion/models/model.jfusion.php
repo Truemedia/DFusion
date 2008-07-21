@@ -173,9 +173,9 @@ class JFusionFunction{
         $db = JFusionFactory::getDatabase($jname);
         $jdb =& JFactory::getDBO();
 
-        if (JError::isError($db) ) {
+        if (JError::isError($db) || !$db) {
             //Save this error for the integration
-            $query = 'UPDATE #__jfusion SET status = 1 WHERE name =' . $db->quote($jname);
+            $query = 'UPDATE #__jfusion SET status = 1 WHERE name =' . $jdb->quote($jname);
             $jdb->setQuery($query );
             $jdb->query();
         } else {
@@ -258,6 +258,13 @@ class JFusionFunction{
         $prefix = $params->get('database_prefix');
         $driver = $params->get('database_type');
         $debug = $conf->getValue('config.debug');
+
+		//added extra code to prevent error when $driver is incorrect
+		if ($driver != 'mysql' && $driver != 'mysqli') {
+			//invalid driver
+            JError::raiseWarning(0, JText::_('INVALID_DRIVER'));
+            return false;
+		}
 
         //create an options variable that contains all database connection variables
         $options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix );
