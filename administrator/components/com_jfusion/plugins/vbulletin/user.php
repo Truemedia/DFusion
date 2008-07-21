@@ -85,6 +85,12 @@ class JFusionUser_vbulletin extends JFusionUser{
         return 'user';
     }
 
+
+    function deleteUser($username)
+    {
+	    //TODO: create a function that deletes a user
+    }
+
     function destroySession($userinfo, $options)
     {
         // Get the parameters

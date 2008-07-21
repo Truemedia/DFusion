@@ -67,6 +67,24 @@ class JFusionUser_joomla_ext extends JFusionUser
 		return 'joomla_ext';
     }
 
+    function deleteUser($username)
+    {
+        //get the database ready
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'SELECT id from #__users WHERE username = ' . $db->quote($username);
+        $db->setQuery($query);
+        $userid = $db->loadResult();
+        if ($userid) {
+                //delete user from the Joomla usertable
+        		$query = 'DELETE FROM #__users WHERE username = ' . $db->quote($username);
+        		$db->setQuery($query);
+            	$db->query();
+
+
+        }
+    }
+
+
 
     function destroySession($userinfo, $options)
     {

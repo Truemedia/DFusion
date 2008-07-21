@@ -80,6 +80,11 @@ class JFusionUser_punbb extends JFusionUser{
         return 'punbb';
     }
 
+    function deleteUser($username)
+    {
+	    //TODO: create a function that deletes a user
+    }
+
     function destroySession($userinfo, $session)
     {
         // Get the parameters

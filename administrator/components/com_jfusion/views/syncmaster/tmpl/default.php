@@ -167,7 +167,7 @@ window.addEvent('domready', function() {
 </h3><br/>
 
 <div id="ajax_bar"><b>
-<?php echo JText::_('SYNC_STEP1');
+<?php echo JText::_('SYNC_MASTER_HEAD');
 ?>
 </div>
 <br/>
@@ -178,6 +178,7 @@ window.addEvent('domready', function() {
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="syncstatus" />
+<input type="hidden" name="action" value="master" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
@@ -234,7 +235,7 @@ window.addEvent('domready', function() {
 </table></form></div>
 <br/><div id="counter"></div><br/>
 
-<div id="ajax_bar"><b><?php echo JText::_('SYNC_STEP1_INSTR');
+<div id="ajax_bar"><b><?php echo JText::_('SYNC_MASTER_INSTR');
 ?>
 </b>&nbsp;
 &nbsp;

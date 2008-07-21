@@ -55,7 +55,19 @@ class JFusionUsersync{
         return $syncdata;
     }
 
-    function SyncStep1($syncdata)
+    function SyncError($syncid, $syncerror)
+    {
+		$syncdata = JFusionUsersync::getSyncdata($syncid);
+		foreach ($syncerror as $key => $value) {
+			if ($value == 'master' || $value == 'slave'){
+			$jname =  $syncdata['errors'][$key][$value];
+	        $JFusionPlugin = JFusionFactory::getUser($jname);
+	        $JFusionPlugin->deleteUser($syncdata['errors'][$key]['username']);
+			}
+		}
+    }
+
+    function SyncMaster($syncdata)
     {
 
         //setup some variables
@@ -80,6 +92,79 @@ class JFusionUsersync{
                     foreach($userlist as $user) {
                         $userinfo = $SlaveUser->getUser($user->username);
                         $status = $MasterPlugin->updateUser($userinfo);
+                        if ($status['error']) {
+                            $sync_error = array();
+                            $sync_error['master']['username'] = $status['userinfo']->username;
+                            $sync_error['master']['email'] = $status['userinfo']->email;
+                            $sync_error['master']['jname'] = $syncdata['master'];
+                            $sync_error['slave']['username'] = $userinfo->username;
+                            $sync_error['slave']['email'] = $userinfo->email;
+                            $sync_error['slave']['jname'] = $jname;
+                            //save the error for later
+                            $syncdata['errors'][] = $sync_error;
+
+                            //update the counters
+                            $syncdata['slave_data'][$jname]['error'] += 1;
+                            $syncdata['slave_data'][$jname]['total'] -= 1;
+                        } else {
+                            if ($status['action'] == 'created') {
+                                $syncdata['slave_data'][$jname]['created'] += 1;
+                            } else {
+                                $syncdata['slave_data'][$jname]['updated'] += 1;
+                            }
+                            $syncdata['slave_data'][$jname]['total'] -= 1;
+                        }
+
+                        //update the database
+                        $count = $count + 1;
+                        if ($count > $update_count) {
+                            //save the syncdata
+                            $count = 0;
+                            JFusionUsersync::saveSyncdata($syncdata);
+                        }
+                    //save the final data
+                    $syncdata['completed'] = 'true';
+                    JFusionUsersync::saveSyncdata($syncdata);
+
+                    //update the finish time
+            		$db =& JFactory::getDBO();
+            		$query = 'UPDATE #__jfusion_sync SET time_end = ' . $db->quote(time()) .' WHERE syncid =' . $db->Quote($syncdata['syncid']);
+            		$db->setQuery($query );
+            		$db->query();
+
+                    }
+                }
+            }
+            //end of sync
+        }
+    }
+
+    function SyncSlave($syncdata)
+    {
+
+        //setup some variables
+        $MasterUser = JFusionFactory::getUser($syncdata['master']);
+        $MasterPlugin = JFusionFactory::getPlugin($syncdata['master']);
+        $sync_errors = array();
+
+        //we should start with the import of slave users into the master
+        if ($syncdata['slave_data']) {
+            foreach($syncdata['slave_data'] as $slave_sync) {
+                //update the database every x users
+                $update_count = 10;
+                $count = 0;
+
+                //get a list of users
+                $jname = $slave_sync['jname'];
+                if ($jname) {
+                    $SlavePlugin = & JFusionFactory::getPlugin($jname);
+                    $SlaveUser = & JFusionFactory::getUser($jname);
+                    $userlist = $MasterPlugin->getUserList();
+
+                    //perform the actual sync
+                    foreach($userlist as $user) {
+                        $userinfo = $MasterUser->getUser($user->username);
+                        $status = $SlavePlugin->updateUser($userinfo);
                         if ($status['error']) {
                             $sync_error = array();
                             $sync_error['master']['username'] = $status['userinfo']->username;

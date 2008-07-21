@@ -12,16 +12,16 @@ defined('_JEXEC') or die('Restricted access');
 
 //check to see if there is anything to output
 if (!$this->syncdata['slave_data']){
-	echo JText::_('STEP1_NODATA');
+	echo JText::_('SYNC_NODATA');
 	return true;
 } elseif ($this->syncdata['completed']) {
 	//check to see if there were any errors
 	if ($this->syncdata['errors']) {
 		//redirect to resolve errors
-		echo '<h2><a href="index.php?option=com_jfusion&task=sync2&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('STEP1_CONFLICT') . '</a></h2><br/><br/>';
+		echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2><br/><br/>';
 	} else {
 		//inform about the success
-		echo '<h2>' . JText::_('STEP1_SUCCESS') . '</h2><br/><br/>';
+		echo '<h2>' . JText::_('SYNC_SUCCESS') . '</h2><br/><br/>';
 	}
 
 }

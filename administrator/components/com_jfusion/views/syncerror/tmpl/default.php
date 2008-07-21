@@ -49,3 +49,4 @@ $error =  $this->syncdata['errors'][$i];
 <?php } ?>
 </table>
 
+<input type="submit" value="<? echo JText::_('RESOLVE_CONLFICTS'); ?>">

@@ -82,6 +82,10 @@ class JFusionUser_smf extends JFusionUser{
         return 'smf';
     }
 
+    function deleteUser($username)
+    {
+	    //TODO: create a function that deletes a user
+    }
 
     function destroySession($userinfo, $options)
     {

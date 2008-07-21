@@ -81,6 +81,12 @@ class JFusionUser_magento extends JFusionUser
 		return $user;
 	}
 
+    function deleteUser($username)
+    {
+	    //TODO: create a function that deletes a user
+    }
+
+
 	function createSession($userinfo, $options){
 		/* posting info to magento */
 		// Setup a string with the form parameters in it

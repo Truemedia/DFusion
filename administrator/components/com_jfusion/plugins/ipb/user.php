@@ -61,8 +61,11 @@ class JFusionUser_ipb extends JFusionUser
         $result = $db->loadObject();
 
         return $result;
+    }
 
-
+    function deleteUser($username)
+    {
+	    //TODO: create a function that deletes a user
     }
 
     function getJname()

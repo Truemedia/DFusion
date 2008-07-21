@@ -261,8 +261,18 @@ class JFusionController extends JController
 */
     function syncerror()
     {
-        JRequest::setVar('view', 'syncerror');
-        parent::display();
+    	$syncerror = JRequest::getVar('syncerror', '', 'GET');
+    	$syncid = JRequest::getVar('syncid', '', 'GET');
+    	if ($syncerror) {
+    		//apply the submitted sync error instructions
+			JFusionUsersync::SyncError($syncid, $syncerror);
+
+    	} else {
+    		//output the sync errors to the user
+        	JRequest::setVar('view', 'syncerror');
+        	parent::display();
+    	}
+
     }
 
     /**
@@ -306,6 +316,8 @@ class JFusionController extends JController
 
 	//check to see if the sync has already started
     $syncid = JRequest::getVar('syncid', '', 'GET');
+    $action = JRequest::getVar('action', '', 'GET');
+
     $db = & JFactory::getDBO();
     $query = 'SELECT syncid FROM #__jfusion_sync WHERE syncid =' . $db->Quote($syncid);
     $db->setQuery($query);
@@ -349,13 +361,18 @@ class JFusionController extends JController
         $syncdata['master'] = JRequest::getVar('master', '', 'GET');
         $syncdata['syncid'] = JRequest::getVar('syncid', '', 'GET');
         $syncdata['slave_data'] = $slave_data;
-        $syncdata['action'] = JText::_('SYNC_INTO_MASTER');
+        $syncdata['action'] = $action;
 
         //save the submitted syndata in order for AJAX updates to work
         JFusionUsersync::saveSyncdata($syncdata);
 
         //start the usersync
-        JFusionUsersync::SyncStep1($syncdata);
+        if ($action == 'master') {
+        	JFusionUsersync::SyncMaster($syncdata);
+        } elseif ($action == 'slave') {
+        	JFusionUsersync::SyncSlave($syncdata);
+        }
+
     }
     }
 

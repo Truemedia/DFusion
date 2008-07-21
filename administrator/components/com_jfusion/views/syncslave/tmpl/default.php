@@ -54,13 +54,15 @@ window.addEvent('domready', function() {
 
 
     var url = '<? echo JURI::root() . 'administrator'. DS .'index.php'; ?>';
-    // refresh every 4 seconds
-    var timer = 4;
+    // refresh every 15 seconds
+    var timer = 1;
+    var time_update = 10;
+    var counter = 10;
     // periodical and dummy variables for later use
-    var periodical, dummy;
+    var periodical, dummy, sub_vars;
     var start = $('start'), stop = $('stop'), log = $('log_res');
 
-    /* our ajax istance */
+    /* our ajax istance for starting the sync */
     var ajax = new Ajax(url, {
         update: log,
         method: 'get',
@@ -77,25 +79,25 @@ window.addEvent('domready', function() {
             log.removeClass('ajax-loading');
         }
     }
+
     );
 
-    /* our refresh function: it sets a dummy to prevent
-caching of php and add the loader class */
+    /* our usersync status update function: */
     var refresh = (function() {
-        // dummy to prevent caching of php
-        //dummy = $time() + $random(0, 100);
-        // we add out fancy spinner
-        //log.empty().addClass('ajax-loading');
-        // requests of our php plus dummy as query
-        var sync_status = document.getElementById("log_res").innerHTML;
-        if (sync_status.search(/http/) == -1) {
-            alert('continue');
-        } else {
-            // let's stop our timed ajax
-            $clear(periodical);
-            // and let's stop our request in case it was waiting for a response
-            ajax.cancel();
-        }
+
+            //add another second to the counter
+            counter = counter - 1;
+            if (counter < 1) {
+            	counter = time_update;
+            	// dummy to prevent caching of php
+            	dummy = $time() + $random(0, 100);
+            	//generate the get variable for submission
+            	sub_vars = 'option=com_jfusion&task=syncstatus&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
+	    	ajax.request(sub_vars);
+	    } else {
+		//update the counter
+        	document.getElementById("counter").innerHTML = '<b>Update in ' + counter + ' seconds</b>';
+	    }
 
     }
     );
@@ -110,7 +112,7 @@ caching of php and add the loader class */
         /* a bit of fancy styles */
         stop.setStyle('font-weight', 'normal');
         start.setStyle('font-weight', 'bold');
-        log.empty().addClass('ajax-loading');
+        //log.empty().addClass('ajax-loading');
         /* ********************* */
 
         //give the user a last chance to opt-out
@@ -119,7 +121,10 @@ caching of php and add the loader class */
 
             // when we press start we want to inform JFusion how to run the usersync
             var paramString = document.adminForm.toQueryString();
-            ajax.request(paramString);
+
+	new Ajax(url, {
+		method: 'get',
+	}).request(paramString);
 
             // then we want to refresh the progress window periodically
             periodical = refresh.periodical(timer * 1000, this);
@@ -162,15 +167,19 @@ caching of php and add the loader class */
 </h3><br/>
 
 <div id="ajax_bar"><b>
-<?php echo JText::_('SYNC_STEP1');
-?>
+<?php echo JText::_('SYNC_SLAVE_HEAD');?>
 </div>
 <br/>
 
+
+
+<div id="log_res">
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
-<input type="hidden" name="task" value="synccontroller" />
+<input type="hidden" name="task" value="syncstatus" />
+<input type="hidden" name="action" value="slave" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
+
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
 <?php echo JText::_('NAME');
 ?>
@@ -178,7 +187,7 @@ caching of php and add the loader class */
 <?php echo JText::_('TYPE');
 ?>
 </th><th width="50px">
-<?php echo JText::_('USERS_TOTAL');
+<?php echo JText::_('USERS');
 ?>
 </th><th width="200px">
 <?php echo JText::_('OPTIONS');
@@ -213,7 +222,7 @@ caching of php and add the loader class */
     ?>][total]" value="<?php echo $slave['total'];
     ?>" />
     </td><td>
-    <?php echo JText::_('SYNC_INTO_MASTER');
+    <?php echo JText::_('SYNC_INTO_SLAVE');
     ?><input type="checkbox" name="slave[<?php echo $slave['jname'];
     ?>][sync_into_master]" value="1">
     </td></tr>
@@ -222,10 +231,10 @@ caching of php and add the loader class */
 ?>
 
 
-</table></form>
-<br/><br/>
+</table></form></div>
+<br/><div id="counter"></div><br/>
 
-<div id="ajax_bar"><b><?php echo JText::_('SYNC_STEP1_INSTR');
+<div id="ajax_bar"><b><?php echo JText::_('SYNC_SLAVE_INSTR');
 ?>
 </b>&nbsp;
 &nbsp;
@@ -236,8 +245,6 @@ caching of php and add the loader class */
 </span>
 <a id="stop" href="#"><?php echo JText::_('STOP');
 ?></a>
-<div id="aspin"></div>
-</div><br/>
+</div><br/><br/><br/>
 
-<div id="log_res">
-</div>
+

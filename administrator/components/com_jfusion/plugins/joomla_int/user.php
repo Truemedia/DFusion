@@ -130,12 +130,12 @@ class JFusionUser_joomla_int extends JFusionUser{
         }
     }
 
-    function deleteUser($userinfo)
+    function deleteUser($username)
     {
         //get the database ready
         $db = & JFactory::getDBO();
 
-        $query = 'SELECT juser_id FROM #__jfusion_users WHERE username='.$db->Quote($userinfo->username);
+        $query = 'SELECT id FROM #__jfusion_users WHERE username='.$db->Quote($username);
         $db->setQuery($query );
         $userid = $db->loadResult();
 
@@ -143,7 +143,8 @@ class JFusionUser_joomla_int extends JFusionUser{
             //this user was created by JFusion and we need to delete them from the joomla user and jfusion lookup table
             $user =& JUser::getInstance($userid);
             $user->delete();
-            $db->Execute('DELETE FROM #__jfusion_user_lookup WHERE juser_id='.$userid);
+            $db->Execute('DELETE FROM #__jfusion_users_plugin WHERE id='.$userid);
+            $db->Execute('DELETE FROM #__jfusion_users WHERE id='.$userid);
         } else {
             //this user was NOT create by JFusion. Therefore we need to delete it in the Joomla user table only
 
