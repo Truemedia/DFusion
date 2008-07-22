@@ -11,7 +11,8 @@
 	<version>1.0.7</version>
 	<description>
 		This is the JFusion user plugin, that sets up the permissions of
-		the user upon login.
+		the user upon login. You MUST configure the JFusion
+		component BEFORE you publish the JFusion authentication and user plugins
 	</description>
 	<files folder="plugins/user">
 		<filename plugin="jfusion">jfusion.php</filename>

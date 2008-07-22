@@ -11,7 +11,8 @@
 	<version>1.0.7</version>
 	<description >
 		This is the JFusion authentication plugin, that checks if the
-		supplied password is correct upon login.
+		supplied password is correct upon login. You MUST configure the JFusion
+		component BEFORE you publish the JFusion authentication and user plugins
 	</description>
 	<files folder="plugins/authentication">
 		<filename plugin="jfusion">jfusion.php</filename>

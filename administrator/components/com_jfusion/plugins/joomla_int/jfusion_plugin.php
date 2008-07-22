@@ -84,17 +84,17 @@ class JFusionPlugin_joomla_int extends JFusionPlugin
 
     function getDefaultUsergroup()
     {
-        $row =& JTable::getInstance('component' );
-        $row->loadByOption('com_users' );
-        $parameters = JArrayHelper::fromObject($row );
-        $params = $parameters['params'];
-        $file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_user'.DS.'com_user.xml';
-        $parametersInstance = new JParameter($params, $file );
+        $params = JFusionFactory::getParams($this->getJname());
+        $usergroup_id = $params->get('usergroup', 18);
 
-        $new_usertype = $parametersInstance->get('new_usertype');
-
-        return $new_usertype;
+        //we want to output the usergroup name
+        $db = & JFactory::getDBO();
+        $query = 'SELECT name from #__core_acl_aro_groups WHERE id = ' . $usergroup_id;
+        $db->setQuery($query );
+        return $db->loadResult();
     }
+
+
 
 
 

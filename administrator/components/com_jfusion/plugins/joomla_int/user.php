@@ -95,7 +95,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
             //find out what usergroup the new user should have
             $params = JFusionFactory::getParams($this->getJname());
-            $gid = $params->get('usergroup');
+            $gid = $params->get('usergroup', 18);
             $query = 'SELECT name FROM #__core_acl_aro_groups WHERE id = ' . $db->quote($usergroup);
             $db->setQuery($query);
             $usergroup = $db->loadResult();
@@ -189,13 +189,8 @@ class JFusionUser_joomla_int extends JFusionUser{
         }
 
         if ($result) {
-            //update the JFusion user table
-            $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ','. $db->quote($username) .')';
-            $db->setQuery($query);
-            $db->query();
-
             //split up the password if it contains a salt
-            $parts = explode(':', $userinfo->password );
+            $parts = explode(':', $result->password );
         	if($parts[1]) {
         		$result->password_salt = $parts[1];
         		$result->password = $parts[0];

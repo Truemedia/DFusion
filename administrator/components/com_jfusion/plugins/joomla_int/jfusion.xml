@@ -22,5 +22,6 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
+		<param name="usergroup" default="18" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 	</params>
 </install>
