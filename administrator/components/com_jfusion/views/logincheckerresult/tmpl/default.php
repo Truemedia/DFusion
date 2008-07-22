@@ -222,6 +222,9 @@ if ($userinfo) {
     $db->setQuery($query);
     $db->query();
 
+    if ($jname->name != 'joomla_int'){
+        JFusionFunction::updateLookup($userinfo, $jname->name, $joomla_user['userinfo']->userid);
+    }
 
     //setup the other slave JFusion plugins
     $plugins = JFusionFunction::getPlugins();

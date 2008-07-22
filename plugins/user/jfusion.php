@@ -124,8 +124,8 @@ class plgUserJfusion extends JPlugin
         	}
 
 			//setup the master session
-			if($jname->dual_login){
-        		$master_session = $JFusionMaster->createSession($joomla_user['userinfo'], $options);
+			if($jname->dual_login && $options['group'] != 'Public Backend'){
+        		$master_session = $JFusionMaster->createSession($userinfo, $options);
         		if ($master_session ['error']){
             		//no Joomla session could be created -> deny login
             		JError::raiseWarning('500', $jname->name . ': '. $master_session ['error']);
@@ -165,6 +165,10 @@ class plgUserJfusion extends JPlugin
         $query = 'INSERT INTO #__jfusion_user (id, username) VALUES (' . $joomla_user['userinfo']->userid . ', ' . $db->quote($user['username']) . ')';
         $db->setQuery($query);
         $db->query();
+
+        if ($jname->name != 'joomla_int'){
+            JFusionFunction::updateLookup($userinfo, $jname->name, $joomla_user['userinfo']->userid);
+        }
 
 
         //setup the other slave JFusion plugins

@@ -332,7 +332,7 @@ class JFusionFunction{
     function lookupUser($jname, $userid)
     {
         $db =& JFactory::getDBO();
-        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE id =' . $userid . ' AND jname = ' . $db->quote($element) . ' AND folder=' . $db->quote($jname);
+        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE id =' . $userid . ' AND jname = ' . $db->quote($jname);
         $db->setQuery($query);
         $result = $db->loadObject();
         return $result;

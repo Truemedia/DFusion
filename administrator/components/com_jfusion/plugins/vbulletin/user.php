@@ -54,13 +54,13 @@ class JFusionUser_vbulletin extends JFusionUser{
     {
         // Get user info from database
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT userid, username,email, password, salt as password_salt FROM #__user WHERE username=' . $db->Quote($username);
+        $query = 'SELECT userid, username, username as name, email, password, salt as password_salt FROM #__user WHERE username=' . $db->Quote($username);
         $db->setQuery($query );
         $result = $db->loadObject();
 
         if ($result) {
             //Check to see if they are banned
-            $query = 'SELECT userid FROM #__userban WHERE userid='. int($result->userid);
+            $query = 'SELECT userid FROM #__userban WHERE userid='. $result->userid;
             $db->setQuery($query);
             if ($db->loadObject()) {
                 $result->block = 1;
