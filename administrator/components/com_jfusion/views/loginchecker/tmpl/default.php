@@ -36,9 +36,11 @@ radioObj[i].checked = true;
 
 //-->
 </script>
+
+
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
-<input type="hidden" name="task" value="" />
+<input type="hidden" name="task" value="logincheckerresult" />
 
 <?php echo $this->toolbar; ?>
 

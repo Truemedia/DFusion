@@ -53,7 +53,7 @@ if (file_exists($model_file) && file_exists($model_file)) {
 	        if ($userlookup) {
 	            if ($params->get('avatar')) {
     	            // retrieve avatar
-					$avatar = JFusionfunction::createURL($JFusionPlugin->getAvatar($userlookup->userid), $PluginName, $view);
+					$avatar = $JFusionPlugin->getAvatar($userlookup->userid);
             	}
 
             	if ($params->get('pmcount')) {
@@ -66,8 +66,10 @@ if (file_exists($model_file) && file_exists($model_file)) {
             	}
     			//output the login module
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));
+	        } else {
+    			require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
 	        }
-    	require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
+
         }
 
     } else {

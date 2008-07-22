@@ -192,11 +192,20 @@ class JFusionController extends JController
             }
 
             //auto enable the auth and dual login for newly enabled plugins
-            //disable a master when it is turned into a slave
             if (($field_name == 'slave' || $field_name == 'master') && $field_value == '1') {
-                $query = 'UPDATE #__jfusion SET dual_login = 1, check_encryption = 1 WHERE name = ' . $db->quote($jname);
-                $db->setQuery($query );
-                $db->query();
+            	$query = 'SELECT dual_login FROM #__jfusion WHERE name = ' . $db->quote($jname);
+            	$db->setQuery($query );
+            	$dual_login = $db->loadResult();
+            	if ($dual_login > 1) {
+                	//only set the encryption if dual login is disabled
+                	$query = 'UPDATE #__jfusion SET check_encryption = 1 WHERE name = ' . $db->quote($jname);
+                	$db->setQuery($query );
+                	$db->query();
+            	} else {
+                	$query = 'UPDATE #__jfusion SET dual_login = 1, check_encryption = 1 WHERE name = ' . $db->quote($jname);
+                	$db->setQuery($query );
+                	$db->query();
+            	}
             }
 
         } else {

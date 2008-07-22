@@ -125,7 +125,7 @@ class JFusionUser_mybb extends JFusionUser{
       	$cookiepath = $params->get('cookie_path','/');
       	//get myBB uid, loginkey
         $db = JFusionFactory::getDatabase($this->getJname());
-      	$query = 'SELECT uid, loginkey FROM #__users WHERE username=' .$db->quote($userinfo->username ;
+      	$query = 'SELECT uid, loginkey FROM #__users WHERE username=' .$db->quote($userinfo->username) ;
       	$db->setQuery($query );
       	$user = $db->loadObject();
 
