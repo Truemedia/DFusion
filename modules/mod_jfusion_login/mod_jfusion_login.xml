@@ -23,7 +23,7 @@
 	<languages folder="language/en-GB">
 		<language tag="en-GB">en-GB.mod_jfusion_login.ini</language>
 	</languages>
-	<params>
+	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="link_mode" type="list" default="direct" label="LINK_MODE"
 			description="LINK_MODE_DESCR">
 			<option value="wrapper">LINK_MODE_0</option>
@@ -65,13 +65,16 @@
 			<option value="0">HIDE</option>
 			<option value="1">SHOW</option>
 		</param>
-		<param name="@spacer" type="spacer" default="" label=""
-			description="" />
 		<param name="greeting" type="radio" default="1" label="GREETING"
 			description="GREETING_DESCR">
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</param>
+		<param name="@spacer" type="spacer" default="" label=""
+			description="" />
+		<param name="JFusionPlugin" type="JFusionPlugins" default=""
+			label="JFUSION_PLUGIN"
+			description="JFUSION_PLUGIN_DESCR" />
 		<param name="avatar" type="radio" default="1"
 			label="AVATAR_IMAGE" description="AVATAR_IMAGE_DESCR">
 			<option value="0">HIDE</option>

@@ -35,53 +35,53 @@ if (file_exists($model_file) && file_exists($model_file)) {
 
     //Get the forum integration object
     $jname = JFusionFunction::getMaster();
-    //now check to see if the plugin is configured
-    $jdb =& JFactory::getDBO();
-    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->quote($jname->name);
-    $jdb->setQuery($query );
-    $plugin_status =$jdb->loadResult;
 
+    if ($jname->status == 3) {
+        $MasterPlugin = JFusionFactory::getPlugin($jname->name);
+        $allow_registration = JFusionFunction::createURL($MasterPlugin->allowRegistration(), $jname->name, $view);
+        $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view);
+        $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view);
+        $url_register = JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view);
 
-    if ($jname && $plugin_status == 3) {
+		//now find out from which plugin the avatars need to be displayed
+		$PluginName = $params->get('JFusionPlugin');
+		if ($PluginName){
+			$JFusionPlugin = JFusionFactory::getPlugin($PluginName);
+        	$userlookup = JFusionFunction::lookupUser($PluginName, $user->get('id'));
 
+			//check to see if we found a user
+	        if ($userlookup) {
+	            if ($params->get('avatar')) {
+    	            // retrieve avatar
+					$avatar = JFusionfunction::createURL($JFusionPlugin->getAvatar($userlookup->userid), $PluginName, $view);
+            	}
 
-        $JFusionPlugin = JFusionFactory::getPlugin($jname);
-        $allow_registration = JFusionFunction::createURL($JFusionPlugin->allowRegistration(), $jname, $view);
-        $url_lostpass = JFusionFunction::createURL($JFusionPlugin->getLostPasswordURL(), $jname, $view);
-        $url_lostuser = JFusionFunction::createURL($JFusionPlugin->getLostUsernameURL(), $jname, $view);
-        $url_register = JFusionFunction::createURL($JFusionPlugin->getRegistrationURL(), $jname, $view);
+            	if ($params->get('pmcount')) {
+                	$pmcount = $JFusionPlugin->getPrivateMessageCounts($userlookup->userid);
+                	$url_pm = JFusionfunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $view);
+            	}
 
-        $userlookup = JFusionFunction::lookupUser($jname, $user->get('id'));
-
-        if ($userlookup) {
-            $userid = $userlookup->userid;
-
-            if ($params->get('avatar')) {
-                // retrieve avatar
-                $avatar = $forum->getAvatar($userid);
-            }
-            if ($params->get('pmcount')) {
-                $pmcount = $forum->getPrivateMessageCounts($userid);
-                $url_pm = $forum->getPrivateMessageURL();
-            }
-            if ($params->get('viewnewmessages')) {
-                $url_viewnewmessages = $forum->getViewNewMessagesURL();
-            }
+            	if ($params->get('viewnewmessages')) {
+                	$url_viewnewmessages = JFusionfunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $view);
+            	}
+    			//output the login module
+    		require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));
+	        }
+    	require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
+
     } else {
         //use the Joomla default urls
         $url_lostpass = JRoute::_('index.php?option=com_user&view=reset' );
         $url_lostuser = JRoute::_('index.php?option=com_user&view=remind' );
         $url_register = JRoute::_('index.php?option=com_user&task=register' );
+    	require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
     }
-
-    require(JModuleHelper::getLayoutPath('mod_jfusionlogin'));
 
 } else {
     //use the Joomla default urls
     $url_lostpass = JRoute::_('index.php?option=com_user&view=reset' );
     $url_lostuser = JRoute::_('index.php?option=com_user&view=remind' );
     $url_register = JRoute::_('index.php?option=com_user&task=register' );
-    require(JModuleHelper::getLayoutPath('mod_jfusionlogin'));
-
+    require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
 }

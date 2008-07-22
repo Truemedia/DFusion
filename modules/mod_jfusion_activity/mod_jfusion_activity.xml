@@ -27,7 +27,7 @@
 		<param name="@spacer" type="spacer" default="" label=""
 			description="" />
 
-		<param name="JFusionPlugins" type="JFusionPlugins" default=""
+		<param name="JFusionPlugins" type="ActivityPlugins" default=""
 			label="JFUSION_PLUGIN"
 			description="JFUSION_PLUGIN_DESCR" />
 

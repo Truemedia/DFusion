@@ -24,12 +24,9 @@ class JFusionAuth_joomla_int extends JFusionAuth{
 
     function generateEncryptedPassword($userinfo)
     {
-        $parts = explode(':', $userinfo->password );
-        $salt = @$parts[1];
         jimport('joomla.user.helper');
-        $crypt = JUserHelper::getCryptedPassword($userinfo->password_clear, $salt);
-        $password = $crypt.':'.$salt;
-        return $password;
+        $crypt = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
+        return $crypt;
     }
 
 }

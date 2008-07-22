@@ -75,11 +75,18 @@ class JFusionUser_joomla_int extends JFusionUser{
                 $db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
             }
 
+			//also store the salt if present
+			if ($userinfo->password_salt) {
+				$password = $userinfo->password . ':' . $userinfo->password_salt;
+			} else {
+				$password = $userinfo->password;
+			}
+
             //now we can create the new Joomla user
             $instance = new JUser();
             $instance->set('name'         , $userinfo->name );
             $instance->set('username'     , $username_clean );
-            $instance->set('password'     , $userinfo->password );
+            $instance->set('password'     , $password);
             $instance->set('email'        , $userinfo->email );
             $instance->set('registerDate' , $userinfo->registerdate);
             $instance->set('block'        , $userinfo->block );
@@ -173,28 +180,33 @@ class JFusionUser_joomla_int extends JFusionUser{
         $db->setQuery('SELECT a.id as userid, b.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE b.username=' . $db->quote($username));
         $result = $db->loadObject();
 
-        if ($result) {
-            //found the user
-            return $result;
-        } else {
+        if (!$result) {
             //no user found, now check the Joomla user table
             $JFusionUser = JFusionfactory::getUser('joomla_int');
             $filtered_username = $JFusionUser->filterUsername($username);
             $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.username=' . $db->quote($filtered_username));
             $result = $db->loadObject();
+        }
 
-            if ($result) {
-                //update the JFusion user table
-                $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ','. $db->quote($username) .')';
-                $db->setQuery($query);
-                $db->query();
+        if ($result) {
+            //update the JFusion user table
+            $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ','. $db->quote($username) .')';
+            $db->setQuery($query);
+            $db->query();
 
-                return $result;
-            } else {
-                return false;
-            }
+            //split up the password if it contains a salt
+            $parts = explode(':', $userinfo->password );
+        	if($parts[1]) {
+        		$result->password_salt = $parts[1];
+        		$result->password = $parts[0];
+        	}
+
+            return $result;
+        } else {
+            return false;
         }
     }
+
 
     function getJname()
     {

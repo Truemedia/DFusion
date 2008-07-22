@@ -21,5 +21,8 @@
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</param>
-	</params>
+		<param name="JFusionPlugin" type="JFusionPlugins" default=""
+			label="JFUSION_PLUGIN"
+			description="JFUSION_PLUGIN_DESCR" />
+		</params>
 </config>

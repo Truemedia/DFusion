@@ -33,9 +33,10 @@ class jfusionViewWrapper extends JView {
 			$menuitemid = JRequest::getInt( 'Itemid' );
 	    	$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
     		$menu_data = $db->loadResult();
-    	    $db->setQuery($query );
+    	    $db->setQuery($query);
+    	    $params = $db->loadResult();
             $menu_param = new JParameter($params, '');
-            $jname =  $$menu_param->get('JFusionPlugin');
+            $jname =  $menu_param->get('JFusionPlugin');
             if (!jname){
             	//die gracefully as no plugin name was defined
 				echo JText::_('ERROR_NO_PLUGIN');

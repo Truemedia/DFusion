@@ -17,25 +17,25 @@ defined('_JEXEC') or die();
 * Defines the forum select list for JFusion forum plugins
 * @package JFusion
 */
-    class JElementJFusionPlugins extends JElement
+    class JElementActivityPlugins extends JElement
     {
-        var $_name = "JFusionPlugins";
+        var $_name = "ActivityPlugins";
 
         function fetchElement($name, $value, &$node, $control_name)
         {
             $db = & JFactory::getDBO();
-            $query = 'SELECT name as id, description as name from #__jfusion WHERE status = 3';
+            $query = 'SELECT name as id, description as name from #__jfusion WHERE activity = 1 and status = 3';
             $db->setQuery($query );
             $rows = $db->loadObjectList();
 
             if (!empty($rows)) {
                 return JHTML::_('select.genericlist', $rows, $control_name.'['.$name.'][]', 'size="1" class="inputbox"',
                 'id', 'name', $value);
-        	} else {
+        } else {
                 return JText::_('NO_VALID_PLUGINS');
-        	}
-    	}
-	}
+        }
+    }
+}
 
 
 

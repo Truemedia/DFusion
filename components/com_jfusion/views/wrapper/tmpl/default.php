@@ -46,7 +46,7 @@ defined('_JEXEC') or die('Restricted access');
 <iframe
 
 <?php if($this->params->get('wrapper_autoheight')) {?>
-onload="'adjustMyFrameHeight();'"
+onload="adjustMyFrameHeight();"
 <?php }?>
 
 id="blockrandom"

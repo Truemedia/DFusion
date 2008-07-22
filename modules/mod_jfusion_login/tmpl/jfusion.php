@@ -13,12 +13,33 @@ defined('_JEXEC') or die('Restricted access'); ?>
 
 <?php if($type == 'logout') : ?>
 <form action="index.php" method="post" name="login" id="form-login">
+<?php if ($params->get('avatar') && $avatar) : ?>
+	<div align="center"><img src="<?php echo $avatar; ?>" alt="<?php echo $user->get('name'); ?>" /></div>
+<?php endif; ?>
 <?php if ($params->get('greeting')) : ?>
 	<div align="center">
 	    <?php echo JText::sprintf( 'HINAME', $user->get('name') ); ?>
+		<?php if ($params->get('pmcount')) : ?>
+			<br />
+			<?php
+			    echo JText::_('PM_START');
+			    echo ' <a href="'.$url_pm.'">'.JText::sprintf('PM_LINK', $pmcount["total"])."</a>";
+			    echo JText::sprintf('PM_END', $pmcount["unread"]);
+			?>
+		<?php endif; ?>
+	</div>
+<?php elseif ($params->get('pmcount')) : ?>
+    <div align="center">
+	<?php
+	    echo JText::_('PM_START');
+	    echo ' <a href="'.$url_pm.'">'.JText::sprintf('PM_LINK', $pmcount["total"]).'</a>';
+	    echo JText::sprintf('PM_END', $pmcount["unread"]);
+	?>
 	</div>
 <?php endif; ?>
-
+<?php if ($params->get('viewnewmessages')) : ?>
+	<div align="center"><a href="<?php echo $url_viewnewmessages; ?>"><?php echo JText::_('VIEW_NEW_TOPICS'); ?></a></div>
+<?php endif; ?>
 	<div align="center">
 		<input type="submit" name="Submit" class="button" value="<?php echo JText::_('BUTTON_LOGOUT'); ?>" />
 	</div>
