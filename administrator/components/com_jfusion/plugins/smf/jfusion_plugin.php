@@ -76,7 +76,6 @@ class JFusionPlugin_smf extends JFusionPlugin{
             $params['cookie_name'] = $config['cookiename'];
             $params['source_path'] = $forumPath;
 
-            JError::raiseNotice(0,JText::_('WIZARD_SUCCESS'));
             return $params;
         }
     }

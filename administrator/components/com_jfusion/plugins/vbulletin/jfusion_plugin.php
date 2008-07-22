@@ -109,12 +109,8 @@ class JFusionPlugin_vbulletin extends JFusionPlugin{
             $vdb->setQuery($query);
             $cookie_path = $vdb-> loadResult();
             $params['cookie_path'] = $cookie_path;
-
-
             $params['source_license'] = trim($vb_lic);
 
-
-            JError::raiseNotice(0,JText::_('WIZARD_SUCCESS'));
             return $params;
         }
     }

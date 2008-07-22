@@ -124,7 +124,7 @@ class plgUserJfusion extends JPlugin
         	}
 
 			//setup the master session
-			if($jname->dual_login && $options['group'] != 'Public Backend'){
+			if($jname->dual_login == 1 && $options['group'] != 'Public Backend'){
         		$master_session = $JFusionMaster->createSession($userinfo, $options);
         		if ($master_session ['error']){
             		//no Joomla session could be created -> deny login
@@ -184,7 +184,7 @@ class plgUserJfusion extends JPlugin
                 JError::raiseWarning('500', $plugin_user['error']);
             } else {
                 JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin_name, $joomla_user['userinfo']->userid);
-                if ($options['group'] != 'Public Backend' && $plugin->dual_login) {
+                if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
                     $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);
                     if ($session_result['error']){
                         JError::raiseWarning('500', $plugin->name . ': ' . $session_result['error']);
@@ -217,7 +217,7 @@ class plgUserJfusion extends JPlugin
             $plugins = JFusionFunction::getPlugins();
             foreach ($plugins as $plugin) {
             	//check if sessions are enabled
-            	if ($plugin->dual_login){
+            	if ($plugin->dual_login == 1){
                     $JFusionPlugin = JFusionFactory::getUser($plugin->name);
                     $username = JFusionFunction::lookupUserId($plugin->name, $my->get('id'));
                     $userinfo = $JFusionPlugin->getUser($username);

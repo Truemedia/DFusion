@@ -51,7 +51,7 @@ radioObj[i].checked = true;
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'wizard.png'; ?>" height="75px" width="75px">
-<td><h2><? echo JText::_('SETUP_WIZARD'); ?></h2></td></tr></table>
+<td><h2><? echo $this->jname . ' ' . JText::_('SETUP_WIZARD'); ?></h2></td></tr></table>
 
 <br/><br/><font size="2">
 <?php echo JText::_('WIZARD_INSTR'); ?>

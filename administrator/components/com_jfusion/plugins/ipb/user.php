@@ -127,7 +127,7 @@ class JFusionUser_ipb extends JFusionUser
         setcookie($prefix . 'member_id', $result->id, $expires, $path, $domain);
         setcookie($prefix . 'pass_hash', $result->member_login_key, $expires, $path, $domain);
         setcookie($prefix . 'session_id', '', $expires, $path, $domain);
-        $status['debug'] .= JText::_('USERID') . '=' . $result->id . ', ' . JText::_('PASSWORD') . '=' . $result->member_login_key . ', ' . JText::_('COOKIE_PATH') . '=' . $path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $domain ', ' . JText::_('EXPIRES') . '=' . $expires;
+        $status['debug'] .= JText::_('USERID') . '=' . $result->id . ', ' . JText::_('PASSWORD') . '=' . $result->member_login_key . ', ' . JText::_('COOKIE_PATH') . '=' . $path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $domain . ', ' . JText::_('EXPIRES') . '=' . $expires;
 
         // Set strong protection cookie
         if ($params->get('ipb_cookie_stronghold'))

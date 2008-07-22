@@ -174,7 +174,7 @@ if ($userinfo) {
         }
 
         //setup the master session
-        if ($jname->dual_login) {
+        if ($jname->dual_login == 1) {
             $master_session = $JFusionMaster->createSession($userinfo, $options);
             if ($master_session['error']) {
                 //no Joomla session could be created -> deny login
@@ -245,7 +245,7 @@ if ($userinfo) {
             echo JText::_('NAME') .': ' . $plugin_user['userinfo']->name .'<br/>';
 
             JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin_name, $joomla_user['userinfo']->userid);
-            if ($options['group'] != 'Public Backend' && $plugin->dual_login) {
+            if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
                 $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);
                 if ($session_result['error']) {
             		echo JText::_('SESSION'). ' '. JText::_('CREATE') . ' ' . JText::_('ERROR'). ':' . $session_result['error'] .'<br/>';

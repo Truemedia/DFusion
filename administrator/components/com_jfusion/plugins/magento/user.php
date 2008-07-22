@@ -74,9 +74,9 @@ class JFusionUser_magento extends JFusionUser
 
   		$user = new stdClass;
 		$user->id = $entity;
-		$user->name = $myInfo[4]->value . ' ' . $myInfo[5]->value; // full name
-		$user->email = $user['username']; // username / e-mail
-		$user->username = $user['username']; // username / e-mail
+		$user->name = $myInfo[4]->value . ' ' . $myInfo[5]->value;
+		$user->email = $username;
+		$user->username = $username;
 		$user->password = $myInfo[8]->value;
 		return $user;
 	}
@@ -103,7 +103,7 @@ class JFusionUser_magento extends JFusionUser
 
 		/* --- first part. --- */
 		// Set the URL to execute
-		curl_setopt($cCURL, CURLOPT_URL, AbstractForum::createURL("index.php/customer/account/loginPost/","magento"));
+		curl_setopt($cCURL, CURLOPT_URL, JFusionFunction::createURL('index.php'.DS.'customer'.DS.'account'.DS.'loginPost'.DS,$this->getJname(), 'direct'));
 
 		// Set options
 		curl_setopt( $cCURL, CURLOPT_HEADER, true );

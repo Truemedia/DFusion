@@ -53,11 +53,8 @@ class JFusionUser_joomla_ext extends JFusionUser
 	function &getUser($username)
     {
         // Get a database object
-        $db = JFusionFactory::getDatabase($this->getJname());
-		$username = $this->filterUsername($username);
-
 		$db = JFusionFactory::getDatabase($this->getJname());
-        $db->setQuery('SELECT a.id as userid, b.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE b.username=' . $db->quote($username));
+        $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.username=' . $db->quote($username));
         $result = $db->loadObject();
 		return $result;
     }
@@ -71,17 +68,11 @@ class JFusionUser_joomla_ext extends JFusionUser
     {
         //get the database ready
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT id from #__users WHERE username = ' . $db->quote($username);
-        $db->setQuery($query);
-        $userid = $db->loadResult();
-        if ($userid) {
-                //delete user from the Joomla usertable
-        		$query = 'DELETE FROM #__users WHERE username = ' . $db->quote($username);
-        		$db->setQuery($query);
-            	$db->query();
 
-
-        }
+        //delete user from the Joomla usertable
+  		$query = 'DELETE FROM #__users WHERE username = ' . $db->quote($username);
+   		$db->setQuery($query);
+       	$db->query();
     }
 
 

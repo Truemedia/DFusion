@@ -81,7 +81,6 @@ class JFusionPlugin_mybb extends JFusionPlugin{
          $cookiepath = $bb->loadResult();
          $params['cookie_path'] =  $cookiepath;
 
-         JError::raiseNotice(0,JText::_('WIZARD_SUCCESS'));
          return $params;
    }
 

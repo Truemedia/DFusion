@@ -25,7 +25,7 @@
 		<param name="database_password" type="text" size="20" default="" description="DATABASE_PASSWORD"/>
 		<param name="database_prefix" type="text" size="20" default="" description="DATABASE_PREFIX"/>
 		<param name="@spacer" type="spacer" default="" label="" description="" />
-		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
+		<param name="source_url" type="text" size="40" default="" description="SOURCE_URL" />
 		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
