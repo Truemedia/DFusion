@@ -156,15 +156,24 @@ class plgUserJfusion extends JPlugin
         //update the JFusion user lookup table
        	//Delete old user data in the lookup table
         $db =& JFactory::getDBO();
-        $query = 'DELETE FROM #__jfusion_user WHERE id =' . $joomla_user['userinfo']->userid . ' OR username =' . $db->quote($user['username']);
+        $query = 'DELETE FROM #__jfusion_users WHERE id =' . $joomla_user['userinfo']->userid . ' OR username =' . $db->quote($user['username']);
         $db->setQuery($query);
-        $db->query();
+        if(!$db->query()) {
+            JError::raiseWarning(0,$db->stderr());
+        }
+        $db =& JFactory::getDBO();
+        $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $joomla_user['userinfo']->userid ;
+        $db->setQuery($query);
+        if(!$db->query()) {
+            JError::raiseWarning(0,$db->stderr());
+        }
 
         //create a new entry in the lookup table
-        $db =& JFactory::getDBO();
-        $query = 'INSERT INTO #__jfusion_user (id, username) VALUES (' . $joomla_user['userinfo']->userid . ', ' . $db->quote($user['username']) . ')';
+        $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $joomla_user['userinfo']->userid . ', ' . $db->quote($user['username']) . ')';
         $db->setQuery($query);
-        $db->query();
+        if(!$db->query()) {
+            JError::raiseWarning(0,$db->stderr());
+        }
 
         if ($jname->name != 'joomla_int'){
             JFusionFunction::updateLookup($userinfo, $jname->name, $joomla_user['userinfo']->userid);
@@ -183,7 +192,7 @@ class plgUserJfusion extends JPlugin
         		}
                 JError::raiseWarning('500', $plugin_user['error']);
             } else {
-                JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin_name, $joomla_user['userinfo']->userid);
+                JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin->name, $joomla_user['userinfo']->userid);
                 if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
                     $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);
                     if ($session_result['error']){

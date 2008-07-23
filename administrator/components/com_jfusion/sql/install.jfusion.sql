@@ -38,18 +38,18 @@ VALUES ('punbb', 'punbb 1.2.17','1.00', '25th May 2008', 'JFusion development te
 
 CREATE TABLE IF NOT EXISTS #__jfusion_users (
 	id int(11) NOT NULL,
-	username varchar(50) character set utf8 collate utf8_bin NOT NULL,
+	username varchar(50),
 	PRIMARY KEY (username)
-);
+) DEFAULT CHARACTER SET utf8;
 
 CREATE TABLE IF NOT EXISTS #__jfusion_users_plugin (
 	autoid int(11) NOT NULL auto_increment,
 	id int(11) NOT NULL,
-	username varchar(50) character set utf8 collate utf8_bin NOT NULL,
+	username varchar(50),
 	userid int(11) NOT NULL,
     jname varchar(50) NOT NULL,
 	PRIMARY KEY (autoid)
-);
+) DEFAULT CHARACTER SET utf8;
 
 
 CREATE TABLE IF NOT EXISTS #__jfusion_sync (
@@ -58,5 +58,5 @@ CREATE TABLE IF NOT EXISTS #__jfusion_sync (
   syncdata text,
   time_start int(8),
   time_end int(8),
-  PRIMARY KEY  (`syncid`)
+  PRIMARY KEY  (syncid)
 );
