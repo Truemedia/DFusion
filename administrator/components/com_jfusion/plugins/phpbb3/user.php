@@ -27,7 +27,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         $db = JFusionFactory::getDatabase($this->getJname());
 		$username = $this->filterUsername($username);
 
-        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password FROM #__users '.
+        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, user_lastvisit as lastvisit FROM #__users '.
         'WHERE username_clean=' . $db->Quote($username);
         $db->setQuery($query);
         $result = $db->loadObject();
@@ -247,7 +247,9 @@ class JFusionUser_phpbb3 extends JFusionUser{
         $userid = $userinfo->userid;
 
         if ($userid && !empty($userid) && ($userid > 0)) {
-            $session_key = dechex(mt_rand()) . dechex(mt_rand());
+
+        	jimport('joomla.user.helper');
+        	$session_key = JUserHelper::genRandomPassword(32);
 
             //Check for admin access
             $query = 'SELECT a.group_name from #__groups as a INNER JOIN #__users as b ON a.group_id = b.group_id WHERE username_clean=' . $db->Quote($userinfo->username);
@@ -291,6 +293,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 $session_obj = new stdClass;
                 $session_obj->session_id = substr($session_key, 0, 32);
                 $session_obj->session_user_id = $userid;
+                $session_obj->session_last_visit = $userinfo->lastvisit;
                 $session_obj->session_start = $session_start;
                 $session_obj->session_time = $session_start;
                 $session_obj->session_ip = $_SERVER['REMOTE_ADDR'];
