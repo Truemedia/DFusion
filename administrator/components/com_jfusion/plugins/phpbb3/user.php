@@ -311,12 +311,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
                     // Remember me option?
                     if ($autologin>0) {
                         //Insert the session key into sessions_key table
-                        $session_key = new stdClass;
-                        $session_key->key_id = substr($session_key, 0, 32);
-                        $session_key->user_id = $userid;
-                        $session_key->last_ip = $_SERVER['REMOTE_ADDR'];
-                        $session_key->last_login = $session_start;
-                        if (!$db->insertObject('#__sessions_keys', $session_key )) {
+                        $session_key_ins = new stdClass;
+                        $session_key_ins->key_id = substr($session_key, 0, 32);
+                        $session_key_ins->user_id = $userid;
+                        $session_key_ins->last_ip = $_SERVER['REMOTE_ADDR'];
+                        $session_key_ins->last_login = $session_start;
+                        if (!$db->insertObject('#__sessions_keys', $session_key_ins )) {
         	        		//could not save the session_key
             				$status['error'] = JText::_('ERROR_CREATE_USER') . $database->stderr();
             				return $status;

@@ -219,8 +219,8 @@ class plgUserJfusion extends JPlugin
             	//check if sessions are enabled
             	if ($plugin->dual_login == 1){
                     $JFusionPlugin = JFusionFactory::getUser($plugin->name);
-                    $username = JFusionFunction::lookupUserId($plugin->name, $my->get('id'));
-                    $userinfo = $JFusionPlugin->getUser($username);
+        			$userlookup = JFusionFunction::lookupUser($plugin->name, $my->get('id'));
+                    $userinfo = $JFusionPlugin->getUser($userlookup->username);
 					//check if a user was found
                     if ($userinfo) {
                     	$session_result = $JFusionPlugin->destroySession($userinfo, $options);

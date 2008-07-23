@@ -66,7 +66,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 		<?php endif; ?>
 		<?php
 		$usersConfig = &JComponentHelper::getParams( 'com_users' );
-		if ($usersConfig->get('allowUserRegistration') && $params->get('show_newaccount')) : ?>
+		if ($params->get('show_newaccount')) : ?>
 		<li>
 			<a href="<?php echo $url_register ?>">
 				<?php echo JText::_('REGISTER'); ?>
