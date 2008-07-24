@@ -96,7 +96,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             //find out what usergroup the new user should have
             $params = JFusionFactory::getParams($this->getJname());
             $gid = $params->get('usergroup', 18);
-            $query = 'SELECT name FROM #__core_acl_aro_groups WHERE id = ' . $db->quote($usergroup);
+            $query = 'SELECT name FROM #__core_acl_aro_groups WHERE id = ' . $gid;
             $db->setQuery($query);
             $usergroup = $db->loadResult();
 
