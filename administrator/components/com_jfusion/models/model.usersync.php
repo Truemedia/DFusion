@@ -164,7 +164,7 @@ class JFusionUsersync{
                     //perform the actual sync
                     foreach($userlist as $user) {
                         $userinfo = $MasterUser->getUser($user->username);
-                        $status = $SlavePlugin->updateUser($userinfo);
+                        $status = $SlaveUser->updateUser($userinfo);
                         if ($status['error']) {
                             $sync_error = array();
                             $sync_error['master']['username'] = $status['userinfo']->username;

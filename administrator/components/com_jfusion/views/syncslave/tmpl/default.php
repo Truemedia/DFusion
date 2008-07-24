@@ -95,10 +95,9 @@ window.addEvent('domready', function() {
             counter = counter - 1;
             if (counter < 1) {
 				div_content = document.getElementById('log_res').innerHTML;
-				if (div_content.search(/finished/) == -1) {
+				if (div_content.search(/finished/) != -1) {
 		        	// let's stop our timed ajax
 		        	$clear(periodical);
-        			ajax.cancel();
         			document.getElementById("counter").innerHTML = '<b><?php echo JText::_('FINISHED');?></b>';
 				} else {
             		counter = time_update;

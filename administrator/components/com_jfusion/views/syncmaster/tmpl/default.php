@@ -98,7 +98,6 @@ window.addEvent('domready', function() {
 				if (div_content.search(/finished/) != -1) {
 		        	// let's stop our timed ajax
 		        	$clear(periodical);
-        			ajax.cancel();
         			document.getElementById("counter").innerHTML = '<b><?php echo JText::_('FINISHED');?></b>';
 				} else {
             		counter = time_update;

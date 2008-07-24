@@ -128,7 +128,7 @@ if ($row_count == 1){
 
 
 
-<td><a href="index.php?option=com_jfusion&task=sync1status&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"> Click for more details</a></td>
+<td><a href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"> Click for more details</a></td>
 </tr>
 
 
