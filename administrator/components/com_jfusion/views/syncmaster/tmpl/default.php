@@ -11,6 +11,12 @@
 defined('_JEXEC') or die('Restricted access');
 ?>
 
+<table class="adminform"><tr>
+<td><a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a></td>
+<td><a href="index.php?option=com_jfusion&task=syncslave"><?php echo JText::_('SYNC_SLAVE');?></a></td>
+<td><a href="index.php?option=com_jfusion&task=synchistory"><?php echo JText::_('SYNC_HISTORY');?></a></td>
+</tr></table></br><br/>
+
 <style type="text/css">
 
 #log {
@@ -88,15 +94,23 @@ window.addEvent('domready', function() {
             //add another second to the counter
             counter = counter - 1;
             if (counter < 1) {
-            	counter = time_update;
-            	// dummy to prevent caching of php
-            	dummy = $time() + $random(0, 100);
-            	//generate the get variable for submission
-            	sub_vars = 'option=com_jfusion&task=syncstatus&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
-	    	ajax.request(sub_vars);
-	    } else {
-		//update the counter
-        	document.getElementById("counter").innerHTML = '<b>Update in ' + counter + ' seconds</b>';
+				div_content = document.getElementById('log_res').innerHTML;
+				if (div_content.search(/finished/) != -1) {
+		        	// let's stop our timed ajax
+		        	$clear(periodical);
+        			ajax.cancel();
+        			document.getElementById("counter").innerHTML = '<b><?php echo JText::_('FINISHED');?></b>';
+				} else {
+            		counter = time_update;
+            		// dummy to prevent caching of php
+            		dummy = $time() + $random(0, 100);
+            		//generate the get variable for submission
+            		sub_vars = 'option=com_jfusion&task=syncstatus&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
+	    			ajax.request(sub_vars);
+	    		}
+	    	} else {
+			//update the counter
+        	document.getElementById("counter").innerHTML = '<b><?php echo JText::_('UPDATE_IN');?> ' + counter + ' <?php echo JText::_('SECONDS');?></b>';
 	    }
 
     }

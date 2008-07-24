@@ -82,11 +82,11 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
             //Get configuration settings stored in the database
             $vdb =& JDatabase::getInstance($options);
             $query = "SELECT config_name, config_value FROM #__config WHERE config_name IN ('script_path', 'cookie_path', 'server_name', 'cookie_domain', 'cookie_name', 'allow_autologin');";
-            $vdb->setQuery($query);
-            if (JError::isError($vdb) ) {
+            if (JError::isError($vdb) || !$vdb ) {
                 JError::raiseWarning(0, JText::_('NO_DATABASE'));
                 return false;
             } else {
+            	$vdb->setQuery($query);
                 $rows = $vdb->loadObjectList();
                 foreach($rows as $row ) {
                     $config[$row->config_name] = $row->config_value;
@@ -256,7 +256,7 @@ ORDER BY left_id';
     {
         //getting the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT username_clean as username, user_email as email from #__users';
+        $query = 'SELECT username_clean as username, user_email as email from #__users WHERE user_email NOT LIKE \'\'';
         $db->setQuery($query );
 
         //getting the results
@@ -269,7 +269,7 @@ ORDER BY left_id';
     {
         //getting the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT count(*) from #__users WHERE user_email IS NOT NULL ';
+        $query = 'SELECT count(*) from #__users WHERE user_email NOT LIKE \'\' ';
         $db->setQuery($query );
 
         //getting the results

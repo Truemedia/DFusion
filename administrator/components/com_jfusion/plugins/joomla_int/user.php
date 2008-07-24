@@ -120,6 +120,7 @@ class JFusionUser_joomla_int extends JFusionUser{
                     $status = array();
                     $status['userinfo'] = $joomla_user;
                     $status['error'] = false;
+                    $status['action'] = 'created';
                     return $status;
                 } else {
                     //report back error

@@ -72,6 +72,7 @@ form.submit();
 </td><td width="100px">
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'manager.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_MANAGER'); ?></h2></td></tr></table>
+<? echo JText::_('PLUGIN_MANAGER_INSTR'); ?><br/><br/>
 
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
@@ -114,6 +115,8 @@ if ($row_count == 1){
 </td><td width="100px">
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'install.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_INSTALL'); ?></h2></td></tr></table>
+<? echo JText::_('PLUGIN_INSTALL_INSTR'); ?><br/><br/>
+
 
 <table class="adminform"><tr><td>
 	<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'folder_zip.png'; ?>" height="75px" width="75px">

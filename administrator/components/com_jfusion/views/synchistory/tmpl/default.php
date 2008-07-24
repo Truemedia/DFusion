@@ -10,6 +10,12 @@
 
 defined('_JEXEC') or die('Restricted access'); ?>
 
+<table class="adminform"><tr>
+<td><a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a></td>
+<td><a href="index.php?option=com_jfusion&task=syncslave"><?php echo JText::_('SYNC_SLAVE');?></a></td>
+<td><a href="index.php?option=com_jfusion&task=synchistory"><?php echo JText::_('SYNC_HISTORY');?></a></td>
+</tr></table></br><br/>
+
 <script type="text/javascript" src="<?php echo 'components'.DS.'com_jfusion'.DS.'js'.DS.'moodalbox.js'; ?>"></script>
 <link rel="stylesheet" href="<?php echo 'components'.DS.'com_jfusion'.DS.'css'.DS.'moodalbox.css'; ?>" type="text/css" media="screen" />
 
@@ -112,8 +118,16 @@ if ($row_count == 1){
 <td><?php echo $record->syncid; ?></td>
 <td><?php echo $record->action; ?></td>
 <td><?php echo date("d/m/y : H:i:s", $record->time_start) ; ?></td>
-<td><?php echo date("d/m/y : H:i:s", $record->time_end) ; ?></td>
+<?php if($record->time_end){?>
+<td><?echo date("d/m/y : H:i:s", $record->time_end) ; ?></td>
 <td><?php echo get_formatted_timediff($record->time_start, $record->time_end); ?></td>
+<?php } else {?>
+<td></td>
+<td><?php echo JText::_('SYNC_NOT_FINISHED'); ?></td>
+<?php } ?>
+
+
+
 <td><a href="index.php?option=com_jfusion&task=sync1status&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"> Click for more details</a></td>
 </tr>
 

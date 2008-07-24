@@ -42,7 +42,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 		<label for="modlgn_passwd"><?php echo JText::_('PASSWORD') ?></label><br />
 		<input id="modlgn_passwd" type="password" name="passwd" class="inputbox" size="18" alt="password" />
 	</p>
-	<?php if(JPluginHelper::isEnabled('system', 'remember')) : ?>
+	<?php if($params->get('rememberme')) : ?>
 	<p id="form-login-remember">
 		<label for="modlgn_remember"><?php echo JText::_('REMEMBER_ME') ?></label>
 		<input id="modlgn_remember" type="checkbox" name="remember" class="inputbox" value="yes" alt="Remember Me" />

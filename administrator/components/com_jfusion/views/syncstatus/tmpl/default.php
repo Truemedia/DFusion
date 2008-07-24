@@ -18,10 +18,10 @@ if (!$this->syncdata['slave_data']){
 	//check to see if there were any errors
 	if ($this->syncdata['errors']) {
 		//redirect to resolve errors
-		echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2><br/><br/>';
+		echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2>';
 	} else {
 		//inform about the success
-		echo '<h2>' . JText::_('SYNC_SUCCESS') . '</h2><br/><br/>';
+		echo '<h2>' . JText::_('SYNC_SUCCESS') . '</h2>';
 	}
 
 }
@@ -31,22 +31,22 @@ if (!$this->syncdata['slave_data']){
 <h2><?php echo JText::_('SYNC_STATUS');?></h2>
 
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
-<?php echo JText::_('NAME');
-?>
-</th><th width="50px">
-<?php echo JText::_('TOTAL');
-?>
-</th><th width="50px">
-<?php echo JText::_('CREATED');
-?>
-</th><th width="200px">
-<?php echo JText::_('UPDATED');
+<?php echo JText::_('PLUGIN'). ' ' . JText::_('NAME');
 ?>
 </th><th>
-<?php echo JText::_('DELETED');
+<?php echo JText::_('SYNC_USERS_TODO');
 ?>
 </th><th>
-<?php echo JText::_('ERROR');
+<?php echo JText::_('USERS') . ' ' . JText::_('CREATED');
+?>
+</th><th>
+<?php echo JText::_('USERS') . ' ' . JText::_('UPDATED');
+?>
+</th><th>
+<?php echo JText::_('USERS') . ' ' . JText::_('DELETED');
+?>
+</th><th>
+<?php echo JText::_('USER') . ' ' . JText::_('CONFLICTS');
 ?>
 </th></tr></thead>
 

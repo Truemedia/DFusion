@@ -60,6 +60,9 @@ radioObj[i].checked = true;
 </td><td width="100px">
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'controlpanel.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_CONFIGURATION'); ?></h2></td></tr></table><br/>
+
+<? echo JText::_('PLUGIN_CONFIG_INSTR'); ?><br/><br/>
+
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
 <th class="title" align="center"><?php echo JText::_('NAME'); ?></th>

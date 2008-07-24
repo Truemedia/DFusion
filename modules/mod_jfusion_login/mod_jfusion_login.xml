@@ -49,6 +49,11 @@
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</param>
+		<param name="show_rememberme" type="radio" default="1"
+			label="REMEMBER_ME" description="REMEMBER_ME_DESCR">
+			<option value="0">HIDE</option>
+			<option value="1">SHOW</option>
+		</param>
 		<param name="show_lostpass" type="radio" default="1"
 			label="LOST_PASSWORD" description="LOST_PASSWORD_DESCR">
 			<option value="0">HIDE</option>
