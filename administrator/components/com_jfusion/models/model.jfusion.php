@@ -289,7 +289,7 @@ class JFusionFunction{
     {
         if ($view == 'wrapper') {
             $url_root = JURI::root();
-            $url = $url_root . 'index.php?option=com_jfusion&amptask=wrapper&amp;wrap='. urlencode($url);
+            $url = $url_root . 'index.php?option=com_jfusion&amptask=wrapper&amp;jname=' . $jname . '&amp;wrap='. urlencode($url);
         } else {
             $params = JFusionFactory::getParams($jname);
             $url = $params->get('source_url') . $url;

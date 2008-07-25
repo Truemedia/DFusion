@@ -9,8 +9,12 @@
 */
 
 defined('_JEXEC' ) or die('Restricted access' );
-
+/**
+* Load the JFusion framework
+*/
 jimport('joomla.application.component.view');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+
 
 /**
 * Renders the main admin screen that shows the configuration overview of all integrations
@@ -42,6 +46,9 @@ class jfusionViewWrapper extends JView {
 				echo JText::_('ERROR_NO_PLUGIN');
                 return false;
             }
+        } else {
+            	//fetch the general wrapper settings from joomla_int
+        		$menu_param  = JFusionFactory::getParams('joomla_int');
         }
 
         //check to see if the plugin is configured properly

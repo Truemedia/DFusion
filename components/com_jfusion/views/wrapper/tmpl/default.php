@@ -45,16 +45,16 @@ defined('_JEXEC') or die('Restricted access');
 <div class="contentpane">
 <iframe
 
-<?php if($this->params->get('wrapper_autoheight')) {?>
+<?php if($this->params->get('wrapper_autoheight', 1)) {?>
 onload="adjustMyFrameHeight();"
 <?php }?>
 
 id="blockrandom"
 name="iframe"
 src="<?php echo $this->url; ?>""
-width="<?php echo $this->params->get('wrapper_width'); ?>"
-height="<?php echo $this->params->get('wrapper_height'); ?>"
-scrolling="<?php echo $this->params->get('wrapper_scroll'); ?>"
+width="<?php echo $this->params->get('wrapper_width', '100%'); ?>"
+height="<?php echo $this->params->get('wrapper_height', '500'); ?>"
+scrolling="<?php echo $this->params->get('wrapper_scroll', 'auto'); ?>"
 
 <?php if ($this->params->get('wrapper_transparency')) { ?>
 allowtransparency="true"

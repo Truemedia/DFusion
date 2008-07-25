@@ -37,11 +37,8 @@
 			<option value="direct">LINK_MODE_1</option>
 		</param>
 
-		<param name="link_type" type="list" default="0" label="LINK_TYPE"
-			description="LINK_TYPE_DESCR">
-			<option value="1">YES</option>
-			<option value="0">NO</option>
-		</param>
+		<param name="WRAPPER_OPTIONS" type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
+			description="" />
 
 		<param name="mode" type="list" default="0" label="MODE"
 			description="MODE_DESCR">

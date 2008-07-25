@@ -28,6 +28,8 @@
 			<option value="wrapper">LINK_MODE_0</option>
 			<option value="direct">LINK_MODE_1</option>
 		</param>
+		<param name="WRAPPER_OPTIONS" type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
+			description="" />
 		<param name="pretext" type="textarea" cols="20" rows="5"
 			default="" label="PRE_TEXT" description="PRE_TEXT_DESCR" />
 		<param name="posttext" type="textarea" cols="20" rows="5"

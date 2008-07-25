@@ -63,7 +63,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 		<label for="modlgn_passwd"><?php echo JText::_('PASSWORD') ?></label><br />
 		<input id="modlgn_passwd" type="password" name="passwd" class="inputbox" size="18" alt="password" />
 	</p>
-	<?php if(JPluginHelper::isEnabled('system', 'remember')) : ?>
+	<?php if($params->get('rememberme')) : ?>
 	<p id="form-login-remember">
 		<label for="modlgn_remember"><?php echo JText::_('REMEMBER_ME') ?></label>
 		<input id="modlgn_remember" type="checkbox" name="remember" class="inputbox" value="yes" alt="Remember Me" />
@@ -87,7 +87,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 		<?php endif; ?>
 		<?php
 		$usersConfig = &JComponentHelper::getParams( 'com_users' );
-		if ($usersConfig->get('allowUserRegistration') && $params->get('show_newaccount')) : ?>
+		if ($params->get('show_newaccount')) : ?>
 		<li>
 			<a href="<?php echo $url_register ?>">
 				<?php echo JText::_('REGISTER'); ?>
