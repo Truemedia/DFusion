@@ -40,7 +40,7 @@ class jfusionViewplugindisplay extends JView {
             parent::display($tpl);
         } else {
         	//for some reason the Joomla installer did no create the needed tables
-        	$sqlfile = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'sql'.DS.'install.sql';
+        	$sqlfile = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'sql'.DS.'install.jfusion.sql';
         	if (($file_handle = @fopen($sqlfile, 'r')) === FALSE) {
             	JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE'). ' ' . JText::_('NO_SQL_FILE'));
 	        } else {

@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS #__jfusion (
+DROP TABLE IF EXISTS #__jfusion;
+CREATE TABLE #__jfusion (
   id int(11) NOT NULL auto_increment,
   name varchar(50) NOT NULL,
   description varchar(150) NOT NULL,
@@ -35,14 +36,15 @@ VALUES ('magento', 'magento 1.0','1.00', '25th May 2008', 'JFusion development t
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
 VALUES ('punbb', 'punbb 1.2.17','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/',  0,  3, 0, 0, 0, 1);
 
-
-CREATE TABLE IF NOT EXISTS #__jfusion_users (
+DROP TABLE IF EXISTS #__jfusion_users;
+CREATE TABLE #__jfusion_users (
 	id int(11) NOT NULL,
 	username varchar(50),
 	PRIMARY KEY (username)
 ) DEFAULT CHARACTER SET utf8;
 
-CREATE TABLE IF NOT EXISTS #__jfusion_users_plugin (
+DROP TABLE IF EXISTS #__jfusion_users_plugin;
+CREATE TABLE #__jfusion_users_plugin (
 	autoid int(11) NOT NULL auto_increment,
 	id int(11) NOT NULL,
 	username varchar(50),
@@ -51,8 +53,8 @@ CREATE TABLE IF NOT EXISTS #__jfusion_users_plugin (
 	PRIMARY KEY (autoid)
 ) DEFAULT CHARACTER SET utf8;
 
-
-CREATE TABLE IF NOT EXISTS #__jfusion_sync (
+DROP TABLE IF EXISTS #__jfusion_sync;
+CREATE TABLE #__jfusion_sync (
   syncid varchar(10),
   action varchar(255),
   syncdata text,

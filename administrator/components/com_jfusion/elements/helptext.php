@@ -24,6 +24,6 @@ class JElementhelptext extends JElement
     function fetchElement($name, $value, &$node, $control_name)
     {
         //find out which JFusion plugin is used in the activity module
-        return $value;
+        return JText::_($value);
     }
 }
