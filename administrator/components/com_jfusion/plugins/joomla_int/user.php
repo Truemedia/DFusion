@@ -31,9 +31,9 @@ class JFusionUser_joomla_int extends JFusionUser{
         //find out if the user already exists
         $userlookup = $this->getUser($userinfo->username);
         if ($userlookup->email == $userinfo->email) {
-            //emails match up
             //user exist however some details need to be updates
 			//TODO:Update the password
+
 
             //return the good news
             $status = array();
@@ -42,7 +42,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             $status['debug'] = JText::_('USER_EXISTS');
             return $status;
         } else if ($userlookup) {
-            //emails match up
+            //emails doe not match up
             $status['userinfo'] = $userlookup;
             $status['error'] = JText::_('EMAIL_CONFLICT');
             return $status;

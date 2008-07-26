@@ -119,7 +119,7 @@ if ($userinfo) {
         echo $jname->name . ' ' . JText::_('NAME') .': ' . $userinfo->name .'<br/>';
 
         //apply the cleartext password to the user object
-        $userinfo->password_clear = $user['password'];
+        $userinfo->password_clear = $credentials['password'];
         $joomla_user['userinfo'] = $userinfo;
 
         //allow for password updates
@@ -135,16 +135,8 @@ if ($userinfo) {
             echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('SUCCESS'). ':' . $user_update['debug'] .'<br/>';
         }
 
-        //create a Joomla session
-        $joomla_session = $JFusionMaster->createSession($userinfo, $options);
-        if ($joomla_session['error']) {
-            //no Joomla session could be created -> deny login
-            echo JText::_('SESSION'). ' '. JText::_('CREATE') . ' ' . JText::_('ERROR'). ':' . $joomla_session['error'] .'<br/>';
-            echo JText::_('FATAL_ERROR');
-            return false;
-        } else {
-            echo JText::_('SESSION'). ' '. JText::_('CREATE') . ' ' . JText::_('SUCCESS'). ':' . $joomla_session['debug'] .'<br/>';
-        }
+        //skip Joomla session
+        echo JText::_('SKIPPED_SESSION_CREATE');
 
     } else {
         //a JFusion plugin other than Joomla is the master
@@ -159,7 +151,7 @@ if ($userinfo) {
         echo JText::_('NAME') .': ' . $userinfo->name .'<br/>';
 
         //apply the cleartext password to the user object
-        $userinfo->password_clear = $user['password'];
+        $userinfo->password_clear = $credentials['password'] ;
         //allow for password updates
         $user_update = $JFusionMaster->updateUser($userinfo);
         if ($user_update['error']) {

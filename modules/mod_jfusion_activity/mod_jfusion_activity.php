@@ -33,7 +33,7 @@ define('LINKPOST', 1);
 $mode = intval($params->get('mode'));
 $linktype = intval($params->get('linktype'));
 $display_body = intval($params->get('display_body'));
-$lxt_type = intval($params->get('lxt_type'));
+$lxt_type = intval($params->get('linktype'));
 $forum_mode = $params->get('forum_mode', 0);
 $selected_forums = $params->get('selected_forums');
 $display_limit = intval($params->get('display_limit'));

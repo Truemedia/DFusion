@@ -60,12 +60,33 @@ class JFusionUser_phpbb3 extends JFusionUser{
             //a matching user has been found
             if ($userlookup->email == $userinfo->email) {
                 //emails match up
+                if($userinfo->password_clear) {
+                	//we can update the password
+			        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
+        			$t_hasher = new PasswordHash(8, TRUE);
+					$userlookup->password = $t_hasher->HashPassword($userinfo->password_clear);
+					unset($t_hasher);
+					$query = 'UPDATE #__users SET user_password =' . $db->quote($userlookup->password) . ' WHERE user_id =' . $userlookup->userid;
+                	$db->setQuery($query);
+            		if (!$db->query()) {
+                		//return the error
+                		$status['error'] = 'Error while creating the user: ' . $db->stderr();
+                		return $status;
+            		}
+  		            $status['userinfo'] = $userlookup;
+       		        $status['error'] = false;
+       	    	    $status['debug'] = 'User already exists, password was updated to:' . $userlookup->password;
+           	    	return $status;
+                } else {
+	                //TODO: Update the password
+  		            $status['userinfo'] = $userlookup;
+       		        $status['error'] = false;
+       	    	    $status['debug'] = 'User already exists, password was not updated.';
+           	    	return $status;
 
-                //TODO: Update the password
-  	            $status['userinfo'] = $userlookup;
-       	        $status['error'] = false;
-       	        $status['debug'] = 'User already exists.';
-           	    return $status;
+                }
+
+
 
             } else {
                 //this could be a username conflict -> return an error
@@ -79,6 +100,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             //found out what usergroup should be used
             $params = JFusionFactory::getParams($this->getJname());
             $usergoup = $params->get('usergroup');
+            
 			$username_clean = $this->filterUsername($userinfo->username);
             //prepare the variables
             $user = new stdClass;
