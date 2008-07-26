@@ -101,18 +101,18 @@ class JFusionPlugin_mybb extends JFusionPlugin{
        return 'member.php?action=lostpw';
     }
 
-    function getThreadURL($threadid, $subject)
+    function getThreadURL($threadid)
     {
        return  'showthread.php?tid='.$threadid;
 
     }
 
-    function getPostURL($threadid, $postid, $subject)
+    function getPostURL($threadid, $postid)
     {
         return  'showthread.php?tid='.$threadid.'&amp;pid='.$postid.'#pid'.$postid;
     }
 
-    function getProfileURL($uid,$uname)
+    function getProfileURL($uid)
     {
         return  'member.php?action=profile&amp;uid'.$uid;
     }

@@ -79,12 +79,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
             //found out what usergroup should be used
             $params = JFusionFactory::getParams($this->getJname());
             $usergoup = $params->get('usergroup');
-
+			$username_clean = $this->filterUsername($userinfo->username);
             //prepare the variables
             $user = new stdClass;
             $user->id = NULL;
             $user->username = $userinfo->username;
-            $user->username_clean = $this->filterUsername($userinfo->username);
+            $user->username_clean = $username_clean;
             $user->user_password = $userinfo->password;
             $user->user_pass_convert = 0;
             $user->user_email = strtolower($userinfo->email);
@@ -156,12 +156,17 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 //now create a user_group entry
                 $query = 'INSERT INTO #__user_group (group_id, user_id, group_leader, user_pending) VALUES (' .$usergroup.','. $user->id .', 0,0 )';
                 $db->setQuery($query);
-                $db->query();
-
-				//return the good news
-                $status['debug'] = 'Created new user with userid:' . $user->id;
-                $status['error'] = false;
-                return $status;
+            	if (!$db->query()) {
+                	//return the error
+                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
+                	return $status;
+            	} else {
+                	//return the good news
+                	$status['debug'] = 'Created new user with userid:' . $user->id;
+                	$status['error'] = false;
+                	$status['userinfo'] = $this->getUser($username_clean);
+                	return $status;
+            	}
             }
         }
     }

@@ -135,15 +135,9 @@ if ($jname) {
                         $subject = empty($subject) ? JText::_('NO_SUBJECT') : $subject;
 
                         //combine all info into an urlstring
-                        if ($mode == LCP) {
+                        if ($linktype == LINKPOST) {
 							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0], $subject), $jname, $view);
     	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">'. $subject.'</a>';
-                        } elseif ($mode == LCT) {
-							$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0], $subject), $jname, $view);
-							$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">' .$subject.'</a>';
-                        } elseif ($linktype == LINKPOST) {
-							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0], $subject), $jname, $view);
-							$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">'. $subject.'</a>';
                         } else {
                         	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0], $subject), $jname, $view);
                         	$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">' .$subject.'</a>';

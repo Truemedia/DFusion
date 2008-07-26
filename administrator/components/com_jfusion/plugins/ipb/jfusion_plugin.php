@@ -92,17 +92,17 @@ class JFusionPlugin_ipb extends JFusionPlugin
         return 'index.php?act=Reg&amp;CODE=10';
     }
 
-    function getThreadURL($threadid, $subject)
+    function getThreadURL($threadid)
     {
         return 'index.php?showtopic=' . $threadid;
     }
 
-    function getPostURL($threadid, $postid, $subject)
+    function getPostURL($threadid, $postid)
     {
         return 'index.php?showtopic=' . $threadid . '&amp;view=findpost&amp;p='.$postid;
     }
 
-    function getProfileURL($uid, $uname)
+    function getProfileURL($uid)
     {
         return 'index.php?showuser='.$uid;
     }

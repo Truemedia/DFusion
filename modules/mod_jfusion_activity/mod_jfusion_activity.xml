@@ -61,13 +61,6 @@
 			<option value="3">DISPLAY_BODY_3</option>
 		</param>
 
-		<param name="lxt_type" type="radio" default="0"
-			label="LXT_TYPE"
-			description="LXT_TYPE_DESCR">
-			<option value="0">LXT_TYPE_0</option>
-			<option value="1">LXT_TYPE_1</option>
-		</param>
-
 		<param name="forum_mode" type="radio" default="0" label="FORUM_MODE"
 			description="FORUM_MODE_DESCR">
 			<option value="0">FORUM_MODE_0</option>

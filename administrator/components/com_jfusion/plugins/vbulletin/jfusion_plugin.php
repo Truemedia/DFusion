@@ -174,18 +174,18 @@ class JFusionPlugin_vbulletin extends JFusionPlugin{
         return JFusionFunction::createURL('login.php?do=lostpw', $this->getJname());
     }
 
-    function getThreadURL($threadid, $subject)
+    function getThreadURL($threadid)
     {
         return  JFusionFunction::createURL('showthread.php?t=' . $threadid, $this->getJname());
 
     }
 
-    function getPostURL($threadid, $postid, $subject)
+    function getPostURL($threadid, $postid)
     {
         return  JFusionFunction::createURL('showthread.php?p='.$postid.'#post' . $postid, $this->getJname());
     }
 
-    function getProfileURL($uid,$uname)
+    function getProfileURL($uid)
     {
         return  JFusionFunction::createURL('member.php?u='.$uid, $this->getJname());
     }

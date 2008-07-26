@@ -95,18 +95,18 @@ class JFusionPlugin_smf extends JFusionPlugin{
         return 'index.php?action=reminder';
     }
 
-    function getThreadURL($threadid, $subject)
+    function getThreadURL($threadid)
     {
         return  'index.php?topic=' . $threadid;
 
     }
 
-    function getPostURL($threadid, $postid, $subject)
+    function getPostURL($threadid, $postid)
     {
         return  'index.php?topic=' . $threadid . 'msg'.$postid.'#msg' . $postid;
     }
 
-    function getProfileURL($uid,$uname)
+    function getProfileURL($uid)
     {
         return  'member.php?u='.$uid;
     }

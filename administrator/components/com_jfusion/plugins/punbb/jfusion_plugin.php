@@ -144,18 +144,18 @@ class JFusionPlugin_punbb extends JFusionPlugin{
        return 'login.php?action=forget';
     }
 
-    function getThreadURL($threadid, $subject)
+    function getThreadURL($threadid)
     {
         return  'viewtopic.php?id=' . $threadid;
 
     }
 
-    function getPostURL($threadid, $postid, $subject)
+    function getPostURL($threadid, $postid)
     {
         return  'viewtopic.php?id=' . $threadid . '#p' . $postid;
     }
 
-    function getProfileURL($uid,$uname)
+    function getProfileURL($uid)
     {
         return  'profile.php?id='.$uid;
     }

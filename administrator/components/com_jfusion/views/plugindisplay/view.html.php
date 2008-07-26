@@ -39,12 +39,35 @@ class jfusionViewplugindisplay extends JView {
             $this->assignRef('toolbar', $toolbar);
             parent::display($tpl);
         } else {
-            JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE'));
+        	//for some reason the Joomla installer did no create the needed tables
+        	$sqlfile = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'sql'.DS.'install.sql';
+        	if (($file_handle = @fopen($sqlfile, 'r')) === FALSE) {
+            	JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE'). ' ' . JText::_('NO_SQL_FILE'));
+	        } else {
+    	        //parse the file line by line to get only the config variables
+        	    $sqlquery = fopen($sqlfile, 'r');
+        	    $db->setQuery($sqlquery);
+        	    if (!$db->query) {
+            		JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE') . ': ' . $db->stderr());
+        	    } else {
+			        //get the data about the JFusion plugins
+			        $query = 'SELECT * from #__jfusion';
+        			$db->setQuery($query );
+        			$rows = $db->loadObjectList();
+			        if ($rows) {
+            			//print out results to user
+            			$this->assignRef('rows', $rows);
+            			$this->assignRef('toolbar', $toolbar);
+            			parent::display($tpl);
+              	    } else {
+            			JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE'));
+			        }
+        	    }
+        	}
         }
     }
-
 }
-?>
+
 
 
 
