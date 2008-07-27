@@ -99,8 +99,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
             //found out what usergroup should be used
             $params = JFusionFactory::getParams($this->getJname());
-            $usergoup = $params->get('usergroup');
-            
+            $usergroup = $params->get('usergroup');
+
 			$username_clean = $this->filterUsername($userinfo->username);
             //prepare the variables
             $user = new stdClass;
