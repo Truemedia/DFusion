@@ -223,6 +223,29 @@ class plgUserJfusion extends JPlugin
 
     	//logout from the JFusion plugins if done through frontend
         if ($options['clientid'][0] != 1) {
+
+	        //get the JFusion master
+    	    $jname = JFusionFunction::getMaster();
+        	if ($jname->name && $jname->name != 'joomla_int') {
+                $JFusionMaster = JFusionFactory::getUser($jname->name);
+      			$userlookup = JFusionFunction::lookupUser($jname->name, $my->get('id'));
+                $userinfo = $JFusionMaster->getUser($userlookup->username);
+				//check if a user was found
+                if ($userinfo) {
+                  	$session_result = $JFusionMaster->destroySession($userinfo, $options);
+                   	if ($session_result['error']){
+                       	JError::raiseWarning('500', $jname->name . ': ' . $session_result['error']);
+                   	}
+                } else {
+                    JError::raiseWarning('500', $jname->name . ': ' . JText::_('COULD_NOT_FIND_USER'));
+                }
+
+
+            	//logout from the master
+        	}
+
+
+
             $plugins = JFusionFunction::getPlugins();
             foreach ($plugins as $plugin) {
             	//check if sessions are enabled
