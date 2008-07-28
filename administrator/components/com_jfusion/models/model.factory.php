@@ -49,7 +49,7 @@ class JFusionFactory{
     }
 
     /**
-    * Gets an Authentication Class the JFusion Plugin
+    * Gets an Authentication Class for the JFusion Plugin
     * @param string $jname name of the JFusion plugin used
     * @return object JFusionAuth JFusion Authentication class for the JFusion plugin
     */
@@ -72,7 +72,7 @@ class JFusionFactory{
     }
 
     /**
-    * Gets an User Class the JFusion Plugin
+    * Gets an User Class for the JFusion Plugin
     * @param string $jname name of the JFusion plugin used
     * @return object JFusionUser JFusion User class for the JFusion plugin
     */
@@ -95,7 +95,7 @@ class JFusionFactory{
     }
 
     /**
-    * Gets an Database Connection the JFusion Plugin
+    * Gets an Database Connection for the JFusion Plugin
     * @param string $jname name of the JFusion plugin used
     * @return object JDatabase Database connection for the JFusion plugin
     */

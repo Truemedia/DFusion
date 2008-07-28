@@ -89,14 +89,58 @@ class JFusionUser_smf extends JFusionUser{
 
     function destroySession($userinfo, $options)
     {
-            $status['error'] = 'Dual login is not available for this plugin';
+		//check to see if the smf_api.php file exists
+        $params = JFusionFactory::getParams($this->getJname());
+        $source_path = $params->get('source_path');
+        if (substr($source_path, -1) == '/') {
+			$api_file = $source_path .'smf_api.php';
+        } else {
+			$api_file = $source_path .DS.'smf_api.php';
+        }
+
+		if (file_exists($api_file)) {
+			require_once($api_file);
+    		smf_setLoginCookie(-3600,0);
+            $status['debug'] = 'Destroyed the SMF session using the smf_api.php';
+            $status['error'] = false;
             return $status;
+        } else {
+            $status['error'] = 'Dual login is not available for this plugin, as the smf_api.php file was not found at:'. $api_file . 'Please download the smf_api.php file and put it in your smf home directory:   http://www.simplemachines.org/community/index.php?action=dlattach;topic=42867.0;attach=9158';
+            return $status;
+        }
     }
 
     function createSession($userinfo, $options)
     {
-            $status['error'] = 'Dual login is not available for this plugin';
+		//check to see if the smf_api.php file exists
+        $params = JFusionFactory::getParams($this->getJname());
+        $source_path = $params->get('source_path');
+        if (substr($source_path, -1) == '/') {
+			$api_file = $source_path .'smf_api.php';
+        } else {
+			$api_file = $source_path .DS.'smf_api.php';
+        }
+
+		if (file_exists($api_file)) {
+			require_once($api_file);
+			$username = $userinfo->username;
+			$password = $userinfo->password_clear;
+			$cookie_length = 3600 + $options['remember']*31536000;
+			smf_setLoginCookie($cookie_length,$username,$password,false);
+			smf_loadSession();
+			smf_authenticateUser();
+
+            $status['debug'] = 'Created SMF session using the smf_api.php';
+            $status['error'] = false;
             return $status;
+		} else {
+            $status['error'] = 'Dual login is not available for this plugin, as the smf_api.php file was not found at:'. $api_file . 'Please download the smf_api.php file and put it in your smf home directory:   http://www.simplemachines.org/community/index.php?action=dlattach;topic=42867.0;attach=9158';
+            return $status;
+
+		}
+
+
+
     }
 
     function filterUsername($username) {

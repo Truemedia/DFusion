@@ -37,6 +37,7 @@ $lxt_type = intval($params->get('linktype'));
 $forum_mode = $params->get('forum_mode', 0);
 $selected_forums = $params->get('selected_forums');
 $display_limit = intval($params->get('display_limit'));
+$display_limit_subject = intval($params->get('display_limit_subject'));
 $result_limit = intval($params->get('result_limit'));
 $date_format = $params->get('custom_date', _DATE_FORMAT_LC2);
 $tz_offset = intval($params->get('tz_offset'));
@@ -132,14 +133,19 @@ if ($jname) {
                         $display_body == 2) ? $result[$i][5] : $result[$i][3];
 
                         //make sure that a message is always shown
-                        $subject = empty($subject) ? JText::_('NO_SUBJECT') : $subject;
+						if (empty($subject)) {
+							$subject = JText::_('NO_SUBJECT');
+						} elseif (strlen($subject) > $display_limit_subject) {
+							//we need to shorten the subject
+							$subject = substr($subject,0,$display_limit_subject) . '...';
+						}
 
                         //combine all info into an urlstring
                         if ($linktype == LINKPOST) {
-							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0], $subject), $jname, $view);
+							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0]), $jname, $view);
     	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">'. $subject.'</a>';
                         } else {
-                        	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0], $subject), $jname, $view);
+                        	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0]), $jname, $view);
                         	$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">' .$subject.'</a>';
                         }
 

@@ -38,7 +38,7 @@ class JFusionFunction{
     }
 
     /**
-* Returns the JFusion plugin name of the software that is currently the master of user management
+* Returns the JFusion plugin name of the software that are currently the slaves of user management
 * @param string $jname Name of master JFusion plugin
 */
 
@@ -54,7 +54,7 @@ class JFusionFunction{
     }
 
     /**
-* Returns the JFusion plugin name of the software that is currently the slave of user management
+* Returns the JFusion plugin name of the software that is currently the slave of user management, minus the joomla_int plugin
 * @param array $jname Array list of slave JFusion plugin names
 */
 
@@ -339,7 +339,7 @@ class JFusionFunction{
     }
 
     /**
-* Returns either the Joomla wrapper URL or the full URL directly to the forum
+* Checks to see if a JFusion plugin is properly configured
 * @param string $jname name of the JFusion plugin used
 * @return bolean returns true if plugin is correctly configured
 */

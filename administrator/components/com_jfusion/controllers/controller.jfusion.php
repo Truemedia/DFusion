@@ -345,6 +345,8 @@ class JFusionController extends JController
     } else {
     	//sync has not started, lets get going :)
         $slaves = JRequest::getVar('slave', '', 'GET');
+        $master = JRequest::getVar('master', '', 'GET');
+        $JFusionMaster = JFusionFactory::getPlugin($master);
 
         //lets find out which slaves need to be imported into the Master
         foreach($slaves as $jname => $slave) {
@@ -352,7 +354,11 @@ class JFusionController extends JController
                 $temp_data = array();
                 $temp_data['jname'] = $jname;
                 $JFusionPlugin = JFusionFactory::getPlugin($jname);
-                $temp_data['total'] = $JFusionPlugin->getUserCount();
+                if ($action == 'master') {
+                	$temp_data['total'] = $JFusionPlugin->getUserCount();
+                } else {
+                	$temp_data['total'] = $JFusionPlugin->getUserCount();
+                }
                 $temp_data['created'] = 0;
                 $temp_data['deleted'] = 0;
                 $temp_data['updated'] = 0;
@@ -367,7 +373,7 @@ class JFusionController extends JController
         }
 
         //format the syncdata for storage in the JFusion sync table
-        $syncdata['master'] = JRequest::getVar('master', '', 'GET');
+        $syncdata['master'] = $master;
         $syncdata['syncid'] = JRequest::getVar('syncid', '', 'GET');
         $syncdata['slave_data'] = $slave_data;
         $syncdata['action'] = $action;

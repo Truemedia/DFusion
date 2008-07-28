@@ -100,9 +100,14 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
             }
 
             //check for trailing slash
-			if (substr($config['server_name'], -1) == '/') {
+			if (substr($config['server_name'], -1) == '/' && substr($config['script_path'], 0, 1) == '/') {
+				//too many slashes, we need to remove one
+                 $params['source_url'] = $config['server_name'] . substr($config['script_path'],1);
+			} elseif (substr($config['server_name'], -1) == '/' || substr($config['script_path'], 0, 1) == '/') {
+				//the correct number of slashes
                  $params['source_url'] = $config['server_name'] . $config['script_path'];
 			} else {
+				//no slashes found, we need to add one
                  $params['source_url'] = $config['server_name'] . '/' . $config['script_path'] ;
 			}
 

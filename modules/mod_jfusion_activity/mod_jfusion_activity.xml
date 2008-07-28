@@ -78,6 +78,10 @@
 			label="DISPLAY_LIMIT"
 			description="DISPLAY_LIMIT_DESC" />
 
+		<param name="display_limit_subject" type="text" size="5" default="50"
+			label="DISPLAY_LIMIT_SUBJECT"
+			description="DISPLAY_LIMIT_SUBJECT_DESC" />
+
 		<param name="result_limit" type="text" size="5" default="5"
 			label="RESULT_LIMIT" description="RESULT_LIMIT_DESCR" />
 
