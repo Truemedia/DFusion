@@ -182,12 +182,41 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 	//return the error
                 	$status['error'] = 'Error while creating the user: ' . $db->stderr();
                 	return $status;
-            	} else {
-                	//return the good news
-                	$status['debug'] = 'Created new user with userid:' . $user->id;
-                	$status['error'] = false;
-                	$status['userinfo'] = $this->getUser($username_clean);
+            	}
+
+				//update the total user count
+                $query = 'UPDATE #__phpbb_config SET config_value = config_value + 1 WHERE config_name = \'num_users\'';
+                $db->setQuery($query);
+            	if (!$db->query()) {
+                	//return the error
+                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
                 	return $status;
+            	}
+
+				//update the newest username
+                $query = 'UPDATE #__phpbb_config SET config_value = '. $db->quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
+                $db->setQuery($query);
+            	if (!$db->query()) {
+                	//return the error
+                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
+                	return $status;
+            	}
+
+            	//update the newest userid
+                $query = 'UPDATE #__phpbb_config SET config_value = ' . $user->id . ' WHERE config_name = \'newest_user_id\'';
+                $db->setQuery($query);
+            	if (!$db->query()) {
+                	//return the error
+                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
+                	return $status;
+            	}
+
+
+                //return the good news
+                $status['debug'] = 'Created new user with userid:' . $user->id;
+                $status['error'] = false;
+                $status['userinfo'] = $this->getUser($username_clean);
+                return $status;
             	}
             }
         }
@@ -330,7 +359,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 $session_obj->session_admin = $admin_access;
                 if (!$db->insertObject('#__sessions', $session_obj )) {
         	        //could not save the user
-            		$status['error'] = JText::_('ERROR_CREATE_SESSION') . $database->stderr();
+            		$status['error'] = JText::_('ERROR_CREATE_SESSION') . $db->stderr();
             		return $status;
                 } else {
                     //Set cookies

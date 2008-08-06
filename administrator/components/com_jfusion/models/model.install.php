@@ -110,7 +110,7 @@ class JFusionModelInstaller extends InstallerModelInstall {
  */
 	function uninstall($jname) {
 		$db =& JFactory::getDBO();
-		$db->setQuery('SELECT id FROM #__jfusion WHERE jname ='. $db->Quote($jname));
+		$db->setQuery('SELECT id FROM #__jfusion WHERE name ='. $db->Quote($jname));
 		$myId = $db->loadResult();
 		if (!$myId) {
 			;// error!! plugin not installed (hack attempt?)
