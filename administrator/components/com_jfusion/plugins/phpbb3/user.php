@@ -217,7 +217,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 $status['error'] = false;
                 $status['userinfo'] = $this->getUser($username_clean);
                 return $status;
-            	}
+
             }
         }
     }

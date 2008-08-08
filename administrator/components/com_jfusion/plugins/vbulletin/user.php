@@ -44,9 +44,42 @@ class JFusionUser_vbulletin extends JFusionUser{
             $status['error'] = JText::_('EMAIL_CONFLICT');
             return $status;
         } else {
-            $status['userinfo'] = $userlookup;
-            $status['error'] = JText::_('UNABLE_CREATE_USER');
-            return $status;
+
+            //found out what usergroup should be used
+            $params = JFusionFactory::getParams($this->getJname());
+            $usergroup = $params->get('usergroup');
+
+            //lookup the name of the usergroup
+	        $db = JFusionFactory::getDatabase($this->getJname());
+    	    $query = 'SELECT group_name from #__groups WHERE group_id = ' . $usergroup_id;
+        	$db->setQuery($query );
+        	$usergroupname = $db->loadResult();
+
+            //prepare the variables
+            $user = new stdClass;
+			$user->userid = NULL;
+			$user->usergroupid = $usergroup;
+			$user->displaygroupid = $usergroup;
+			$user->usertitle = $usergroupname;
+			$user->username = $userinfo->username;
+			$user->password = $userinfo->password;
+			$user->salt = $userinfo->password_salt;
+			$user->email = $userinfo->email;
+			$user->passworddate = date("Y/m/d");
+			$user->joindate = date("Y/m/d");
+
+            //now append the new user data
+            if (!$db->insertObject('#__user', $user, 'userid' )) {
+                //return the error
+                $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                return $status;
+            } else {
+                //return the good news
+                $status['debug'] = 'Created new user with userid:' . $user->id;
+                $status['error'] = false;
+                $status['userinfo'] = $this->getUser($username_clean);
+                return $status;
+            }
         }
     }
 

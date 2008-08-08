@@ -275,6 +275,9 @@ class JFusionFunction{
             JError::raiseWarning(0, JText::_('NO_DATABASE'));
         }
 
+        //add support for UTF8
+        $jfusion_database->Execute('SET names \'utf8\'');
+
         return $jfusion_database;
     }
 

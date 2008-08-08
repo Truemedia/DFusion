@@ -36,7 +36,7 @@ if (file_exists($model_file) && file_exists($model_file)) {
     //Get the forum integration object
     $jname = JFusionFunction::getMaster();
 
-    if ($jname->status == 3) {
+    if ($jname->status == 3 && $jname->name != 'joomla_int') {
         $MasterPlugin = JFusionFactory::getPlugin($jname->name);
         $allow_registration = JFusionFunction::createURL($MasterPlugin->allowRegistration(), $jname->name, $view);
         $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view);
