@@ -107,7 +107,18 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $user->id = NULL;
             $user->username = $userinfo->username;
             $user->username_clean = $username_clean;
-            $user->user_password = $userinfo->password;
+
+            if($userinfo->password_clear) {
+                //we can update the password
+			    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
+        		$t_hasher = new PasswordHash(8, TRUE);
+				$user->user_password = $t_hasher->HashPassword($userinfo->password_clear);
+				unset($t_hasher);
+            } else {
+            	$user->user_password = $userinfo->password;
+            }
+
+
             $user->user_pass_convert = 0;
             $user->user_email = strtolower($userinfo->email);
             $user->user_email_hash = crc32(strtolower($userinfo->email)) . strlen($userinfo->email);

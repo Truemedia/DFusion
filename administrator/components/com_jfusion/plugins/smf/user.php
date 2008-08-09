@@ -35,6 +35,18 @@ class JFusionUser_smf extends JFusionUser{
         $userlookup = $this->getUser($userinfo->username);
         if ($userlookup->email == $userinfo->email) {
             //emails match up
+
+			//update the password if we have access to it
+			if($userinfo->password_clear){
+            	$password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
+            	$password_salt->passwordSalt = substr(md5(rand()), 0, 4);
+                $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $userlookup->userid;
+            	$db->setQuery($query );
+            	if (!$db->Query()) {
+	                $status['error'] = 'Could not update the SMF password: ' . $db->stderr();
+	            }
+            }
+
             $status['userinfo'] = $userlookup;
             $status['error'] = false;
             $status['debug'] = JText::_('USER_EXISTS');
@@ -57,8 +69,15 @@ class JFusionUser_smf extends JFusionUser{
             $user->ID_MEMBER = NULL;
             $user->memberName = $userinfo->name;
             $user->realName = $userinfo->username;
-            $user->passwd = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
-            $user->passwordSalt = substr(md5(rand()), 0, 4);
+
+            if($userinfo->password_clear){
+            	$user->passwd = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
+            	$user->passwordSalt = substr(md5(rand()), 0, 4);
+            } else {
+            	$user->passwd = $userinfo->password;
+            	$user->passwordSalt = $userinfo->password_salt;
+            }
+
             $user->posts = 0 ;
             $user->dateRegistered = time();
             $user->is_activated = 1;

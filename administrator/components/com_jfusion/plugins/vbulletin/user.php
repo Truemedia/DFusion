@@ -33,6 +33,19 @@ class JFusionUser_vbulletin extends JFusionUser{
         //find out if the user already exists
         $userlookup = $this->getUser($userinfo->username);
         if ($userlookup->email == $userinfo->email) {
+
+			//update the password if we have access to it
+			if($userinfo->password_clear){
+        		jimport('joomla.user.helper');
+        		$password_salt = JUserHelper::genRandomPassword(3);
+				$password = md5(md5($userinfo->password_clear).$password_salt);
+                $query = 'UPDATE #__user SET password = ' . $db->quote($password). ', salt ' . $db->quote($password_salt). ' WHERE userid  = ' . $userlookup->userid;
+            	$db->setQuery($query );
+            	if (!$db->Query()) {
+	                $status['error'] = 'Could not update the SMF password: ' . $db->stderr();
+	            }
+            }
+
             //emails match up
             $status['userinfo'] = $userlookup;
             $status['error'] = false;
@@ -62,8 +75,16 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$user->displaygroupid = $usergroup;
 			$user->usertitle = $usergroupname;
 			$user->username = $userinfo->username;
-			$user->password = $userinfo->password;
-			$user->salt = $userinfo->password_salt;
+
+            if($userinfo->password_clear){
+        		jimport('joomla.user.helper');
+        		$user->salt = JUserHelper::genRandomPassword(3);
+				$user->password = md5(md5($userinfo->password_clear).$user->salt);
+            } else {
+				$user->salt = $userinfo->password_salt;
+				$user->password = $userinfo->password;
+            }
+
 			$user->email = $userinfo->email;
 			$user->passworddate = date("Y/m/d");
 			$user->joindate = date("Y/m/d");

@@ -232,7 +232,7 @@ class JFusionPlugin_smf extends JFusionPlugin{
         return 0;
     }
 
-	function & getSMFBuffer()
+	function & getBuffer()
 	{
 		// We're going to want a few globals... these are all set later.
 		global $time_start, $maintenance, $msubject, $mmessage, $mbname, $language;
@@ -253,8 +253,8 @@ class JFusionPlugin_smf extends JFusionPlugin{
             $index_file = $source_path .DS.'index.php';
         }
 
-		if ( ! is_file($path) ) {
-			$this->logError('The path to the SMF index file set in the component preferences does not exist');
+		if ( ! is_file($index_file) ) {
+            JError::raiseWarning(500, 'The path to the SMF index file set in the component preferences does not exist');
 			return null;
 		}
 
@@ -265,7 +265,9 @@ class JFusionPlugin_smf extends JFusionPlugin{
 		ob_end_clean();
 
 		// Log an error if we could not include the file
-		if ( ! $rs ) $this->logDebug('Could not find SMF in the specified directory');
+		if (!$rs) {
+            JError::raiseWarning(500, 'Could not find SMF in the specified directory');
+		}
 
 		return $buffer;
 	}
