@@ -1,6 +1,21 @@
 <?php
+/**
+* @package JFusion
+* @subpackage Views
+* @version 1.0.7
+* @author JFusion development team
+* @copyright Copyright (C) 2008 JFusion. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+*/
+defined('_JEXEC' ) or die('Restricted access' );
 
+/**
+* load the JFusion framework
+*/
 jimport('joomla.application.component.view');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+
 class jfusionViewframeless extends JView {
 {
 	function display()
@@ -41,34 +56,6 @@ class jfusionViewframeless extends JView {
                 return false;
     	}
 
-		/**
-		* load the JFusion framework
-		*/
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-
-
-        //get the URL to the forum
-        $params2 = JFusionFactory::getParams($jname);
-        $source_url = $params2->get('source_url');
-
-        //check to see if url starts with http
-		if (substr($source_url, 0, 7) != 'http://' && substr($source_url, 0, 8) != 'https://') {
-            $source_url = 'http://' . $source_url;
-        }
-
-        //check for trailing slash
-        if (substr($source_url, -1) == '/') {
-            $url = $source_url . $wrap;
-        } else {
-            $url = $source_url . '/'. $wrap;
-        }
-        ;
-
-        //print out results to user
-        $this->assignRef('url', $url);
-        $this->assignRef('params', $menu_param);
-        $this->assignRef('jname', $jname);
         parent::display($tpl);
     }
 }

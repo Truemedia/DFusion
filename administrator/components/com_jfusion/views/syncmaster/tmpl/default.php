@@ -59,7 +59,7 @@ defined('_JEXEC') or die('Restricted access');
 window.addEvent('domready', function() {
 
 
-    var url = '<? echo JURI::root() . 'administrator'. DS .'index.php'; ?>';
+    var url = '<?php echo JURI::root() . 'administrator'. DS .'index.php'; ?>';
     // refresh every 15 seconds
     var timer = 1;
     var time_update = 10;
@@ -173,7 +173,7 @@ window.addEvent('domready', function() {
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
 <img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'usersync.png'; ?>" height="75px" width="75px">
-<td><h2><? echo JText::_('USERSYNC'); ?></h2></td></tr></table><br/>
+<td><h2><?php echo JText::_('USERSYNC'); ?></h2></td></tr></table><br/>
 <h3>
 <?php echo JText::_('SYNC_WARNING');
 ?>

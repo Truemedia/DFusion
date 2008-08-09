@@ -17,25 +17,25 @@ require_once(JPATH_SITE .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.
 
 $application = JFactory::getApplication();
 $uri		= JURI::getInstance();
+$frameless = new frameless();
 
 // Set the URL and make sure we have a ? delimiter
-//$url	= JRoute::_('index.php?option=com_j2smf');
-//$url	= $uri->current();
-//$j2smf->setBaseURL($url);
+$url	= JRoute::_('index.php?option=com_jfusion');
+$url	= $uri->current();
+$frameless->setBaseURL($url);
 
 // Make note of the query
-//$query	= $uri->getQuery();
-//$j2smf->setFullURL($url.'?'.$query);
+$query	= $uri->getQuery();
+$frameless->setFullURL($url.'?'.$query);
 
 
-// Get the bridge
-$j2smf	= j2smfBridge::getInstance();
+// Get the output from the JFusion plugin
+$JFusionPlugin = JFusionfactory::getPlugin($jname);
 
-// Load the integration script
-$j2smf->loadIntegration();
+//Get the output buffer
+$buffer =& $JFusionPlugin->getBuffer();
 
-// Get the output from SMF
-$buffer =& $j2smf->getBuffer();
+
 if (! $buffer ) {
     echo "No output from SMF";
     $j2smf->logError("Cannot obtain SMF Output");

@@ -35,6 +35,15 @@ function wrapper()
 	parent::display();
 }
 
+/**
+ * Displays the integrated software inside Joomla without a frame
+ */
+function frameless()
+{
+	JRequest::setVar('view', 'frameless');
+	parent::display();
+}
+
 
 }
 

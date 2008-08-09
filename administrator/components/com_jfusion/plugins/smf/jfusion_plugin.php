@@ -231,5 +231,45 @@ class JFusionPlugin_smf extends JFusionPlugin{
     {
         return 0;
     }
+
+	function & getSMFBuffer()
+	{
+		// We're going to want a few globals... these are all set later.
+		global $time_start, $maintenance, $msubject, $mmessage, $mbname, $language;
+		global $boardurl, $boarddir, $sourcedir, $webmaster_email, $cookiename;
+		global $db_server, $db_name, $db_user, $db_prefix, $db_persist, $db_error_send, $db_last_error;
+		global $db_connection, $modSettings, $context, $sc, $user_info, $topic, $board, $txt;
+		global $scripturl;
+
+		// Required to avoid a warning about a license violation even though this is not the case
+		global $forum_version;
+
+		// Get the path
+        $params = JFusionFactory::getParams($this->getJname());
+        $source_path = $params->get('source_path');
+        if (substr($source_path, -1) == '/') {
+            $index_file = $source_path .'index.php';
+        } else {
+            $index_file = $source_path .DS.'index.php';
+        }
+
+		if ( ! is_file($path) ) {
+			$this->logError('The path to the SMF index file set in the component preferences does not exist');
+			return null;
+		}
+
+		// Get the output
+		ob_start();
+		$rs = include_once($path);
+		$buffer = ob_get_contents();
+		ob_end_clean();
+
+		// Log an error if we could not include the file
+		if ( ! $rs ) $this->logDebug('Could not find SMF in the specified directory');
+
+		return $buffer;
+	}
+
+
 }
 
