@@ -8,7 +8,7 @@
 	<authorUrl>http://www.jfusion.org</authorUrl>
 	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<version>1.0.7</version>
+	<version>1.0.7b</version>
 	<description>
 		This is the JFusion component, used to configure the JFusion behaviour.
 		Please ONLY install the JFusion user and authentication plugin after the JFusion component has been fully configured.

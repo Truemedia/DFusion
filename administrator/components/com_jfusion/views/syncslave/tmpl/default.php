@@ -269,6 +269,6 @@ window.addEvent('domready', function() {
 </option><option value="1">
 <?php echo JText::_('SYNC_OUTPUT_EXTENDED');?>
 </option></select></form>
-<br/><br/>
 
-
+<br/><br/><br/>
+		<?php echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('SYNC_RESUME') . '</a>';

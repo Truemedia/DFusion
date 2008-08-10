@@ -266,6 +266,36 @@ class JFusionController extends JController
     }
 
     /**
+* Resumes a usersync if it has stopped
+*/
+    function syncresume()
+    {
+
+    	$syncid = JRequest::getVar('syncid', '', 'GET');
+
+		if ($syncid) {
+			/**
+			* 	Load usersync library
+			*/
+			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
+			$syncdata = JFusionUsersync::getSyncdata($syncid);
+
+			if ($syncdata['action'] == 'master'){
+        		JFusionUsersync::SyncMaster($syncdata,$syncdata['plugin_offset'],$syncdata['user_offset']);
+        	} elseif ($syncdata['action'] == 'slave') {
+        		JFusionUsersync::SyncSlave($syncdata,$syncdata['plugin_offset'],$syncdata['user_offset']);
+        	}
+
+		}
+
+
+
+
+
+    }
+
+    /**
 * Displays the usersync error screen
 */
     function syncerror()
@@ -280,6 +310,8 @@ class JFusionController extends JController
 
     		//apply the submitted sync error instructions
 			JFusionUsersync::SyncError($syncid, $syncerror);
+
+        	JFusionUsersync::SyncSlave($syncdata,0,0);
 
     	} else {
     		//output the sync errors to the user
@@ -389,9 +421,9 @@ class JFusionController extends JController
 
         //start the usersync
         if ($action == 'master') {
-        	JFusionUsersync::SyncMaster($syncdata,0,0,0);
+        	JFusionUsersync::SyncMaster($syncdata,0,0);
         } elseif ($action == 'slave') {
-        	JFusionUsersync::SyncSlave($syncdata,0,0,0);
+        	JFusionUsersync::SyncSlave($syncdata,0,0);
         }
 
     }

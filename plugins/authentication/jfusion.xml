@@ -8,7 +8,7 @@
 	<authorUrl>http://www.jfusion.org</authorUrl>
 	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<version>1.0.7</version>
+	<version>1.0.7b</version>
 	<description >
 		This is the JFusion authentication plugin, that checks if the
 		supplied password is correct upon login. You MUST configure the JFusion

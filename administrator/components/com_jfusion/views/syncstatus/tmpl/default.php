@@ -69,3 +69,4 @@ if (!$this->syncdata['slave_data']){
 <?php } ?>
 
 </table></form>
+
