@@ -74,16 +74,16 @@ window.addEvent('domready', function() {
         method: 'get',
 
         onComplete: function() {
-            // when complete, we remove the spinner
-            log.removeClass('ajax-loading');
+            // when complete, check to see if we should stop the countdown
+			div_content = document.getElementById('log_res').innerHTML;
+			if (div_content.search(/finished/) != -1) {
+		       	// let's stop our timed ajax
+		       	$clear(periodical);
+        		document.getElementById("counter").innerHTML = '<b><?php echo JText::_('FINISHED');?></b>';
+			}
+
         }
-        ,
-        onCancel: function() {
-            // when we stop timed ajax while it's requesting
-            // we forse to cancel the request, so here we
-            // just remove the spinner
-            log.removeClass('ajax-loading');
-        }
+
     }
 
     );
@@ -105,6 +105,7 @@ window.addEvent('domready', function() {
             		dummy = $time() + $random(0, 100);
             		//generate the get variable for submission
             		sub_vars = 'option=com_jfusion&task=syncstatus&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
+					document.getElementById("log_res").innerHTML = '<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'ajax_loader.gif'; ?>"> Loading ....';
 	    			ajax.request(sub_vars);
 	    		}
 	    	} else {
@@ -125,22 +126,25 @@ window.addEvent('domready', function() {
         /* a bit of fancy styles */
         stop.setStyle('font-weight', 'normal');
         start.setStyle('font-weight', 'bold');
-        //log.empty().addClass('ajax-loading');
         /* ********************* */
 
         //give the user a last chance to opt-out
         var answer = confirm("Are you sure you want to run usersync and make PERMANENT changes to your user tables?");
         if (answer) {
 
-            // when we press start we want to inform JFusion how to run the usersync
-            var paramString = document.adminForm.toQueryString();
+			//check to see what type of output we need
+			if (document.debug.debug.value == 0){
+	            // give a summary output
+    	        var paramString = document.adminForm.toQueryString();
+				new Ajax(url, {method: 'get'}).request(paramString);
+            	periodical = refresh.periodical(timer * 1000, this);
+			} else {
+	            // give a detailed output
+	            alert('<?php echo JText::_('SYNC_EXTENDED_REDIRECT');?>');
+    	        var paramString = document.adminForm.toQueryString();
+				window.location = url + '?' + paramString;
+			}
 
-	new Ajax(url, {
-		method: 'get',
-	}).request(paramString);
-
-            // then we want to refresh the progress window periodically
-            periodical = refresh.periodical(timer * 1000, this);
         }
 
     }
@@ -247,8 +251,7 @@ window.addEvent('domready', function() {
 </table></form></div>
 <br/><div id="counter"></div><br/>
 
-<div id="ajax_bar"><b><?php echo JText::_('SYNC_SLAVE_INSTR');
-?>
+<div id="ajax_bar"><b><?php echo JText::_('SYNC_SLAVE_INSTR');?>
 </b>&nbsp;
 &nbsp;
 &nbsp;
@@ -258,6 +261,14 @@ window.addEvent('domready', function() {
 </span>
 <a id="stop" href="#"><?php echo JText::_('STOP');
 ?></a>
-</div><br/><br/><br/>
+</div><br/>
+<form name="debug">
+<?php echo JText::_('SYNC_OUTPUT');?>
+&nbsp;<select name="debug" default="0"><option value="0">
+<?php echo JText::_('SYNC_OUTPUT_NORMAL');?>
+</option><option value="1">
+<?php echo JText::_('SYNC_OUTPUT_EXTENDED');?>
+</option></select></form>
+<br/><br/>
 
 

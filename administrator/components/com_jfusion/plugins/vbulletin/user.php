@@ -87,7 +87,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 			$user->email = $userinfo->email;
 			$user->passworddate = date("Y/m/d");
-			$user->joindate = date("Y/m/d");
+			$user->joindate = time();
 
             //now append the new user data
             if (!$db->insertObject('#__user', $user, 'userid' )) {
@@ -98,7 +98,7 @@ class JFusionUser_vbulletin extends JFusionUser{
                 //return the good news
                 $status['debug'] = 'Created new user with userid:' . $user->id;
                 $status['error'] = false;
-                $status['userinfo'] = $this->getUser($username_clean);
+                $status['userinfo'] = $this->getUser($username);
                 return $status;
             }
         }

@@ -270,9 +270,14 @@ class JFusionController extends JController
 */
     function syncerror()
     {
-    	$syncerror = JRequest::getVar('syncerror', '', 'GET');
-    	$syncid = JRequest::getVar('syncid', '', 'GET');
+    	$syncerror = JRequest::getVar('syncerror', array(), 'POST', 'array' );
+    	$syncid = JRequest::getVar('syncid', '', 'POST');
     	if ($syncerror) {
+			/**
+			* 	Load usersync library
+			*/
+			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
     		//apply the submitted sync error instructions
 			JFusionUsersync::SyncError($syncid, $syncerror);
 
@@ -357,7 +362,7 @@ class JFusionController extends JController
                 if ($action == 'master') {
                 	$temp_data['total'] = $JFusionPlugin->getUserCount();
                 } else {
-                	$temp_data['total'] = $JFusionPlugin->getUserCount();
+                	$temp_data['total'] = $JFusionMaster->getUserCount();
                 }
                 $temp_data['created'] = 0;
                 $temp_data['deleted'] = 0;
@@ -365,7 +370,8 @@ class JFusionController extends JController
                 $temp_data['error'] = 0;
 
                 //save the data
-                $slave_data[$jname] = $temp_data;
+                $slave_data = array();
+                $slave_data[] = $temp_data;
 
                 //reset the variables
                 unset($temp_data, $JFusionPlugin);
@@ -383,9 +389,9 @@ class JFusionController extends JController
 
         //start the usersync
         if ($action == 'master') {
-        	JFusionUsersync::SyncMaster($syncdata);
+        	JFusionUsersync::SyncMaster($syncdata,0,0,0);
         } elseif ($action == 'slave') {
-        	JFusionUsersync::SyncSlave($syncdata);
+        	JFusionUsersync::SyncSlave($syncdata,0,0,0);
         }
 
     }

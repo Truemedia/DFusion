@@ -75,6 +75,7 @@ echo $jname->name . ' ' . JText::_('USERNAME') .': ' . $userinfo->username .'<br
 echo $jname->name . ' ' . JText::_('USERID') . ': ' . $userinfo->userid .'<br/>';
 echo $jname->name . ' ' . JText::_('NAME') .': ' . $userinfo->name .'<br/>';
 echo $jname->name . ' ' . JText::_('PASSWORD') .': ' . $userinfo->password .'<br/>';
+echo $jname->name . ' ' . JText::_('SALT') .': ' . $userinfo->password_salt .'<br/>';
 echo $jname->name . ' ' . JText::_('EMAIL') .': ' . $userinfo->email .'<br/>';
 
 if ($userinfo) {

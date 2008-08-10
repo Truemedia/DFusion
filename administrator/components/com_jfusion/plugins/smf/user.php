@@ -69,6 +69,7 @@ class JFusionUser_smf extends JFusionUser{
             $user->ID_MEMBER = NULL;
             $user->memberName = $userinfo->name;
             $user->realName = $userinfo->username;
+            $user->emailAddress = $userinfo->email;
 
             if($userinfo->password_clear){
             	$user->passwd = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
