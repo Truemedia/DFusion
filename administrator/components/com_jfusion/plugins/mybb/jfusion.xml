@@ -3,13 +3,16 @@
 <install type="jfusion" version="1.5.0">
 	<name>mybb</name>
 	<author>JFusion Development Team</author>
-	<creationDate>June 2008</creationDate>
+	<creationDate>August 2008</creationDate>
 	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
-	<version>1.0</version>
-	<description>myBB plugin for JFusion</description>
+	<version>1.01</version>
+	<description>myBB 1.4.0</description>
+	<slave>3</slave>
+	<dual_login>3</dual_login>
+	
 	<files>
 		<filename>auth.php</filename>
 		<filename>index.xml</filename>
@@ -29,6 +32,7 @@
 		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
 		<param name="cookie_domain" type="text" size="10" default="" description="COOKIE_DOMAIN" />
 		<param name="cookie_path" type="text" size="40" default="/" description="COOKIE_PATH" />
+		<param name="cookie_prefix" type="text" size="10" default="" description="COOKIE_PREFIX" />
 		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 	</params>

@@ -180,7 +180,7 @@ class JFusionUser_mybb extends JFusionUser{
    	}
 
     function filterUsername($username) {
-    	//no username filtering implemented yet
+    	//TODO: no username filtering implemented yet
     	return $username;
     }
 
