@@ -48,23 +48,24 @@ class JFusionPlugin_mybb extends JFusionPlugin{
 
          //Save the parameters into the standard JFusion params format
          $params = array();
-         $params['database_type'] = $config['dbtype'];
-         $params['database_host'] = $config['hostname'];
-         $params['database_user'] = $config['username'];
-         $params['database_password'] = $config['password'];
-         $params['database_name'] = $config['database'];
-         $params['database_prefix'] = $config['table_prefix'];
-         $params['source_path'] = $forumPath;
+         $params['database_type'] = $config['database']['type'];
+         $params['database_host'] = $config['database']['hostname'];
+         $params['database_user'] = $config['database']['username'];
+         $params['database_password'] = $config['database']['password'];
+         $params['database_name'] = $config['database']['database'];
+         $params['database_prefix'] = $config['database']['table_prefix'];
+		 $params['source_path'] = $forumPath;
+         
 
          //find the source url to mybb
-         $driver = $config['dbtype'];
-         $host = $config['hostname'];
-         $user = $config['username'];
-         $password = $config['password'];
-         $database = $config['database'];
-         $prefix = $config['table_prefix'];
-         $options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix );
-         $bb =& JDatabase::getInstance($options );
+         $driver = $config['database']['type'];
+         $host = $config['database']['hostname'];
+         $user = $config['datbase']['username'];
+         $password = $config['database']['password'];
+         $database = $config['database']['database'];
+         $prefix = $config['database']['table_prefix'];
+		 $options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix );
+		 $bb =& JDatabase::getInstance($options );
          $query = "SELECT value FROM #__settings WHERE name = 'bburl'";
          $bb->setQuery($query);
          $bb_url = $bb->loadResult();
@@ -80,6 +81,11 @@ class JFusionPlugin_mybb extends JFusionPlugin{
          $bb->setQuery($query);
          $cookiepath = $bb->loadResult();
          $params['cookie_path'] =  $cookiepath;
+		 
+		 $query = "SELECT value FROM #__settings WHERE name='cookieprefix'";
+		 $bb->setQuery($query);
+		 $cookieprefix = $bb->loadResult();
+		 $params['cookie_prefix'] = $cookieprefix;
 
          return $params;
    }
@@ -248,7 +254,7 @@ class JFusionPlugin_mybb extends JFusionPlugin{
     	$db->setQuery( $query );
     	$disableregs = $db->loadResult();
 
-		if ($disableregs == 'no') {
+		if ($disableregs == '0') {
 			return true;
 		} else {
 			return false;
