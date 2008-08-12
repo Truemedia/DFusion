@@ -178,14 +178,14 @@ class JFusionUser_joomla_int extends JFusionUser{
         $username = $this->filterUsername($username);
 
         //first check the JFusion user table
-        $db->setQuery('SELECT a.id as userid, b.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE b.username=' . $db->quote($username));
+        $db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE b.username=' . $db->quote($username));
         $result = $db->loadObject();
 
         if (!$result) {
             //no user found, now check the Joomla user table
             $JFusionUser = JFusionfactory::getUser('joomla_int');
             $filtered_username = $JFusionUser->filterUsername($username);
-            $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.username=' . $db->quote($filtered_username));
+            $db->setQuery('SELECT a.id as userid, a.activation, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.username=' . $db->quote($filtered_username));
             $result = $db->loadObject();
         }
 
@@ -195,6 +195,11 @@ class JFusionUser_joomla_int extends JFusionUser{
         	if($parts[1]) {
         		$result->password_salt = $parts[1];
         		$result->password = $parts[0];
+        	}
+
+        	//do an extra check to prevent inactive accounts to login
+        	if ($result->activation) {
+        		$result->block = 1;
         	}
 
             return $result;
