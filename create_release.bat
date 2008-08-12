@@ -14,4 +14,4 @@ wzzip -a jfusion_plugin_auth.zip plugins/authentication/jfusion.xml
 wzzip -rP jfusion_plugin_user.zip plugins/user
 wzzip -a jfusion_plugin_user.zip plugins/user/jfusion.xml
 
-wzzip -a jfusion_package.zip *.zip
+wzzip -a jfusion_package.zip *.zip *.txt

@@ -36,7 +36,7 @@ if (file_exists($model_file) && file_exists($model_file)) {
     //Get the forum integration object
     $jname = JFusionFunction::getMaster();
 
-    if ($jname->status == 3 && $jname->name != 'joomla_int') {
+    if ($jname->status == 3 ) {
         $MasterPlugin = JFusionFactory::getPlugin($jname->name);
         $allow_registration = JFusionFunction::createURL($MasterPlugin->allowRegistration(), $jname->name, $view);
         $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view);
@@ -45,7 +45,7 @@ if (file_exists($model_file) && file_exists($model_file)) {
 
 		//now find out from which plugin the avatars need to be displayed
 		$PluginName = $params->get('JFusionPlugin');
-		if ($PluginName){
+		if ($PluginName != 'joomla_int'){
 			$JFusionPlugin = JFusionFactory::getPlugin($PluginName);
         	$userlookup = JFusionFunction::lookupUser($PluginName, $user->get('id'));
 
@@ -70,6 +70,12 @@ if (file_exists($model_file) && file_exists($model_file)) {
     			require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
 	        }
 
+        } else {
+	        //use the Joomla default urls
+    	    $url_lostpass = JRoute::_('index.php?option=com_user&view=reset' );
+        	$url_lostuser = JRoute::_('index.php?option=com_user&view=remind' );
+	        $url_register = JRoute::_('index.php?option=com_user&task=register' );
+    		require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
 
     } else {

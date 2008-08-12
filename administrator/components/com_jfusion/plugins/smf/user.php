@@ -67,8 +67,8 @@ class JFusionUser_smf extends JFusionUser{
             //prepare the user variables
             $user = new stdClass;
             $user->ID_MEMBER = NULL;
-            $user->memberName = $userinfo->name;
-            $user->realName = $userinfo->username;
+            $user->memberName = $userinfo->username;
+            $user->realName = $userinfo->name;
             $user->emailAddress = $userinfo->email;
 
             if($userinfo->password_clear){

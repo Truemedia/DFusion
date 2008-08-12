@@ -59,7 +59,7 @@ defined('_JEXEC') or die('Restricted access');
 window.addEvent('domready', function() {
 
 
-    var url = '<?php echo JURI::root() . 'administrator'. DS .'index.php'; ?>';
+    var url = '<?php echo JURI::root() . 'administrator/index.php'; ?>';
     // refresh every 15 seconds
     var timer = 1;
     var time_update = 10;
@@ -105,7 +105,7 @@ window.addEvent('domready', function() {
             		dummy = $time() + $random(0, 100);
             		//generate the get variable for submission
             		sub_vars = 'option=com_jfusion&task=syncstatus&dummy=' + dummy + '&syncid=' + '<?php echo $this->syncid;?>';
-					document.getElementById("log_res").innerHTML = '<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'ajax_loader.gif'; ?>"> Loading ....';
+					document.getElementById("log_res").innerHTML = '<img src="<?php echo 'components/com_jfusion/images/ajax_loader.gif'; ?>"> Loading ....';
 	    			ajax.request(sub_vars);
 	    		}
 	    	} else {
@@ -174,9 +174,9 @@ window.addEvent('domready', function() {
 </script>
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'usersync.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/usersync.png'; ?>" height="75px" width="75px">
 <td><h2><?php echo JText::_('USERSYNC'); ?></h2></td></tr></table><br/>
 <h3>
 <?php echo JText::_('SYNC_WARNING');

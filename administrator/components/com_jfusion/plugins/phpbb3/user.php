@@ -196,7 +196,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             	}
 
 				//update the total user count
-                $query = 'UPDATE #__phpbb_config SET config_value = config_value + 1 WHERE config_name = \'num_users\'';
+                $query = 'UPDATE #__config SET config_value = config_value + 1 WHERE config_name = \'num_users\'';
                 $db->setQuery($query);
             	if (!$db->query()) {
                 	//return the error
@@ -205,7 +205,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             	}
 
 				//update the newest username
-                $query = 'UPDATE #__phpbb_config SET config_value = '. $db->quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
+                $query = 'UPDATE #__config SET config_value = '. $db->quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
                 $db->setQuery($query);
             	if (!$db->query()) {
                 	//return the error
@@ -214,7 +214,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             	}
 
             	//update the newest userid
-                $query = 'UPDATE #__phpbb_config SET config_value = ' . $user->id . ' WHERE config_name = \'newest_user_id\'';
+                $query = 'UPDATE #__config SET config_value = ' . $user->id . ' WHERE config_name = \'newest_user_id\'';
                 $db->setQuery($query);
             	if (!$db->query()) {
                 	//return the error
