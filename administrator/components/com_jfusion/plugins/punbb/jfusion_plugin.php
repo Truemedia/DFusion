@@ -111,13 +111,13 @@ class JFusionPlugin_punbb extends JFusionPlugin{
         if ($userid)
         {
             	$params = JFusionFactory::getParams($this->getJname());
-                $avatarfile = $params->get('source_url') . 'img'.DS.'avatars'.DS . $userid . '.';
+                $avatarfile = $params->get('source_url') . 'img/avatars/' . $userid . '.';
                 if (file_exists($avatarfile . 'gif')) {
-                    $url = $params->get('source_url').'img'.DS.'avatars'.DS . $userid . '.gif';
+                    $url = $params->get('source_url').'img/avatars/' . $userid . '.gif';
                 } elseif (file_exists($avatarfile . 'jpg')) {
-                    $url = $params->get('source_url').'img'.DS.'avatars'.DS . $userid . '.jpg';
+                    $url = $params->get('source_url').'img/avatars/' . $userid . '.jpg';
                 } else {
-                    $url = $params->get('source_url').'img'.DS.'avatars'.DS . $userid . '.png';
+                    $url = $params->get('source_url').'img/avatars/' . $userid . '.png';
                 }
                 return $url;
 

@@ -64,11 +64,11 @@ class JFusionUsersync{
 			if ($error['action'] == 'master') {
 		        $JFusionPlugin = JFusionFactory::getUser($error['master_jname']);
 		        $JFusionPlugin->deleteUser(html_entity_decode($error['master_username']));
-				echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'error.png" width="32" height="32">' . JText::_('DELETED'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . $error['master_username'] . '<br/>';
+				echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('DELETED'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . $error['master_username'] . '<br/>';
 			} elseif ($error['action'] == 'slave') {
 		        $JFusionPlugin = JFusionFactory::getUser($error['slave_jname']);
 		        $JFusionPlugin->deleteUser(html_entity_decode($error['slave_username']));
-				echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'error.png" width="32" height="32">' . JText::_('DELETED'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . $error['slave_username'] . '<br/>';
+				echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('DELETED'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . $error['slave_username'] . '<br/>';
 			}
 		}
     }
@@ -103,7 +103,7 @@ class JFusionUsersync{
                         if ($status['error']) {
 
                         	//output results
-							echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';
+							echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';
 
                             $sync_error = array();
                             $sync_error['master']['username'] = $status['userinfo']->username;
@@ -120,10 +120,10 @@ class JFusionUsersync{
                             $syncdata['slave_data'][$i]['total'] -= 1;
                         } else {
                             if ($status['action'] == 'created') {
-								echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'created.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('CREATED') . '<br/>';
+								echo '<img src="components/com_jfusion/images/created.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('CREATED') . '<br/>';
                                 $syncdata['slave_data'][$i]['created'] += 1;
                             } else {
-								echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'updated.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('UPDATED') . '<br/>';
+								echo '<img src="components/com_jfusion/images/updated.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('UPDATED') . '<br/>';
                                 $syncdata['slave_data'][$i]['updated'] += 1;
                             }
                             $syncdata['slave_data'][$i]['total'] -= 1;
@@ -181,7 +181,7 @@ class JFusionUsersync{
                         $status = $SlaveUser->updateUser($userinfo);
                         if ($status['error']) {
 
-							echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';
+							echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';
                             $sync_error = array();
                             $sync_error['master']['username'] = $status['userinfo']->username;
                             $sync_error['master']['email'] = $status['userinfo']->email;
@@ -197,10 +197,10 @@ class JFusionUsersync{
                             $syncdata['slave_data'][$i]['total'] -= 1;
                         } else {
                             if ($status['action'] == 'created') {
-								echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'created.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('CREATED') . '<br/>';
+								echo '<img src="components/com_jfusion/images/created.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('CREATED') . '<br/>';
                                 $syncdata['slave_data'][$i]['created'] += 1;
                             } else {
-								echo '<img src="components'.DS.'com_jfusion'.DS.'images'.DS.'updated.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('UPDATED') . '<br/>';
+								echo '<img src="components/com_jfusion/images/updated.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('UPDATED') . '<br/>';
                                 $syncdata['slave_data'][$i]['updated'] += 1;
                             }
                             $syncdata['slave_data'][$i]['total'] -= 1;

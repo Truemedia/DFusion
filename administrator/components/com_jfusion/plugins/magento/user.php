@@ -103,7 +103,7 @@ class JFusionUser_magento extends JFusionUser
 
 		/* --- first part. --- */
 		// Set the URL to execute
-		curl_setopt($cCURL, CURLOPT_URL, JFusionFunction::createURL('index.php'.DS.'customer'.DS.'account'.DS.'loginPost'.DS,$this->getJname(), 'direct'));
+		curl_setopt($cCURL, CURLOPT_URL, JFusionFunction::createURL('index.php/customer/account/loginPost/',$this->getJname(), 'direct'));
 
 		// Set options
 		curl_setopt( $cCURL, CURLOPT_HEADER, true );

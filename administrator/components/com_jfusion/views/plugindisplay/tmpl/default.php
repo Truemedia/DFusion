@@ -56,9 +56,9 @@ radioObj[i].checked = true;
 
 <?php echo $this->toolbar; ?>
 <table><tr><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'controlpanel.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/controlpanel.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_CONFIGURATION'); ?></h2></td></tr></table><br/>
 
 <? echo JText::_('PLUGIN_CONFIG_INSTR'); ?><br/><br/>

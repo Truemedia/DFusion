@@ -172,14 +172,14 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
             if (!empty($result)) {
                 if ($result->user_avatar_type == 1) {
                     // AVATAR_UPLOAD
-                    $url = $params->get('source_url').'download'.DS.'file.php?avatar='.$result->user_avatar;
+                    $url = $params->get('source_url').'download/file.php?avatar='.$result->user_avatar;
                 } else if ($result->user_avatar_type == 3) {
                     // AVATAR_GALLERY
                     $db->setQuery("SELECT config_value FROM #__config WHERE config_name='avatar_gallery_path'");
                     $db->query();
                     $path = $db->loadResult();
                     if (!empty($path)) {
-                        $url = $params->get('source_url').$path.DS.$result->user_avatar;
+                        $url = $params->get('source_url').$path.'/'.$result->user_avatar;
                     } else {
                         $url = '';
                     }

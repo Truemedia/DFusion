@@ -247,7 +247,7 @@ class JFusionPlugin_smf extends JFusionPlugin{
 		// Get the path
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
-        if (substr($source_path, -1) == '/') {
+        if (substr($source_path, -1) == DS) {
             $index_file = $source_path .'index.php';
         } else {
             $index_file = $source_path .DS.'index.php';

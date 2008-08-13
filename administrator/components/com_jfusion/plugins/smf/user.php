@@ -184,7 +184,7 @@ class JFusionUser_smf extends JFusionUser{
         //check to see if the smf_api.php file exists
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
-        if (substr($source_path, -1) == '/') {
+        if (substr($source_path, -1) == DS) {
             $api_file = $source_path .'smf_api.php';
         } else {
             $api_file = $source_path .DS.'smf_api.php';

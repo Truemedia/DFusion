@@ -12,9 +12,9 @@ defined('_JEXEC') or die('Restricted access');
 
 //output the header?>
 <table><tr><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'login_checker2.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/login_checker2.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('LOGIN_CHECKER_RESULT'); ?></h2></td></tr></table><br/>
 
 
