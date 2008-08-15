@@ -311,8 +311,6 @@ class JFusionController extends JController
     		//apply the submitted sync error instructions
 			JFusionUsersync::SyncError($syncid, $syncerror);
 
-        	JFusionUsersync::SyncSlave($syncdata,0,0);
-
     	} else {
     		//output the sync errors to the user
         	JRequest::setVar('view', 'syncerror');

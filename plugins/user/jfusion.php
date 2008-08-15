@@ -84,6 +84,12 @@ class plgUserJfusion extends JPlugin
         	$JFusionMaster = JFusionFactory::getUser('joomla_int');
         	$userinfo = $JFusionMaster->getUser($user['username']);
 
+			// If the user is blocked, redirect with an error
+			if ($userinfo->block == 1) {
+				JError::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'));
+				return false;
+			}
+
             //apply the cleartext password to the user object
             $userinfo->password_clear = $user['password'];
 			$joomla_user['userinfo'] = $userinfo;

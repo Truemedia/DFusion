@@ -130,7 +130,7 @@ class JFusionPlugin_ipb extends JFusionPlugin
     {
         //getting the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT name, email from #__members';
+        $query = 'SELECT name as username, email from #__members';
         $db->setQuery($query);
         $userlist = $db->loadObjectList();
 

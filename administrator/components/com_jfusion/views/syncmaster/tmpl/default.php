@@ -133,16 +133,27 @@ window.addEvent('domready', function() {
         if (answer) {
 
 			//check to see what type of output we need
-			if (document.debug.debug.value == 0){
+			if (document.forms['adminForm2'].elements['jfusiondebug'].value == 0){
 	            // give a summary output
-    	        var paramString = document.adminForm.toQueryString();
+
+    	        var paramString = url + '?option=com_jfusion&task=syncstatus&action=slave&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
+				for(i=0; i<document.adminForm.elements.length; i++){
+					if(document.adminForm.elements[i].type=="checkbox"){
+						paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].value;
+					}
+				}
 				new Ajax(url, {method: 'get'}).request(paramString);
             	periodical = refresh.periodical(timer * 1000, this);
 			} else {
 	            // give a detailed output
 	            alert('<?php echo JText::_('SYNC_EXTENDED_REDIRECT');?>');
-    	        var paramString = document.adminForm.toQueryString();
-				window.location = url + '?' + paramString;
+    	        var paramString = url + '?option=com_jfusion&task=syncstatus&action=slave&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
+				for(i=0; i<document.adminForm.elements.length; i++){
+					if(document.adminForm.elements[i].type=="checkbox"){
+						paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].value;
+					}
+				}
+				window.location = paramString;
 			}
 
         }
@@ -264,9 +275,9 @@ window.addEvent('domready', function() {
 <a id="stop" href="#"><?php echo JText::_('STOP');
 ?></a>
 </div><br/>
-<form name="debug">
+<form name="name="adminForm2">
 <?php echo JText::_('SYNC_OUTPUT');?>
-&nbsp;<select name="debug"><option value="0">
+&nbsp;<select name="jfusiondebug"><option value="0">
 <?php echo JText::_('SYNC_OUTPUT_NORMAL');?>
 </option><option value="1">
 <?php echo JText::_('SYNC_OUTPUT_EXTENDED');?>
