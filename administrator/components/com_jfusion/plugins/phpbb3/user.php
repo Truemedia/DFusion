@@ -47,7 +47,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         }
     }
 
-    function updateUser($userinfo)
+    function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
         $db = JFusionFactory::getDatabase($this->getJname());

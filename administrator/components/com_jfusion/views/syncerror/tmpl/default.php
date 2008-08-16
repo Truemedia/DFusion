@@ -24,15 +24,41 @@ defined('_JEXEC') or die('Restricted access');
 <td><h2><? echo JText::_('RESOLVE_CONLFICTS'); ?></h2></td></tr></table><br/>
 <br/>
 
+
+
+<script language="Javascript">
+<!--
+function applyall() {
+
+var default_value = document.forms['adminForm'].elements['default_value'].selectedIndex;
+	for(i=0; i<document.adminForm.elements.length; i++){
+		if(document.adminForm.elements[i].type=="select"){
+			document.adminForm.elements[i].selectedIndex = default_value;
+		}
+	}
+
+}
+//-->
+</script>
+
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="syncerror" />
+
+<select name="default_value" default="0">
+<option value="0"><?php echo JText::_('IGNORE')?></option>
+<option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
+<option value="2"><?php echo JText::_('UPDATE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
+<option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
+<option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
+</select>
+<input type="button" onclick="applyall()" value="<?php echo JText::_('SYNC_ERROR_APLLY_ALL')?>"><br>
 
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
 <th class="title" align="center"><?php echo JText::_('MASTER'); ?></th>
 <th class="title" align="center"><?php echo JText::_('SLAVE'); ?></th>
-<th class="title" align="center"><?php echo JText::_('IGNORE'); ?></th>
+<th class="title" align="center"><?php echo JText::_('ACTION'); ?></th>
 </tr></thead><tbody>
 
 <?php $row_count = 0;
@@ -55,10 +81,16 @@ $error =  $this->syncdata['errors'][$i];
 
 
 </td>
-<td><input type="radio" name="syncerror[<?php echo $i; ?>][action]" value="master"><?php echo JText::_('DELETE') . ' ' . $error['master']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['master']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['master']['email'] ; ?></td>
-<td><input type="radio" name="syncerror[<?php echo $i; ?>][action]" value="slave"><?php echo JText::_('DELETE') . ' ' . $error['slave']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['slave']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['slave']['email'] ; ?></td>
-<td><input type="radio" name="syncerror[<?php echo $i; ?>][action]" value="ignore" checked="checked"><?php echo JText::_('IGNORE') . ' ' . JText::_('USERSYNC') . ' ' . JText::_('ERROR'); ?></td>
-</tr>
+<td><?php echo $error['master']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['master']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['master']['email'] ; ?></td>
+<td><?php echo $error['slave']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['slave']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['slave']['email'] ; ?></td>
+<td><select name="syncerror[<?php echo $i; ?>][action]" default="0">
+<option value="0"><?php echo JText::_('IGNORE')?></option>
+<option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
+<option value="2"><?php echo JText::_('UPDATE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
+<option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
+<option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
+</select></td></tr>
+
 <?php } ?>
 </table>
 The conflict function does not work correctly for email conflicts. I am working on a fix. My apologies for the inconvience.

@@ -136,7 +136,7 @@ window.addEvent('domready', function() {
 			if (document.forms['adminForm2'].elements['jfusiondebug'].value == 0){
 	            // give a summary output
 
-    	        var paramString = url + '?option=com_jfusion&task=syncstatus&action=slave&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
+    	        var paramString = 'option=com_jfusion&task=syncstatus&action=slave&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
 				for(i=0; i<document.adminForm.elements.length; i++){
 					if(document.adminForm.elements[i].type=="checkbox"){
 						paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].value;

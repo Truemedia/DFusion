@@ -95,7 +95,7 @@ class plgUserJfusion extends JPlugin
 			$joomla_user['userinfo'] = $userinfo;
 
             //allow for password updates
-            $user_update = $JFusionMaster->updateUser($userinfo);
+            $user_update = $JFusionMaster->updateUser($userinfo,0);
         	if ($user_update['error']){
             	//report any errors
            		JError::raiseWarning('500', $jname->name . ': '. $user_update['error']);
@@ -122,7 +122,7 @@ class plgUserJfusion extends JPlugin
             //apply the cleartext password to the user object
             $userinfo->password_clear = $user['password'];
             //allow for password updates
-            $user_update = $JFusionMaster->updateUser($userinfo);
+            $user_update = $JFusionMaster->updateUser($userinfo,0);
         	if ($user_update['error']){
             	//report any errors
             	JError::raiseWarning('500', $jname->name . ': '. $user_update['error']);
@@ -140,7 +140,7 @@ class plgUserJfusion extends JPlugin
 
         	//setup the Joomla user
             $joomla_int = JFusionFactory::getUser('joomla_int');
-            $joomla_user = $joomla_int->updateUser($userinfo);
+            $joomla_user = $joomla_int->updateUser($userinfo,0);
             if ($joomla_user['error']) {
                 //no Joomla user could be created
            		JError::raiseWarning('500', $jname->name . ': '. $joomla_user['error']);
@@ -190,7 +190,7 @@ class plgUserJfusion extends JPlugin
         $plugins = JFusionFunction::getPlugins();
         foreach($plugins as $plugin) {
             $JFusionPlugin = JFusionFactory::getUser($plugin->name);
-            $plugin_user = $JFusionPlugin->updateUser($userinfo);
+            $plugin_user = $JFusionPlugin->updateUser($userinfo,0);
             if ($plugin_user['error']) {
            		JError::raiseWarning('500', $plugin->name . ': '. $plugin_user['error']);
         		if ($joomla_user['userinfo']) {

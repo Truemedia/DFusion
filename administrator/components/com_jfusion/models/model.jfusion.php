@@ -360,5 +360,23 @@ class JFusionFunction{
 		}
     }
 
+    function removeUser($userinfo)
+    {
+    	//Delete old user data in the lookup table
+		$db =& JFactory::getDBO();
+        $query = 'DELETE FROM #__jfusion_users WHERE id =' . $userinfo->userid . ' OR username =' . $db->quote($userinfo->username);
+       	$db->setQuery($query);
+		if(!$db->query()) {
+            JError::raiseWarning(0,$db->stderr());
+        }
+
+        $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $userinfo->userid ;
+       	$db->setQuery($query);
+	    if(!$db->query()) {
+       		JError::raiseWarning(0,$db->stderr());
+   		}
+
+    }
+
 }
 

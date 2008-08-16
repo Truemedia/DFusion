@@ -22,7 +22,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
 class JFusionUser_joomla_int extends JFusionUser{
 
-    function updateUser($userinfo)
+    function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
         $db =& JFactory::getDBO();
@@ -42,10 +42,43 @@ class JFusionUser_joomla_int extends JFusionUser{
             $status['debug'] = JText::_('USER_EXISTS');
             return $status;
         } else if ($userlookup) {
-            //emails doe not match up
-            $status['userinfo'] = $userlookup;
-            $status['error'] = JText::_('EMAIL_CONFLICT');
-            return $status;
+            //emails do not match up
+            if ($overwrite == 1) {
+            	//remove old entries in the userlookup table
+				JFusionFunction::removeUser($userlookup);
+
+            	//generate the filtered integration username
+            	$username_clean = $this->filterUsername($userinfo->username);
+
+				//also store the salt if present
+				if ($userinfo->password_salt) {
+					$password = $userinfo->password . ':' . $userinfo->password_salt;
+				} else {
+					$password = $userinfo->password;
+				}
+
+				$db =& JFactory::getDBO();
+        		$query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . ', name ='.$db->quote($userinfo->name) . ', email = '. $db->quote($userinfo->email) .', password ='.$db->quote($password).' WHERE id =' . $userlookup->userid;
+       			$db->setQuery($query);
+				if(!$db->query()) {
+					//update failed, return error
+            		JError::raiseWarning(0,$db->stderr());
+	            	$status['userinfo'] = $userlookup;
+    	        	$status['error'] = JText::_('EMAIL_CONFLICT');
+        	    	return $status;
+        		} else {
+	            	$status['userinfo'] = $userinfo;
+    	        	$status['error'] = false;
+        	    	return $status;
+        		}
+
+
+            } else {
+				//overwite disabled return an error
+            	$status['userinfo'] = $userlookup;
+            	$status['error'] = JText::_('EMAIL_CONFLICT');
+            	return $status;
+            }
         } else {
 
             //check for conlicting email addresses

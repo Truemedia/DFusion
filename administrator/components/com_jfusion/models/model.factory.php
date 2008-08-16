@@ -39,10 +39,15 @@ class JFusionFactory{
 
         //only create a new plugin instance if it has not been created before
         if (!isset($plugin_instances[$jname] )) {
-            require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'jfusion_plugin.php');
-            $class = "JFusionPlugin_" . $jname;
-            $plugin_instances[$jname]= new $class;
-            return $plugin_instances[$jname];
+            $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'jfusion_plugin.php';
+			if (file_exists($filename)){
+            	require_once($filename);
+	            $class = "JFusionPlugin_" . $jname;
+    	        $plugin_instances[$jname]= new $class;
+        	    return $plugin_instances[$jname];
+			} else {
+				return false;
+			}
         } else {
             return $plugin_instances[$jname];
         }
@@ -62,10 +67,15 @@ class JFusionFactory{
 
         //only create a new authentication instance if it has not been created before
         if (!isset($auth_instances[$jname] )) {
-            require_once( JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname . DS.'auth.php');
-            $class = "JFusionAuth_" . $jname;
-            $auth_instances[$jname]= new $class;
-            return $auth_instances[$jname];
+            $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'auth.php';
+			if (file_exists($filename)){
+            	require_once($filename);
+	            $class = "JFusionAuth_" . $jname;
+    	        $auth_instances[$jname]= new $class;
+        	    return $auth_instances[$jname];
+			} else {
+				return false;
+			}
         } else {
             return $auth_instances[$jname];
         }
@@ -85,10 +95,15 @@ class JFusionFactory{
 
         //only create a new authentication instance if it has not been created before
         if (!isset($user_instances[$jname] )) {
-            require_once( JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname . DS.'user.php');
-            $class = "JFusionUser_" . $jname;
-            $user_instances[$jname]= new $class;
-            return $user_instances[$jname];
+            $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'user.php';
+			if (file_exists($filename)){
+            	require_once($filename);
+	            $class = "JFusionUser_" . $jname;
+    	        $user_instances[$jname]= new $class;
+        	    return $user_instances[$jname];
+			} else {
+				return false;
+			}
         } else {
             return $user_instances[$jname];
         }

@@ -124,7 +124,7 @@ if ($userinfo) {
         $joomla_user['userinfo'] = $userinfo;
 
         //allow for password updates
-        $user_update = $JFusionMaster->updateUser($userinfo);
+        $user_update = $JFusionMaster->updateUser($userinfo,0);
         if ($user_update['error']) {
             //report any errors
             echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $user_update['error'] .'<br/>';
@@ -154,7 +154,7 @@ if ($userinfo) {
         //apply the cleartext password to the user object
         $userinfo->password_clear = $credentials['password'] ;
         //allow for password updates
-        $user_update = $JFusionMaster->updateUser($userinfo);
+        $user_update = $JFusionMaster->updateUser($userinfo,0);
         if ($user_update['error']) {
             //report any errors
             echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $user_update['error'] .'<br/>';
@@ -182,7 +182,7 @@ if ($userinfo) {
         //setup the Joomla user
         echo '<h3>' . 'joomla_int:' . JText::_('USER_DETAILS') . '</h3>';
         $joomla_int = JFusionFactory::getUser('joomla_int');
-        $joomla_user = $joomla_int->updateUser($userinfo);
+        $joomla_user = $joomla_int->updateUser($userinfo,0);
         if ($joomla_user['error']) {
             //no Joomla user could be created
             echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $joomla_user['error'] .'<br/>';
@@ -224,7 +224,7 @@ if ($userinfo) {
     foreach($plugins as $plugin) {
         echo '<h3>' . $plugin->name .':' . JText::_('USER_DETAILS') . '</h3>';
         $JFusionPlugin = JFusionFactory::getUser($plugin->name);
-        $plugin_user = $JFusionPlugin->updateUser($userinfo);
+        $plugin_user = $JFusionPlugin->updateUser($userinfo,0);
         if ($plugin_user['error']) {
             echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $plugin_user['error'] .'<br/>';
             if ($plugin_user['userinfo']) {

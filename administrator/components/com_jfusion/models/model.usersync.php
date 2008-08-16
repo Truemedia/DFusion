@@ -12,6 +12,21 @@
 // no direct access
 defined('_JEXEC' ) or die('Restricted access' );
 
+
+/**
+* Prevent time-outs
+*/
+
+@set_time_limit(0);
+@ini_set('memory_limit', '256M');
+@ini_set('upload_max_filesize', '128M');
+@ini_set('post_max_size', '256M');
+@ini_set('max_input_time', '-1');
+@ini_set('max_execution_time', '-1');
+@ini_set('expect.timeout', '-1');
+@ini_set('default_socket_timeout', '-1');
+
+
 /**
 * Class for general JFusion functions
 * @package JFusion
@@ -61,15 +76,30 @@ class JFusionUsersync{
 		$syncdata = JFusionUsersync::getSyncdata($syncid);
 		foreach ($syncerror as $error) {
 
-			if ($error['action'] == 'master') {
+			if ($error['action'] == '1') {
+				//update the master user
 		        $JFusionPlugin = JFusionFactory::getUser($error['master_jname']);
-		        $JFusionPlugin->deleteUser(html_entity_decode($error['master_username']));
+		        $JFusionPlugin2 = JFusionFactory::getUser($error['slave_jname']);
+				$userinfo = $JFusionPlugin2->getUser(html_entity_decode($error['master_username']));
+				$JFusionPlugin->updateUser($userinfo,1);
 				echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('DELETED'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . $error['master_username'] . '<br/>';
-			} elseif ($error['action'] == 'slave') {
+			} elseif ($error['action'] == '2') {
+				//update the slave user
 		        $JFusionPlugin = JFusionFactory::getUser($error['slave_jname']);
-		        $JFusionPlugin->deleteUser(html_entity_decode($error['slave_username']));
+		        $JFusionPlugin2 = JFusionFactory::getUser($error['master_jname']);
+				$userinfo = $JFusionPlugin2->getUser(html_entity_decode($error['slave_username']));
+				$JFusionPlugin->updateUser($userinfo,1);
 				echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('DELETED'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . $error['slave_username'] . '<br/>';
+			} elseif ($error['action'] == '3') {
+				//delete the master user
+		        $JFusionPlugin = JFusionFactory::getUser($error['master_jname']);
+				$JFusionPlugin->deleteUsername(html_entity_decode($error['master_username']));
+			} elseif ($error['action'] == '4') {
+				//delete the slave user
+		        $JFusionPlugin = JFusionFactory::getUser($error['slave_jname']);
+				$JFusionPlugin->deleteUsername(html_entity_decode($error['slave_username']));
 			}
+
 		}
     }
 
@@ -99,7 +129,7 @@ class JFusionUsersync{
         			for ($j=$user_offset; $j<count($userlist); $j++) {
         				$syncdata['user_offset'] = $j;
                         $userinfo = $SlaveUser->getUser($userlist[$j]->username);
-                        $status = $MasterPlugin->updateUser($userinfo);
+                        $status = $MasterPlugin->updateUser($userinfo,0);
                         if ($status['error']) {
 
                         	//output results
@@ -178,7 +208,7 @@ class JFusionUsersync{
         			for ($j=$user_offset; $j<count($userlist); $j++) {
         				$syncdata['user_offset'] = $j;
                         $userinfo = $MasterUser->getUser($userlist[$j]->username);
-                        $status = $SlaveUser->updateUser($userinfo);
+                        $status = $SlaveUser->updateUser($userinfo,0);
                         if ($status['error']) {
 
 							echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';

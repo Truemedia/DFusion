@@ -24,7 +24,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 class JFusionUser_ipb extends JFusionUser
 {
 
-    function updateUser($userinfo)
+    function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
         $db = JFusionFactory::getDatabase($this->getJname());
