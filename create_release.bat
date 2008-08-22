@@ -15,3 +15,5 @@ wzzip -rP jfusion_plugin_user.zip plugins/user
 wzzip -a jfusion_plugin_user.zip plugins/user/jfusion.xml
 
 wzzip -a jfusion_package.zip *.zip *.txt
+
+wzzip -rP jfusion_files.zip administrator components language modules plugins

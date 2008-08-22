@@ -372,12 +372,15 @@ class JFusionController extends JController
         //get the syncdata
 		$syncdata = JFusionUsersync::getSyncdata($syncid);
     	$view->assignRef('syncdata', $syncdata);
+    	$view->assignRef('syncid', $syncid);
         $view->setLayout('default');
         $result = $view->loadTemplate();
         die($result);
 
 
     } else {
+
+		echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
     	//sync has not started, lets get going :)
         $slaves = JRequest::getVar('slave', '', 'GET');
         $master = JRequest::getVar('master', '', 'GET');
@@ -423,6 +426,8 @@ class JFusionController extends JController
         } elseif ($action == 'slave') {
         	JFusionUsersync::SyncSlave($syncdata,0,0);
         }
+
+        	echo JText::_('USERSYNC') . ' ' . JText::_('COMPLETED');
 
     }
     }

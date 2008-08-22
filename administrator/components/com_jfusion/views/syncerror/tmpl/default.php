@@ -11,6 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?>
 
+
 <table class="adminform"><tr>
 <td><a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a></td>
 <td><a href="index.php?option=com_jfusion&task=syncslave"><?php echo JText::_('SYNC_SLAVE');?></a></td>
@@ -25,25 +26,10 @@ defined('_JEXEC') or die('Restricted access');
 <br/>
 
 
-
-<script language="Javascript">
-<!--
-function applyall() {
-
-var default_value = document.forms['adminForm'].elements['default_value'].selectedIndex;
-	for(i=0; i<document.adminForm.elements.length; i++){
-		if(document.adminForm.elements[i].type=="select"){
-			document.adminForm.elements[i].selectedIndex = default_value;
-		}
-	}
-
-}
-//-->
-</script>
-
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="syncerror" />
+
 
 <select name="default_value" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
@@ -52,7 +38,23 @@ var default_value = document.forms['adminForm'].elements['default_value'].select
 <option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
 <option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
 </select>
-<input type="button" onclick="applyall()" value="<?php echo JText::_('SYNC_ERROR_APLLY_ALL')?>"><br>
+
+<script language="javascript" type="text/javascript">
+<!--
+function applyAll() {
+var default_value = document.forms['adminForm'].elements['default_value'].selectedIndex;
+	for(i=0; i<document.adminForm.elements.length; i++){
+		if(document.adminForm.elements[i].type=="select-one"){
+			document.adminForm.elements[i].selectedIndex = default_value;
+		}
+	}
+
+}
+//-->
+</script>
+<a href="javascript:void(0);"  onclick="applyAll();">start</a>
+
+
 
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
@@ -93,6 +95,6 @@ $error =  $this->syncdata['errors'][$i];
 
 <?php } ?>
 </table>
-The conflict function does not work correctly for email conflicts. I am working on a fix. My apologies for the inconvience.
+The conflict function does not work at the moment. We are working on adding this feature to the JFusion plugins. My apologies for the inconvience.
 <input type="submit" value="<? echo JText::_('RESOLVE_CONLFICTS'); ?>">
 </form>

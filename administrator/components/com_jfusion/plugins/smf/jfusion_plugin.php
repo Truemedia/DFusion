@@ -260,7 +260,7 @@ class JFusionPlugin_smf extends JFusionPlugin{
 
 		// Get the output
 		ob_start();
-		$rs = include_once($path);
+		$rs = include_once($index_file);
 		$buffer = ob_get_contents();
 		ob_end_clean();
 

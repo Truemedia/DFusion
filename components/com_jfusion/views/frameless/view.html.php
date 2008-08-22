@@ -17,8 +17,8 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
 
 class jfusionViewframeless extends JView {
-{
-	function display()
+
+    function display($tpl = null)
 	{
         $db =& JFactory::getDBO();
 
@@ -56,6 +56,7 @@ class jfusionViewframeless extends JView {
                 return false;
     	}
 
+        $this->assignRef('jname', $jname);
         parent::display($tpl);
     }
 }

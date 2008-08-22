@@ -136,7 +136,7 @@ window.addEvent('domready', function() {
 			if (document.forms['adminForm2'].elements['jfusiondebug'].value == 0){
 	            // give a summary output
 
-    	        var paramString = url + '?option=com_jfusion&task=syncstatus&action=slave&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
+    	        var paramString = 'option=com_jfusion&task=syncstatus&action=master&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
 				for(i=0; i<document.adminForm.elements.length; i++){
 					if(document.adminForm.elements[i].type=="checkbox"){
 						paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].value;
@@ -147,7 +147,7 @@ window.addEvent('domready', function() {
 			} else {
 	            // give a detailed output
 	            alert('<?php echo JText::_('SYNC_EXTENDED_REDIRECT');?>');
-    	        var paramString = url + '?option=com_jfusion&task=syncstatus&action=slave&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
+    	        var paramString = url + '?option=com_jfusion&task=syncstatus&action=master&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
 				for(i=0; i<document.adminForm.elements.length; i++){
 					if(document.adminForm.elements[i].type=="checkbox"){
 						paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].value;
@@ -195,8 +195,7 @@ window.addEvent('domready', function() {
 </h3><br/>
 
 <div id="ajax_bar"><b>
-<?php echo JText::_('SYNC_MASTER_HEAD');
-?>
+<?php echo JText::_('SYNC_MASTER_HEAD');?>
 </div>
 <br/>
 
@@ -227,8 +226,7 @@ window.addEvent('domready', function() {
 ?>
 </td><td>
 <?php echo JText::_('MASTER') ?>
-<input type="hidden" name="master" value="<?php echo $this->master_data['jname'];
-?>" />
+<input type="hidden" name="master" value="<?php echo $this->master_data['jname'];?>" />
 </td><td>
 <?php echo $this->master_data['total'];
 ?>
@@ -263,8 +261,7 @@ window.addEvent('domready', function() {
 </table></form></div>
 <br/><div id="counter"></div><br/>
 
-<div id="ajax_bar"><b><?php echo JText::_('SYNC_MASTER_INSTR');
-?>
+<div id="ajax_bar"><b><?php echo JText::_('SYNC_MASTER_INSTR');?>
 </b>&nbsp;
 &nbsp;
 &nbsp;
@@ -275,14 +272,13 @@ window.addEvent('domready', function() {
 <a id="stop" href="#"><?php echo JText::_('STOP');
 ?></a>
 </div><br/>
-<form name="name="adminForm2">
+<form name="adminForm2">
 <?php echo JText::_('SYNC_OUTPUT');?>
-&nbsp;<select name="jfusiondebug"><option value="0">
+&nbsp;<select name="jfusiondebug" default="0"><option value="0">
 <?php echo JText::_('SYNC_OUTPUT_NORMAL');?>
 </option><option value="1">
 <?php echo JText::_('SYNC_OUTPUT_EXTENDED');?>
 </option></select></form>
 
 <br/><br/><br/>
-		<?php echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('SYNC_RESUME') . '</a>';
-
+		<?php echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $this->syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
