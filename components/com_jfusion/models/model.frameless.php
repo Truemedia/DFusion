@@ -2,164 +2,52 @@
 
 class frameless
 {
-	/**
-	 * The base URL of this application
-	 *
-	 * @var		string
-	 * @access	protected
-	 * @since	1.0
-	 */
-	protected	$_baseURL			= NULL;
-
-
-	/**
-	 * The full URL of this application
-	 *
-	 * @var		string
-	 * @access	protected
-	 * @since	1.0
-	 */
-	protected	$_fullURL			= NULL;
-
-	/**
-	 * A list of headers used by SMF
-	 *
-	 * @var		array
-	 * @access	protected
-	 * @since	1.0
-	 */
-	protected	$_headers			= array();
-
-
-	/**
-	 * Get an instance of the brdige
-	 *
-	 * @param	array $config Configuration values
-	 * @return	object j2smfBridge
-	 * @access	public
-	 * @since	1.0
-	 */
-	function getInstance($config = array())
+	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
 	{
-		static $frameless;
+		static $regex_body, $replace_body;
 
-		if ( ! $frameless ) $frameless = new frameless();
-
-		return $frameless;
-	}
-
-
-	/**
-	 * Add a header that will later be given to Joomla
-	 *
-	 * @param	string $header
-	 * @access	public
-	 * @since	1.0
-	 */
-	function addHeader($header)
-	{
-		array_push($this->_headers, $header);
-	}
-
-	/**
-	 * Get all the headers used by SMF
-	 *
-	 * @return	array HTML Headers
-	 * @access	public
-	 * @since	1.0
-	 */
-	function getAllHeaders()
-	{
-		return $this->_headers;
-	}
-
-	/**
-	 * Get the base URL for the application
-	 *
-	 * @return	string
-	 * @access	public
-	 * @since	1.0
-	 */
-	function getBaseURL()
-	{
-		return $this->_baseURL;
-	}
-
-	/**
-	 * Get the full URL for the application
-	 *
-	 * @return	string
-	 * @access	public
-	 * @since	1.0
-	 */
-	function getFullURL()
-	{
-		return $this->_fullURL;
-	}
-
-
-	/**
-	 * Set the base URL for the application
-	 *
-	 * @param	string $url
-	 * @access	public
-	 * @since	1.0
-	 */
-	function setBaseURL($url)
-	{
-		$this->_baseURL = $url;
-	}
-
-
-	/**
-	 * Set the full URL for the application
-	 *
-	 * @param	string $url
-	 * @access	public
-	 * @since	1.0
-	 */
-	function setFullURL($url)
-	{
-		$this->_fullURL = $url;
-	}
-
-	function parseBuffer(&$buffer)
-	{
-		global $boardurl, $scripturl;
-
-		$base		= $this->_baseURL;
-		$full		= $this->_fullURL;
-
-		static $regex, $replace;
-
-		if ( ! $regex || ! $replace )
+		if ( ! $regex_body || ! $replace_body )
 		{
 			// Define our preg arrays
-			$regex		= array();
-			$replace	= array();
+			$regex_body		= array();
+			$replace_body	= array();
 
-			// Add the appropriate url termination
-			if ( strpos($base, '?') === false )
-			{
-				$base .= '?';
-			} else
-			if ( strpos($base, '&') )
-			{
-				$base .= '&';
-			}
+			//convert relative links into absolute links
+			//$regex_body[]	= '#(href|src)="./(.*?)"#';
+			//$replace_body[]	= 'href="'.$fullURL.'#$1"';
 
 			// Internal links
-			$regex[]	= '#href="\#(.*?)"#';
-			$replace[]	= 'href="'.$full.'#$1"';
+			$regex_body[]	= '#href="\#(.*?)"#';
+			$replace_body[]	= 'href="'.$fullURL.'#$1"';
 
 			// Site URLs
-			$regex[]	= "#$scripturl\??#mS";
-			$replace[]	= $base;
+			$regex_body[]	= "#$integratedURL(.*)\?(.*)\"#mS";
+			$replace_body[]	= $baseURL . 'jfile=$1&$2"';
 
 		}
 
-		$buffer = preg_replace($regex, $replace, $buffer);
+		$buffer = preg_replace($regex_body, $replace_body, $buffer);
 	}
+
+	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
+	{
+		static $regex_header, $replace_header;
+
+		if ( ! $regex_header || ! $replace_header )
+		{
+			// Define our preg arrays
+			$regex_header		= array();
+			$replace_header	= array();
+
+			//convert relative links into absolute links
+			$regex_header[]	= '#(href|src)="./(.*?)"#mS';
+			$replace_header[]	= 'href="'.$integratedURL.'#$1"';
+
+		}
+
+		$buffer = preg_replace($regex_header, $replace_header, $buffer);	}
+
+
 }
 
 

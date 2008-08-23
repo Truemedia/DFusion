@@ -323,5 +323,57 @@ ORDER BY left_id';
         }
     }
 
+	function & getBuffer()
+	{
+		// Get the path
+        $params = JFusionFactory::getParams($this->getJname());
+        $source_path = $params->get('source_path');
+
+		//get the filename
+		$jfile = JRequest::getVar('jfile', '', 'GET', 'STRING');
+		if(!$jfile) {
+			//use the default index.php
+			$jfile = 'index.php';
+		}
+
+		//combine the path and filename
+        if (substr($source_path, -1) == DS) {
+            $index_file = $source_path . $jfile;
+        } else {
+            $index_file = $source_path . DS . $jfile;
+        }
+
+		if ( ! is_file($index_file) ) {
+            JError::raiseWarning(500, 'The path to the SMF index file set in the component preferences does not exist');
+			return null;
+		}
+
+		//set the current directory to phpBB3
+		chdir($source_path);
+
+		/* set scope for variables required later */
+		define('IN_PHPBB', true);
+		global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template;
+
+		// Get the output
+		ob_start();
+		$rs = include_once($index_file);
+		$buffer = ob_get_contents();
+		ob_end_clean();
+
+		//change the current directory back to Joomla.
+		chdir(JPATH);
+
+		// Log an error if we could not include the file
+		if (!$rs) {
+            JError::raiseWarning(500, 'Could not find SMF in the specified directory');
+		}
+
+		return $buffer;
+	}
+
+
+
+
 }
 

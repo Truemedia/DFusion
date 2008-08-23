@@ -11,46 +11,63 @@
 defined('_JEXEC') or die('Restricted access');
 ?>
 
+<script type="text/javascript">
+function autofitIframe(frame,name)
+{
+	var ua, s, i;
 
-<script language="javascript" type="text/javascript">
-    function getElement(aID)
-    {
-        return (document.getElementById) ?
-            document.getElementById(aID) : document.all[aID];
-    }
+	var isIE = false;
+	var version = null;
 
-    function getIFrameDocument(aID){
-        var rv = null;
-        var frame=getElement(aID);
-        // if contentDocument exists, W3C compliant (e.g. Mozilla)
+	ua = navigator.userAgent;
 
-        if (frame.contentDocument)
-            rv = frame.contentDocument;
-        else // bad IE  ;)
+	if ((i = ua.indexOf("MSIE")) >= 0)
+	{
+		isIE = true;
+		version = parseFloat(ua.substr(i + 4));
+	}
 
-            rv = document.frames[aID].document;
-        return rv;
-    }
+	if (isIE)
+	{
+		try
+		{
+			var win = document.getElementById(name).contentWindow.document;
 
-    function adjustMyFrameHeight()
-    {
-        var frame = getElement("blockrandom");
-        var frameDoc = getIFrameDocument("blockrandom");
-        frame.height = frameDoc.body.offsetHeight;
-    }
+			//find the height of the internal page
+			var the_height = win.body.scrollHeight;
 
+			//change the height of the iframe
+			document.getElementById(name).height=the_height;
+			window.scrollTo(0,0);
+		}
+		//An error is raised if the IFrame domain != its container's domain
+		catch(e)
+		{
+			window.status =	'Error: ' + e.number + '; ' + e.description;
+		}
+	}
+	else
+	{
+		var win = document.getElementById(name).contentWindow.document;
 
+		//find the height of the internal page
+		var the_height = win.body.scrollHeight;
 
+		//change the height of the iframe
+		document.getElementById(name).height=the_height;
+		window.scrollTo(0, 0);
+	}
+}
 </script>
+
 <div class="contentpane">
-<iframe
+
+<iframe frameborder='0' id='the_iframe'
 
 <?php if($this->params->get('wrapper_autoheight', 1)) {?>
-onload="adjustMyFrameHeight();"
+onload="autofitIframe(this, 'the_iframe')"
 <?php }?>
 
-id="blockrandom"
-name="iframe"
 src="<?php echo $this->url; ?>""
 width="<?php echo $this->params->get('wrapper_width', '100%'); ?>"
 height="<?php echo $this->params->get('wrapper_height', '500'); ?>"
@@ -61,8 +78,7 @@ allowtransparency="true"
 <?php } else { ?>
 allowtransparency="false"
 <?php } ?>
-
-align="top" frameborder="0" class="wrapper">
+>
 <?php echo JText::_('OLD_BROWSER');?>
 </iframe>
 </div>

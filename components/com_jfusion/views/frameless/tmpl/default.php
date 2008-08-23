@@ -19,14 +19,17 @@ $application = JFactory::getApplication();
 $uri		= JURI::getInstance();
 $frameless = new frameless();
 
-// Set the URL and make sure we have a ? delimiter
-$url	= JRoute::_('index.php?option=com_jfusion&task=frameless&jname=smf');
-$frameless->setBaseURL($url);
+//Get the base URL and make sure we have a ? delimiter
+$baseURL	= JRoute::_('index.php?option=com_jfusion&task=frameless&jname=smf&');
 
-// Make note of the query
+//Get the full URL, making note of the query
 $query	= $uri->getQuery();
-$frameless->setFullURL($url.'?'.$query);
+$url	= $uri->current();
+$fullURL = $url.'?'.$query;
 
+//Get the integrated URL
+$JFusionParam = JFusionfactory::getParams($this->jname);
+$integratedURL =$JFusionParam->get('source_url');
 
 // Get the output from the JFusion plugin
 $JFusionPlugin = JFusionfactory::getPlugin($this->jname);
@@ -34,72 +37,71 @@ $JFusionPlugin = JFusionfactory::getPlugin($this->jname);
 //Get the output buffer
 $buffer =& $JFusionPlugin->getBuffer();
 
-
 if (! $buffer ) {
-	JError::raiseWarning(500, JText::_('NO_BUFFER'));
+    JError::raiseWarning(500, JText::_('NO_BUFFER'));
     return false;
 }
 
-// Do some general parsing
-$frameless->parseBuffer($buffer);
+if (class_exists('tidy') ) {
+    // Parse the output using Tidy
+    $options	= array('wrap' => 0 );
+    $tidy = new tidy();
+    $tidy->parseString($buffer, $options);
+    $root = $tidy->root();
 
-if ( class_exists('tidy') ) {
-	// Parse the output using Tidy
-	$options	= array( 'wrap' => 0 );
-	$tidy = new tidy();
-	$tidy->parseString($buffer, $options);
-	$root = $tidy->root();
+    // Make sure that we have something
+    if (! $root || ! $root->hasChildren()) {
+        JError::raiseWarning(500, JText::_('NO_HTML'));
+        return false;
+    }
 
-	// Make sure that we have something
-	if( ! $root || ! $root->hasChildren()) {
-		JError::raiseWarning(500, JText::_('NO_HTML'));
-		return false;
-	}
+    // Get the important nodes
+    $html = $root->child[1];
+    $head = $html->child[0];
+    $body = $html->child[1];
 
-	// Get the important nodes
-	$html = $root->child[1];
-	$head = $html->child[0];
-	$body = $html->child[1];
+    // Output the headers
+    $document	= JFactory::getDocument();
+    foreach($head->child as $child ) {
+        $name	= $child->name;
+        if ($name == 'script' || $name == 'link' ) {
+			$frameless->parseHeader($child, $baseURL, $fullURL, $integratedURL);
+			$document->addCustomTag($child);
+        }
+    }
 
-	// Output the headers
-	foreach ( $head->child as $child ) {
-		$name	= $child->name;
-		if ( $name == 'script' || $name == 'link' ) {
-			$frameless->addHeader($child);
-		}
-	}
-
-	// Output the body
-	foreach ( $body->child as $child ) {
-		echo $child;
-	}
+    // Output the body
+    foreach($body->child as $child ) {
+		// parse the URL's'
+		$frameless->parseBody($child, $baseURL, $fullURL, $integratedURL);
+        echo $child;
+    }
 } else {
-	$pattern	= '#<head>(.*?)</head>\s*<body>(.*)</body>#';
-	$pattern	= '#<head[^>]*>(.*)<\/head>\s*<body[^>]*>(.*)<\/body>#si';
-	preg_match_all($pattern, $buffer, $data);
+    $pattern	= '#<head>(.*?)</head>\s*<body>(.*)</body>#';
+    $pattern	= '#<head[^>]*>(.*)<\/head>\s*<body[^>]*>(.*)<\/body>#si';
+    preg_match_all($pattern, $buffer, $data);
 
-	// Check if we found something
-	if ( count($data) < 3 ) {
-		JError::raiseWarning(500, JText::_('NO_HTML'));
-	} else {
+    // Check if we found something
+    if (count($data) < 3 ) {
+        JError::raiseWarning(500, JText::_('NO_HTML'));
+    } else {
 
-		// Get the body information
-		if ( isset($data[1][0]) ) {
-			$frameless->addHeader($data[1][0]);
-		}
+        // Add the header information
 
+        if (isset($data[1][0]) ) {
+		    $document	= JFactory::getDocument();
+			//$frameless->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
+			$document->addCustomTag($data[1][0]);
+        }
 
-		// Get the header information
-		if ( isset($data[2][0]) ) {
-			echo $data[2][0];
-		}
-	}
+        // Output the body
+        if (isset($data[2][0]) ) {
+		// 	parse the URL's'
+			$frameless->parseBody($data[2][0], $baseURL, $fullURL, $integratedURL);
+            echo $data[2][0];
+        }
+    }
 }
 
 
-    // Add the headers to Joomla
-    $document	= JFactory::getDocument();
-    $headers	= $frameless->getAllHeaders();
-    foreach($headers as $header ) {
-        $document->addCustomTag($header);
-    }
+

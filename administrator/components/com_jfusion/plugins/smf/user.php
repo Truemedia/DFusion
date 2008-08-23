@@ -51,7 +51,7 @@ class JFusionUser_smf extends JFusionUser{
             $status['error'] = false;
             $status['debug'] = JText::_('USER_EXISTS');
             return $status;
-        } else if ($userlookup) {
+        } elseif ($userlookup) {
             //emails match up
             $status['userinfo'] = $userlookup;
             $status['error'] = JText::_('EMAIL_CONFLICT');
