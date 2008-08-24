@@ -222,12 +222,7 @@ class JFusionPlugin_vbulletin extends JFusionPlugin{
         $db->setQuery($query );
 
         //getting the results
-        $rows = $db->loadObjectList();
-
-        //parse it into an array for later comparison
-        foreach($rows as $record ) {
-            $userlist[$record->username] = $record->email;
-        }
+        $userlist = $db->loadObjectList();
 
         return $userlist;
 

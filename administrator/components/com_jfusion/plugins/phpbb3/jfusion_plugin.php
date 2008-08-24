@@ -358,8 +358,11 @@ ORDER BY left_id';
 		// Get the output
 		ob_start();
 		$rs = include_once($index_file);
-		$buffer = ob_get_contents();
-		ob_end_clean();
+		do
+    {
+        $buffer = ob_get_contents() . $buffer;
+    } while(ob_end_clean());
+
 
 		//change the current directory back to Joomla.
 		chdir(JPATH);

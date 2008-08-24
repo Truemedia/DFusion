@@ -22,19 +22,15 @@ VALUES ('joomla_int', 'Current Joomla Installation', '1.00', '25th May 2008', 'J
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
 VALUES ('joomla_ext', 'External Joomla Installation', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0, 3, 3, 0,  0, 0);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('vbulletin', 'vBulletin 3.6.8', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0,  0, 0, 0,  0, 1);
+VALUES ('vbulletin', 'vBulletin 3.7.x', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0,  0, 0, 0,  0, 1);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
 VALUES ('phpbb3', 'phpBB3','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0, 0, 0, 0, 0, 1);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('smf', 'SMF 1.1.4', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0, 0, 0, 0,  0, 1);
+VALUES ('smf', 'SMF 1.1.x', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0, 0, 0, 0,  0, 1);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
 VALUES ('mybb', 'myBB 1.2.12','1.00','25th May 2008',  'JFusion development team', 'www.jfusion.org/phpbb3/',  0,  3, 0, 0,  0, 1);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
 VALUES ('ipb', 'ipb','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/',  0,  3, 0, 0, 0, 1);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('magento', 'magento 1.0','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/',  0,  3, 0, 0, 0, 0);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('punbb', 'punbb 1.2.17','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/',  0,  3, 0, 0, 0, 1);
 
 DROP TABLE IF EXISTS #__jfusion_users;
 CREATE TABLE #__jfusion_users (
