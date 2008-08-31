@@ -237,6 +237,9 @@ if ($userinfo) {
             echo JText::_('USERID') . ': ' . $plugin_user['userinfo']->userid .'<br/>';
             echo JText::_('NAME') .': ' . $plugin_user['userinfo']->name .'<br/>';
 
+    		//apply the cleartext password to the user object
+    		$plugin_user['userinfo']->password_clear = $credentials['password'];
+
             JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin_name, $joomla_user['userinfo']->userid);
             if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
                 $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);

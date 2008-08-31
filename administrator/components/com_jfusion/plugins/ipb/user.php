@@ -162,4 +162,6 @@ class JFusionUser_ipb extends JFusionUser
         $status['error'] = false;
         return $status;
     }
+
+
 }

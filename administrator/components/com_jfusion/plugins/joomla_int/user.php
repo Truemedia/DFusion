@@ -43,7 +43,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             return $status;
         } else if ($userlookup) {
             //emails do not match up
-            if ($overwrite == 1) {
+            if ($overwrite) {
             	//remove old entries in the userlookup table
 				JFusionFunction::removeUser($userlookup);
 
@@ -69,6 +69,7 @@ class JFusionUser_joomla_int extends JFusionUser{
         		} else {
 	            	$status['userinfo'] = $userinfo;
     	        	$status['error'] = false;
+    	        	$status['debug'] = ' Update was successful';
         	    	return $status;
         		}
 
@@ -86,11 +87,37 @@ class JFusionUser_joomla_int extends JFusionUser{
             $conflict_user = $db->loadObject();
 
             if ($conflict_user) {
-                $status = array();
-            	$status['userinfo'] = $conflict_user;
-                $status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_user->userid . ' JFusionPlugin:' . $this->getJname();
+				if($overwrite){
+	            	//remove old entries in the userlookup table
+					JFusionFunction::removeUser($conflict_user);
 
-                return $status;
+        	    	//generate the filtered integration username
+            		$username_clean = $this->filterUsername($userinfo->username);
+
+					$db =& JFactory::getDBO();
+    	    		$query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . ', name ='.$db->quote($userinfo->name) .' WHERE email =' . $db->Quote($userinfo->email) ;
+       				$db->setQuery($query);
+					if(!$db->query()) {
+						//update failed, return error
+    	        		JError::raiseWarning(0,$db->stderr());
+	    	        	$status['userinfo'] = $userlookup;
+    	    	    	$status['error'] = JText::_('EMAIL_CONFLICT');
+        	    		return $status;
+        			} else {
+	            		$status['userinfo'] = $userinfo;
+    	        		$status['error'] = false;
+    	        		$status['debug'] = ' Username Update was successful';
+        	    		return $status;
+        		}
+
+
+
+				} else {
+    	            $status = array();
+	            	$status['userinfo'] = $conflict_user;
+                	$status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_user->userid . ' JFusionPlugin:' . $this->getJname();
+                	return $status;
+				}
             }
 
             //generate the filtered integration username

@@ -198,6 +198,10 @@ class plgUserJfusion extends JPlugin
         		}
                 JError::raiseWarning('500', $plugin_user['error']);
             } else {
+
+            	//apply the cleartext password to the user object
+    			$plugin_user['userinfo']->password_clear = $credentials['password'];
+
                 JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin->name, $joomla_user['userinfo']->userid);
                 if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
                     $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);

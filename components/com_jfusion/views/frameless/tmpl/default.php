@@ -20,7 +20,14 @@ $uri		= JURI::getInstance();
 $frameless = new frameless();
 
 //Get the base URL and make sure we have a ? delimiter
-$baseURL	= JRoute::_('index.php?option=com_jfusion&task=frameless&jname=smf&');
+$baseURL	= JRoute::_('index.php?option=com_jfusion&task=frameless&jname='.$this->jname);
+
+//append the itemid to allow people to assign Joomla templates
+$Itemid = JRequest::getVar('Itemid', '', 'get');
+if($Itemid){
+	$baseURL .= '&Itemid=' . $Itemid;
+}
+
 
 //Get the full URL, making note of the query
 $query	= $uri->getQuery();
@@ -65,7 +72,7 @@ if (class_exists('tidy') ) {
     foreach($head->child as $child ) {
         $name	= $child->name;
         if ($name == 'script' || $name == 'link' ) {
-			$frameless->parseHeader($child, $baseURL, $fullURL, $integratedURL);
+			$JFusionPlugin->parseHeader($child, $baseURL, $fullURL, $integratedURL);
 			$document->addCustomTag($child);
         }
     }
@@ -73,7 +80,7 @@ if (class_exists('tidy') ) {
     // Output the body
     foreach($body->child as $child ) {
 		// parse the URL's'
-		$frameless->parseBody($child, $baseURL, $fullURL, $integratedURL);
+		$JFusionPlugin->parseBody($child, $baseURL, $fullURL, $integratedURL);
         echo $child;
     }
 } else {
@@ -90,14 +97,14 @@ if (class_exists('tidy') ) {
 
         if (isset($data[1][0]) ) {
 		    $document	= JFactory::getDocument();
-			//$frameless->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
+			$JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
 			$document->addCustomTag($data[1][0]);
         }
 
         // Output the body
         if (isset($data[2][0]) ) {
 		// 	parse the URL's'
-			$frameless->parseBody($data[2][0], $baseURL, $fullURL, $integratedURL);
+			$JFusionPlugin->parseBody($data[2][0], $baseURL, $fullURL, $integratedURL);
             echo $data[2][0];
         }
     }

@@ -39,7 +39,7 @@ class JFusionUser_smf extends JFusionUser{
 			//update the password if we have access to it
 			if($userinfo->password_clear){
             	$password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
-            	$password_salt->passwordSalt = substr(md5(rand()), 0, 4);
+            	$password_salt = substr(md5(rand()), 0, 4);
                 $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $userlookup->userid;
             	$db->setQuery($query );
             	if (!$db->Query()) {
