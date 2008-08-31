@@ -92,7 +92,7 @@ class JFusionUsersync{
 				//update the slave user
 		        $JFusionPlugin = JFusionFactory::getUser($error['slave_jname']);
 		        $JFusionPlugin2 = JFusionFactory::getUser($error['master_jname']);
-				$userinfo = $JFusionPlugin2->getUser(html_entity_decode($error['slave_username']));
+				$userinfo = $JFusionPlugin2->getUser(html_entity_decode($error['master_username']));
 				$status = $JFusionPlugin->updateUser($userinfo,1);
 				if ($status['error']) {
 					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('UPDATE'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . ' ' . JText::_('ERROR') . ': '  . $status['error']. '<br/>';
@@ -223,12 +223,13 @@ class JFusionUsersync{
 
 							echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';
                             $sync_error = array();
-                            $sync_error['master']['username'] = $status['userinfo']->username;
-                            $sync_error['master']['email'] = $status['userinfo']->email;
-                            $sync_error['master']['jname'] = $syncdata['master'];
-                            $sync_error['slave']['username'] = $userinfo->username;
-                            $sync_error['slave']['email'] = $userinfo->email;
                             $sync_error['slave']['jname'] = $jname;
+                            $sync_error['slave']['username'] = $status['userinfo']->username;
+                            $sync_error['slave']['email'] = $status['userinfo']->email;
+                            $sync_error['master']['jname'] = $syncdata['master'];
+                            $sync_error['master']['username'] = $userinfo->username;
+                            $sync_error['master']['email'] = $userinfo->email;
+
                             //save the error for later
                             $syncdata['errors'][] = $sync_error;
 

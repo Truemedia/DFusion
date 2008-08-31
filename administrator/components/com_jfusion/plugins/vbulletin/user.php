@@ -39,17 +39,20 @@ class JFusionUser_vbulletin extends JFusionUser{
         		jimport('joomla.user.helper');
         		$password_salt = JUserHelper::genRandomPassword(3);
 				$password = md5(md5($userinfo->password_clear).$password_salt);
-                $query = 'UPDATE #__user SET password = ' . $db->quote($password). ', salt ' . $db->quote($password_salt). ' WHERE userid  = ' . $userlookup->userid;
+                $query = 'UPDATE #__user SET password = ' . $db->quote($password). ', salt = ' . $db->quote($password_salt). ' WHERE userid  = ' . $userlookup->userid;
             	$db->setQuery($query );
             	if (!$db->Query()) {
-	                $status['error'] = 'Could not update the SMF password: ' . $db->stderr();
+	                $status['error'] = 'Could not update the vbulletin password: ' . $db->stderr();
 	            }
+    	    	$status['debug'] = 'User already exists, password was updated to:' . $password . 'with salt: ' .$password_salt;
+            } else {
+   	    	    $status['debug'] = 'User already exists, password was not updated';
             }
 
             //emails match up
             $status['userinfo'] = $userlookup;
             $status['error'] = false;
-            $status['debug'] = JText::_('USER_EXISTS');
+
             return $status;
         } else if ($userlookup) {
             //emails match up
@@ -94,13 +97,24 @@ class JFusionUser_vbulletin extends JFusionUser{
                 //return the error
                 $status['error'] = 'Error while creating the user: ' . $db->stderr();
                 return $status;
-            } else {
-                //return the good news
-                $status['debug'] = 'Created new user with userid:' . $user->id;
-                $status['error'] = false;
-                $status['userinfo'] = $this->getUser($username);
+            }
+
+	        //prepare the variables
+    	    $userfield = new stdClass;
+			$userfield->userid = $user->userid;
+
+            if (!$db->insertObject('#__userfield', $userfield )) {
+                //return the error
+                $status['error'] = 'Error while creating the userfield: ' . $db->stderr();
                 return $status;
             }
+
+            //return the good news
+            $status['debug'] = 'Created new user with userid:' . $user->userid;
+            $status['error'] = false;
+            $status['userinfo'] = $this->getUser($userinfo->username);
+            return $status;
+
         }
     }
 
@@ -179,18 +193,19 @@ class JFusionUser_vbulletin extends JFusionUser{
 
             if (isset($options['remember'])) {
                 $lifetime = time() + 365*24*60*60;
-                setcookie('usercookie[username]', $userinfo->username, $lifetime, "/" );
-                setcookie('usercookie[password]', $userinfo->password, $lifetime, "/" );
+                setcookie('usercookie[username]', $userinfo->username, $lifetime, $vbCookiePath, $vbCookieDomain );
+                setcookie('usercookie[password]', $userinfo->password, $lifetime, $vbCookiePath, $vbCookieDomain );
                 setcookie($vbCookiePrefix.'userid', $userinfo->userid, $lifetime, $vbCookiePath, $vbCookieDomain );
                 setcookie($vbCookiePrefix.'password', md5($userinfo->password . $vbLicense ), $lifetime, $vbCookiePath, $vbCookieDomain );
-                setcookie('userid', $userinfo->userid, $lifetime, "/" );
+                setcookie('userid', $userinfo->userid, $lifetime, $vbCookiePath, $vbCookieDomain );
 
             } else {
                 setcookie($vbCookiePrefix.'userid', $userinfo->userid, time() + 43200, $vbCookiePath, $vbCookieDomain );
                 setcookie($vbCookiePrefix.'password', md5($userinfo->password . $vbLicense ), time() + 43200, $vbCookiePath, $vbCookieDomain );
-                setcookie('userid', $userinfo->userid, time() + 43200, "/" );
+                setcookie('userid', $userinfo->userid, time() + 43200, $vbCookiePath, $vbCookieDomain );
             }
             $status['error'] = false;
+       		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain;
             $status['debug'] = 'created session';
             return $status;
         } else {

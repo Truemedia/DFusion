@@ -44,32 +44,20 @@ class JFusionUser_joomla_int extends JFusionUser{
         } else if ($userlookup) {
             //emails do not match up
             if ($overwrite) {
-            	//remove old entries in the userlookup table
-				JFusionFunction::removeUser($userlookup);
 
-            	//generate the filtered integration username
-            	$username_clean = $this->filterUsername($userinfo->username);
-
-				//also store the salt if present
-				if ($userinfo->password_salt) {
-					$password = $userinfo->password . ':' . $userinfo->password_salt;
-				} else {
-					$password = $userinfo->password;
-				}
-
+                //we need to update the email
 				$db =& JFactory::getDBO();
-        		$query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . ', name ='.$db->quote($userinfo->name) . ', email = '. $db->quote($userinfo->email) .', password ='.$db->quote($password).' WHERE id =' . $userlookup->userid;
+   	    		$query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE id =' . $userlookup->userid;
        			$db->setQuery($query);
 				if(!$db->query()) {
 					//update failed, return error
-            		JError::raiseWarning(0,$db->stderr());
 	            	$status['userinfo'] = $userlookup;
-    	        	$status['error'] = JText::_('EMAIL_CONFLICT');
+    	        	$status['error'] = 'Error while updating the user email: ' . $db->stderr();
         	    	return $status;
         		} else {
 	            	$status['userinfo'] = $userinfo;
     	        	$status['error'] = false;
-    	        	$status['debug'] = ' Update was successful';
+   	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
         	    	return $status;
         		}
 
@@ -81,44 +69,6 @@ class JFusionUser_joomla_int extends JFusionUser{
             	return $status;
             }
         } else {
-
-            //check for conlicting email addresses
-            $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.email='.$db->Quote($userinfo->email)) ;
-            $conflict_user = $db->loadObject();
-
-            if ($conflict_user) {
-				if($overwrite){
-	            	//remove old entries in the userlookup table
-					JFusionFunction::removeUser($conflict_user);
-
-        	    	//generate the filtered integration username
-            		$username_clean = $this->filterUsername($userinfo->username);
-
-					$db =& JFactory::getDBO();
-    	    		$query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . ', name ='.$db->quote($userinfo->name) .' WHERE email =' . $db->Quote($userinfo->email) ;
-       				$db->setQuery($query);
-					if(!$db->query()) {
-						//update failed, return error
-    	        		JError::raiseWarning(0,$db->stderr());
-	    	        	$status['userinfo'] = $userlookup;
-    	    	    	$status['error'] = JText::_('EMAIL_CONFLICT');
-        	    		return $status;
-        			} else {
-	            		$status['userinfo'] = $userinfo;
-    	        		$status['error'] = false;
-    	        		$status['debug'] = ' Username Update was successful';
-        	    		return $status;
-        		}
-
-
-
-				} else {
-    	            $status = array();
-	            	$status['userinfo'] = $conflict_user;
-                	$status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_user->userid . ' JFusionPlugin:' . $this->getJname();
-                	return $status;
-				}
-            }
 
             //generate the filtered integration username
             $username_clean = $this->filterUsername($userinfo->username);
@@ -134,6 +84,39 @@ class JFusionUser_joomla_int extends JFusionUser{
                 $username_clean .= '_';
                 $db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
             }
+
+            //check for conlicting email addresses
+            $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.email='.$db->Quote($userinfo->email)) ;
+            $conflict_user = $db->loadObject();
+
+            if ($conflict_user) {
+				if($overwrite){
+					//we need to update the username
+					$db =& JFactory::getDBO();
+    	    		$query = 'UPDATE #__users SET username ='.$db->quote($username_clean) .' WHERE email =' . $db->Quote($conflict_user->email) ;
+       				$db->setQuery($query);
+					if(!$db->query()) {
+						//update failed, return error
+	    	        	$status['userinfo'] = $userlookup;
+    	    	    	$status['error'] = 'unable to update the email address: ' . $db->stderr();
+    	    	    	return $status;
+        			} else {
+	            		$status['userinfo'] = $userinfo;
+    	        		$status['error'] = false;
+    	        		$status['debug'] = ' Updated the username from: ' . $conflict_user->username . ' to:' . $username_clean;
+        	    		return $status;
+        		}
+
+
+
+				} else {
+    	            $status = array();
+	            	$status['userinfo'] = $conflict_user;
+                	$status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_user->userid . ' JFusionPlugin:' . $this->getJname();
+                	return $status;
+				}
+            }
+
 
 			//also store the salt if present
 			if ($userinfo->password_salt) {
@@ -198,7 +181,7 @@ class JFusionUser_joomla_int extends JFusionUser{
         }
     }
 
-    function deleteUser($username)
+    function deleteUsername($username)
     {
         //get the database ready
         $db = & JFactory::getDBO();
