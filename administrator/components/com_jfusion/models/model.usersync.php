@@ -103,13 +103,25 @@ class JFusionUsersync{
 			} elseif ($error['action'] == '3') {
 				//delete the master user
 		        $JFusionPlugin = JFusionFactory::getUser($error['master_jname']);
-				$JFusionPlugin->deleteUsername(html_entity_decode($error['master_username']));
+				if($JFusionPlugin->deleteUsername(html_entity_decode($error['master_username']))) {
+					//delete success
+					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . '<br/>';
+				} else {
+					//delete error
+					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . '<br/>';
+				}
+
 			} elseif ($error['action'] == '4') {
 				//delete the slave user
 		        $JFusionPlugin = JFusionFactory::getUser($error['slave_jname']);
-				$JFusionPlugin->deleteUsername(html_entity_decode($error['slave_username']));
+				if($JFusionPlugin->deleteUsername(html_entity_decode($error['slave_username']))) {
+					//delete success
+					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . '<br/>';
+				} else {
+					//delete error
+					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . '<br/>';
+				}
 			}
-
 		}
     }
 

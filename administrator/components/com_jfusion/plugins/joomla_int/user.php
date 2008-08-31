@@ -196,6 +196,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             $user->delete();
             $db->Execute('DELETE FROM #__jfusion_users_plugin WHERE id='.$userid);
             $db->Execute('DELETE FROM #__jfusion_users WHERE id='.$userid);
+            return true;
         } else {
             //this user was NOT create by JFusion. Therefore we need to delete it in the Joomla user table only
 
@@ -206,9 +207,11 @@ class JFusionUser_joomla_int extends JFusionUser{
                 //delete it from the Joomla usertable
                 $user =& JUser::getInstance($userid);
                 $user->delete();
+                return true;
             } else {
                 //could not find user and return an error
                 JError::raiseWarning(0, JText::_('ERROR_DELETE') . $username);
+                return false;
             }
         }
     }

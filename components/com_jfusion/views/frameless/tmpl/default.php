@@ -10,11 +10,6 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-/**
-* load the frameless model
-*/
-require_once(JPATH_SITE .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.frameless.php');
-
 $application = JFactory::getApplication();
 $uri		= JURI::getInstance();
 $frameless = new frameless();
