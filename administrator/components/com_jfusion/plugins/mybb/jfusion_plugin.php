@@ -48,21 +48,21 @@ class JFusionPlugin_mybb extends JFusionPlugin{
 
          //Save the parameters into the standard JFusion params format
          $params = array();
-         $params['database_type'] = $config['dbtype'];
-         $params['database_host'] = $config['hostname'];
-         $params['database_user'] = $config['username'];
-         $params['database_password'] = $config['password'];
-         $params['database_name'] = $config['database'];
-         $params['database_prefix'] = $config['table_prefix'];
+      $params['database_type'] = $config['database']['type'];
+         $params['database_host'] = $config['database']['hostname'];
+         $params['database_user'] = $config['database']['username'];
+         $params['database_password'] = $config['database']['password'];
+         $params['database_name'] = $config['database']['database'];
+         $params['database_prefix'] = $config['database']['table_prefix'];
          $params['source_path'] = $forumPath;
 
          //find the source url to mybb
-         $driver = $config['dbtype'];
-         $host = $config['hostname'];
-         $user = $config['username'];
-         $password = $config['password'];
-         $database = $config['database'];
-         $prefix = $config['table_prefix'];
+         $driver = $params['database_type'];
+         $host = $params['database_host'];
+         $user = $params['database_user'];
+         $password = $params['database_password'];
+         $database = $params['database_name'];
+         $prefix = $params['database_prefix'];
          $options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix );
          $bb =& JDatabase::getInstance($options );
          $query = "SELECT value FROM #__settings WHERE name = 'bburl'";

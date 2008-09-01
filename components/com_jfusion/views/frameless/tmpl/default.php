@@ -12,10 +12,9 @@ defined('_JEXEC') or die('Restricted access');
 
 $application = JFactory::getApplication();
 $uri		= JURI::getInstance();
-$frameless = new frameless();
 
 //Get the base URL and make sure we have a ? delimiter
-$baseURL	= JRoute::_('index.php?option=com_jfusion&task=frameless&jname='.$this->jname);
+$baseURL	= JRoute::_('index.php?option=com_jfusion&view=frameless&jname='.$this->jname);
 
 //append the itemid to allow people to assign Joomla templates
 $Itemid = JRequest::getVar('Itemid', '', 'get');
