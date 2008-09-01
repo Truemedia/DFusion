@@ -8,7 +8,15 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-defined('_JEXEC') or die('Restricted access'); ?>
+defined('_JEXEC') or die('Restricted access');
+
+/**
+* Load the JFusion framework
+*/
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+JFusionFunction::displayDonate();
+
+?>
 
 <table class="adminform"><tr>
 <td><a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a></td>
@@ -16,15 +24,15 @@ defined('_JEXEC') or die('Restricted access'); ?>
 <td><a href="index.php?option=com_jfusion&task=synchistory"><?php echo JText::_('SYNC_HISTORY');?></a></td>
 </tr></table></br><br/>
 
-<script type="text/javascript" src="<?php echo 'components/com_jfusion/js/moodalbox.js'; ?>"></script>
-<link rel="stylesheet" href="<?php echo 'components/com_jfusion/css/moodalbox.css'; ?>" type="text/css" media="screen" />
+<script type="text/javascript" src="<?php echo 'components'.DS.'com_jfusion'.DS.'js'.DS.'moodalbox.js'; ?>"></script>
+<link rel="stylesheet" href="<?php echo 'components'.DS.'com_jfusion'.DS.'css'.DS.'moodalbox.css'; ?>" type="text/css" media="screen" />
 
 
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/synchistory.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'synchistory.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('SYNC_HISTORY'); ?></h2></td></tr></table><br/><br/><br/>
 <br/><br/><br/>
 

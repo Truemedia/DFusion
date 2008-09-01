@@ -89,10 +89,28 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
 
             } else {
-                //this could be a username conflict -> return an error
-                $status['userinfo'] = $userlookup;
-                $status['error'] = 'There is an email conflict with userid:' . $userlookup->userid;
-                return $status;
+            if ($overwrite) {
+                //we need to update the email
+   	    		$query = 'UPDATE #__users SET user_email ='.$db->quote($userinfo->email) .' WHERE user_id =' . $userlookup->userid;
+       			$db->setQuery($query);
+				if(!$db->query()) {
+					//update failed, return error
+	            	$status['userinfo'] = $userlookup;
+    	        	$status['error'] = 'Error while updating the user email: ' . $db->stderr();
+        	    	return $status;
+        		} else {
+	            	$status['userinfo'] = $userinfo;
+    	        	$status['error'] = false;
+   	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
+        	    	return $status;
+        		}
+            } else {
+				//overwite disabled return an error
+            	$status['userinfo'] = $userlookup;
+            	$status['error'] = JText::_('EMAIL_CONFLICT');
+            	return $status;
+            }
+
             }
         } else {
             //we need to create a new user

@@ -8,7 +8,15 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-defined('_JEXEC') or die('Restricted access'); ?>
+defined('_JEXEC') or die('Restricted access');
+
+/**
+* Load the JFusion framework
+*/
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+JFusionFunction::displayDonate();
+
+?>
 
 
 <script language="javascript" type="text/javascript">
@@ -68,9 +76,9 @@ form.submit();
 <?php echo $this->toolbar; ?>
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/manager.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'manager.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_MANAGER'); ?></h2></td></tr></table>
 <? echo JText::_('PLUGIN_MANAGER_INSTR'); ?><br/><br/>
 
@@ -111,15 +119,15 @@ if ($row_count == 1){
 
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/install.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'install.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_INSTALL'); ?></h2></td></tr></table>
 <? echo JText::_('PLUGIN_INSTALL_INSTR'); ?><br/><br/>
 
 
 <table class="adminform"><tr><td>
-	<img src="<?php echo 'components/com_jfusion/images/folder_zip.png'; ?>" height="75px" width="75px">
+	<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'folder_zip.png'; ?>" height="75px" width="75px">
 </td><td>
 	<table><tr><th colspan="2">
 	<?php echo JText::_( 'UPLOAD_PACKAGE' ); ?>
@@ -132,7 +140,7 @@ if ($row_count == 1){
 </td></tr></table>
 
 <table class="adminform"><tr><td>
-	<img src="<?php echo 'components/com_jfusion/images/folder_dir.png'; ?>" height="75px" width="75px">
+	<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'folder_dir.png'; ?>" height="75px" width="75px">
 </td><td>
 	<table><tr><th colspan="2">
 	<?php echo JText::_( 'INSTALL_FROM_DIRECTORY' ); ?>
@@ -145,7 +153,7 @@ if ($row_count == 1){
 </td</tr></table>
 
 <table class="adminform"><tr><td>
-	<img src="<?php echo 'components/com_jfusion/images/folder_url.png'; ?>" height="75px" width="75px">
+	<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'folder_url.png'; ?>" height="75px" width="75px">
 </td><td>
 	<table><tr><th colspan="2">
 	<?php echo JText::_( 'INSTALL_FROM_URL' ); ?>

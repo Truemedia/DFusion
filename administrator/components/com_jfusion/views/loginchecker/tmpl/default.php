@@ -8,7 +8,15 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-defined('_JEXEC') or die('Restricted access'); ?>
+defined('_JEXEC') or die('Restricted access');
+
+/**
+* Load the JFusion framework
+*/
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+JFusionFunction::displayDonate();
+
+?>
 
 <script language="javascript" type="text/javascript">
 <!--
@@ -46,9 +54,9 @@ radioObj[i].checked = true;
 
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/login_checker.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'login_checker.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('LOGIN_CHECKER'); ?></h2></td></tr></table><br/>
 
 <font size="2"><?php echo JText::_('LOGIN_CHECKER_TEXT'); ?></font>

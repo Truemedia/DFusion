@@ -8,7 +8,15 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-defined('_JEXEC') or die('Restricted access'); ?>
+defined('_JEXEC') or die('Restricted access');
+
+/**
+* Load the JFusion framework
+*/
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+JFusionFunction::displayDonate();
+
+?>
 
 <style type="text/css"> .icon-32-addusers{
 background-image: url(templates/khepri/images/toolbar/icon-32-adduser.png);
@@ -34,9 +42,9 @@ return;
 <?php echo $this->toolbar; ?>
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/editor.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'editor.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_EDITOR'); ?></h2></td></tr></table><br/>
 
 <?php echo $this->parameters; ?>

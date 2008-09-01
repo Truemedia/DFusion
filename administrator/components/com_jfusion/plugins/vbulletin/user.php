@@ -55,6 +55,29 @@ class JFusionUser_vbulletin extends JFusionUser{
 
             return $status;
         } else if ($userlookup) {
+
+            if ($overwrite) {
+                //we need to update the email
+   	    		$query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE userid =' . $userlookup->userid;
+       			$db->setQuery($query);
+				if(!$db->query()) {
+					//update failed, return error
+	            	$status['userinfo'] = $userlookup;
+    	        	$status['error'] = 'Error while updating the user email: ' . $db->stderr();
+        	    	return $status;
+        		} else {
+	            	$status['userinfo'] = $userinfo;
+    	        	$status['error'] = false;
+   	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
+        	    	return $status;
+        		}
+            } else {
+				//overwite disabled return an error
+            	$status['userinfo'] = $userlookup;
+            	$status['error'] = JText::_('EMAIL_CONFLICT');
+            	return $status;
+            }
+
             //emails match up
             $status['userinfo'] = $userlookup;
             $status['error'] = JText::_('EMAIL_CONFLICT');

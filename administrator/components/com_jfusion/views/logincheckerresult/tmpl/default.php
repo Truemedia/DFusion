@@ -10,6 +10,12 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+/**
+* Load the JFusion framework
+*/
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+JFusionFunction::displayDonate();
+
 //output the header?>
 <table><tr><td width="100px">
 <img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">

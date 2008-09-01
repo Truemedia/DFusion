@@ -378,5 +378,26 @@ class JFusionFunction{
 
     }
 
+    function displayDonate(){
+    	?>
+<table class="adminform"><tr><td>Please help support the JFusion project with a donation. This will ensure the continued development of this revolutionary project.</td><td>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_donations"/>
+<input type="hidden" name="business" value="webmaster@jfusion.org"/>
+<input type="hidden" name="item_name" value="jfusion.org"/>
+<input type="hidden" name="no_shipping" value="0"/>
+<input type="hidden" name="no_note" value="1"/>
+<input type="hidden" name="currency_code" value="AUD"/>
+<input type="hidden" name="tax" value="0"/>
+<input type="hidden" name="lc" value="AU"/>
+<input type="hidden" name="bn" value="PP-DonationsBF"/>
+<input type="image" src="https://www.paypal.com/en_AU/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal donation button."/>
+<img alt="" border="0" src="https://www.paypal.com/en_AU/i/scr/pixel.gif" width="1" height="1"/>
+</form></td></tr></form>
+
+    	<?php
+
+    }
+
 }
 

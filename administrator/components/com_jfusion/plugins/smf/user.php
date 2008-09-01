@@ -52,10 +52,33 @@ class JFusionUser_smf extends JFusionUser{
             $status['debug'] = JText::_('USER_EXISTS');
             return $status;
         } elseif ($userlookup) {
-            //emails match up
-            $status['userinfo'] = $userlookup;
-            $status['error'] = JText::_('EMAIL_CONFLICT');
-            return $status;
+
+            //emails do not match up
+            if ($overwrite) {
+                //we need to update the email
+				$db =& JFactory::getDBO();
+   	    		$query = 'UPDATE #__users SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $userlookup->userid;
+       			$db->setQuery($query);
+				if(!$db->query()) {
+					//update failed, return error
+	            	$status['userinfo'] = $userlookup;
+    	        	$status['error'] = 'Error while updating the user email: ' . $db->stderr();
+        	    	return $status;
+        		} else {
+	            	$status['userinfo'] = $userinfo;
+    	        	$status['error'] = false;
+   	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
+        	    	return $status;
+        		}
+
+
+            } else {
+				//overwite disabled return an error
+            	$status['userinfo'] = $userlookup;
+            	$status['error'] = JText::_('EMAIL_CONFLICT');
+            	return $status;
+            }
+
         } else {
 
             //we need to create a new SMF user
