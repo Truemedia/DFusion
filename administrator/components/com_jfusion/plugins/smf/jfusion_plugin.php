@@ -304,9 +304,6 @@ class JFusionPlugin_smf extends JFusionPlugin{
 			$regex_body[]	= "#$integratedURL(.*)\?(.*)\"#mS";
 			$replace_body[]	= $baseURL . '&jfile=$1&$2"';
 
-			//convert action URLs inside forms to absolute URLs
-			//$regex_body[]	= '#action="(.*)"#mS';
-			//$replace_body[]	= 'action="'.$integratedURL.'/"';
 
 		}
 

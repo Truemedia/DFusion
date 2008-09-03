@@ -245,6 +245,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 $status['debug'] = 'Created new user with userid:' . $user->id;
                 $status['error'] = false;
                 $status['userinfo'] = $this->getUser($username_clean);
+                $status['action'] = 'created';
                 return $status;
 
             }

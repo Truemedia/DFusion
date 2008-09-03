@@ -393,7 +393,7 @@ class JFusionFunction{
 <input type="hidden" name="bn" value="PP-DonationsBF"/>
 <input type="image" src="https://www.paypal.com/en_AU/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal donation button."/>
 <img alt="" border="0" src="https://www.paypal.com/en_AU/i/scr/pixel.gif" width="1" height="1"/>
-</form></td></tr></form>
+</form></td></tr></table>
 
     	<?php
 

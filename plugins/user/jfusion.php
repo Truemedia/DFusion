@@ -200,7 +200,7 @@ class plgUserJfusion extends JPlugin
             } else {
 
             	//apply the cleartext password to the user object
-    			$plugin_user['userinfo']->password_clear = $credentials['password'];
+    			$plugin_user['userinfo']->password_clear = $user['password'];
 
                 JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin->name, $joomla_user['userinfo']->userid);
                 if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {

@@ -28,6 +28,10 @@
 		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
 		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name="cookie_name" type="text" size="40" default="" description="COOKIE_NAME" />
+
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="smf_help" type="helptext" default="SMF_DUAL_TEXT" />
+
 	</params>
 </install>

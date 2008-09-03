@@ -137,6 +137,7 @@ class JFusionUser_smf extends JFusionUser{
                 $status['debug'] = 'Created new user with userid:' . $user->ID_MEMBER;
                 $status['error'] = false;
                 $status['userinfo'] = $this->getUser($userinfo->username);
+                $status['action'] = 'created';
                 return $status;
             }
         }
@@ -181,26 +182,9 @@ class JFusionUser_smf extends JFusionUser{
     function destroySession($userinfo, $options)
     {
         $params = JFusionFactory::getParams($this->getJname());
-        $cookiename = $params->get('cookiename');
+        $cookiename = $params->get('cookie_name');
 
-        //check to see if we can find a SMF session
-        if (isset($_COOKIE[$cookiename])) {
-            $db = JFusionFactory::getDatabase($this->getJname());
-            $query = 'DELETE FROM #__sessions WHERE session_id = ' . $db->Quote($_COOKIE[$cookiename]) . ' LIMIT 1';
-            $db->setQuery($query );
-            if ($db->Query()) {
-                $status['debug'] = 'Destroyed the SMF session using the smf_api.php';
-                $status['error'] = false;
-                return $status;
-            } else {
-                $status['error'] = 'Could not destroy session: ' . $db->stderr();
-                return $status;
-            }
-        } else {
-            $status['error'] = 'Could not find a SMF session cookie and therefore could not logout. Please set your cookies to .yourdomain.com in SMF in order for Joomla to logout SMF';
-            return $status;
-        }
-    }
+                   setcookie($cookiename,'',  time()-3600);    }
 
     function createSession($userinfo, $options)
     {
