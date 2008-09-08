@@ -248,7 +248,7 @@ class JFusionPlugin_mybb extends JFusionPlugin{
     	$db->setQuery( $query );
     	$disableregs = $db->loadResult();
 
-		if ($disableregs == 'no') {
+		if ($disableregs == '0') {
 			return true;
 		} else {
 			return false;
@@ -280,7 +280,7 @@ class JFusionPlugin_mybb extends JFusionPlugin{
 			return null;
 		}
 
-		//set the current directory to phpBB3
+		//set the current directory to MyBB
 		chdir($source_path);
 
 		/* set scope for variables required later */

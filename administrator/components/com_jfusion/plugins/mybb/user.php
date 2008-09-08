@@ -131,13 +131,13 @@ class JFusionUser_mybb extends JFusionUser{
 
       	// Set cookie values
       	$name='mybbuser';
-      	$value=$user->uid.'_'.$user->loginkey;
+		$value=$user->uid.'_'.$user->loginkey;
       	$expires = null;
       	$remember='no';
       	$httponly=true;
 
    		// Creating Forum Cookies
-   		//adopted from myBB function my_setcookie() in inc/functions.php
+   		//adopted from myBB function  in inc/functions.php
       	if(!$cookiepath){
         	$cookiepath = "/";
       	}
