@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
   <params addpath="/administrator/components/com_jfusion/elements">
+		<param name="visual_integration" type="radio" default="1"
+			description="VISUAL_INTEGRATION">
+			<option value="wrapper">WRAPPER</option>
+			<option value="frameless">FRAMELESS</option>
+		</param>
+		<param name="JFusionPlugin" type="JFusionPlugins" default=""
+			label="JFUSION_PLUGIN"
+			description="JFUSION_PLUGIN_DESCR" />
+		</params>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="wrapper_scroll" type="radio" default="auto"
 			description="WRAPPER_SCROLL">
 			<option value="no">NO</option>
@@ -21,8 +31,4 @@
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</param>
-		<param name="JFusionPlugin" type="JFusionPlugins" default=""
-			label="JFUSION_PLUGIN"
-			description="JFUSION_PLUGIN_DESCR" />
-		</params>
 </config>

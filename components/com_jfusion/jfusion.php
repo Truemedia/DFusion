@@ -31,7 +31,7 @@ $classname    = 'JFusionControllerFrontEnd'.$controller;
 $controller   = new $classname( );
 
 // Perform the Request task
-$controller->execute( JRequest::getVar( 'view', 'wrapper' ) );
+$controller->execute( 'integrate' );
 
 // Redirect if set by the controller
 $controller->redirect();

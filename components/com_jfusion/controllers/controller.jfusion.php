@@ -27,20 +27,11 @@ class JFusionControllerFrontEnd extends JController
 {
 
 /**
- * Displays the integrated software in an iFrame
+ * Displays the integrated software
  */
-function wrapper()
+function integrate()
 {
-	JRequest::setVar('view', 'wrapper');
-	parent::display();
-}
-
-/**
- * Displays the integrated software inside Joomla without a frame
- */
-function frameless()
-{
-	JRequest::setVar('view', 'frameless');
+	JRequest::setVar('view', 'integrate');
 	parent::display();
 }
 
