@@ -27,12 +27,32 @@ class JFusionControllerFrontEnd extends JController
 {
 
 /**
- * Displays the integrated software
+ * Displays the integrated software inside Joomla without a frame
  */
-function integrate()
+function displayplugin()
 {
-	JRequest::setVar('view', 'integrate');
-	parent::display();
+	//find out if there is an itemID with the view variable
+	$menuitemid = JRequest::getInt( 'Itemid' );
+	if ($menuitemid){
+               $db =& JFactory::getDBO();
+		$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
+		$menu_data = $db->loadResult();
+    	$db->setQuery($query);
+	    $params = $db->loadResult();
+    	$menu_param = new JParameter($params, '');
+	    $jview =  $menu_param->get('visual_integration');
+	} else {
+		$jview = JRequest::getVar('view');
+	}
+
+    if($jview){
+		JRequest::setVar('view', $jview);
+		parent::display();
+    } else {
+    	echo JText::_('NO_VIEW_SELECTED');
+        return false;
+    }
+
 }
 
 

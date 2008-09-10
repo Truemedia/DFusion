@@ -6,11 +6,13 @@
 			<option value="wrapper">WRAPPER</option>
 			<option value="frameless">FRAMELESS</option>
 		</param>
+		<param name="limits" type="helptext" default="frameless_limits" />
+
 		<param name="JFusionPlugin" type="JFusionPlugins" default=""
 			label="JFUSION_PLUGIN"
 			description="JFUSION_PLUGIN_DESCR" />
 		</params>
-		<param name="@spacer" type="spacer" default="" label=""	description="" />
+
 		<param name="wrapper_scroll" type="radio" default="auto"
 			description="WRAPPER_SCROLL">
 			<option value="no">NO</option>
