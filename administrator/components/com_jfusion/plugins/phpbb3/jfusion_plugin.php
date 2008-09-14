@@ -86,7 +86,7 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
                 JError::raiseWarning(0, JText::_('NO_DATABASE'));
                 return false;
             } else {
-            	$vdb->setQuery($query);
+                $vdb->setQuery($query);
                 $rows = $vdb->loadObjectList();
                 foreach($rows as $row ) {
                     $config[$row->config_name] = $row->config_value;
@@ -100,16 +100,16 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
             }
 
             //check for trailing slash
-			if (substr($config['server_name'], -1) == '/' && substr($config['script_path'], 0, 1) == '/') {
-				//too many slashes, we need to remove one
-                 $params['source_url'] = $config['server_name'] . substr($config['script_path'],1);
-			} elseif (substr($config['server_name'], -1) == '/' || substr($config['script_path'], 0, 1) == '/') {
-				//the correct number of slashes
-                 $params['source_url'] = $config['server_name'] . $config['script_path'];
-			} else {
-				//no slashes found, we need to add one
-                 $params['source_url'] = $config['server_name'] . '/' . $config['script_path'] ;
-			}
+            if (substr($config['server_name'], -1) == '/' && substr($config['script_path'], 0, 1) == '/') {
+                //too many slashes, we need to remove one
+                $params['source_url'] = $config['server_name'] . substr($config['script_path'],1);
+            } else if (substr($config['server_name'], -1) == '/' || substr($config['script_path'], 0, 1) == '/') {
+                //the correct number of slashes
+                $params['source_url'] = $config['server_name'] . $config['script_path'];
+            } else {
+                //no slashes found, we need to add one
+                $params['source_url'] = $config['server_name'] . '/' . $config['script_path'] ;
+            }
 
             //return the parameters so it can be saved permanently
             return $params;
@@ -183,9 +183,9 @@ class JFusionPlugin_phpbb3 extends JFusionPlugin{
                     } else {
                         $url = '';
                     }
-                } else if($result->user_avatar_type == 2) {
-                   // AVATAR REMOTE URL
-                   $url = $result->user_avatar;
+                } else if ($result->user_avatar_type == 2) {
+                    // AVATAR REMOTE URL
+                    $url = $result->user_avatar;
                 } else {
                     $url = '';
                 }
@@ -323,131 +323,135 @@ ORDER BY left_id';
         }
     }
 
-	function & getBuffer()
-	{
-		// Get the path
+    function & getBuffer()
+    {
+        // Get the path
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
 
-		//get the filename
-		$jfile = JRequest::getVar('jfile', '', 'GET', 'STRING');
-		if(!$jfile) {
-			//use the default index.php
-			$jfile = 'index.php';
-		}
+        //get the filename
+        $jfile = JRequest::getVar('jfile');
 
-		//combine the path and filename
-        if (substr($source_path, -1) == DS) {
-            $index_file = $source_path . $jfile;
-        } else {
-            $index_file = $source_path . DS . $jfile;
+        //redirect directly to admincp if needed
+        if ($jfile == 'adm/index.php') {
+
+            $url ="Location: " . $params->get('source_url') . 'adm/index.php' ;
+            header($url);
         }
 
-		if ( ! is_file($index_file) ) {
+        if (!$jfile) {
+            //use the default index.php
+            $jfile = 'index.php';
+        }
+
+        //combine the path and filename
+        if (substr($source_path, -1) == DS) {
+            $index_file = $source_path . basename($jfile);
+        } else {
+            $index_file = $source_path . DS . basename($jfile);
+        }
+
+        if (! is_file($index_file) ) {
             JError::raiseWarning(500, 'The path to the requested does not exist');
-			return null;
-		}
+            return null;
+        }
 
-		//set the current directory to phpBB3
-		chdir($source_path);
+        //set the current directory to phpBB3
+        chdir($source_path);
 
-		/* set scope for variables required later */
-		define('IN_PHPBB', true);
-		global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template;
+        /* set scope for variables required later */
+        define('IN_PHPBB', true);
+        global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template;
 
-		// Get the output
-		ob_start();
-		include_once($index_file);
+        // Get the output
+        ob_start();
+        include_once($index_file);
         $buffer = ob_get_contents() ;
         ob_end_clean();
 
-		//change the current directory back to Joomla.
-		chdir(JPATH_SITE);
+        //change the current directory back to Joomla.
+        chdir(JPATH_SITE);
 
-		return $buffer;
-	}
-
-
-
-	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
-	{
-		static $regex_body, $replace_body;
-
-		if ( ! $regex_body || ! $replace_body )
-		{
-			// Define our preg arrays
-			$regex_body		= array();
-			$replace_body	= array();
-
-			//convert relative links with query into absolute links
-			$regex_body[]	= '#href="./(.*?)\?(.*?)"#mS';
-			$replace_body[]	= 'href="'.$baseURL.'&jfile=$1&$2"';
-
-			//convert relative links without query into absolute links
-			$regex_body[]	= '#href="./(.*?)"#mS';
-			$replace_body[]	= 'href="'.$baseURL.'&jfile=$1"';
-
-			//keep post action URLs as phpBB3 URLSs
-			$regex_body[]	= '#action="./(.*?)"#mS';
-			$replace_body[]	= 'action="'.$integratedURL.'$1/"';
-
-			//update site URLs with query to the new Joomla URLS
-			$regex_body[]	= "#$integratedURL(.*?)\?(.*?)\"#mS";
-			$replace_body[]	= $baseURL . '&jfile=$1&$2"';
-
-			//update site URLs without query to the new Joomla URLS
-			$regex_body[]	= "#$integratedURL(.*?)\"#mS";
-			$replace_body[]	= $baseURL . '&jfile=$1"';
-
-
-			//convert relative links from images into absolute links
-			$regex_body[]	= '#(src="|url\()./(.*)("|\))#mS';
-			$replace_body[]	= '$1'.$integratedURL.'$2$3"';
-
-			//convert links to the same page with anchors
-			$regex_body[]	= '#href="\#(.*?)"#';
-			$replace_body[]	= 'href="'.$fullURL.'#$1"';
-
-
-		}
-
-		$buffer = preg_replace($regex_body, $replace_body, $buffer);
-	}
-
-	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
-	{
-		static $regex_header, $replace_header;
-
-		if ( ! $regex_header || ! $replace_header )
-		{
-			// Define our preg arrays
-			$regex_header		= array();
-			$replace_header	= array();
-
-			//convert relative links into absolute links
-			$regex_header[]	= '#(href|src)=("./|"/)(.*?)"#mS';
-			$replace_header[]	= 'href="'.$integratedURL.'$3"';
-
-            //convert redirect URLS to the new Joomla URL
-
-			$regex_body[]	= "#$integratedURL(.*)\?(.*)\"#mS";
-			$replace_body[]	= $baseURL . '&jfile=$1&$2"';
-
-
-            //convert redirect URLS to the new Joomla URL
-			$regex_body[]	= "$integratedURL(.*)\"#mS";
-			$replace_body[]	= $baseURL . '&jfile=$1"';
+        return $buffer;
+    }
 
 
 
+    function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
+    {
+        static $regex_body, $replace_body;
 
-		}
+        if (! $regex_body || ! $replace_body ) {
+            // Define our preg arrays
+            $regex_body		= array();
+            $replace_body	= array();
 
-		$buffer = preg_replace($regex_header, $replace_header, $buffer);
-}
+            //convert relative links with query into absolute links
+            $regex_body[]	= '#href="./(.*?)\?(.*?)"#mS';
+            $replace_body[]	= 'href="'.$baseURL.'&jfile=&"';
 
+            //convert relative links without query into absolute links
+            $regex_body[]	= '#href="./(.*?)"#mS';
+            $replace_body[]	= 'href="'.$baseURL.'&jfile="';
 
+            //convert relative links from images into absolute links
+            $regex_body[]	= '#(src="|url\()./(.*?)("|\))#mS';
+            $replace_body[]	= ''.$integratedURL.'"';
 
+            //convert links to the same page with anchors
+            $regex_body[]	= '#href="\#(.*?)"#';
+            $replace_body[]	= 'href="'.$fullURL.'&#"';
 
+            //update site URLs to the new Joomla URLS
+            //$regex_body[]	= "#$integratedURL(.*?)\?(.*?)\"#mS";
+            //$replace_body[]	= $baseURL . '&jfile=&"';
+
+            //needed to make form action urls to be properly redirected
+            $jfile = JRequest::getVar('jfile');
+
+            //prepare the additional post variables
+            $Itemid = JRequest::getVar('Itemid');
+            if ($Itemid) {
+                $add_post = '<input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="Itemid" value="' . $Itemid . '">';
+            } else {
+                $jname = JRequest::getVar('jname');
+                $add_post = '<input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="view" value="frameless"><input type="hidden" name="jname" value="' . $jname . '">';
+            }
+
+            // make sure search actions always go to search.php
+            $regex_body[]	= '#action="./search.php(\?.*?"|")(.*?)>#mS';
+            $replace_body[]	= 'action="'.$baseURL . '&jfile=search.php& ><input type="hidden" name="jfile" value="search.php">' . $add_post;
+
+            //convert all other action URLs to the current jfile name
+            $regex_body[]	= '#action="./(.*?)\?(.*?)"(.*?)>#mS';
+            $replace_body[]	= 'action="'.$baseURL . '&jfile=' . $jfile . '&" ><input type="hidden" name="jfile" value="'. $jfile . '">' . $add_post;
+
+            $regex_body[]	= '#action="./(.*?)"(.*?)>#mS';
+            $replace_body[]	= 'action="'.$baseURL . '" ><input type="hidden" name="jfile" value="'.$jfile.'">' . $add_post;
+        }
+
+        $buffer = preg_replace($regex_body, $replace_body, $buffer);
+    }
+
+    function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
+    {
+        static $regex_header, $replace_header;
+
+        if (! $regex_header || ! $replace_header ) {
+            // Define our preg arrays
+            $regex_header		= array();
+            $replace_header	= array();
+
+            //convert relative links into absolute links
+            $regex_header[]	= '#(href|src)=("./|"/)(.*?)"#mS';
+            $replace_header[]	= 'href="'.$integratedURL.'"';
+
+            //allow for redirects
+            $regex_header[] =  '#url='.JURI::base() .'(.*?)\?(.*?)"#mS';
+            $replace_header[]	= 'url='.$baseURL.'&jfile=&"';
+
+        }
+        $buffer = preg_replace($regex_header, $replace_header, $buffer);
+    }
 }
 
