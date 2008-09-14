@@ -180,10 +180,6 @@ class JFusionUsersync{
                             }
                             $syncdata['slave_data'][$i]['total'] -= 1;
                         }
-
-						//add the offsets in order for the resume function to work
-
-
                         //update the database
                         JFusionUsersync::updateSyncdata($syncdata);
         			}
