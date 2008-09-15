@@ -110,11 +110,12 @@ class JFusionUser_mybb extends JFusionUser{
                 //we can update the password
                 jimport('joomla.user.helper');
                 $user->salt = JUserHelper::genRandomPassword(6);
-                $user->password = md5(md5($userinfo->password_salt).md5($userinfo->password_clear));
+                $user->password = md5(md5($user->salt).md5($userinfo->password_clear));
                 $user->loginkey  = JUserHelper::genRandomPassword(50);
             } else {
                 $user->password = $userinfo->password;
                 $user->salt = $userinfo->password_salt;
+                $user->loginkey  = JUserHelper::genRandomPassword(50);
             }
 
             $user->usergroup = $usergroup;
@@ -141,7 +142,7 @@ class JFusionUser_mybb extends JFusionUser{
     {
         // Get user info from database
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT uid as userid, username,email, usergroup, password, salt as password_salt FROM #__users WHERE username=' . $db->Quote($username);
+        $query = 'SELECT uid as userid, username, username as name, email, usergroup, password, salt as password_salt FROM #__users WHERE username=' . $db->Quote($username);
         $db->setQuery($query );
         $result = $db->loadObject();
 
