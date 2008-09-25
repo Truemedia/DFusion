@@ -18,12 +18,6 @@ JFusionFunction::displayDonate();
 
 ?>
 
-<table class="adminform"><tr>
-<td><a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a></td>
-<td><a href="index.php?option=com_jfusion&task=syncslave"><?php echo JText::_('SYNC_SLAVE');?></a></td>
-<td><a href="index.php?option=com_jfusion&task=synchistory"><?php echo JText::_('SYNC_HISTORY');?></a></td>
-</tr></table></br><br/>
-
 <script type="text/javascript" src="<?php echo 'components'.DS.'com_jfusion'.DS.'js'.DS.'moodalbox.js'; ?>"></script>
 <link rel="stylesheet" href="<?php echo 'components'.DS.'com_jfusion'.DS.'css'.DS.'moodalbox.css'; ?>" type="text/css" media="screen" />
 

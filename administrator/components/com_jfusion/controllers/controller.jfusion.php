@@ -330,20 +330,11 @@ class JFusionController extends JController
 
 
     /**
-* Displays the usersync into slave screen
-*/
-    function syncslave()
-    {
-        JRequest::setVar('view', 'syncslave');
-        parent::display();
-    }
-
-    /**
 * Displays the usersync into master screen
 */
-    function syncmaster()
+    function syncoptions()
     {
-        JRequest::setVar('view', 'syncmaster');
+        JRequest::setVar('view', 'syncoptions');
         parent::display();
     }
 

@@ -18,12 +18,6 @@ JFusionFunction::displayDonate();
 
 ?>
 
-<table class="adminform"><tr>
-<td><a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a></td>
-<td><a href="index.php?option=com_jfusion&task=syncslave"><?php echo JText::_('SYNC_SLAVE');?></a></td>
-<td><a href="index.php?option=com_jfusion&task=synchistory"><?php echo JText::_('SYNC_HISTORY');?></a></td>
-</tr></table></br><br/>
-
 <style type="text/css">
 
 #log {
@@ -202,17 +196,16 @@ window.addEvent('domready', function() {
 </h3><br/>
 
 <div id="ajax_bar"><b>
-<?php echo JText::_('SYNC_MASTER_HEAD');?>
-</div>
-<br/>
-
-
+<?php echo JText::_('SYNC_DIRECTION_SELECT');?>&nbsp;&nbsp;&nbsp;
+<SELECT name="action">
+<OPTION class="master"><?php echo JText::_('SYNC_MASTER');?>
+<OPTION class="slave"><?php echo JText::_('SYNC_SLAVE');?>
+</SELECT></div><br/>
 
 <div id="log_res">
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="syncstatus" />
-<input type="hidden" name="action" value="master" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
 <table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
@@ -256,7 +249,7 @@ window.addEvent('domready', function() {
     ?>][total]" value="<?php echo $slave['total'];
     ?>" />
     </td><td>
-    <?php echo JText::_('SYNC_INTO_MASTER');
+    <?php echo JText::_('SYNC_SELECT_PLUGIN');
     ?><input type="checkbox" name="slave[<?php echo $slave['jname'];
     ?>][sync_into_master]" value="1">
     </td></tr>
@@ -268,10 +261,18 @@ window.addEvent('domready', function() {
 </table></form></div>
 <br/><div id="counter"></div><br/>
 
-<div id="ajax_bar"><b><?php echo JText::_('SYNC_MASTER_INSTR');?>
-</b>&nbsp;
-&nbsp;
-&nbsp;
+<div id="ajax_bar">
+<form name="adminForm2">
+<?php echo JText::_('SYNC_OUTPUT');?>
+&nbsp;<select name="jfusiondebug" default="0"><option value="0">
+<?php echo JText::_('SYNC_OUTPUT_NORMAL');?>
+</option><option value="1">
+<?php echo JText::_('SYNC_OUTPUT_EXTENDED');?>
+</option></select></form></div>
+<br/><br/>
+
+<div id="ajax_bar"><b><?php echo JText::_('SYNC_CONTROLLER');?>
+</b>&nbsp;&nbsp;&nbsp;
 <a id="start" href="#"><?php echo JText::_('START');
 ?></a>
 <span class="border">&nbsp;
@@ -279,13 +280,6 @@ window.addEvent('domready', function() {
 <a id="stop" href="#"><?php echo JText::_('STOP');
 ?></a>
 </div><br/>
-<form name="adminForm2">
-<?php echo JText::_('SYNC_OUTPUT');?>
-&nbsp;<select name="jfusiondebug" default="0"><option value="0">
-<?php echo JText::_('SYNC_OUTPUT_NORMAL');?>
-</option><option value="1">
-<?php echo JText::_('SYNC_OUTPUT_EXTENDED');?>
-</option></select></form>
 
 <br/><br/><br/>
 		<?php echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $this->syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
