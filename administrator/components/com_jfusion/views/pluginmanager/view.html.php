@@ -23,6 +23,7 @@ class jfusionViewpluginmanager extends JView {
     {
         $bar =& new JToolBar('My Toolbar' );
         $bar->appendButton('Standard', 'delete', JText::_('REMOVE'), 'uninstall_plugin', false, false );
+        $bar->appendButton('Standard', 'copy', JText::_('COPY'), 'copy_plugin', false, false );
         $toolbar = $bar->render();
 
         //get the data about the JFusion plugins

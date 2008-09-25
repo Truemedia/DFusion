@@ -37,7 +37,7 @@
 		<filename>jfusion.php</filename>
 		<filename>controllers/controller.jfusion.php</filename>
 		<filename>controllers/index.html</filename>
-        <folder>views</folder>
+        <folder>view</folder>
 	</files>
 
 		<languages folder="language/en-GB">

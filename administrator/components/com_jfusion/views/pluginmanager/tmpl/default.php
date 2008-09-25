@@ -21,11 +21,44 @@ JFusionFunction::displayDonate();
 
 <script language="javascript" type="text/javascript">
 <!--
+function getCheckedValue(radioObj) {
+	if(!radioObj)
+		return "";
+	var radioLength = radioObj.length;
+	if(radioLength == undefined)
+		if(radioObj.checked)
+			return radioObj.value;
+		else
+			return "";
+	for(var i = 0; i < radioLength; i++) {
+		if(radioObj[i].checked) {
+			return radioObj[i].value;
+		}
+	}
+	return "";
+}
+
+
 function submitbutton(pressbutton) {
 var form = document.adminForm;
+
+if (pressbutton == 'copy_plugin'){
+	//see if a plugin was selected
+	if (getCheckedValue(document.adminForm.jname)) {
+        var new_jname = prompt('Please type in the name to use for the copied plugin. This name must not already be in use.');
+		document.adminForm.new_jname.value = new_jname;
+	    exit;
+    } else {
+	    alert('Please select a plugin to copy first');
+	    exit;
+    }
+
+}
+
 submitform(pressbutton);
 return;
 }
+
 
 function setCheckedValue(radioObj, newValue) {
 if(!radioObj)
@@ -72,6 +105,7 @@ form.submit();
 <form method="post" action="index2.php" name="adminForm" enctype="multipart/form-data">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="install_plugin" />
+<input type="hidden" name="new_jname" value="" />
 
 <?php echo $this->toolbar; ?>
 
@@ -167,4 +201,4 @@ if ($row_count == 1){
 
 <input type="hidden" name="type" value="" />
 <input type="hidden" name="installtype" value="upload" />
-
+</form>

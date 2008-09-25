@@ -40,14 +40,33 @@ class JFusionControllerFrontEnd extends JController
             $db->setQuery($query);
             $params = $db->loadResult();
             $menu_param = new JParameter($params, '');
-            $jview =  $menu_param->get('visual_integration');
+            $jview = $menu_param->get('visual_integration');
+            $jname = $menu_param->get('JFusionPlugin');
         } else {
             $jview = JRequest::getVar('view');
+            $jname = JRequest::getVar('jname');
         }
 
         if ($jview) {
-            JRequest::setVar('view', $jview);
-            parent::display();
+
+            //check to see if the plugin is configured properly
+            $db =& JFactory::getDBO();
+            $query = 'SELECT status from #__jfusion WHERE name = ' . $db->quote($jname);
+            $db->setQuery($query );
+
+            if ($db->loadResult() != 3) {
+                //die gracefully as the plugin is not configured properly
+                echo JText::_('ERROR_PLUGIN_CONFIG');
+                return false;
+            } else {
+
+                $view = &$this->getView($jview, 'html');
+                $view->assignRef('jname', $jname);
+                $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($jview).DS.'tmpl');
+                $view->setLayout('default');
+                $view->display();
+            }
+
         } else {
             echo JText::_('NO_VIEW_SELECTED');
             return false;

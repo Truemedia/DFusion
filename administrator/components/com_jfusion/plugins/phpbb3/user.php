@@ -338,9 +338,10 @@ class JFusionUser_phpbb3 extends JFusionUser{
         	$session_key = JUserHelper::genRandomPassword(32);
 
             //Check for admin access
-            $query = 'SELECT a.group_name from #__groups as a INNER JOIN #__users as b ON a.group_id = b.group_id WHERE username_clean=' . $db->Quote($userinfo->username);
+            $query = 'SELECT b.group_name FROM #__user_group as a INNER JOIN #__groups as b ON a.group_id = b.group_id WHERE b.group_name = \'ADMINISTRATORS\' and a.user_id = ' . $userinfo->userid;
 	        $db->setQuery($query);
     	    $usergroup = $db->loadResult();
+
 			if ($usergroup == 'ADMINISTRATORS') {
             	$admin_access = 1;
 			} else {

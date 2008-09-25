@@ -407,23 +407,11 @@ header($url);
 			//$regex_body[]	= "#$integratedURL(.*?)\?(.*?)\"#mS";
 			//$replace_body[]	= $baseURL . '&jfile=$1&$2"';
 
-                //needed to make form action urls to be properly redirected
-		$jfile = JRequest::getVar('jfile');
-
-//prepare the additional post variables
-$Itemid = JRequest::getVar('Itemid');
-if($Itemid) {
-$add_post = '<input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="Itemid" value="' . $Itemid . '">';
-} else {
-$jname = JRequest::getVar('jname');
-$add_post = '<input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="view" value="frameless"><input type="hidden" name="jname" value="' . $jname . '">';
-}
-
-                       // make sure search actions always go to search.php
+            // make sure search actions always go to search.php
 			$regex_body[]	= '#action="./search.php(\?.*?"|")(.*?)>#mS';
 			$replace_body[]	= 'action="'.$baseURL . '&jfile=search.php&$1 $2><input type="hidden" name="jfile" value="search.php">' . $add_post;
 
-	//convert all other action URLs to the current jfile name
+			//convert all other action URLs to the current jfile name
 			$regex_body[]	= '#action="./(.*?)\?(.*?)"(.*?)>#mS';
 			$replace_body[]	= 'action="'.$baseURL . '&jfile=' . $jfile . '&$2" $3><input type="hidden" name="jfile" value="'. $jfile . '">' . $add_post;
 

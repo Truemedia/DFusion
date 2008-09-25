@@ -10,9 +10,11 @@
 	<authorUrl>www.jfusion.org</authorUrl>
 	<version>1.0</version>
 	<description>IPB plugin for JFusion</description>
+	<dual_login>0</dual_login>
+	<slave>3</slave>
 	<files>
 		<filename>auth.php</filename>
-		<filename>index.xml</filename>
+		<filename>index.html</filename>
 		<filename>jfusion.xml</filename>
 		<filename>jfusion_plugin.php</filename>
 		<filename>user.php</filename>

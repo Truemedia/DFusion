@@ -455,7 +455,27 @@ class JFusionController extends JController
         parent::display();
 
     }
+    /**
+* Function to copy an existing JFusion plugins
+*/
+    function copy_plugin()
+    {
+        $jname = JRequest::getVar('jname');
+        $new_jname = JRequest::getVar('new_jname');
 
+        //check to see if an integration was selected
+        if ($jname && $new_jname) {
+            require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.install.php');
+            $model = new JFusionModelInstaller();
+            $model->copy($jname, $new_jname);
+
+        } else {
+            JError::raiseWarning(500, JText::_('NONE_SELECTED'));
+        }
+
+        JRequest::setVar('view', 'pluginmanager');
+        parent::display();
+    }
     /**
 * Function to uninstall JFusion plugins
 */

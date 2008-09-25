@@ -131,6 +131,31 @@ class JFusionModelInstaller extends InstallerModelInstall {
 		return $result;
 
 	}
+
+	function copy($jname, $new_jname) {
+		$db =& JFactory::getDBO();
+		$db->setQuery('SELECT id FROM #__jfusion WHERE name ='. $db->Quote($jname));
+		$myId = $db->loadResult();
+		if (!$myId) {
+			;// error!! plugin not installed (hack attempt?)
+		}
+
+		$installer = new JfusionPluginInstaller($this);
+		// Install the package
+		if (!$installer->copy($jname, $new_jname)) {
+			// There was an error installing the package
+			$msg = 'JFusion ' . JText::_('PLUGIN') . ' ' . JText::_('COPY') . ' ' . JText::_('FAILED');
+			$result = false;
+		} else {
+			// Package installed sucessfully
+			$msg = 'JFusion ' . JText::_('PLUGIN') . ' ' . JText::_('COPY') . ' ' . JText::_('SUCCESS');
+			$result = true;
+		}
+
+		return $result;
+
+	}
+
 }
 
 /**
@@ -326,6 +351,68 @@ class JFusionPluginInstaller extends JObject {
 		}
 
 	}
+
+	/**
+	 * handles JFusion plugin un-installation
+     * @param string $jname name of the JFusion plugin used
+	 * @return boolean
+	 */
+	function copy($jname, $new_jname) {
+		$dir = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname;
+		$new_dir = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $new_jname;
+
+		if (!$jname || !JFolder::exists($dir)) {
+			$this->parent->abort(JText::_('COPY_ERROR_PATH'));
+			return false;
+		}
+		//copy the files
+		if (!JFolder::copy($dir, $new_dir)) {
+			$this->parent->abort(JText::_('COPY_ERROR'));
+			return false;
+		}
+
+
+		//add the new entry in the JFusion plugin table
+		$db =& JFactory::getDBO();
+		$db->setQuery('SELECT * FROM #__jfusion WHERE name = '.$db->Quote($jname));
+		$plugin_entry = $db->loadObject();
+		$plugin_entry->name = $new_jname;
+		$plugin_entry->id = NULL;
+        if (!$db->insertObject('#__jfusion', $plugin_entry, 'id' )) {
+            //return the error
+            $this->parent->abort('Error while creating the user: ' . $db->stderr());
+        }
+
+		// Define our preg arrays
+		$regex		= array();
+		$replace	= array();
+
+		//change the classname
+		$regex[]	= '#JFusion(Plugin|Auth|User)_' . $jname .'#ms';
+		$replace[]	= 'JFusion$1_' . $new_jname;
+
+		//change the jname function
+		$regex[]	= '#return \'' . $jname .'\';#ms';
+		$replace[]	= '#return \'' . $new_jname .'\';';
+
+		//update the XML name tag
+		$regex[]	= '#<name>' . $jname .'</name>#ms';
+		$replace[]	= '#<name>' . $new_jname .'</name>';
+
+
+		//define which files need parsing
+		$parse_files = array($new_dir . DS . 'auth.php', $new_dir . DS . 'jfusion_plugin.php', $new_dir . DS . 'user.php', $new_dir . DS . 'jfusion.xml');
+
+		foreach ($parse_files as $parse_file) {
+			$file_data = JFile::read($parse_file);
+			$file_data = preg_replace($regex, $replace, $file_data);
+        	JFile::write($parse_file, $file_data);
+		}
+
+        return true;
+
+	}
+
 
 	/**
 	 * load manifest file with installation information
