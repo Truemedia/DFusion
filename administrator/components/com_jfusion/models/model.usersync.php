@@ -125,10 +125,11 @@ class JFusionUsersync{
 		}
     }
 
-    function SyncMaster($syncdata, $action, $plugin_offset, $user_offset)
+    function SyncExecute($syncdata, $action, $plugin_offset, $user_offset)
     {
         //setup some variables
-        $MasterPlugin = JFusionFactory::getUser($syncdata['master']);
+        $MasterPlugin = JFusionFactory::getPlugin($syncdata['master']);
+        $MasterUser = JFusionFactory::getUser($syncdata['master']);
         $sync_errors = array();
 
         //we should start with the import of slave users into the master
@@ -145,14 +146,20 @@ class JFusionUsersync{
 
                     $SlavePlugin = & JFusionFactory::getPlugin($jname);
                     $SlaveUser = & JFusionFactory::getUser($jname);
-                    $userlist = $SlavePlugin->getUserList();
+					if($action =='master'){
+                    	$userlist = $SlavePlugin->getUserList();
+                    	$action_reverse = 'slave';
+					} else {
+                    	$userlist = $MasterPlugin->getUserList();
+                    	$action_reverse = 'master';
+					}
 
                     //perform the actual sync
         			for ($j=$user_offset; $j<count($userlist); $j++) {
         				$syncdata['user_offset'] = $j;
 						if($action =='master'){
 	                        $userinfo = $SlaveUser->getUser($userlist[$j]->username);
-    	                    $status = $MasterPlugin->updateUser($userinfo,0);
+    	                    $status = $MasterUser->updateUser($userinfo,0);
 						} else {
 	                        $userinfo = $MasterUser->getUser($userlist[$j]->username);
     	                    $status = $SlaveUser->updateUser($userinfo,0);
@@ -164,12 +171,13 @@ class JFusionUsersync{
 							echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';
 
                             $sync_error = array();
-                            $sync_error['master']['username'] = $status['userinfo']->username;
-                            $sync_error['master']['email'] = $status['userinfo']->email;
-                            $sync_error['master']['jname'] = $syncdata['master'];
-                            $sync_error['slave']['username'] = $userinfo->username;
-                            $sync_error['slave']['email'] = $userinfo->email;
-                            $sync_error['slave']['jname'] = $jname;
+                            $sync_error[$action]['username'] = $status['userinfo']->username;
+                            $sync_error[$action]['email'] = $status['userinfo']->email;
+                            $sync_error[$action]['jname'] = $syncdata['master'];
+                            $sync_error[$action_reverse]['username'] = $userinfo->username;
+                            $sync_error[$action_reverse]['email'] = $userinfo->email;
+                            $sync_error[$action_reverse]['jname'] = $jname;
+
                             //save the error for later
                             $syncdata['errors'][] = $sync_error;
 

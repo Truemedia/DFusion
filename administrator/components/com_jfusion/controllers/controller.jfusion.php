@@ -350,8 +350,8 @@ class JFusionController extends JController
 	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
 
 	//check to see if the sync has already started
-    $syncid = JRequest::getVar('syncid', '', 'GET');
-    $action = JRequest::getVar('action', '', 'GET');
+    $syncid = JRequest::getVar('syncid');
+    $action = JRequest::getVar('action');
 
     $db = & JFactory::getDBO();
     $query = 'SELECT syncid FROM #__jfusion_sync WHERE syncid =' . $db->Quote($syncid);
@@ -373,13 +373,17 @@ class JFusionController extends JController
 
 		echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
     	//sync has not started, lets get going :)
-        $slaves = JRequest::getVar('slave', '', 'GET');
-        $master = JRequest::getVar('master', '', 'GET');
+        $slaves = JRequest::getVar('slave');
+        $master_plugin = JFusionFunction::getMaster();
+        $master = $master_plugin->name;
         $JFusionMaster = JFusionFactory::getPlugin($master);
+
+        //initialise the slave data array
+        $slave_data = array();
 
         //lets find out which slaves need to be imported into the Master
         foreach($slaves as $jname => $slave) {
-            if ($slave['sync_into_master']) {
+            if ($slave['perform_sync']) {
                 $temp_data = array();
                 $temp_data['jname'] = $jname;
                 $JFusionPlugin = JFusionFactory::getPlugin($jname);
@@ -394,7 +398,6 @@ class JFusionController extends JController
                 $temp_data['error'] = 0;
 
                 //save the data
-                $slave_data = array();
                 $slave_data[] = $temp_data;
 
                 //reset the variables
@@ -404,7 +407,7 @@ class JFusionController extends JController
 
         //format the syncdata for storage in the JFusion sync table
         $syncdata['master'] = $master;
-        $syncdata['syncid'] = JRequest::getVar('syncid', '', 'GET');
+        $syncdata['syncid'] = JRequest::getVar('syncid');
         $syncdata['slave_data'] = $slave_data;
         $syncdata['action'] = $action;
 
@@ -412,7 +415,7 @@ class JFusionController extends JController
         JFusionUsersync::saveSyncdata($syncdata);
 
         //start the usersync
-       	JFusionUsersync::SyncMaster($syncdata,$action,0,0);
+       	JFusionUsersync::SyncExecute($syncdata,$action,0,0);
 
        	echo JText::_('USERSYNC') . ' ' . JText::_('COMPLETED');
 

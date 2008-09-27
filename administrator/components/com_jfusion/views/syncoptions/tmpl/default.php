@@ -137,21 +137,24 @@ window.addEvent('domready', function() {
 			if (document.forms['adminForm2'].elements['jfusiondebug'].value == 0){
 	            // give a summary output
 
-    	        var paramString = 'option=com_jfusion&task=syncstatus&action=master&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
+    	        var paramString = 'option=com_jfusion&task=syncstatus&syncid=<?php echo $this->syncid;?>';
 				for(i=0; i<document.adminForm.elements.length; i++){
-					if(document.adminForm.elements[i].type=="checkbox"){
-						paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].value;
-					}
-				}
+					if(document.adminForm.elements[i].type=="select-one"){
+						if(document.adminForm.elements[i].options[document.adminForm.elements[i].selectedIndex].value) {
+							paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].options[document.adminForm.elements[i].selectedIndex].value;
+						}
+					}				}
 				new Ajax(url, {method: 'get'}).request(paramString);
             	periodical = refresh.periodical(timer * 1000, this);
 			} else {
 	            // give a detailed output
 	            alert('<?php echo JText::_('SYNC_EXTENDED_REDIRECT');?>');
-    	        var paramString = url + '?option=com_jfusion&task=syncstatus&action=master&master=<?php echo $this->master_data['jname'];?>&syncid=<?php echo $this->syncid;?>';
+    	        var paramString = url + '?option=com_jfusion&task=syncstatus&syncid=<?php echo $this->syncid;?>';
 				for(i=0; i<document.adminForm.elements.length; i++){
-					if(document.adminForm.elements[i].type=="checkbox"){
-						paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].value;
+					if(document.adminForm.elements[i].type=="select-one"){
+						if(document.adminForm.elements[i].options[document.adminForm.elements[i].selectedIndex].value) {
+							paramString = paramString + '&' + document.adminForm.elements[i].name + '=' + document.adminForm.elements[i].options[document.adminForm.elements[i].selectedIndex].value;
+						}
 					}
 				}
 				window.location = paramString;
@@ -185,22 +188,13 @@ window.addEvent('domready', function() {
 );
 </script>
 
-<table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
-</td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/usersync.png'; ?>" height="75px" width="75px">
-<td><h2><?php echo JText::_('USERSYNC'); ?></h2></td></tr></table><br/>
-<h3>
-<?php echo JText::_('SYNC_WARNING');
-?>
-</h3><br/>
+<table><tr>
+<td width="100px"><img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px"></td>
+<td width="100px"><img src="<?php echo 'components/com_jfusion/images/usersync.png'; ?>" height="75px" width="75px"></td>
+<td><h2><?php echo JText::_('USERSYNC'); ?></h2></td>
+</tr></table><br/>
 
-<div id="ajax_bar"><b>
-<?php echo JText::_('SYNC_DIRECTION_SELECT');?>&nbsp;&nbsp;&nbsp;
-<SELECT name="action">
-<OPTION class="master"><?php echo JText::_('SYNC_MASTER');?>
-<OPTION class="slave"><?php echo JText::_('SYNC_SLAVE');?>
-</SELECT></div><br/>
+<h3><?php echo JText::_('SYNC_WARNING');?></h3><br/>
 
 <div id="log_res">
 <form method="post" action="index2.php" name="adminForm">
@@ -208,78 +202,52 @@ window.addEvent('domready', function() {
 <input type="hidden" name="task" value="syncstatus" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
-<table class="adminlist" cellspacing="1"><thead><tr><th width="50px">
-<?php echo JText::_('NAME');
-?>
-</th><th width="50px">
-<?php echo JText::_('TYPE');
-?>
-</th><th width="50px">
-<?php echo JText::_('USERS');
-?>
-</th><th width="200px">
-<?php echo JText::_('OPTIONS');
-?>
-</th></tr></thead>
-<tr><td>
-<?php echo $this->master_data['jname'];
-?>
-</td><td>
-<?php echo JText::_('MASTER') ?>
-<input type="hidden" name="master" value="<?php echo $this->master_data['jname'];?>" />
-</td><td>
-<?php echo $this->master_data['total'];
-?>
-</td><td></td></tr>
+<div id="ajax_bar"><?php echo JText::_('SYNC_DIRECTION_SELECT');?>&nbsp;&nbsp;&nbsp;
+<select name="action">
+<option value="master"><?php echo JText::_('SYNC_MASTER');?></option>
+<option value="slave"><?php echo JText::_('SYNC_SLAVE');?></option>
+</select><br/></div><br/>
 
-<?php foreach($this->slave_data as $slave) {
-    ?>
-    <tr><td>
-    <?php echo $slave['jname'];
-    ?>
-    <input type="hidden" name="slave[<?php echo $slave['jname'];
-    ?>]" value="<?php echo $slave['jname'];
-    ?>" />
-    </td><td>
-    <?php echo JText::_('SLAVE') ?>
-    </td><td>
-    <?php echo $slave['total'];
-    ?>
-    <input type="hidden" name="slave[<?php echo $slave['jname'];
-    ?>][total]" value="<?php echo $slave['total'];
-    ?>" />
-    </td><td>
-    <?php echo JText::_('SYNC_SELECT_PLUGIN');
-    ?><input type="checkbox" name="slave[<?php echo $slave['jname'];
-    ?>][sync_into_master]" value="1">
-    </td></tr>
+<table class="adminlist" cellspacing="1"><thead><tr>
+<th width="50px"><?php echo JText::_('NAME');?></th>
+<th width="50px"><?php echo JText::_('TYPE');?></th>
+<th width="50px"><?php echo JText::_('USERS');?></th>
+<th width="200px"><?php echo JText::_('OPTIONS');?></th>
+</tr></thead>
+
+<tr><td><?php echo $this->master_data['jname'];?></td>
+<td><?php echo JText::_('MASTER') ?></td>
+<td><?php echo $this->master_data['total'];?></td>
+<td></td></tr>
+
+<?php foreach($this->slave_data as $slave) {?>
+
+    <tr><td><?php echo $slave['jname'];?></td>
+    <td><?php echo JText::_('SLAVE') ?></td>
+    <td><?php echo $slave['total']; ?></td>
+    <td><select name="slave[<?php echo $slave['jname'];?>][perform_sync]">
+    <option value=""><?php echo JText::_('SYNC_EXCLUDE_PLUGIN');?></option>
+    <option value="1"><?php echo JText::_('SYNC_INCLUDE_PLUGIN');?></option>
+    </select></td></tr>
 
 <?php }
 ?>
 
+</table></form></div><br/>
 
-</table></form></div>
-<br/><div id="counter"></div><br/>
+<div id="counter"></div><br/>
 
-<div id="ajax_bar">
-<form name="adminForm2">
-<?php echo JText::_('SYNC_OUTPUT');?>
-&nbsp;<select name="jfusiondebug" default="0"><option value="0">
-<?php echo JText::_('SYNC_OUTPUT_NORMAL');?>
-</option><option value="1">
-<?php echo JText::_('SYNC_OUTPUT_EXTENDED');?>
-</option></select></form></div>
+<div id="ajax_bar"><form name="adminForm2"><?php echo JText::_('SYNC_OUTPUT');?> &nbsp;
+<select name="jfusiondebug" default="0">
+<option value="0"><?php echo JText::_('SYNC_OUTPUT_NORMAL');?></option>
+<option value="1"><?php echo JText::_('SYNC_OUTPUT_EXTENDED');?></option>
+</select></form></div>
 <br/><br/>
 
-<div id="ajax_bar"><b><?php echo JText::_('SYNC_CONTROLLER');?>
-</b>&nbsp;&nbsp;&nbsp;
-<a id="start" href="#"><?php echo JText::_('START');
-?></a>
-<span class="border">&nbsp;
-</span>
-<a id="stop" href="#"><?php echo JText::_('STOP');
-?></a>
-</div><br/>
+<div id="ajax_bar"><b><?php echo JText::_('SYNC_CONTROLLER');?></b>&nbsp;&nbsp;&nbsp;
+<a id="start" href="#"><?php echo JText::_('START');?></a>
+<span class="border">&nbsp;</span>
+<a id="stop" href="#"><?php echo JText::_('STOP');?></a></div><br/>
 
 <br/><br/><br/>
-		<?php echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $this->syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
+<?php echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $this->syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
