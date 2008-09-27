@@ -133,39 +133,30 @@ if ($record->dual_login =='1') { ?>
 //prepare an array of status messages
 $status = array(JText::_('NO_CONFIG'), JText::_('NO_DATABASE'), JText::_('NO_TABLE'), JText::_('GOOD_CONFIG'));
 
-//check to see what the config status is
-if ($record->status == '3') { ?>
-<td><img src="images/tick.png" border="0" alt="Good Config" /><?php echo $status[$record->status]; ?></td>
-<?php } else { ?>
-<td><img src="images/publish_x.png" border="0" alt="Wrong Config" /><?php echo $status[$record->status]; ?></td>
-<?php }
+//added check for database configuration to prevent error after moving sites
+$config_status =  JFusionFunction::checkConfig($record->name);
 
-//if a plugin is properly configured
-if ($record->status == '3') {
+//check to see what the config status is
+if ($config_status == '3') {
+
+echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' . $status[$config_status] .'</td>';
+
 //output the total number of users for the plugin
 $JFusionPlugin = NULL;
 $total_users = NULL;
 $JFusionPlugin = JFusionFactory::getPlugin($record->name);
 $total_users = $JFusionPlugin->getUserCount();
 
-echo "<td> $total_users </td>";
-} else {
-echo "<td></td>";
-}
+echo '<td>' .$total_users . '</td>';
 
-//if a plugin is properly configured
-if ($record->status == '3') {
 //check to see if new user registration is allowed
 $new_registration = NULL;
 $new_registration  = $JFusionPlugin->allowRegistration();
 
-if ($new_registration) { ?>
-<td><img src="images/tick.png" border="0" alt="Enabled" /><?php echo JText::_('ENABLED'); ?></td>
-<?php } else { ?>
-<td><img src="images/publish_x.png" border="0" alt="Disabled" /><?php echo JText::_('DISABLED'); ?></td>
-<?php }
+if ($new_registration) {
+echo '<td><img src="images/tick.png" border="0" alt="Enabled" />' . JText::_('ENABLED') . '</td>';
 } else {
-	echo "<td></td>";
+echo '<td><img src="images/publish_x.png" border="0" alt="Disabled" />' .JText::_('DISABLED') . '</td>';
 }
 
 //output a warning to the administrator if the allowRegistration setting is wrong
@@ -177,9 +168,6 @@ if (!$new_registration && $record->master == '1'){
    JError::raiseWarning(0, $record->name . ' ' . JText::_('ENABLE_REGISTRATION'));
 }
 
-
-//if a plugin is properly configured
-if ($record->status == '3') {
 //display the default usergroup
 $usergroup = $JFusionPlugin->getDefaultUsergroup();
 if ($usergroup) {
@@ -188,13 +176,15 @@ if ($usergroup) {
 	echo '<td><img src="images/publish_x.png" border="0" alt="Disabled" />' . JText::_('MISSING'). ' ' .JText::_('DEFAULT_USERGROUP'). '</td></tr>';
     JError::raiseWarning(0, $record->name . ': ' . JText::_('MISSING'). ' '. JText::_('DEFAULT_USERGROUP'));
 }
+
 } else {
-echo "<td></td></tr>";
+echo '<td><img src="images/publish_x.png" border="0" alt="Wrong Config" />' .$status[$record->status] . '</td>
+<td></td><td></td><td></td></tr>';
 }
 
 }
+
 ?>
-
 </tbody></table>
 
 <input type="hidden" name="field_name" value=""><input type="hidden" name="field_value" value=""></form>

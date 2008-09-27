@@ -39,65 +39,69 @@ function getCheckedValue(radioObj) {
 }
 
 
-function submitbutton(pressbutton) {
-var form = document.adminForm;
+function submitbutton(pressbutton)
+{
+    var form = document.adminForm;
 
-if (pressbutton == 'copy_plugin'){
-	//see if a plugin was selected
-	if (getCheckedValue(document.adminForm.jname)) {
-        var new_jname = prompt('Please type in the name to use for the copied plugin. This name must not already be in use.');
-		document.adminForm.new_jname.value = new_jname;
-	    exit;
-    } else {
-	    alert('Please select a plugin to copy first');
-	    exit;
+    if (pressbutton == 'copy_plugin') {
+        //see if a plugin was selected
+        if (getCheckedValue(document.adminForm.jname)) {
+            var new_jname = prompt('Please type in the name to use for the copied plugin. This name must not already be in use.');
+            document.adminForm.new_jname.value = new_jname;
+        } else {
+            alert('Please select a plugin to copy first');
+            exit;
+        }
+
     }
 
-}
-
-submitform(pressbutton);
-return;
+    submitform(pressbutton);
+    return;
 }
 
 
-function setCheckedValue(radioObj, newValue) {
-if(!radioObj)
-return;
-var radioLength = radioObj.length;
-if(radioLength == undefined) {
-radioObj.checked = (radioObj.value == newValue.toString());
-return;
-}
-for(var i = 0; i < radioLength; i++) {
-radioObj[i].checked = false;
-if(radioObj[i].value == newValue.toString()) {
-radioObj[i].checked = true;
-}
-}
-}
-
-function submitbutton3(pressbutton) {
-var form = document.adminForm;
-
-// do field validation
-if (form.install_directory.value == ""){
-alert( "<?php echo JText::_( 'NO_DIRECTORY'); ?>" );
-} else {
-form.installtype.value = 'folder';
-form.submit();
-}
+function setCheckedValue(radioObj, newValue)
+{
+    if (!radioObj) {
+        return;
+    }
+    var radioLength = radioObj.length;
+    if (radioLength == undefined) {
+        radioObj.checked = (radioObj.value == newValue.toString());
+        return;
+    }
+    for (var i = 0; i < radioLength; i++) {
+        radioObj[i].checked = false;
+        if (radioObj[i].value == newValue.toString()) {
+            radioObj[i].checked = true;
+        }
+    }
 }
 
-function submitbutton4(pressbutton) {
-var form = document.adminForm;
+function submitbutton3(pressbutton)
+{
+    var form = document.adminForm;
 
-// do field validation
-if (form.install_url.value == "" || form.install_url.value == "http://"){
-alert( "<?php echo JText::_( 'NO_URL'); ?>" );
-} else {
-form.installtype.value = 'url';
-form.submit();
+    // do field validation
+    if (form.install_directory.value == "") {
+        alert("<?php echo JText::_( 'NO_DIRECTORY'); ?>" );
+    } else {
+        form.installtype.value = 'folder';
+        form.submit();
+    }
 }
+
+function submitbutton4(pressbutton)
+{
+    var form = document.adminForm;
+
+    // do field validation
+    if (form.install_url.value == "" || form.install_url.value == "http://") {
+        alert("<?php echo JText::_( 'NO_URL'); ?>" );
+    } else {
+        form.installtype.value = 'url';
+        form.submit();
+    }
 }
 
 //-->

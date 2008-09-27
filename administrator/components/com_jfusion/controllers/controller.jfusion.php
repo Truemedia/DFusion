@@ -412,13 +412,9 @@ class JFusionController extends JController
         JFusionUsersync::saveSyncdata($syncdata);
 
         //start the usersync
-        if ($action == 'master') {
-        	JFusionUsersync::SyncMaster($syncdata,0,0);
-        } elseif ($action == 'slave') {
-        	JFusionUsersync::SyncSlave($syncdata,0,0);
-        }
+       	JFusionUsersync::SyncMaster($syncdata,$action,0,0);
 
-        	echo JText::_('USERSYNC') . ' ' . JText::_('COMPLETED');
+       	echo JText::_('USERSYNC') . ' ' . JText::_('COMPLETED');
 
     }
     }

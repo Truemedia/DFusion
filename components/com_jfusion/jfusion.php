@@ -30,7 +30,7 @@ $classname    = 'JFusionControllerFrontEnd'.$controller;
 $controller   = new $classname();
 
 //load the views
-$this->addViewPath(JPATH_COMPONENT.DS.'view');
+$controller->addViewPath(JPATH_COMPONENT.DS.'view');
 
 // Perform the Request task
 $controller->execute('displayplugin' );

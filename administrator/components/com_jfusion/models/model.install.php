@@ -393,11 +393,11 @@ class JFusionPluginInstaller extends JObject {
 
 		//change the jname function
 		$regex[]	= '#return \'' . $jname .'\';#ms';
-		$replace[]	= '#return \'' . $new_jname .'\';';
+		$replace[]	= 'return \'' . $new_jname .'\';';
 
 		//update the XML name tag
 		$regex[]	= '#<name>' . $jname .'</name>#ms';
-		$replace[]	= '#<name>' . $new_jname .'</name>';
+		$replace[]	= '<name>' . $new_jname .'</name>';
 
 
 		//define which files need parsing

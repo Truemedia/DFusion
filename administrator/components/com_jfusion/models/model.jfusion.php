@@ -170,6 +170,11 @@ class JFusionFunction{
     function checkConfig($jname)
     {
 
+		//internal Joomla plugin is always properly configured
+		if ($jname == 'joomla_int') {
+			return 3;
+		}
+
         $db = JFusionFactory::getDatabase($jname);
         $jdb =& JFactory::getDBO();
 
@@ -178,6 +183,7 @@ class JFusionFunction{
             $query = 'UPDATE #__jfusion SET status = 1 WHERE name =' . $jdb->quote($jname);
             $jdb->setQuery($query );
             $jdb->query();
+            return 1;
         } else {
             //get the user table name
             $JFusionPlugin = JFusionFactory::getPlugin($jname);
@@ -192,11 +198,13 @@ class JFusionFunction{
                 $query = 'UPDATE #__jfusion SET status = 3 WHERE name =' . $db->quote($jname);
                 $jdb->setQuery($query );
                 $jdb->query();
+                return 3;
             } else {
                 //Save this error for the integration
                 $query = 'UPDATE #__jfusion SET status = 2 WHERE name =' . $db->quote($jname);
                 $jdb->setQuery($query );
                 $jdb->query();
+                return 2;
 
             }
 
@@ -292,7 +300,7 @@ class JFusionFunction{
     {
         if ($view == 'wrapper') {
             $url_root = JURI::root();
-            $url = $url_root . 'index.php?option=com_jfusion&ampview=wrapper&amp;jname=' . $jname . '&amp;wrap='. urlencode($url);
+            $url = $url_root . 'index.php?option=com_jfusion&amp;view=wrapper&amp;jname=' . $jname . '&amp;wrap='. urlencode($url);
         } else {
             $params = JFusionFactory::getParams($jname);
             $url = $params->get('source_url') . $url;

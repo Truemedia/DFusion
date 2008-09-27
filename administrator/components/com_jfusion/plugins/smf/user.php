@@ -184,8 +184,9 @@ class JFusionUser_smf extends JFusionUser{
     {
         $params = JFusionFactory::getParams($this->getJname());
         $cookiename = $params->get('cookie_name');
+        setcookie($cookiename, serialize(array(0, '', 0)), time() - 3600,  '/', '', 0);
 
-                   setcookie($cookiename,'',  time()-3600);    }
+    }
 
     function createSession($userinfo, $options)
     {
