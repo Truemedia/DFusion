@@ -19,6 +19,7 @@
 	</files>
 
   <params addpath="/administrator/components/com_jfusion/elements">
+  		<param name="description" type="text" size="20" default="external Joomla 1.5.x plugin" description="DESCRIPTION"/>
 		<param name="database_type" type="text" size="20" default="" description="DATABASE_TYPE"/>
 		<param name="database_host" type="text" size="20" default="" description="DATABASE_HOST"/>
 		<param name="database_name" type="text" size="20" default="" description="DATABASE_NAME"/>

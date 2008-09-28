@@ -90,7 +90,13 @@ if ($row_count == 1){
 	?>
 <td><?php echo $record->id; ?></td>
 <td><INPUT TYPE=RADIO NAME="jname" VALUE="<?php echo $record->name; ?>"><?php echo $record->name; ?></td>
-<td><?php echo $record->description; ?></td>
+<td><?php $JFusionParam = JFusionFactory::getParams($record->name);
+$description = $JFusionParam->get('description');
+if($description){
+	echo $description;
+} else {
+	echo $record->description;
+}?></td>
 
 <?php //check to see if module is a master
 if ($record->master =='1') {?>

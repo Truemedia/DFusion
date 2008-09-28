@@ -66,9 +66,8 @@ class JFusionUser_mybb extends JFusionUser{
 
                 }
 
-
-
             } else {
+
                 if ($overwrite) {
                     //we need to update the email
                     $query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE uid =' . $userlookup->userid;
@@ -136,7 +135,6 @@ class JFusionUser_mybb extends JFusionUser{
             }
         }
     }
-
 
     function &getUser($username)
     {

@@ -18,6 +18,7 @@
 		<filename>user.php</filename>
 	</files>
 	<params addpath="/administrator/components/com_jfusion/elements">
+		<param name="description" type="text" size="20" default="internal Joomla plugin" description="DESCRIPTION"/>
 		<param name="username_filter" type="list" default="1" description="USERNAME_FILTER">
 			<option value="1">YES</option>
 			<option value="0">NO</option>

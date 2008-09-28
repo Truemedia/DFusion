@@ -12,7 +12,7 @@
 	<description>myBB 1.4.0</description>
 	<slave>3</slave>
 	<dual_login>3</dual_login>
-	
+
 	<files>
 		<filename>auth.php</filename>
 		<filename>index.xml</filename>
@@ -21,6 +21,7 @@
 		<filename>user.php</filename>
 	</files>
   	<params addpath="/administrator/components/com_jfusion/elements">
+		<param name="description" type="text" size="20" default="mybb 1.4 plugin" description="DESCRIPTION"/>
 		<param name="database_type" type="text" size="20" default="" description="DATABASE_TYPE"/>
 		<param name="database_host" type="text" size="20" default="" description="DATABASE_HOST"/>
 		<param name="database_name" type="text" size="20" default="" description="DATABASE_NAME"/>
