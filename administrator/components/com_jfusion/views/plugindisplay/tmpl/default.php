@@ -140,7 +140,9 @@ if ($record->dual_login =='1') { ?>
 $status = array(JText::_('NO_CONFIG'), JText::_('NO_DATABASE'), JText::_('NO_TABLE'), JText::_('GOOD_CONFIG'));
 
 //added check for database configuration to prevent error after moving sites
-$config_status =  JFusionFunction::checkConfig($record->name);
+if ($record->slave || $record->master) {
+	$config_status =  JFusionFunction::checkConfig($record->name);
+}
 
 //check to see what the config status is
 if ($config_status == '3') {

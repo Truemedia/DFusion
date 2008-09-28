@@ -258,11 +258,18 @@ class JFusionPlugin_smf extends JFusionPlugin{
 			return null;
 		}
 
+		//set the current directory to SMF
+		chdir($source_path);
+
 		// Get the output
 		ob_start();
 		$rs = include_once($index_file);
 		$buffer = ob_get_contents();
 		ob_end_clean();
+
+		//change the current directory back to Joomla.
+		chdir(JPATH_SITE);
+
 
 		// Log an error if we could not include the file
 		if (!$rs) {

@@ -27,6 +27,8 @@ class JFusionUser_joomla_int extends JFusionUser{
         // Initialise some variables
         $db =& JFactory::getDBO();
         $status = array();
+		global $JFusionActive;
+		$JFusionActive = true;
 
         //find out if the user already exists
         $userlookup = $this->getUser($userinfo->username);
@@ -42,11 +44,15 @@ class JFusionUser_joomla_int extends JFusionUser{
             $status['debug'] = JText::_('USER_EXISTS');
             return $status;
         } else if ($userlookup) {
-            //emails do not match up
-            if ($overwrite) {
+            //emails do not match up, we need to update the email
 
-                //we need to update the email
-				$db =& JFactory::getDBO();
+            //joomla does not allow duplicate email addresses, check to see if the email is unique
+			$db =& JFactory::getDBO();
+   	    	$query = 'SELECT id from #__users WHERE email ='.$db->quote($userinfo->email);
+       		$db->setQuery($query);
+			$conflict_id = $db->loadResult();
+
+			if (!$conflict_id) {
    	    		$query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE id =' . $userlookup->userid;
        			$db->setQuery($query);
 				if(!$db->query()) {
@@ -60,12 +66,10 @@ class JFusionUser_joomla_int extends JFusionUser{
    	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
         	    	return $status;
         		}
-
-
             } else {
 				//overwite disabled return an error
             	$status['userinfo'] = $userlookup;
-            	$status['error'] = JText::_('EMAIL_CONFLICT');
+            	$status['error'] = JText::_('EMAIL_CONFLICT') . ' '  . JText::_('USERID')  . $conflict_id;
             	return $status;
             }
         } else {
@@ -262,7 +266,6 @@ class JFusionUser_joomla_int extends JFusionUser{
 
     function filterUsername($username)
     {
-        //no username filtering implemented yet
         //define which characters have to be replaced
         $trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
 

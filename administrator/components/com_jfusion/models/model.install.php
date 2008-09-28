@@ -290,6 +290,7 @@ class JFusionPluginInstaller extends JObject {
 		$support = & $this->manifest->getElementByPath('authorurl');
 		$dual_login = & $this->manifest->getElementByPath('dual_login');
 		$slave = & $this->manifest->getElementByPath('slave');
+		$activity = & $this->manifest->getElementByPath('activity');
 
             //prepare the variables
             $plugin_entry = new stdClass;
@@ -302,6 +303,7 @@ class JFusionPluginInstaller extends JObject {
 			$plugin_entry->support = JFilterInput::clean($support->data(), 'string');
 			$plugin_entry->dual_login = JFilterInput::clean($dual_login->data(), 'integer');
 			$plugin_entry->slave = JFilterInput::clean($slave->data(), 'integer');
+			$plugin_entry->activity = JFilterInput::clean($activity->data(), 'integer');
 
 
             //now append the new plugin data

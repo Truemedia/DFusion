@@ -18,17 +18,17 @@ CREATE TABLE #__jfusion (
 );
 
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status, check_encryption, activity)
-VALUES ('joomla_int', 'Current Joomla Installation', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/',  0, 0,  0, 3,  0, 0);
+VALUES ('joomla_int', 'Current Joomla Installation', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/',  0, 0,  0, 3,  0, 0);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('joomla_ext', 'External Joomla Installation', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0, 3, 3, 0,  0, 0);
+VALUES ('joomla_ext', 'External Joomla Installation', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/', 0, 3, 3, 0,  0, 0);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
 VALUES ('vbulletin', 'vBulletin 3.7.x', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0,  0, 0, 0,  0, 1);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('phpbb3', 'phpBB3','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0, 0, 0, 0, 0, 1);
+VALUES ('phpbb3', 'phpBB3','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/', 0, 0, 0, 0, 0, 1);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('smf', 'SMF 1.1.x', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/phpbb3/', 0, 0, 0, 0,  0, 1);
+VALUES ('smf', 'SMF 1.1.x', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/', 0, 0, 0, 0,  0, 1);
 INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('mybb', 'myBB 1.4.1','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/phpbb3/',  0,  0, 0, 0,  0, 1);
+VALUES ('mybb', 'myBB 1.4.1','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0,  0, 0, 0,  0, 1);
 
 DROP TABLE IF EXISTS #__jfusion_users;
 CREATE TABLE #__jfusion_users (

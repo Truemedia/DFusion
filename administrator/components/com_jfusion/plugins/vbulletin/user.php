@@ -58,7 +58,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 
             if ($overwrite) {
                 //we need to update the email
-   	    		$query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE userid =' . $userlookup->userid;
+   	    		$query = 'UPDATE #__user SET email ='.$db->quote($userinfo->email) .' WHERE userid =' . $userlookup->userid;
        			$db->setQuery($query);
 				if(!$db->query()) {
 					//update failed, return error

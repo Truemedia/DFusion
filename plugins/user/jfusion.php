@@ -1,5 +1,5 @@
-<?php
-/**
+    <?php
+    /**
 * @package JFusion
 * @subpackage Plugin_User
 * @version 1.0.7
@@ -8,24 +8,24 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-// no direct access
-defined('_JEXEC' ) or die('Restricted access' );
+    // no direct access
+    defined('_JEXEC' ) or die('Restricted access' );
 
-/**
+    /**
 * Load the JFusion framework
 */
-jimport('joomla.plugin.plugin');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
+    jimport('joomla.plugin.plugin');
+    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 
 
-/**
+    /**
 * JFusion User class
 * @package JFusion
 */
-class plgUserJfusion extends JPlugin
-{
-    /**
+    class plgUserJfusion extends JPlugin
+    {
+        /**
 * Constructor
 *
 * For php4 compatability we must not use the __constructor as a constructor for plugins
@@ -36,12 +36,12 @@ class plgUserJfusion extends JPlugin
 * @param array $config An array that holds the plugin configuration
 * @since 1.5
 */
-    function plgUserJfusion(& $subject, $config)
-    {
-        parent::__construct($subject, $config);
-    }
+        function plgUserJfusion(& $subject, $config)
+        {
+            parent::__construct($subject, $config);
+        }
 
-    /**
+        /**
 * Remove all sessions for the user name
 *
 * Method is called after user data is deleted from the database
@@ -50,20 +50,20 @@ class plgUserJfusion extends JPlugin
 * @param boolean true if user was succesfully stored in the database
 * @param string message
 */
-    function onAfterDeleteUser($user, $succes, $msg)
-    {
-        if (!$succes) {
-            return false;
+        function onAfterDeleteUser($user, $succes, $msg)
+        {
+            if (!$succes) {
+                return false;
+            }
+
+            $db =& JFactory::getDBO();
+            $db->setQuery('DELETE FROM #__session WHERE userid = '.$db->Quote($user['id']));
+            $db->Query();
+
+            return true;
         }
 
-        $db =& JFactory::getDBO();
-        $db->setQuery('DELETE FROM #__session WHERE userid = '.$db->Quote($user['id']));
-        $db->Query();
-
-        return true;
-    }
-
-    /**
+        /**
 * This method should handle any login logic and report back to the subject
 *
 * @access public
@@ -72,153 +72,153 @@ class plgUserJfusion extends JPlugin
 * @return boolean True on success
 * @since 1.5
 */
-    function onLoginUser($user, $options = array())
-    {
-        jimport('joomla.user.helper');
-        //get the JFusion master
-        $jname = JFusionFunction::getMaster();
+        function onLoginUser($user, $options = array())
+        {
+            jimport('joomla.user.helper');
+            //get the JFusion master
+            $jname = JFusionFunction::getMaster();
 
-        if (!$jname->name || $jname->name == 'joomla_int') {
-            //use Joomla as the master
-        	//get the master userinfo
-        	$JFusionMaster = JFusionFactory::getUser('joomla_int');
-        	$userinfo = $JFusionMaster->getUser($user['username']);
+            if (!$jname->name || $jname->name == 'joomla_int') {
+                //use Joomla as the master
+                //get the master userinfo
+                $JFusionMaster = JFusionFactory::getUser('joomla_int');
+                $userinfo = $JFusionMaster->getUser($user['username']);
 
-			// If the user is blocked, redirect with an error
-			if ($userinfo->block == 1) {
-				JError::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'));
-				return false;
-			}
+                // If the user is blocked, redirect with an error
+                if ($userinfo->block == 1) {
+                    JError::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'));
+                    return false;
+                }
 
-            //apply the cleartext password to the user object
-            $userinfo->password_clear = $user['password'];
-			$joomla_user['userinfo'] = $userinfo;
+                //apply the cleartext password to the user object
+                $userinfo->password_clear = $user['password'];
+                $joomla_user['userinfo'] = $userinfo;
 
-            //allow for password updates
-            $user_update = $JFusionMaster->updateUser($userinfo,0);
-        	if ($user_update['error']){
-            	//report any errors
-           		JError::raiseWarning('500', $jname->name . ': '. $user_update['error']);
-        		if ($user_update['userinfo']) {
-	            	JError::raiseWarning('500', 'joomla_int ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $jname->name . ' '. JText::_('USERID') . ' ' . $user_update['userinfo']->userid);
-        		}
-				return false;
-        	}
+                //allow for password updates
+                $user_update = $JFusionMaster->updateUser($userinfo,0);
+                if ($user_update['error']) {
+                    //report any errors
+                    JError::raiseWarning('500', $jname->name . ': '. $user_update['error']);
+                    if ($user_update['userinfo']) {
+                        JError::raiseWarning('500', 'joomla_int ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $jname->name . ' '. JText::_('USERID') . ' ' . $user_update['userinfo']->userid);
+                    }
+                    return false;
+                }
 
-			//create a Joomla session
-        	$joomla_session = $JFusionMaster->createSession($userinfo, $options);
-        	if ($joomla_session['error']){
-            	//no Joomla session could be created -> deny login
-            	JError::raiseWarning('500', 'joomla_int' . ': '. $joomla_session['error']);
-				return false;
-        	}
+                //create a Joomla session
+                $joomla_session = $JFusionMaster->createSession($userinfo, $options);
+                if ($joomla_session['error']) {
+                    //no Joomla session could be created -> deny login
+                    JError::raiseWarning('500', 'joomla_int' . ': '. $joomla_session['error']);
+                    return false;
+                }
 
-        } else {
-        	//a JFusion plugin other than Joomla is the master
-        	//get the master userinfo
-        	$JFusionMaster = JFusionFactory::getUser($jname->name);
-        	$userinfo = $JFusionMaster->getUser($user['username']);
-
-            //apply the cleartext password to the user object
-            $userinfo->password_clear = $user['password'];
-            //allow for password updates
-            $user_update = $JFusionMaster->updateUser($userinfo,0);
-        	if ($user_update['error']){
-            	//report any errors
-            	JError::raiseWarning('500', $jname->name . ': '. $user_update['error']);
-
-        	}
-
-			//setup the master session
-			if($jname->dual_login == 1 && $options['group'] != 'Public Backend'){
-        		$master_session = $JFusionMaster->createSession($userinfo, $options);
-        		if ($master_session ['error']){
-            		//no Joomla session could be created -> deny login
-            		JError::raiseWarning('500', $jname->name . ': '. $master_session ['error']);
-        		}
-			}
-
-        	//setup the Joomla user
-            $joomla_int = JFusionFactory::getUser('joomla_int');
-            $joomla_user = $joomla_int->updateUser($userinfo,0);
-            if ($joomla_user['error']) {
-                //no Joomla user could be created
-           		JError::raiseWarning('500', $jname->name . ': '. $joomla_user['error']);
-        		if ($joomla_user['userinfo']) {
-	            	JError::raiseWarning('500', 'joomla_int ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $jname->name . ' '. JText::_('USERID') . ' ' . $joomla_user['userinfo']->userid);
-        		}
-                return false;
-            }
-
-			//create a Joomla session
-        	$joomla_session = $joomla_int->createSession($joomla_user['userinfo'], $options);
-        	if ($joomla_session['error']){
-            	//no Joomla session could be created -> deny login
-            	JError::raiseWarning('500', $jname->name . ': '. $joomla_session ['error']);
-				return false;
-        	}
-        }
-
-        //update the JFusion user lookup table
-       	//Delete old user data in the lookup table
-        $db =& JFactory::getDBO();
-        $query = 'DELETE FROM #__jfusion_users WHERE id =' . $joomla_user['userinfo']->userid . ' OR username =' . $db->quote($user['username']);
-        $db->setQuery($query);
-        if(!$db->query()) {
-            JError::raiseWarning(0,$db->stderr());
-        }
-        $db =& JFactory::getDBO();
-        $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $joomla_user['userinfo']->userid ;
-        $db->setQuery($query);
-        if(!$db->query()) {
-            JError::raiseWarning(0,$db->stderr());
-        }
-
-        //create a new entry in the lookup table
-        $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $joomla_user['userinfo']->userid . ', ' . $db->quote($user['username']) . ')';
-        $db->setQuery($query);
-        if(!$db->query()) {
-            JError::raiseWarning(0,$db->stderr());
-        }
-
-        if ($jname->name != 'joomla_int'){
-            JFusionFunction::updateLookup($userinfo, $jname->name, $joomla_user['userinfo']->userid);
-        }
-
-
-        //setup the other slave JFusion plugins
-        $plugins = JFusionFunction::getPlugins();
-        foreach($plugins as $plugin) {
-            $JFusionPlugin = JFusionFactory::getUser($plugin->name);
-            $plugin_user = $JFusionPlugin->updateUser($userinfo,0);
-            if ($plugin_user['error']) {
-           		JError::raiseWarning('500', $plugin->name . ': '. $plugin_user['error']);
-        		if ($joomla_user['userinfo']) {
-	            	JError::raiseWarning('500', $jname->name . ' ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $plugin->name . ' '. JText::_('USERID') . ' ' . $plugin_user['userinfo']->userid);
-        		}
-                JError::raiseWarning('500', $plugin_user['error']);
             } else {
+                //a JFusion plugin other than Joomla is the master
+                //get the master userinfo
+                $JFusionMaster = JFusionFactory::getUser($jname->name);
+                $userinfo = $JFusionMaster->getUser($user['username']);
 
-            	//apply the cleartext password to the user object
-    			$plugin_user['userinfo']->password_clear = $user['password'];
+                //apply the cleartext password to the user object
+                $userinfo->password_clear = $user['password'];
+                //allow for password updates
+                $user_update = $JFusionMaster->updateUser($userinfo,0);
+                if ($user_update['error']) {
+                    //report any errors
+                    JError::raiseWarning('500', $jname->name . ': '. $user_update['error']);
 
-                JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin->name, $joomla_user['userinfo']->userid);
-                if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
-                    $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);
-                    if ($session_result['error']){
-                        JError::raiseWarning('500', $plugin->name . ': ' . $session_result['error']);
+                }
+
+                //setup the master session
+                if ($jname->dual_login == 1 && $options['group'] != 'Public Backend') {
+                    $master_session = $JFusionMaster->createSession($userinfo, $options);
+                    if ($master_session ['error']) {
+                        //no Joomla session could be created -> deny login
+                        JError::raiseWarning('500', $jname->name . ': '. $master_session ['error']);
                     }
                 }
-                //clean up for the next loop
-                unset($JFusionPlugin,$plugin_user, $session_result);
+
+                //setup the Joomla user
+                $joomla_int = JFusionFactory::getUser('joomla_int');
+                $joomla_user = $joomla_int->updateUser($userinfo,0);
+                if ($joomla_user['error']) {
+                    //no Joomla user could be created
+                    JError::raiseWarning('500', $jname->name . ': '. $joomla_user['error']);
+                    if ($joomla_user['userinfo']) {
+                        JError::raiseWarning('500', 'joomla_int ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $jname->name . ' '. JText::_('USERID') . ' ' . $joomla_user['userinfo']->userid);
+                    }
+                    return false;
+                }
+
+                //create a Joomla session
+                $joomla_session = $joomla_int->createSession($joomla_user['userinfo'], $options);
+                if ($joomla_session['error']) {
+                    //no Joomla session could be created -> deny login
+                    JError::raiseWarning('500', $jname->name . ': '. $joomla_session ['error']);
+                    return false;
+                }
             }
+
+            //update the JFusion user lookup table
+            //Delete old user data in the lookup table
+            $db =& JFactory::getDBO();
+            $query = 'DELETE FROM #__jfusion_users WHERE id =' . $joomla_user['userinfo']->userid . ' OR username =' . $db->quote($user['username']);
+            $db->setQuery($query);
+            if (!$db->query()) {
+                JError::raiseWarning(0,$db->stderr());
+            }
+            $db =& JFactory::getDBO();
+            $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $joomla_user['userinfo']->userid ;
+            $db->setQuery($query);
+            if (!$db->query()) {
+                JError::raiseWarning(0,$db->stderr());
+            }
+
+            //create a new entry in the lookup table
+            $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $joomla_user['userinfo']->userid . ', ' . $db->quote($user['username']) . ')';
+            $db->setQuery($query);
+            if (!$db->query()) {
+                JError::raiseWarning(0,$db->stderr());
+            }
+
+            if ($jname->name != 'joomla_int') {
+                JFusionFunction::updateLookup($userinfo, $jname->name, $joomla_user['userinfo']->userid);
+            }
+
+
+            //setup the other slave JFusion plugins
+            $plugins = JFusionFunction::getPlugins();
+            foreach($plugins as $plugin) {
+                $JFusionPlugin = JFusionFactory::getUser($plugin->name);
+                $plugin_user = $JFusionPlugin->updateUser($userinfo,0);
+                if ($plugin_user['error']) {
+                    JError::raiseWarning('500', $plugin->name . ': '. $plugin_user['error']);
+                    if ($joomla_user['userinfo']) {
+                        JError::raiseWarning('500', $jname->name . ' ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $plugin->name . ' '. JText::_('USERID') . ' ' . $plugin_user['userinfo']->userid);
+                    }
+                    JError::raiseWarning('500', $plugin_user['error']);
+                } else {
+
+                    //apply the cleartext password to the user object
+                    $plugin_user['userinfo']->password_clear = $user['password'];
+
+                    JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin->name, $joomla_user['userinfo']->userid);
+                    if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
+                        $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);
+                        if ($session_result['error']) {
+                            JError::raiseWarning('500', $plugin->name . ': ' . $session_result['error']);
+                        }
+                    }
+                    //clean up for the next loop
+                    unset($JFusionPlugin,$plugin_user, $session_result);
+                }
+            }
+
+            return true;
         }
 
-        return true;
-    }
 
-
-    /**
+        /**
 * This method should handle any logout logic and report back to the subject
 *
 * @access public
@@ -227,71 +227,106 @@ class plgUserJfusion extends JPlugin
 * @return object True on success
 * @since 1.5
 */
-    function onLogoutUser($user, $options = array())
-    {
-    	$my =& JFactory::getUser();
+        function onLogoutUser($user, $options = array())
+        {
+            $my =& JFactory::getUser();
 
-    	//logout from the JFusion plugins if done through frontend
-        if ($options['clientid'][0] != 1) {
+            //logout from the JFusion plugins if done through frontend
+            if ($options['clientid'][0] != 1) {
 
-	        //get the JFusion master
-    	    $jname = JFusionFunction::getMaster();
-        	if ($jname->name && $jname->name != 'joomla_int') {
-                $JFusionMaster = JFusionFactory::getUser($jname->name);
-      			$userlookup = JFusionFunction::lookupUser($jname->name, $my->get('id'));
-                $userinfo = $JFusionMaster->getUser($userlookup->username);
-				//check if a user was found
-                if ($userinfo) {
-                  	$session_result = $JFusionMaster->destroySession($userinfo, $options);
-                   	if ($session_result['error']){
-                       	JError::raiseWarning('500', $jname->name . ': ' . $session_result['error']);
-                   	}
-                } else {
-                    JError::raiseWarning('500', $jname->name . ': ' . JText::_('COULD_NOT_FIND_USER'));
+                //get the JFusion master
+                $jname = JFusionFunction::getMaster();
+                if ($jname->name && $jname->name != 'joomla_int') {
+                    $JFusionMaster = JFusionFactory::getUser($jname->name);
+                    $userlookup = JFusionFunction::lookupUser($jname->name, $my->get('id'));
+                    $userinfo = $JFusionMaster->getUser($userlookup->username);
+                    //check if a user was found
+                    if ($userinfo) {
+                        $session_result = $JFusionMaster->destroySession($userinfo, $options);
+                        if ($session_result['error']) {
+                            JError::raiseWarning('500', $jname->name . ': ' . $session_result['error']);
+                        }
+                    } else {
+                        JError::raiseWarning('500', $jname->name . ': ' . JText::_('COULD_NOT_FIND_USER'));
+                    }
+
+
+                    //logout from the master
                 }
 
 
-            	//logout from the master
-        	}
 
-
-
-            $plugins = JFusionFunction::getPlugins();
-            foreach ($plugins as $plugin) {
-            	//check if sessions are enabled
-            	if ($plugin->dual_login == 1){
-                    $JFusionPlugin = JFusionFactory::getUser($plugin->name);
-        			$userlookup = JFusionFunction::lookupUser($plugin->name, $my->get('id'));
-                    $userinfo = $JFusionPlugin->getUser($userlookup->username);
-					//check if a user was found
-                    if ($userinfo) {
-                    	$session_result = $JFusionPlugin->destroySession($userinfo, $options);
-                    	if ($session_result['error']){
-                        	JError::raiseWarning('500', $plugin->name . ': ' . $session_result['error']);
-                    	}
-                    } else {
-                        JError::raiseWarning('500', $plugin->name . ': ' . JText::_('COULD_NOT_FIND_USER'));
+                $plugins = JFusionFunction::getPlugins();
+                foreach($plugins as $plugin) {
+                    //check if sessions are enabled
+                    if ($plugin->dual_login == 1) {
+                        $JFusionPlugin = JFusionFactory::getUser($plugin->name);
+                        $userlookup = JFusionFunction::lookupUser($plugin->name, $my->get('id'));
+                        $userinfo = $JFusionPlugin->getUser($userlookup->username);
+                        //check if a user was found
+                        if ($userinfo) {
+                            $session_result = $JFusionPlugin->destroySession($userinfo, $options);
+                            if ($session_result['error']) {
+                                JError::raiseWarning('500', $plugin->name . ': ' . $session_result['error']);
+                            }
+                        } else {
+                            JError::raiseWarning('500', $plugin->name . ': ' . JText::_('COULD_NOT_FIND_USER'));
+                        }
+                        unset($JFusionPlugin, $username, $userinfo, $session_result);
                     }
-                    unset($JFusionPlugin, $username, $userinfo, $session_result);
-            	}
+                }
+            }
+
+            //destroy the Joomla session
+            $table = & JTable::getInstance('session');
+            $table->destroy($user['id'], $options['clientid']);
+
+            $my =& JFactory::getUser();
+            if ($my->get('id') == $user['id']) {
+                // Hit the user last visit field
+                $my->setLastVisit();
+
+                // Destroy the php session for this user
+                $session =& JFactory::getSession();
+                $session->destroy();
+            }
+
+            return true;
+        }
+
+        function onAfterStoreUser($user, $isnew, $succes, $msg)
+        {
+
+            global $JFusionActive;
+
+            if (!$JFusionActive) {
+                //A change has been made to a user without JFusion knowing about it
+
+                /**
+* Load the JFusion framework
+*/
+                require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+                require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
+
+                //update the JFusion plugins with the new user
+                $joomla_int = JFusionFactory::getUser('joomla_int');
+                $joomla_user = $joomla_int->getUser($user->username);
+
+                //setup the other slave JFusion plugins
+                $plugins = JFusionFunction::getPlugins();
+                foreach($plugins as $plugin) {
+                    $JFusionPlugin = JFusionFactory::getUser($plugin->name);
+                    $plugin_user = $JFusionPlugin->updateUser($joomla_user);
+                    if ($plugin_user['error']) {
+                        JError::raiseWarning('500', $plugin->name . ': '. $plugin_user['error']);
+                        if ($joomla_user['userinfo']) {
+                            JError::raiseWarning('500', $jname->name . ' ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $plugin->name . ' '. JText::_('USERID') . ' ' . $plugin_user['userinfo']->userid);
+                        }
+                        JError::raiseWarning('500', $plugin_user['error']);
+                    }
+                }
             }
         }
-
-		//destroy the Joomla session
-        $table = & JTable::getInstance('session');
-        $table->destroy($user['id'], $options['clientid']);
-
-        $my =& JFactory::getUser();
-        if ($my->get('id') == $user['id']) {
-            // Hit the user last visit field
-            $my->setLastVisit();
-
-            // Destroy the php session for this user
-            $session =& JFactory::getSession();
-            $session->destroy();
-        }
-
-        return true;
     }
-}
+
 
