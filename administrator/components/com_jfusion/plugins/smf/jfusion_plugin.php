@@ -311,6 +311,10 @@ class JFusionPlugin_smf extends JFusionPlugin{
 			$regex_body[]	= "#$integratedURL(.*?)\?(.*?)\"#mS";
 			$replace_body[]	= $baseURL . '&jfile=$1&$2"';
 
+			//update site URLs to the new Joomla URLS
+			$regex_body[]	= "#$integratedURL(.*?)\"#mS";
+			$replace_body[]	= $baseURL . '&jfile=$1"';
+
 
 		}
 

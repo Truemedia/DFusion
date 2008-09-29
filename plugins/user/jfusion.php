@@ -75,6 +75,8 @@
         function onLoginUser($user, $options = array())
         {
             jimport('joomla.user.helper');
+			global $JFusionActive;
+			$JFusionActive = true;
             //get the JFusion master
             $jname = JFusionFunction::getMaster();
 
@@ -229,6 +231,8 @@
 */
         function onLogoutUser($user, $options = array())
         {
+			global $JFusionActive;
+			$JFusionActive = true;
             $my =& JFactory::getUser();
 
             //logout from the JFusion plugins if done through frontend

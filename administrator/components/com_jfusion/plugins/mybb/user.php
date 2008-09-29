@@ -67,8 +67,6 @@ class JFusionUser_mybb extends JFusionUser{
                 }
 
             } else {
-
-                if ($overwrite) {
                     //we need to update the email
                     $query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE uid =' . $userlookup->userid;
                     $db->setQuery($query);
@@ -83,13 +81,6 @@ class JFusionUser_mybb extends JFusionUser{
                         $status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
                         return $status;
                     }
-                } else {
-                    //overwite disabled return an error
-                    $status['userinfo'] = $userlookup;
-                    $status['error'] = JText::_('EMAIL_CONFLICT');
-                    return $status;
-                }
-
             }
         } else {
             //we need to create a new user

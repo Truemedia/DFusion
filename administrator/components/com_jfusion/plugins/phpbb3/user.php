@@ -1,6 +1,6 @@
-<?php
+    <?php
 
-/**
+    /**
 * @package JFusion_phpBB3
 * @version 1.0.7
 * @author JFusion development team
@@ -8,108 +8,119 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-// no direct access
-defined('_JEXEC' ) or die('Restricted access' );
+    // no direct access
+    defined('_JEXEC' ) or die('Restricted access' );
 
-/**
+    /**
 * load the Abstract User Class
 */
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
+    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
 
-/**
+    /**
 * @package JFusion_phpBB3
 */
-class JFusionUser_phpbb3 extends JFusionUser{
+    class JFusionUser_phpbb3 extends JFusionUser{
 
-    function &getUser($username)
-    {
-        // Get a database object
-        $db = JFusionFactory::getDatabase($this->getJname());
-		$username = $this->filterUsername($username);
+        function &getUser($username)
+        {
+            // Get a database object
+            $db = JFusionFactory::getDatabase($this->getJname());
+            $username = $this->filterUsername($username);
 
-        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, user_lastvisit as lastvisit FROM #__users '.
-        'WHERE username_clean=' . $db->Quote($username);
-        $db->setQuery($query);
-        $result = $db->loadObject();
-
-        if ($result) {
-            //Check to see if they are banned
-            $query = 'SELECT userid FROM #__banlist WHERE userid=' . $result->userid;
+            $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, user_lastvisit as lastvisit FROM #__users '.
+            'WHERE username_clean=' . $db->Quote($username);
             $db->setQuery($query);
-            if ($db->loadObject()) {
-                $result->block = 1;
-            } else {
-                $result->block = 0;
-            }
-            return $result;
-        } else {
-        	return false;
-        }
-    }
+            $result = $db->loadObject();
 
-    function updateUser($userinfo, $overwrite)
-    {
-        // Initialise some variables
-        $db = JFusionFactory::getDatabase($this->getJname());
-        $status = array();
-
-        //find out if the user already exists
-        $userlookup = $this->getUser($userinfo->username);
-
-        if ($userlookup) {
-            //a matching user has been found
-            if ($userlookup->email == $userinfo->email) {
-                //emails match up
-                if($userinfo->password_clear) {
-                	//we can update the password
-			        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
-        			$t_hasher = new PasswordHash(8, TRUE);
-					$userlookup->password = $t_hasher->HashPassword($userinfo->password_clear);
-					unset($t_hasher);
-					$query = 'UPDATE #__users SET user_password =' . $db->quote($userlookup->password) . ' WHERE user_id =' . $userlookup->userid;
-                	$db->setQuery($query);
-            		if (!$db->query()) {
-                		//return the error
-                		$status['error'] = 'Error while creating the user: ' . $db->stderr();
-                		return $status;
-            		}
-  		            $status['userinfo'] = $userlookup;
-       		        $status['error'] = false;
-       	    	    $status['debug'] = 'User already exists, password was updated to:' . $userlookup->password;
-           	    	return $status;
+            if ($result) {
+                //Check to see if they are banned
+                $query = 'SELECT userid FROM #__banlist WHERE userid=' . $result->userid;
+                $db->setQuery($query);
+                if ($db->loadObject()) {
+                    $result->block = 1;
                 } else {
-	                //TODO: Update the password
-  		            $status['userinfo'] = $userlookup;
-       		        $status['error'] = false;
-       	    	    $status['debug'] = 'User already exists, password was not updated.';
-           	    	return $status;
+                    $result->block = 0;
+                }
+                return $result;
+            } else {
+                return false;
+            }
+        }
+
+        function updateUser($userinfo, $overwrite)
+        {
+            // Initialise some variables
+            $db = JFusionFactory::getDatabase($this->getJname());
+            $status = array();
+            $status['debug'] = '';
+
+            //find out if the user already exists
+            $userlookup = $this->getUser($userinfo->username);
+
+            if ($userlookup) {
+                //a matching user has been found
+                if ($userlookup->email == $userinfo->email) {
+                    //emails match up
+                    if ($userinfo->password_clear) {
+                        //we can update the password
+                        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
+                        $t_hasher = new PasswordHash(8, TRUE);
+                        $userlookup->password = $t_hasher->HashPassword($userinfo->password_clear);
+                        unset($t_hasher);
+                        $query = 'UPDATE #__users SET user_password =' . $db->quote($userlookup->password) . ' WHERE user_id =' . $userlookup->userid;
+                        $db->setQuery($query);
+                        if (!$db->query()) {
+                            //return the error
+                            $status['error'] = 'Error while updating the password: ' . $db->stderr();
+                            return $status;
+                        }
+                        $status['debug'] .= 'the password was updated to:' . $userlookup->password;
+                    }
+
+                    //check the blocked status
+                    if ($userlookup->blocked != $userinfo->blocked) {
+                        if ($userinfo->blocked) {
+                            //block the user
+                            $query = 'INSERT INTO #__banlist (ban_userid) VALUES ('.$userlookup->userid.')';
+                            $db->setQuery($query);
+                            $db->query();
+                        	$status['debug'] .= 'the user was blocked in phpBB3. ';
+                        } else {
+                            //unblock the user
+                            $query = 'DELETE FROM #__banlist WHERE userid=' . $userlookup->userid;
+                            $db->setQuery($query);
+                            $db->query();
+                        	$status['debug'] .= 'the user was unblocked in phpBB3. ';
+                        }
+
+                    }
+
+                    //TODO: Update the password
+                    $status['userinfo'] = $userlookup;
+                    $status['error'] = false;
+                    $status['debug'] = 'User already exists, password was not updated.';
+                    return $status;
 
                 }
 
 
 
             } else {
-            if ($overwrite) {
+
                 //we need to update the email
-   	    		$query = 'UPDATE #__users SET user_email ='.$db->quote($userinfo->email) .' WHERE user_id =' . $userlookup->userid;
-       			$db->setQuery($query);
-				if(!$db->query()) {
-					//update failed, return error
-	            	$status['userinfo'] = $userlookup;
-    	        	$status['error'] = 'Error while updating the user email: ' . $db->stderr();
-        	    	return $status;
-        		} else {
-	            	$status['userinfo'] = $userinfo;
-    	        	$status['error'] = false;
-   	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
-        	    	return $status;
-        		}
-            } else {
-				//overwite disabled return an error
-            	$status['userinfo'] = $userlookup;
-            	$status['error'] = JText::_('EMAIL_CONFLICT');
-            	return $status;
-            }
+                $query = 'UPDATE #__users SET user_email ='.$db->quote($userinfo->email) .' WHERE user_id =' . $userlookup->userid;
+                $db->setQuery($query);
+                if (!$db->query()) {
+                    //update failed, return error
+                    $status['userinfo'] = $userlookup;
+                    $status['error'] = 'Error while updating the user email: ' . $db->stderr();
+                    return $status;
+                } else {
+                    $status['userinfo'] = $userinfo;
+                    $status['error'] = false;
+                    $status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
+                    return $status;
+                }
 
             }
         } else {
@@ -119,21 +130,21 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $params = JFusionFactory::getParams($this->getJname());
             $usergroup = $params->get('usergroup');
 
-			$username_clean = $this->filterUsername($userinfo->username);
+            $username_clean = $this->filterUsername($userinfo->username);
             //prepare the variables
             $user = new stdClass;
             $user->id = NULL;
             $user->username = $userinfo->username;
             $user->username_clean = $username_clean;
 
-            if($userinfo->password_clear) {
+            if ($userinfo->password_clear) {
                 //we can update the password
-			    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
-        		$t_hasher = new PasswordHash(8, TRUE);
-				$user->user_password = $t_hasher->HashPassword($userinfo->password_clear);
-				unset($t_hasher);
+                require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
+                $t_hasher = new PasswordHash(8, TRUE);
+                $user->user_password = $t_hasher->HashPassword($userinfo->password_clear);
+                unset($t_hasher);
             } else {
-            	$user->user_password = $userinfo->password;
+                $user->user_password = $userinfo->password;
             }
 
 
@@ -195,7 +206,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $user->user_notify_type = 0;
 
             //generate a unique id
-			jimport('joomla.user.helper');
+            jimport('joomla.user.helper');
             $user->user_form_salt = JUserHelper::genRandomPassword(13);
 
             //now append the new user data
@@ -207,38 +218,38 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 //now create a user_group entry
                 $query = 'INSERT INTO #__user_group (group_id, user_id, group_leader, user_pending) VALUES (' .$usergroup.','. $user->id .', 0,0 )';
                 $db->setQuery($query);
-            	if (!$db->query()) {
-                	//return the error
-                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
-                	return $status;
-            	}
+                if (!$db->query()) {
+                    //return the error
+                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                    return $status;
+                }
 
-				//update the total user count
+                //update the total user count
                 $query = 'UPDATE #__config SET config_value = config_value + 1 WHERE config_name = \'num_users\'';
                 $db->setQuery($query);
-            	if (!$db->query()) {
-                	//return the error
-                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
-                	return $status;
-            	}
+                if (!$db->query()) {
+                    //return the error
+                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                    return $status;
+                }
 
-				//update the newest username
+                //update the newest username
                 $query = 'UPDATE #__config SET config_value = '. $db->quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
                 $db->setQuery($query);
-            	if (!$db->query()) {
-                	//return the error
-                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
-                	return $status;
-            	}
+                if (!$db->query()) {
+                    //return the error
+                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                    return $status;
+                }
 
-            	//update the newest userid
+                //update the newest userid
                 $query = 'UPDATE #__config SET config_value = ' . $user->id . ' WHERE config_name = \'newest_user_id\'';
                 $db->setQuery($query);
-            	if (!$db->query()) {
-                	//return the error
-                	$status['error'] = 'Error while creating the user: ' . $db->stderr();
-                	return $status;
-            	}
+                if (!$db->query()) {
+                    //return the error
+                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                    return $status;
+                }
 
 
                 //return the good news
@@ -280,8 +291,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $sessionid = $_COOKIE[$phpbb_cookie_name.'_sid'];
             $status['debug'] .= 'Found session cookie:' . $sessionid .' for userid:' . $userid .'<br/>';
         } else {
-        	$status['error'] = 'No userid and session cookie found';
-        	return $status;
+            $status['error'] = 'No userid and session cookie found';
+            return $status;
         }
 
         if ($userid > 0 && $sessionid) {
@@ -301,8 +312,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 setcookie($phpbb_cookie_name . '_u', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
                 setcookie($phpbb_cookie_name . '_sid', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
             } else {
-        	    $status['error'] = 'Error: Could not delete session in database';
-        	    return $status;
+                $status['error'] = 'Error: Could not delete session in database';
+                return $status;
             }
 
             // delete remember me cookie and session keys
@@ -316,17 +327,17 @@ class JFusionUser_phpbb3 extends JFusionUser{
                     $status['debug'] .= 'Error could not delete the session key</br>';
                 }
             }
-                    $status['debug'] .= 'Session destroyed succesfully</br>';
+            $status['debug'] .= 'Session destroyed succesfully</br>';
             return $status;
         } else {
-        	$status['error'] = 'Userid and sessionid were not valid';
-        	return $status;
+            $status['error'] = 'Userid and sessionid were not valid';
+            return $status;
         }
     }
 
     function createSession($userinfo, $options)
     {
-    	$status = array();
+        $status = array();
         $status['debug'] = '';
         $db = JFusionFactory::getDatabase($this->getJname());
 
@@ -334,19 +345,19 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
         if ($userid && !empty($userid) && ($userid > 0)) {
 
-        	jimport('joomla.user.helper');
-        	$session_key = JUserHelper::genRandomPassword(32);
+            jimport('joomla.user.helper');
+            $session_key = JUserHelper::genRandomPassword(32);
 
             //Check for admin access
             $query = 'SELECT b.group_name FROM #__user_group as a INNER JOIN #__groups as b ON a.group_id = b.group_id WHERE b.group_name = \'ADMINISTRATORS\' and a.user_id = ' . $userinfo->userid;
-	        $db->setQuery($query);
-    	    $usergroup = $db->loadResult();
+            $db->setQuery($query);
+            $usergroup = $db->loadResult();
 
-			if ($usergroup == 'ADMINISTRATORS') {
-            	$admin_access = 1;
-			} else {
-            	$admin_access = 0;
-			}
+            if ($usergroup == 'ADMINISTRATORS') {
+                $admin_access = 1;
+            } else {
+                $admin_access = 0;
+            }
 
             $params = JFusionFactory::getParams($this->getJname());
             $phpbb_cookie_name = $params->get('cookie_prefix');
@@ -389,14 +400,14 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 $session_obj->session_autologin = $autologin;
                 $session_obj->session_admin = $admin_access;
                 if (!$db->insertObject('#__sessions', $session_obj )) {
-        	        //could not save the user
-            		$status['error'] = JText::_('ERROR_CREATE_SESSION') . $db->stderr();
-            		return $status;
+                    //could not save the user
+                    $status['error'] = JText::_('ERROR_CREATE_SESSION') . $db->stderr();
+                    return $status;
                 } else {
                     //Set cookies
                     setcookie($phpbb_cookie_name . '_u', $userid, time()+(86400*365), $phpbb_cookie_path, $phpbb_cookie_domain);
                     setcookie($phpbb_cookie_name . '_sid', $session_key, time()+(86400*365), $phpbb_cookie_path, $phpbb_cookie_domain);
-            		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
+                    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
 
                     // Remember me option?
                     if ($autologin>0) {
@@ -407,12 +418,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
                         $session_key_ins->last_ip = $_SERVER['REMOTE_ADDR'];
                         $session_key_ins->last_login = $session_start;
                         if (!$db->insertObject('#__sessions_keys', $session_key_ins )) {
-        	        		//could not save the session_key
-            				$status['error'] = JText::_('ERROR_CREATE_USER') . $database->stderr();
-            				return $status;
+                            //could not save the session_key
+                            $status['error'] = JText::_('ERROR_CREATE_USER') . $database->stderr();
+                            return $status;
                         } else {
                             setcookie($phpbb_cookie_name . '_k', $session_key, time()+(86400*365), $phpbb_cookie_path, $phpbb_cookie_domain);
-            		        $status['debug'] .= 'Created session_key:' . $session_key;
+                            $status['debug'] .= 'Created session_key:' . $session_key;
                         }
 
                     }
@@ -420,12 +431,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
                     return $status;
                 }
             } else {
-         	    //could not find a valid userid
+                //could not find a valid userid
                 $status['error'] = JText::_('INVALID_COOKIENAME') ;
                 return $status;
             }
         } else {
-        	//could not find a valid userid
+            //could not find a valid userid
             $status['error'] = JText::_('INVALID_USERID');
             return $status;
         }

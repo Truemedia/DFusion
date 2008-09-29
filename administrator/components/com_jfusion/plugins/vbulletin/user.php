@@ -56,7 +56,6 @@ class JFusionUser_vbulletin extends JFusionUser{
             return $status;
         } else if ($userlookup) {
 
-            if ($overwrite) {
                 //we need to update the email
    	    		$query = 'UPDATE #__user SET email ='.$db->quote($userinfo->email) .' WHERE userid =' . $userlookup->userid;
        			$db->setQuery($query);
@@ -71,17 +70,6 @@ class JFusionUser_vbulletin extends JFusionUser{
    	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
         	    	return $status;
         		}
-            } else {
-				//overwite disabled return an error
-            	$status['userinfo'] = $userlookup;
-            	$status['error'] = JText::_('EMAIL_CONFLICT');
-            	return $status;
-            }
-
-            //emails match up
-            $status['userinfo'] = $userlookup;
-            $status['error'] = JText::_('EMAIL_CONFLICT');
-            return $status;
         } else {
 
             //found out what usergroup should be used
