@@ -27,7 +27,7 @@
             $db = JFusionFactory::getDatabase($this->getJname());
             $username = $this->filterUsername($username);
 
-            $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, user_lastvisit as lastvisit FROM #__users '.
+            $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_lastvisit as lastvisit FROM #__users '.
             'WHERE username_clean=' . $db->Quote($username);
             $db->setQuery($query);
             $result = $db->loadObject();
@@ -78,8 +78,8 @@
                     }
 
                     //check the blocked status
-                    if ($userlookup->blocked != $userinfo->blocked) {
-                        if ($userinfo->blocked) {
+                    if ($userlookup->block != $userinfo->block) {
+                        if ($userinfo->block) {
                             //block the user
                             $query = 'INSERT INTO #__banlist (ban_userid) VALUES ('.$userlookup->userid.')';
                             $db->setQuery($query);
@@ -101,7 +101,7 @@
                     $status['debug'] = 'User already exists, password was not updated.';
                     return $status;
 
-                }
+
 
 
 
@@ -376,13 +376,13 @@
                 //get autologin perm
                 $phpbb_allow_autologin = $params->get('allow_autologin');
 
-                $autologin = 0;
+                $jautologin = 0;
                 if (isset($options['remember'])) {
                     $jautologin = $options['remember'] ? 1 : 0;
                 }
 
-                if ($jautologin>0 && $phpbb_allow_autologin>0) {
-                    $autologin = $phpbb_allow_autologin;
+                if ($jautologin > 0 && $phpbb_allow_autologin>0) {
+                    $jautologin = $phpbb_allow_autologin;
                 }
 
                 $session_start = time();
@@ -397,7 +397,7 @@
                 $session_obj->session_ip = $_SERVER['REMOTE_ADDR'];
                 $session_obj->session_browser = $_SERVER['HTTP_USER_AGENT'];
                 $session_obj->session_page = 0;
-                $session_obj->session_autologin = $autologin;
+                $session_obj->session_autologin = $jautologin;
                 $session_obj->session_admin = $admin_access;
                 if (!$db->insertObject('#__sessions', $session_obj )) {
                     //could not save the user
@@ -410,7 +410,7 @@
                     $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
 
                     // Remember me option?
-                    if ($autologin>0) {
+                    if ($jautologin>0) {
                         //Insert the session key into sessions_key table
                         $session_key_ins = new stdClass;
                         $session_key_ins->key_id = substr($session_key, 0, 32);

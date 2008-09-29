@@ -216,7 +216,7 @@ class JFusionUser_vbulletin extends JFusionUser{
                 setcookie('userid', $userinfo->userid, time() + 43200, $vbCookiePath, $vbCookieDomain );
             }
             $status['error'] = false;
-       		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain;
+       		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain;
             $status['debug'] = 'created session';
             return $status;
         } else {

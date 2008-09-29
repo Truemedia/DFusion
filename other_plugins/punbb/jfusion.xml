@@ -11,6 +11,7 @@
 	<version>1.0</version>
 	<description>punBB plugin for JFusion</description>
 	<dual_login>0</dual_login>
+	<activity>1</activity>
 	<slave>3</slave>
 	<files>
 		<filename>auth.php</filename>

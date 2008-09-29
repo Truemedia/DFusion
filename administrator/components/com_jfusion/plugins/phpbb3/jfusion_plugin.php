@@ -12,13 +12,6 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* Define some variables
-*/
-define('SUPER_ADMIN', 'Super Administrator');
-define('ADMIN', 'Administrator');
-define('ANONYMOUS_ID', 1);
-
-/**
 * load the JFusion framework
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');

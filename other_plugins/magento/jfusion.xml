@@ -11,6 +11,7 @@
 <version>1.0</version>
 	<dual_login>0</dual_login>
 	<slave>3</slave>
+	<activity>0</activity>
 <description>Magento plugin for JFusion</description>
 	<files>
 		<filename>auth.php</filename>

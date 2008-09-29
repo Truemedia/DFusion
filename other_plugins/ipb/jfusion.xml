@@ -12,6 +12,7 @@
 	<description>IPB plugin for JFusion</description>
 	<dual_login>0</dual_login>
 	<slave>3</slave>
+	<activity>1</activity>
 	<files>
 		<filename>auth.php</filename>
 		<filename>index.html</filename>

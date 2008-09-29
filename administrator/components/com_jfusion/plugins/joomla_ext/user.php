@@ -56,6 +56,26 @@ class JFusionUser_joomla_ext extends JFusionUser
 		$db = JFusionFactory::getDatabase($this->getJname());
         $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.username=' . $db->quote($username));
         $result = $db->loadObject();
+
+        if ($result) {
+            //split up the password if it contains a salt
+            $parts = explode(':', $result->password );
+        	if($parts[1]) {
+        		$result->password_salt = $parts[1];
+        		$result->password = $parts[0];
+        	}
+
+        	//do an extra check to prevent inactive accounts to login
+        	if ($result->activation) {
+        		$result->block = 1;
+        	}
+
+            return $result;
+        } else {
+            return false;
+        }
+
+
 		return $result;
     }
 

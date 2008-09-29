@@ -148,7 +148,7 @@ class JFusionPlugin_joomla_ext extends JFusionPlugin
 
     	$parametersInstance = new JParameter($params, '' );
 
-		if ($parametersInstance->get(allowUserRegistration)) {
+		if ($parametersInstance->get('allowUserRegistration')) {
 			return true;
 		} else {
 			return false;
