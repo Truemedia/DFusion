@@ -44,7 +44,7 @@ class JFusionController extends JController
         global $jname;
 
         //find out the submitted name of the JFusion module
-        $jname = JRequest::getVar('jname', '', 'POST', 'STRING');
+        $jname = JRequest::getVar('jname');
 
         if ($jname) {
 
@@ -73,7 +73,7 @@ class JFusionController extends JController
     function wizard()
     {
         //find out the submitted name of the JFusion module
-        $jname = JRequest::getVar('jname', '', 'POST', 'STRING' );
+        $jname = JRequest::getVar('jname');
 
         //check to see if a integration was selected
         if ($jname) {
@@ -102,7 +102,7 @@ class JFusionController extends JController
         global $jname;
 
         //find out the submitted values
-        $jname = JRequest::getVar('jname', '', 'POST', 'STRING' );
+        $jname = JRequest::getVar('jname');
         $post = JRequest::getVar('params', array(), 'post', 'array' );
 
         //check to see data was posted
@@ -150,9 +150,9 @@ class JFusionController extends JController
     function changesetting()
     {
         //find out the posted ID of the JFusion module to publish
-        $jname = JRequest::getVar('jname', '', 'POST', 'STRING' );
-        $field_name = JRequest::getVar('field_name', '', 'POST', 'STRING' );
-        $field_value = JRequest::getVar('field_value', '', 'POST', 'STRING' );
+        $jname = JRequest::getVar('jname');
+        $field_name = JRequest::getVar('field_name');
+        $field_value = JRequest::getVar('field_value');
 
 
         //check to see if an integration was selected
@@ -471,7 +471,7 @@ class JFusionController extends JController
 */
     function uninstall_plugin()
     {
-        $jname = JRequest::getVar('jname', '', 'POST', 'STRING', _J_ALLOWHTML );
+        $jname = JRequest::getVar('jname');
 
         //check to see if an integration was selected
         if ($jname) {
