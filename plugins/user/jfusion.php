@@ -314,13 +314,13 @@
 
                 //update the JFusion plugins with the new user
                 $joomla_int = JFusionFactory::getUser('joomla_int');
-                $joomla_user = $joomla_int->getUser($user->username);
+                $joomla_user = $joomla_int->getUser($user['username']);
 
                 //setup the other slave JFusion plugins
                 $plugins = JFusionFunction::getPlugins();
                 foreach($plugins as $plugin) {
                     $JFusionPlugin = JFusionFactory::getUser($plugin->name);
-                    $plugin_user = $JFusionPlugin->updateUser($joomla_user);
+                    $plugin_user = $JFusionPlugin->updateUser($joomla_user,0);
                     if ($plugin_user['error']) {
                         JError::raiseWarning('500', $plugin->name . ': '. $plugin_user['error']);
                         if ($joomla_user['userinfo']) {
