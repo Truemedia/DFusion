@@ -105,6 +105,7 @@ class JFusionUser_mybb extends JFusionUser{
             } else {
                 $user->password = $userinfo->password;
                 $user->salt = $userinfo->password_salt;
+                jimport('joomla.user.helper');
                 $user->loginkey  = JUserHelper::genRandomPassword(50);
             }
 
@@ -209,7 +210,13 @@ class JFusionUser_mybb extends JFusionUser{
         $name='mybbuser';
         $value=$user->uid.'_'.$user->loginkey;
         $expires = null;
-        $remember='no';
+
+        if (isset($options['remember'])) {
+            $remember = $options['remember'] ? 1 : 'no';
+        } else {
+        	$remember = 'no';
+        }
+
         $httponly=true;
 
         // Creating Forum Cookies
@@ -251,6 +258,7 @@ class JFusionUser_mybb extends JFusionUser{
 
         $status = array();
         $status['debug'] = JText::_('NAME') . '=' . $name . ', ' . JText::_('VALUE') . '=' . $value . ', ' . JText::_('COOKIE_PATH') . '=' . $cookiepath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $cookiedomain;
+        $status['error'] = false;
         return $status;
 
 

@@ -30,6 +30,8 @@ $credentials['username'] = JRequest::getVar('check_username', '', 'POST', 'STRIN
 $credentials['password'] = JRequest::getVar('check_password', '', 'POST', 'STRING' );
 $user['username'] = JRequest::getVar('check_username', '', 'POST', 'STRING' );
 $options['group'] = 'USERS';
+$options['remember'] = 0;
+
 
 //check to see if a password was submitted
 if (empty($credentials['password'])) {
@@ -92,6 +94,7 @@ if ($userinfo) {
     $auth_models = $db->loadObjectList();
 
     echo '<h2>' . JText::_('AUTHENTICATION_PLUGIN') . '</h2>';
+    $match = null;
     foreach($auth_models as $auth_model) {
         //Generate an encrypted password for comparison
         $model = JFusionFactory::getAuth($auth_model->name);
@@ -212,12 +215,12 @@ if ($userinfo) {
     //update the JFusion user lookup table
     //Delete old user data in the lookup table
     $db =& JFactory::getDBO();
-    $query = 'DELETE FROM #__jfusion_user WHERE id =' . $joomla_user['userinfo']->userid . ' OR username =' . $db->quote($user['username']);
+    $query = 'DELETE FROM #__jfusion_users WHERE id =' . $joomla_user['userinfo']->userid . ' OR username =' . $db->quote($user['username']);
     $db->setQuery($query);
     $db->query();
 
     //create a new entry in the lookup table
-    $query = 'INSERT INTO #__jfusion_user (id, username) VALUES (' . $joomla_user['userinfo']->userid . ', ' . $db->quote($user['username']) . ')';
+    $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $joomla_user['userinfo']->userid . ', ' . $db->quote($user['username']) . ')';
     $db->setQuery($query);
     $db->query();
 

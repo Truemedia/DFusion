@@ -27,6 +27,7 @@ class JFusionUser_joomla_int extends JFusionUser{
         // Initialise some variables
         $db =& JFactory::getDBO();
         $status = array();
+        $status['debug'] = '';
 		global $JFusionActive;
 		$JFusionActive = true;
 
@@ -34,15 +35,46 @@ class JFusionUser_joomla_int extends JFusionUser{
         $userlookup = $this->getUser($userinfo->username);
         if ($userlookup->email == $userinfo->email) {
             //user exist however some details need to be updates
-			//TODO:Update the password
+                   if ($userinfo->password_clear) {
+                        //we need update the password
+						$userinfo->password_salt  = JUserHelper::genRandomPassword(32);
+			            $userinfo->password = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
+			            $new_password = $userinfo->password . ':' . $userinfo->password_salt;
+                        $query = 'UPDATE #__users SET password =' . $db->quote($new_password) . ' WHERE id =' . $userlookup->userid;
+                        $db->setQuery($query);
 
+                        if (!$db->query()) {
+                            //return the error
+                            $status['error'] = 'Error while updating the password: ' . $db->stderr();
+                            return $status;
+                        }
+                        $status['debug'] .= 'the password was updated to:' . $new_password;
+                    }
 
-            //return the good news
-            $status = array();
-            $status['userinfo'] = $userlookup;
-            $status['error'] = false;
-            $status['debug'] = JText::_('USER_EXISTS');
-            return $status;
+                    //check the blocked status
+                    if ($userlookup->block != $userinfo->block) {
+                        if ($userinfo->block) {
+                            //block the user
+	                        $query = 'UPDATE #__users SET block = 1 WHERE id =' . $userlookup->userid;
+                            $db->setQuery($query);
+                            $db->query();
+                        	$status['debug'] .= 'the user was blocked in joomla. ';
+                        } else {
+                            //unblock the user
+	                        $query = 'UPDATE #__users SET block = 0, activation = \'\' WHERE id =' . $userlookup->userid;
+                            $db->setQuery($query);
+                            $db->query();
+                        	$status['debug'] .= 'the user was unblocked in joomla. ';
+                        }
+
+                    }
+
+                    //TODO: Update the password
+                    $status['userinfo'] = $userlookup;
+                    $status['error'] = false;
+                    $status['debug'] .= ' ' . JText::_('USER_EXISTS');
+                    return $status;
+
         } else if ($userlookup) {
             //emails do not match up, we need to update the email
 

@@ -62,7 +62,7 @@
                 if ($userlookup->email == $userinfo->email) {
                     //emails match up
                     if ($userinfo->password_clear) {
-                        //we can update the password
+                        //we need update the password
                         require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
                         $t_hasher = new PasswordHash(8, TRUE);
                         $userlookup->password = $t_hasher->HashPassword($userinfo->password_clear);
@@ -98,7 +98,7 @@
                     //TODO: Update the password
                     $status['userinfo'] = $userlookup;
                     $status['error'] = false;
-                    $status['debug'] = 'User already exists, password was not updated.';
+                    $status['debug'] .= ' ' . JText::_('USER_EXISTS');
                     return $status;
 
 

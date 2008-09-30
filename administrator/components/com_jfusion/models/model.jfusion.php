@@ -26,7 +26,6 @@ class JFusionFunction{
 
     function getMaster()
     {
-        //find the first forum that is enabled
         $db = & JFactory::getDBO();
         $query = 'SELECT * from #__jfusion WHERE master = 1 and status = 3';
         $db->setQuery($query );

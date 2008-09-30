@@ -30,6 +30,7 @@ class JFusionUser_smf extends JFusionUser{
         // Initialise some variables
         $db = JFusionFactory::getDatabase($this->getJname());
         $status = array();
+        $status['debug'] = '';
 
         //find out if the user already exists
         $userlookup = $this->getUser($userinfo->username);
@@ -40,16 +41,18 @@ class JFusionUser_smf extends JFusionUser{
 			if($userinfo->password_clear){
             	$password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
             	$password_salt = substr(md5(rand()), 0, 4);
-                $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $userlookup->userid;
+                $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt = ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $userlookup->userid;
             	$db->setQuery($query );
             	if (!$db->Query()) {
-	                $status['error'] = 'Could not update the SMF password: ' . $db->stderr();
+	                $status['debug'] .= 'Could not update the SMF password: ' . $db->stderr();
+	            } else {
+	                $status['debug'] .= 'Updated the SMF password to: ' . $password . ' with salt:' . $password_salt;
 	            }
             }
 
             $status['userinfo'] = $userlookup;
             $status['error'] = false;
-            $status['debug'] = JText::_('USER_EXISTS');
+            $status['debug'] .= JText::_('USER_EXISTS');
             return $status;
         } elseif ($userlookup) {
 
@@ -67,7 +70,7 @@ class JFusionUser_smf extends JFusionUser{
         		} else {
 	            	$status['userinfo'] = $userinfo;
     	        	$status['error'] = false;
-   	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
+   	        		$status['debug'] .= ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
         	    	return $status;
         		}
 
@@ -135,7 +138,7 @@ class JFusionUser_smf extends JFusionUser{
                 }
 
                 //return the good news
-                $status['debug'] = 'Created new user with userid:' . $user->ID_MEMBER;
+                $status['debug'] .= 'Created new user with userid:' . $user->ID_MEMBER;
                 $status['error'] = false;
                 $status['userinfo'] = $this->getUser($userinfo->username);
                 $status['action'] = 'created';
@@ -203,7 +206,13 @@ class JFusionUser_smf extends JFusionUser{
             require_once($api_file);
             $username = $userinfo->username;
             $password = $userinfo->password_clear;
-            $cookie_length = 3600 + $options['remember']*31536000;
+
+        	if (isset($options['remember'])) {
+            	$cookie_length = $options['remember'] ? 31536000 : 3600;
+        	} else {
+            	$cookie_length = 3600;
+        	}
+
             smf_setLoginCookie($cookie_length,$username,$password,false);
             smf_loadSession();
             smf_authenticateUser();
