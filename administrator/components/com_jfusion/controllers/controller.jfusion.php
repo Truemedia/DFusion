@@ -417,8 +417,6 @@ class JFusionController extends JController
         //start the usersync
        	JFusionUsersync::SyncExecute($syncdata,$action,0,0);
 
-       	echo JText::_('USERSYNC') . ' ' . JText::_('COMPLETED');
-
     }
     }
 

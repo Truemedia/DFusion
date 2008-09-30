@@ -37,10 +37,10 @@ class JFusionUser_mybb extends JFusionUser{
             //a matching user has been found
             if ($userlookup->email == $userinfo->email) {
                 //emails match up
-                if ($userinfo->password_clear) {
+				if(isset($userinfo->password_clear)){
                     //we can update the password
                     jimport('joomla.user.helper');
-                    if (!$userinfo->password_salt) {
+                    if (!isset($userinfo->password_salt)) {
                         $userinfo->password_salt = JUserHelper::genRandomPassword(6);
                     }
                     $userlookup->password = md5(md5($userinfo->password_salt).md5($userinfo->password_clear));
@@ -55,12 +55,14 @@ class JFusionUser_mybb extends JFusionUser{
                     }
                     $status['userinfo'] = $userlookup;
                     $status['error'] = false;
+                    $status['action'] = 'updated';
                     $status['debug'] = 'User already exists, password was updated to:' . $userlookup->password;
                     return $status;
                 } else {
                     //no clear password available, just report back
                     $status['userinfo'] = $userlookup;
                     $status['error'] = false;
+                    $status['action'] = 'updated';
                     $status['debug'] = 'User already exists, password was not updated.';
                     return $status;
 
@@ -78,6 +80,7 @@ class JFusionUser_mybb extends JFusionUser{
                     } else {
                         $status['userinfo'] = $userinfo;
                         $status['error'] = false;
+                    	$status['action'] = 'updated';
                         $status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
                         return $status;
                     }
@@ -96,16 +99,19 @@ class JFusionUser_mybb extends JFusionUser{
             $user->username = $username_clean;
             $user->email = $userinfo->email;
 
-            if ($userinfo->password_clear) {
+            jimport('joomla.user.helper');
+            if (isset($userinfo->password_clear)) {
                 //we can update the password
-                jimport('joomla.user.helper');
                 $user->salt = JUserHelper::genRandomPassword(6);
                 $user->password = md5(md5($user->salt).md5($userinfo->password_clear));
                 $user->loginkey  = JUserHelper::genRandomPassword(50);
             } else {
                 $user->password = $userinfo->password;
-                $user->salt = $userinfo->password_salt;
-                jimport('joomla.user.helper');
+                if (!isset($userinfo->password_salt)) {
+    	            $user->salt = JUserHelper::genRandomPassword(6);
+                } else {
+                	$user->salt = $userinfo->password_salt;
+                }
                 $user->loginkey  = JUserHelper::genRandomPassword(50);
             }
 
@@ -118,7 +124,7 @@ class JFusionUser_mybb extends JFusionUser{
                 return $status;
             } else {
                 //return the good news
-                $status['debug'] = 'Created new user with userid:' . $user->id;
+                $status['debug'] = 'Created new user with userid:' . $user->uid;
                 $status['error'] = false;
                 $status['userinfo'] = $this->getUser($username_clean);
                 $status['action'] = 'created';

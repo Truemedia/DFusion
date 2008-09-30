@@ -35,7 +35,7 @@ class JFusionUser_joomla_int extends JFusionUser{
         $userlookup = $this->getUser($userinfo->username);
         if ($userlookup->email == $userinfo->email) {
             //user exist however some details need to be updates
-                   if ($userinfo->password_clear) {
+				if(isset($userinfo->password_clear)){
                         //we need update the password
 						$userinfo->password_salt  = JUserHelper::genRandomPassword(32);
 			            $userinfo->password = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
@@ -72,6 +72,7 @@ class JFusionUser_joomla_int extends JFusionUser{
                     //TODO: Update the password
                     $status['userinfo'] = $userlookup;
                     $status['error'] = false;
+                    $status['action'] = 'updated';
                     $status['debug'] .= ' ' . JText::_('USER_EXISTS');
                     return $status;
 
@@ -95,6 +96,7 @@ class JFusionUser_joomla_int extends JFusionUser{
         		} else {
 	            	$status['userinfo'] = $userinfo;
     	        	$status['error'] = false;
+                    $status['action'] = 'updated';
    	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
         	    	return $status;
         		}
@@ -139,6 +141,7 @@ class JFusionUser_joomla_int extends JFusionUser{
         			} else {
 	            		$status['userinfo'] = $userinfo;
     	        		$status['error'] = false;
+                    	$status['action'] = 'updated';
     	        		$status['debug'] = ' Updated the username from: ' . $conflict_user->username . ' to:' . $username_clean;
         	    		return $status;
         		}
@@ -167,9 +170,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             $instance->set('username'     , $username_clean );
             $instance->set('password'     , $password);
             $instance->set('email'        , $userinfo->email );
-            $instance->set('registerDate' , $userinfo->registerdate);
             $instance->set('block'        , $userinfo->block );
-            $instance->set('lastvisitDate', $userinfo->lastvisitdate);
             $instance->set('sendEmail '   , 1 );
 
             //find out what usergroup the new user should have
@@ -247,7 +248,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             } else {
                 //could not find user and return an error
                 JError::raiseWarning(0, JText::_('ERROR_DELETE') . $username);
-                return false;
+                return '';
             }
         }
     }
@@ -267,14 +268,14 @@ class JFusionUser_joomla_int extends JFusionUser{
             //no user found, now check the Joomla user table
             $JFusionUser = JFusionfactory::getUser('joomla_int');
             $filtered_username = $JFusionUser->filterUsername($username);
-            $db->setQuery('SELECT a.id as userid, a.activation, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.username=' . $db->quote($filtered_username));
+            $db->setQuery('SELECT a.id as userid, a.activation, a.username, a.name, a.password, a.email, a.block FROM #__users as a WHERE a.username=' . $db->quote($filtered_username));
             $result = $db->loadObject();
         }
 
         if ($result) {
             //split up the password if it contains a salt
             $parts = explode(':', $result->password );
-        	if($parts[1]) {
+        	if(isset($parts[1])) {
         		$result->password_salt = $parts[1];
         		$result->password = $parts[0];
         	}
@@ -283,11 +284,8 @@ class JFusionUser_joomla_int extends JFusionUser{
         	if ($result->activation) {
         		$result->block = 1;
         	}
-
-            return $result;
-        } else {
-            return false;
         }
+        return $result;
     }
 
 

@@ -35,7 +35,7 @@ class JFusionUser_vbulletin extends JFusionUser{
         if ($userlookup->email == $userinfo->email) {
 
 			//update the password if we have access to it
-			if($userinfo->password_clear){
+			if(isset($userinfo->password_clear)){
         		jimport('joomla.user.helper');
         		$password_salt = JUserHelper::genRandomPassword(3);
 				$password = md5(md5($userinfo->password_clear).$password_salt);
@@ -52,6 +52,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             //emails match up
             $status['userinfo'] = $userlookup;
             $status['error'] = false;
+            $status['action'] = 'updated';
 
             return $status;
         } else if ($userlookup) {
@@ -67,6 +68,7 @@ class JFusionUser_vbulletin extends JFusionUser{
         		} else {
 	            	$status['userinfo'] = $userinfo;
     	        	$status['error'] = false;
+                    $status['action'] = 'updated';
    	        		$status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
         	    	return $status;
         		}
@@ -78,7 +80,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 
             //lookup the name of the usergroup
 	        $db = JFusionFactory::getDatabase($this->getJname());
-    	    $query = 'SELECT group_name from #__groups WHERE group_id = ' . $usergroup_id;
+    	    $query = 'SELECT group_name from #__groups WHERE group_id = ' . $usergroup;
         	$db->setQuery($query );
         	$usergroupname = $db->loadResult();
 
@@ -90,7 +92,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$user->usertitle = $usergroupname;
 			$user->username = $userinfo->username;
 
-            if($userinfo->password_clear){
+            if(isset($userinfo->password_clear)){
         		jimport('joomla.user.helper');
         		$user->salt = JUserHelper::genRandomPassword(3);
 				$user->password = md5(md5($userinfo->password_clear).$user->salt);
@@ -123,6 +125,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             //return the good news
             $status['debug'] = 'Created new user with userid:' . $user->userid;
             $status['error'] = false;
+            $status['action'] = 'created';
             $status['userinfo'] = $this->getUser($userinfo->username);
             return $status;
 
@@ -146,11 +149,8 @@ class JFusionUser_vbulletin extends JFusionUser{
             } else {
                 $result->block = 0;
             }
-            return $result;
-
-        } else {
-            return false;
         }
+        return $result;
     }
 
 

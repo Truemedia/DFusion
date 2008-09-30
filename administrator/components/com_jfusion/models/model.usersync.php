@@ -209,6 +209,11 @@ class JFusionUsersync{
        		$query = 'UPDATE #__jfusion_sync SET time_end = ' . $db->quote(time()) .' WHERE syncid =' . $db->Quote($syncdata['syncid']);
        		$db->setQuery($query );
        		$db->query();
+
+       		echo JText::_('USERSYNC') . ' ' . JText::_('COMPLETED') . '<br/><br/>';
+			echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2>';
+
+
         }
     }
 }

@@ -38,7 +38,7 @@ class JFusionUser_smf extends JFusionUser{
             //emails match up
 
 			//update the password if we have access to it
-			if($userinfo->password_clear){
+			if(isset($userinfo->password_clear)){
             	$password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
             	$password_salt = substr(md5(rand()), 0, 4);
                 $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt = ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $userlookup->userid;
@@ -52,6 +52,7 @@ class JFusionUser_smf extends JFusionUser{
 
             $status['userinfo'] = $userlookup;
             $status['error'] = false;
+            $status['action'] = 'updated';
             $status['debug'] .= JText::_('USER_EXISTS');
             return $status;
         } elseif ($userlookup) {
@@ -70,6 +71,7 @@ class JFusionUser_smf extends JFusionUser{
         		} else {
 	            	$status['userinfo'] = $userinfo;
     	        	$status['error'] = false;
+                    $status['action'] = 'updated';
    	        		$status['debug'] .= ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
         	    	return $status;
         		}
@@ -97,12 +99,18 @@ class JFusionUser_smf extends JFusionUser{
             $user->realName = $userinfo->name;
             $user->emailAddress = $userinfo->email;
 
-            if($userinfo->password_clear){
+            if(isset($userinfo->password_clear)){
             	$user->passwd = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
             	$user->passwordSalt = substr(md5(rand()), 0, 4);
             } else {
             	$user->passwd = $userinfo->password;
-            	$user->passwordSalt = $userinfo->password_salt;
+
+            	if (!isset($userinfo->password_salt)) {
+            		$user->passwordSalt = substr(md5(rand()), 0, 4);
+                } else {
+                	$user->passwordSalt = $userinfo->password_salt;
+                }
+
             }
 
             $user->posts = 0 ;

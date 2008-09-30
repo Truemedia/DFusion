@@ -41,10 +41,8 @@
                 } else {
                     $result->block = 0;
                 }
-                return $result;
-            } else {
-                return false;
             }
+        return $result;
         }
 
         function updateUser($userinfo, $overwrite)
@@ -61,7 +59,7 @@
                 //a matching user has been found
                 if ($userlookup->email == $userinfo->email) {
                     //emails match up
-                    if ($userinfo->password_clear) {
+					if(isset($userinfo->password_clear)){
                         //we need update the password
                         require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
                         $t_hasher = new PasswordHash(8, TRUE);
@@ -98,6 +96,7 @@
                     //TODO: Update the password
                     $status['userinfo'] = $userlookup;
                     $status['error'] = false;
+                    $status['action'] = 'updated';
                     $status['debug'] .= ' ' . JText::_('USER_EXISTS');
                     return $status;
 
@@ -118,6 +117,7 @@
                 } else {
                     $status['userinfo'] = $userinfo;
                     $status['error'] = false;
+                    $status['action'] = 'updated';
                     $status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
                     return $status;
                 }
@@ -137,7 +137,7 @@
             $user->username = $userinfo->username;
             $user->username_clean = $username_clean;
 
-            if ($userinfo->password_clear) {
+            if (isset($userinfo->password_clear)) {
                 //we can update the password
                 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
                 $t_hasher = new PasswordHash(8, TRUE);
