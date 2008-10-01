@@ -205,7 +205,8 @@
                     $plugin_user['userinfo']->password_clear = $user['password'];
 
                     JFusionFunction::updateLookup($plugin_user['userinfo'], $plugin->name, $joomla_user['userinfo']->userid);
-                    if ($options['group'] != 'Public Backend' && $plugin->dual_login == 1) {
+
+                    if (!isset($options['group']) && $plugin->dual_login == 1) {
                         $session_result = $JFusionPlugin->createSession($plugin_user['userinfo'], $options);
                         if ($session_result['error']) {
                             JError::raiseWarning('500', $plugin->name . ': ' . $session_result['error']);

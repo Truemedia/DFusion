@@ -385,6 +385,29 @@ class JFusionFunction{
 
     }
 
+    function addCookie($name, $value, $expires_time, $cookiepath, $cookiedomain, $httponly)
+    {
+
+		$expires = time() + intval($expires_time);
+        // Versions of PHP prior to 5.2 do not support HttpOnly cookies and IE is buggy when specifying a blank domain so set the cookie manually
+        $cookie = "Set-Cookie: {$name}=".urlencode($value);
+        if ($expires > 0) {
+            $cookie .= "; expires=".gmdate('D, d-M-Y H:i:s \\G\\M\\T', $expires);
+        }
+        if (!empty($cookiepath)) {
+            $cookie .= "; path={$cookiepath}";
+        }
+        if (!empty($cookiedomain)) {
+            $cookie .= "; domain={$cookiedomain}";
+        }
+        if ($httponly == true) {
+            $cookie .= "; HttpOnly";
+        }
+        $document	= JFactory::getDocument();
+	    $document->addCustomTag($cookie);
+
+    }
+
     function displayDonate(){
     	?>
 <table class="adminform"><tr><td><font size="5"><b>Please help support the JFusion project with a donation. This will ensure the continued development of this revolutionary project.</b></font></td><td>

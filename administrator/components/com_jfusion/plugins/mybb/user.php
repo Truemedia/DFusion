@@ -206,6 +206,7 @@ class JFusionUser_mybb extends JFusionUser{
         $params = JFusionFactory::getParams($this->getJname());
         $cookiedomain = $params->get('cookie_domain','');
         $cookiepath = $params->get('cookie_path','/');
+
         //get myBB uid, loginkey
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT uid, loginkey FROM #__users WHERE username=' .$db->quote($userinfo->username) ;
@@ -215,58 +216,30 @@ class JFusionUser_mybb extends JFusionUser{
         // Set cookie values
         $name='mybbuser';
         $value=$user->uid.'_'.$user->loginkey;
-        $expires = null;
-
-        if (isset($options['remember'])) {
-            $remember = $options['remember'] ? 1 : 'no';
-        } else {
-        	$remember = 'no';
-        }
-
         $httponly=true;
 
-        // Creating Forum Cookies
-        //adopted from myBB function  in inc/functions.php
-        if (!$cookiepath) {
-            $cookiepath = "/";
-        }
-        if ($expires == -1) {
-            $expires = 0;
-        } else if ($expires == "" || $expires == null) {
-            if ($remember == "no") {
-                $expires = 0;
-            } else {
-                $expires = time() + (60*60*24*365);
+        if (isset($options['remember'])) {
+            if($options['remember']) {
                 // Make the cookie expire in a years time
+                $expires = 60*60*24*365;
+            } else {
+                // Make the cookie expire in 30 minutes
+            	$expires = 60*30;
             }
         } else {
-            $expires = time() + intval($expires);
+            //Make the cookie expire in 30 minutes
+            $expires = 60*30;
         }
 
         $cookiepath = str_replace(array("\n","\r"), "", $cookiepath);
         $cookiedomain = str_replace(array("\n","\r"), "", $cookiedomain);
 
-        // Versions of PHP prior to 5.2 do not support HttpOnly cookies and IE is buggy when specifying a blank domain so set the cookie manually
-        $cookie = "Set-Cookie: {$name}=".urlencode($value);
-        if ($expires > 0) {
-            $cookie .= "; expires=".gmdate('D, d-M-Y H:i:s \\G\\M\\T', $expires);
-        }
-        if (!empty($cookiepath)) {
-            $cookie .= "; path={$cookiepath}";
-        }
-        if (!empty($cookiedomain)) {
-            $cookie .= "; domain={$cookiedomain}";
-        }
-        if ($httponly == true) {
-            $cookie .= "; HttpOnly";
-        }
-        header($cookie, false);
+    	JFusionFunction::addCookie($name, $value, $expires, $cookiepath, $cookiedomain, $httponly);
 
         $status = array();
         $status['debug'] = JText::_('NAME') . '=' . $name . ', ' . JText::_('VALUE') . '=' . $value . ', ' . JText::_('COOKIE_PATH') . '=' . $cookiepath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $cookiedomain;
         $status['error'] = false;
         return $status;
-
 
     }
 

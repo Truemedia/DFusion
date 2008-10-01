@@ -385,6 +385,12 @@
                     $jautologin = $phpbb_allow_autologin;
                 }
 
+                if ($jautologin){
+                	$expires = 60*60*24*365;
+                } else {
+                	$expires = 60*30;
+                }
+
                 $session_start = time();
 
                 //Insert the session into sessions table
@@ -405,8 +411,8 @@
                     return $status;
                 } else {
                     //Set cookies
-                    setcookie($phpbb_cookie_name . '_u', $userid, time()+(86400*365), $phpbb_cookie_path, $phpbb_cookie_domain);
-                    setcookie($phpbb_cookie_name . '_sid', $session_key, time()+(86400*365), $phpbb_cookie_path, $phpbb_cookie_domain);
+    				JFusionFunction::addCookie($phpbb_cookie_name . '_u', $userid, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
+    				JFusionFunction::addCookie($phpbb_cookie_name . '_sid', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
                     $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
 
                     // Remember me option?
@@ -422,7 +428,7 @@
                             $status['error'] = JText::_('ERROR_CREATE_USER') . $database->stderr();
                             return $status;
                         } else {
-                            setcookie($phpbb_cookie_name . '_k', $session_key, time()+(86400*365), $phpbb_cookie_path, $phpbb_cookie_domain);
+		    				JFusionFunction::addCookie($phpbb_cookie_name . '_k', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
                             $status['debug'] .= 'Created session_key:' . $session_key;
                         }
 

@@ -201,20 +201,17 @@ class JFusionUser_vbulletin extends JFusionUser{
             $vbLicense = $params->get('source_license','');
 
             $bypost = 1;
+            $expires = 60*30;
 
             if (isset($options['remember'])) {
-                $lifetime = time() + 365*24*60*60;
-                setcookie('usercookie[username]', $userinfo->username, $lifetime, $vbCookiePath, $vbCookieDomain );
-                setcookie('usercookie[password]', $userinfo->password, $lifetime, $vbCookiePath, $vbCookieDomain );
-                setcookie($vbCookiePrefix.'userid', $userinfo->userid, $lifetime, $vbCookiePath, $vbCookieDomain );
-                setcookie($vbCookiePrefix.'password', md5($userinfo->password . $vbLicense ), $lifetime, $vbCookiePath, $vbCookieDomain );
-                setcookie('userid', $userinfo->userid, $lifetime, $vbCookiePath, $vbCookieDomain );
-
-            } else {
-                setcookie($vbCookiePrefix.'userid', $userinfo->userid, time() + 43200, $vbCookiePath, $vbCookieDomain );
-                setcookie($vbCookiePrefix.'password', md5($userinfo->password . $vbLicense ), time() + 43200, $vbCookiePath, $vbCookieDomain );
-                setcookie('userid', $userinfo->userid, time() + 43200, $vbCookiePath, $vbCookieDomain );
+                $expires = 365*24*60*60;
+   				JFusionFunction::addCookie('usercookie[username]' , $userinfo->username, $expires, $vbCookiePath, $vbCookieDomain, true);
+   				JFusionFunction::addCookie('usercookie[password]' , $userinfo->password, $expires, $vbCookiePath, $vbCookieDomain, true);
             }
+   				JFusionFunction::addCookie($vbCookiePrefix.'userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
+   				JFusionFunction::addCookie($vbCookiePrefix.'password' , md5($userinfo->password . $vbLicense ), $expires, $vbCookiePath, $vbCookieDomain, true);
+   				JFusionFunction::addCookie('userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
+
             $status['error'] = false;
        		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain;
             $status['debug'] = 'created session';
