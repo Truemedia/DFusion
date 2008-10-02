@@ -27,7 +27,7 @@
             $db = JFusionFactory::getDatabase($this->getJname());
             $username = $this->filterUsername($username);
 
-            $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_lastvisit as lastvisit FROM #__users '.
+            $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation FROM #__users '.
             'WHERE username_clean=' . $db->Quote($username);
             $db->setQuery($query);
             $result = $db->loadObject();
@@ -91,17 +91,27 @@
                         	$status['debug'] .= 'the user was unblocked in phpBB3. ';
                         }
 
+                    if ($userlookup->activation != $userinfo->activation) {
+                        if ($userinfo->activation) {
+                            //set activation key
+	                        $query = 'UPDATE #__users SET user_actkey =' . $db->quote($userinfo->activation) . ' WHERE user_id =' . $userlookup->userid;
+                            $db->setQuery($query);
+                            $db->query();
+                        	$status['debug'] .= 'the user was disactiavted in phpBB3. ';
+                        } else {
+                            //activate the user
+	                        $query = 'UPDATE #__users SET user_actkey = \'\'  WHERE user_id =' . $userlookup->userid;
+                            $db->setQuery($query);
+                            $db->query();
+                        	$status['debug'] .= 'the user was activated in phpBB3. ';
+                        }
                     }
 
-                    //TODO: Update the password
                     $status['userinfo'] = $userlookup;
                     $status['error'] = false;
                     $status['action'] = 'updated';
                     $status['debug'] .= ' ' . JText::_('USER_EXISTS');
                     return $status;
-
-
-
 
 
             } else {

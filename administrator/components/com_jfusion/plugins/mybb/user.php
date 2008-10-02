@@ -29,6 +29,7 @@ class JFusionUser_mybb extends JFusionUser{
         // Initialise some variables
         $db = JFusionFactory::getDatabase($this->getJname());
         $status = array();
+        $status['debug'] = '';
 
         //find out if the user already exists
         $userlookup = $this->getUser($userinfo->username);
@@ -43,7 +44,7 @@ class JFusionUser_mybb extends JFusionUser{
                     if (!isset($userinfo->password_salt)) {
                         $userinfo->password_salt = JUserHelper::genRandomPassword(6);
                     }
-                    $userlookup->password = md5(md5($userinfo->password_salt).md5($userinfo->password_clear));
+                    $userlookup->password = md5(md5($userinfo->password_salt).$userinfo->password_clear);
                     $userlookup->password_salt = $userinfo->password_salt;
 
                     $query = 'UPDATE #__users SET password =' . $db->quote($userlookup->password) . ', salt = '.$db->quote($userlookup->password_salt). ' WHERE uid =' . $userlookup->userid;
@@ -53,20 +54,52 @@ class JFusionUser_mybb extends JFusionUser{
                         $status['error'] = 'Error while creating the user: ' . $db->stderr();
                         return $status;
                     }
-                    $status['userinfo'] = $userlookup;
-                    $status['error'] = false;
-                    $status['action'] = 'updated';
-                    $status['debug'] = 'User already exists, password was updated to:' . $userlookup->password;
-                    return $status;
-                } else {
-                    //no clear password available, just report back
-                    $status['userinfo'] = $userlookup;
-                    $status['error'] = false;
-                    $status['action'] = 'updated';
-                    $status['debug'] = 'User already exists, password was not updated.';
-                    return $status;
-
+                    $status['debug'] .= 'Password was updated to:' . $userlookup->password;
                 }
+
+                //check the blocked status
+                if ($userlookup->block != $userinfo->block) {
+                    if ($userinfo->block) {
+                        //block the user
+                        $query = 'INSERT INTO #__banlist (ban_userid) VALUES ('.$userlookup->userid.')';
+                        $db->setQuery($query);
+                        $db->query();
+                      	$status['debug'] .= 'the user was blocked in phpBB3. ';
+                    } else {
+                        //unblock the user
+                        $query = 'DELETE FROM #__banlist WHERE userid=' . $userlookup->userid;
+                        $db->setQuery($query);
+                        $db->query();
+                     	$status['debug'] .= 'the user was unblocked in phpBB3. ';
+                    }
+                }
+
+                if ($userlookup->activation != $userinfo->activation) {
+                    if ($userinfo->activation) {
+                        //set activation key
+                        $query = 'UPDATE #__users SET user_actkey =' . $db->quote($userinfo->activation) . ' WHERE user_id =' . $userlookup->userid;
+                        $db->setQuery($query);
+                        $db->query();
+                      	$status['debug'] .= 'the user was disactiavted in phpBB3. ';
+                    } else {
+                        //activate the user
+                        $query = 'UPDATE #__users SET user_actkey = \'\'  WHERE user_id =' . $userlookup->userid;
+                        $db->setQuery($query);
+                        $db->query();
+                      	$status['debug'] .= 'the user was activated in phpBB3. ';
+                    }
+                }
+
+
+
+
+                $status['userinfo'] = $userlookup;
+                $status['error'] = false;
+                $status['action'] = 'updated';
+                $status['debug'] = 'User already exists.';
+                return $status;
+
+
 
             } else {
                     //we need to update the email
@@ -138,7 +171,7 @@ class JFusionUser_mybb extends JFusionUser{
     {
         // Get user info from database
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT uid as userid, username, username as name, email, usergroup, password, salt as password_salt FROM #__users WHERE username=' . $db->Quote($username);
+        $query = 'SELECT uid as userid, username, username as name, email, usergroup, password, salt as password_salt, NULL as activation FROM #__users WHERE username=' . $db->Quote($username);
         $db->setQuery($query );
         $result = $db->loadObject();
 
