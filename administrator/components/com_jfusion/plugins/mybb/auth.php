@@ -25,7 +25,7 @@ class JFusionAuth_mybb extends JFusionAuth{
     function generateEncryptedPassword($userinfo)
     {
            //Apply myBB encryption
-            $testcrypt = md5(md5($userinfo->password_salt).$userinfo->password_clear);
+            $testcrypt = md5(md5($userinfo->password_salt).md5($userinfo->password_clear));
             return $testcrypt;
     }
 

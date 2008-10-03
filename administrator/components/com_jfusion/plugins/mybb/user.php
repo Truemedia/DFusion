@@ -41,11 +41,9 @@ class JFusionUser_mybb extends JFusionUser{
 				if(isset($userinfo->password_clear)){
                     //we can update the password
                     jimport('joomla.user.helper');
-                    if (!isset($userinfo->password_salt)) {
-                        $userinfo->password_salt = JUserHelper::genRandomPassword(6);
-                    }
-                    $userlookup->password = md5(md5($userinfo->password_salt).$userinfo->password_clear);
-                    $userlookup->password_salt = $userinfo->password_salt;
+                    $userlookup->password_salt = JUserHelper::genRandomPassword(6);
+                    $userlookup->password = md5(md5($userlookup->password_salt).md5($userinfo->password_clear));
+
 
                     $query = 'UPDATE #__users SET password =' . $db->quote($userlookup->password) . ', salt = '.$db->quote($userlookup->password_salt). ' WHERE uid =' . $userlookup->userid;
                     $db->setQuery($query);
@@ -61,42 +59,48 @@ class JFusionUser_mybb extends JFusionUser{
                 if ($userlookup->block != $userinfo->block) {
                     if ($userinfo->block) {
                         //block the user
-                        $query = 'INSERT INTO #__banlist (ban_userid) VALUES ('.$userlookup->userid.')';
+                        $this->blockUser($userinfo, $userlookup);
+
+                         $user = new stdClass;
+                         $user->uid = $userlookup->userid;
+                         $user->gid = 7;
+                         $user->oldgroup = $userlookup->usergroup;
+                         $user->admin = 1;
+                         $user->dateline = time();
+                         $user->bantime = '---';
+                         $user->reason = 'JFusion';
+                         $user->lifted = 0;
+
+            //now append the new user data
+            if (!$db->insertObject('#__banned', $user, 'uid' )) {
+                //return the error
+                $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                return $status;
+            }
+
+                        //change its usergroup
+                        $query = 'UPDATE #__users SET usergroup = 7 WHERE uid = '.$userlookup->userid.')';
                         $db->setQuery($query);
                         $db->query();
-                      	$status['debug'] .= 'the user was blocked in phpBB3. ';
+                        $status['debug'] .= ' ,the user was blocked in mybb. ';
+
                     } else {
                         //unblock the user
-                        $query = 'DELETE FROM #__banlist WHERE userid=' . $userlookup->userid;
+                        $query = 'UPDATE #__banned SET lifted = 1 WHERE uid=' . $userlookup->userid;
                         $db->setQuery($query);
                         $db->query();
-                     	$status['debug'] .= 'the user was unblocked in phpBB3. ';
+
+
+                     	$status['debug'] .= ' ,the user was unblocked in mybb. ';
                     }
                 }
 
-                if ($userlookup->activation != $userinfo->activation) {
-                    if ($userinfo->activation) {
-                        //set activation key
-                        $query = 'UPDATE #__users SET user_actkey =' . $db->quote($userinfo->activation) . ' WHERE user_id =' . $userlookup->userid;
-                        $db->setQuery($query);
-                        $db->query();
-                      	$status['debug'] .= 'the user was disactiavted in phpBB3. ';
-                    } else {
-                        //activate the user
-                        $query = 'UPDATE #__users SET user_actkey = \'\'  WHERE user_id =' . $userlookup->userid;
-                        $db->setQuery($query);
-                        $db->query();
-                      	$status['debug'] .= 'the user was activated in phpBB3. ';
-                    }
-                }
-
-
-
+                //note I could not find any email activation system in myBB
 
                 $status['userinfo'] = $userlookup;
                 $status['error'] = false;
                 $status['action'] = 'updated';
-                $status['debug'] = 'User already exists.';
+                $status['debug'] .= ' ,User already exists.';
                 return $status;
 
 
@@ -171,21 +175,17 @@ class JFusionUser_mybb extends JFusionUser{
     {
         // Get user info from database
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT uid as userid, username, username as name, email, usergroup, password, salt as password_salt, NULL as activation FROM #__users WHERE username=' . $db->Quote($username);
+        $query = 'SELECT a.uid as userid, a.username, a.usergroup, a.username as name, a.email, a.password, a.salt as password_salt, a.usergroup as activation, b.isbannedgroup as blocked FROM #__users as a INNER JOIN #__usergroups as b ON a.usergroup = b.gid WHERE username=' . $db->Quote($username);
         $db->setQuery($query );
         $result = $db->loadObject();
 
         if ($result) {
-
-            //Check to see if they are banned
-            $query = 'SELECT isbannedgroup FROM #__usergroups WHERE gid=' . $result->usergroup;
-            $db->setQuery($query );
-            $banCheck = $db->loadObject();
-
-            if ($result->usergroup == 5 || ($banCheck && $banCheck->isbannedgroup == "yes")) {
-                $result->block = 1;
+            //Check to see if user needs to be activated
+            if ($result->usergroup == 5) {
+                jimport('joomla.user.helper');
+                $result->activation = JUserHelper::genRandomPassword(32);;
             } else {
-                $result->block = 0;
+                $result->activation = NULL;
             }
         }
 
@@ -282,7 +282,25 @@ class JFusionUser_mybb extends JFusionUser{
         return $username;
     }
 
+    function blockUser($userinfo, $userlookup)
+    {
 
+    }
+
+    function unblockUser($userinfo, $userlookup)
+    {
+
+    }
+
+    function activateUser($userinfo, $userlookup)
+    {
+
+    }
+
+    function inactivateUser($userinfo, $userlookup)
+    {
+
+    }
 
 }
 
