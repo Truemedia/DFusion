@@ -36,6 +36,12 @@
 		<param name="cookie_prefix" type="text" size="10" default="" description="COOKIE_PREFIX" />
 		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name="update_email" type="radio" default="1"
+			description="UPDATE_EMAIL">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
 	</params>
 
 </install>

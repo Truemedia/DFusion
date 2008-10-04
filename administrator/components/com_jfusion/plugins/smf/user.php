@@ -31,127 +31,59 @@ class JFusionUser_smf extends JFusionUser{
         $db = JFusionFactory::getDatabase($this->getJname());
         $status = array();
         $status['debug'] = '';
+        $status['error'] = '';
 
         //find out if the user already exists
-        $userlookup = $this->getUser($userinfo->username);
-        if ($userlookup->email == $userinfo->email) {
-            //emails match up
+        $existinguser = $this->getUser($userinfo->username);
 
-			//update the password if we have access to it
-			if(isset($userinfo->password_clear)){
-            	$password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
-            	$password_salt = substr(md5(rand()), 0, 4);
-                $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt = ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $userlookup->userid;
-            	$db->setQuery($query );
-            	if (!$db->Query()) {
-	                $status['debug'] .= 'Could not update the SMF password: ' . $db->stderr();
-	            } else {
-	                $status['debug'] .= 'Updated the SMF password to: ' . $password . ' with salt:' . $password_salt;
-	            }
+        if (!empty($existinguser)) {
+            //a matching user has been found
+            if ($existinguser->email != $userinfo->email) {
+                $this->updateEmail($userinfo, $existinguser, $status);
             }
 
-            $status['userinfo'] = $userlookup;
-            $status['error'] = false;
-            $status['action'] = 'updated';
-            $status['debug'] .= JText::_('USER_EXISTS');
-            return $status;
-        } elseif ($userlookup) {
-
-            //emails do not match up
-            if ($overwrite) {
-                //we need to update the email
-				$db =& JFactory::getDBO();
-   	    		$query = 'UPDATE #__users SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $userlookup->userid;
-       			$db->setQuery($query);
-				if(!$db->query()) {
-					//update failed, return error
-	            	$status['userinfo'] = $userlookup;
-    	        	$status['error'] = 'Error while updating the user email: ' . $db->stderr();
-        	    	return $status;
-        		} else {
-	            	$status['userinfo'] = $userinfo;
-    	        	$status['error'] = false;
-                    $status['action'] = 'updated';
-   	        		$status['debug'] .= ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
-        	    	return $status;
-        		}
-
-
-            } else {
-				//overwite disabled return an error
-            	$status['userinfo'] = $userlookup;
-            	$status['error'] = JText::_('EMAIL_CONFLICT');
-            	return $status;
+            if (!empty($userinfo->password_clear)) {
+                //we can update the password
+                $this->updatePassword($userinfo, $existinguser, $status);
             }
 
-        } else {
-
-            //we need to create a new SMF user
-
-            //check to see if the smf_api.php file exists
-            $params = JFusionFactory::getParams($this->getJname());
-            $source_path = $params->get('source_path');
-
-            //prepare the user variables
-            $user = new stdClass;
-            $user->ID_MEMBER = NULL;
-            $user->memberName = $userinfo->username;
-            $user->realName = $userinfo->name;
-            $user->emailAddress = $userinfo->email;
-
-            if(isset($userinfo->password_clear)){
-            	$user->passwd = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
-            	$user->passwordSalt = substr(md5(rand()), 0, 4);
-            } else {
-            	$user->passwd = $userinfo->password;
-
-            	if (!isset($userinfo->password_salt)) {
-            		$user->passwordSalt = substr(md5(rand()), 0, 4);
+            //check the blocked status
+            if ($existinguser->block != $userinfo->block) {
+                if ($userinfo->block) {
+                    //block the user
+                    $this->blockUser($userinfo, $existinguser, &$status);
                 } else {
-                	$user->passwordSalt = $userinfo->password_salt;
+                    //unblock the user
+                    $this->unblockUser($userinfo, $existinguser, &$status);
                 }
-
             }
 
-            $user->posts = 0 ;
-            $user->dateRegistered = time();
-            $user->is_activated = 1;
-            $user->personalText = '';
-            $user->pm_email_notify = 1;
-            $user->ID_THEME = 0;
-            $user->ID_GROUP = $params->get('usergroup', 4);
-            $user->ID_POST_GROUP = 4;
-
-            //now append the new user data
-            if (!$db->insertObject('#__members', $user, 'ID_MEMBER' )) {
-                //return the error
-                $status['error'] = 'Error while creating the user: ' . $db->stderr();
-                return $status;
-            } else {
-                //update the stats
-                $query = 'UPDATE #__settings SET value = value + 1 	WHERE variable = \'totalMembers\' ';
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    //return the error
-                    $status['error'] = 'Error while updating the user stats: ' . $db->stderr();
-                    return $status;
+            //check the blocked status
+            if ($existinguser->block != $userinfo->block) {
+                if ($userinfo->block) {
+                    //block the user
+                    $this->blockUser($userinfo, $existinguser, &$status);
+                } else {
+                    //unblock the user
+                    $this->unblockUser($userinfo, $existinguser, &$status);
                 }
+            }
 
-                $query = 'REPLACE INTO #__settings (variable, value) VALUES (\'latestMember\', ' . $user->ID_MEMBER . '), (\'latestRealName\', ' . $db->quote($userinfo->username) . ')';
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    //return the error
-                    $status['error'] = 'Error while updating the user stats: ' . $db->stderr();
-                    return $status;
-                }
-
-                //return the good news
-                $status['debug'] .= 'Created new user with userid:' . $user->ID_MEMBER;
-                $status['error'] = false;
-                $status['userinfo'] = $this->getUser($userinfo->username);
+            $status['userinfo'] = $existinguser;
+            if (empty($status['error'])) {
+                $status['action'] = 'updated';
+                $status['debug'] .= ' ,User already exists.';
+            }
+            return $status;
+        } else {
+            //we need to create a new user
+            $this->createUser($userinfo, $status);
+            if (empty($status['error'])) {
                 $status['action'] = 'created';
-                return $status;
+                $status['debug'] .= ' ,User created.';
             }
+            return $status;
+
         }
     }
 
@@ -233,9 +165,6 @@ class JFusionUser_smf extends JFusionUser{
             return $status;
 
         }
-
-
-
     }
 
     function filterUsername($username)
@@ -243,5 +172,128 @@ class JFusionUser_smf extends JFusionUser{
         //no username filtering implemented yet
         return $username;
     }
+
+    function updatePassword ($userinfo, &$existinguser, &$status)
+    {
+            	$password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
+            	$password_salt = substr(md5(rand()), 0, 4);
+                $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt = ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
+        		$db = JFusionFactory::getDatabase($this->getJname());
+            	$db->setQuery($query );
+            	if (!$db->Query()) {
+	                $status['debug'] .= 'Could not update the SMF password: ' . $db->stderr();
+	            } else {
+	                $status['debug'] .= 'Updated the SMF password to: ' . $password . ' with salt:' . $password_salt;
+	            }
+
+    }
+
+    function updateUsername ($userinfo, &$existinguser, &$status)
+    {
+
+    }
+
+    function updateEmail ($userinfo, &$existinguser, &$status)
+    {
+                //we need to update the email
+        		$db = JFusionFactory::getDatabase($this->getJname());
+   	    		$query = 'UPDATE #__users SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
+       			$db->setQuery($query);
+				if(!$db->query()) {
+					//update failed, return error
+    	        	$status['error'] .= 'Error while updating the user email: ' . $db->stderr();
+        		} else {
+   	        		$status['debug'] .= ' Update the email address from: ' . $existinguser->email . ' to:' . $userinfo->email;
+        		}
+    }
+
+    function blockUser ($userinfo, &$existinguser, &$status)
+    {
+
+    }
+
+    function unblockUser ($userinfo, &$existinguser, &$status)
+    {
+
+    }
+
+    function activateUser ($userinfo, &$existinguser, &$status)
+    {
+
+    }
+
+    function inactivateUser ($userinfo, &$existinguser, &$status)
+    {
+
+    }
+
+    function createUser ($userinfo, &$status)
+    {
+            //we need to create a new SMF user
+            $params = JFusionFactory::getParams($this->getJname());
+            $source_path = $params->get('source_path');
+
+            //prepare the user variables
+            $user = new stdClass;
+            $user->ID_MEMBER = NULL;
+            $user->memberName = $userinfo->username;
+            $user->realName = $userinfo->name;
+            $user->emailAddress = $userinfo->email;
+
+            if(isset($userinfo->password_clear)){
+            	$user->passwd = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
+            	$user->passwordSalt = substr(md5(rand()), 0, 4);
+            } else {
+            	$user->passwd = $userinfo->password;
+
+            	if (!isset($userinfo->password_salt)) {
+            		$user->passwordSalt = substr(md5(rand()), 0, 4);
+                } else {
+                	$user->passwordSalt = $userinfo->password_salt;
+                }
+
+            }
+
+            $user->posts = 0 ;
+            $user->dateRegistered = time();
+            $user->is_activated = 1;
+            $user->personalText = '';
+            $user->pm_email_notify = 1;
+            $user->ID_THEME = 0;
+            $user->ID_GROUP = $params->get('usergroup', 4);
+            $user->ID_POST_GROUP = 4;
+
+            //now append the new user data
+            if (!$db->insertObject('#__members', $user, 'ID_MEMBER' )) {
+                //return the error
+                $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                return $status;
+            } else {
+                //update the stats
+                $query = 'UPDATE #__settings SET value = value + 1 	WHERE variable = \'totalMembers\' ';
+                $db->setQuery($query);
+                if (!$db->query()) {
+                    //return the error
+                    $status['error'] = 'Error while updating the user stats: ' . $db->stderr();
+                    return $status;
+                }
+
+                $query = 'REPLACE INTO #__settings (variable, value) VALUES (\'latestMember\', ' . $user->ID_MEMBER . '), (\'latestRealName\', ' . $db->quote($userinfo->username) . ')';
+                $db->setQuery($query);
+                if (!$db->query()) {
+                    //return the error
+                    $status['error'] = 'Error while updating the user stats: ' . $db->stderr();
+                    return $status;
+                }
+
+                //return the good news
+                $status['debug'] .= 'Created new user with userid:' . $user->ID_MEMBER;
+                $status['error'] = false;
+                $status['userinfo'] = $this->getUser($userinfo->username);
+                $status['action'] = 'created';
+                return $status;
+
+    }
+
 }
 

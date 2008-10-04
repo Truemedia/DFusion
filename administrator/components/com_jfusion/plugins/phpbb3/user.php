@@ -1,6 +1,6 @@
-    <?php
+<?php
 
-    /**
+/**
 * @package JFusion_phpBB3
 * @version 1.0.7
 * @author JFusion development team
@@ -8,269 +8,104 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-    // no direct access
-    defined('_JEXEC' ) or die('Restricted access' );
+// no direct access
+defined('_JEXEC' ) or die('Restricted access' );
 
-    /**
+/**
 * load the Abstract User Class
 */
-    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
 
-    /**
+/**
 * @package JFusion_phpBB3
 */
-    class JFusionUser_phpbb3 extends JFusionUser{
+class JFusionUser_phpbb3 extends JFusionUser{
 
-        function &getUser($username)
-        {
-            // Get a database object
-            $db = JFusionFactory::getDatabase($this->getJname());
-            $username = $this->filterUsername($username);
+    function updateUser($userinfo, $overwrite)
+    {
+        // Initialise some variables
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $status = array();
+        $status['debug'] = '';
+        $status['error'] = '';
 
-            $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation FROM #__users '.
-            'WHERE username_clean=' . $db->Quote($username);
-            $db->setQuery($query);
-            $result = $db->loadObject();
+        //find out if the user already exists
+        $existinguser = $this->getUser($userinfo->username);
 
-            if ($result) {
-                //Check to see if they are banned
-                $query = 'SELECT userid FROM #__banlist WHERE userid=' . $result->userid;
-                $db->setQuery($query);
-                if ($db->loadObject()) {
-                    $result->block = 1;
+        if (!empty($existinguser)) {
+            //a matching user has been found
+            if ($existinguser->email != $userinfo->email) {
+                $this->updateEmail($userinfo, $existinguser, $status);
+            }
+
+            if (!empty($userinfo->password_clear)) {
+                //we can update the password
+                $this->updatePassword($userinfo, $existinguser, $status);
+            }
+
+            //check the blocked status
+            if ($existinguser->block != $userinfo->block) {
+                if ($userinfo->block) {
+                    //block the user
+                    $this->blockUser($userinfo, $existinguser, &$status);
                 } else {
-                    $result->block = 0;
+                    //unblock the user
+                    $this->unblockUser($userinfo, $existinguser, &$status);
                 }
             }
-        return $result;
-        }
 
-        function updateUser($userinfo, $overwrite)
-        {
-            // Initialise some variables
-            $db = JFusionFactory::getDatabase($this->getJname());
-            $status = array();
-            $status['debug'] = '';
-
-            //find out if the user already exists
-            $userlookup = $this->getUser($userinfo->username);
-
-            if ($userlookup) {
-                //a matching user has been found
-                if ($userlookup->email == $userinfo->email) {
-                    //emails match up
-					if(isset($userinfo->password_clear)){
-                        //we need update the password
-                        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
-                        $t_hasher = new PasswordHash(8, TRUE);
-                        $userlookup->password = $t_hasher->HashPassword($userinfo->password_clear);
-                        unset($t_hasher);
-                        $query = 'UPDATE #__users SET user_password =' . $db->quote($userlookup->password) . ' WHERE user_id =' . $userlookup->userid;
-                        $db->setQuery($query);
-                        if (!$db->query()) {
-                            //return the error
-                            $status['error'] = 'Error while updating the password: ' . $db->stderr();
-                            return $status;
-                        }
-                        $status['debug'] .= 'the password was updated to:' . $userlookup->password;
-                    }
-
-                    //check the blocked status
-                    if ($userlookup->block != $userinfo->block) {
-                        if ($userinfo->block) {
-                            //block the user
-                            $query = 'INSERT INTO #__banlist (ban_userid) VALUES ('.$userlookup->userid.')';
-                            $db->setQuery($query);
-                            $db->query();
-                        	$status['debug'] .= 'the user was blocked in phpBB3. ';
-                        } else {
-                            //unblock the user
-                            $query = 'DELETE FROM #__banlist WHERE userid=' . $userlookup->userid;
-                            $db->setQuery($query);
-                            $db->query();
-                        	$status['debug'] .= 'the user was unblocked in phpBB3. ';
-                        }
-
-                    if ($userlookup->activation != $userinfo->activation) {
-                        if ($userinfo->activation) {
-                            //set activation key
-	                        $query = 'UPDATE #__users SET user_actkey =' . $db->quote($userinfo->activation) . ' WHERE user_id =' . $userlookup->userid;
-                            $db->setQuery($query);
-                            $db->query();
-                        	$status['debug'] .= 'the user was disactiavted in phpBB3. ';
-                        } else {
-                            //activate the user
-	                        $query = 'UPDATE #__users SET user_actkey = \'\'  WHERE user_id =' . $userlookup->userid;
-                            $db->setQuery($query);
-                            $db->query();
-                        	$status['debug'] .= 'the user was activated in phpBB3. ';
-                        }
-                    }
-
-                    $status['userinfo'] = $userlookup;
-                    $status['error'] = false;
-                    $status['action'] = 'updated';
-                    $status['debug'] .= ' ' . JText::_('USER_EXISTS');
-                    return $status;
-
-
-            } else {
-
-                //we need to update the email
-                $query = 'UPDATE #__users SET user_email ='.$db->quote($userinfo->email) .' WHERE user_id =' . $userlookup->userid;
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    //update failed, return error
-                    $status['userinfo'] = $userlookup;
-                    $status['error'] = 'Error while updating the user email: ' . $db->stderr();
-                    return $status;
+            //check the blocked status
+            if ($existinguser->block != $userinfo->block) {
+                if ($userinfo->block) {
+                    //block the user
+                    $this->blockUser($userinfo, $existinguser, &$status);
                 } else {
-                    $status['userinfo'] = $userinfo;
-                    $status['error'] = false;
-                    $status['action'] = 'updated';
-                    $status['debug'] = ' Update the email address from: ' . $userlookup->email . ' to:' . $userinfo->email;
-                    return $status;
+                    //unblock the user
+                    $this->unblockUser($userinfo, $existinguser, &$status);
                 }
-
             }
+
+            $status['userinfo'] = $existinguser;
+            if (empty($status['error'])) {
+                $status['action'] = 'updated';
+                $status['debug'] .= ' ,User already exists.';
+            }
+            return $status;
         } else {
             //we need to create a new user
-
-            //found out what usergroup should be used
-            $params = JFusionFactory::getParams($this->getJname());
-            $usergroup = $params->get('usergroup');
-
-            $username_clean = $this->filterUsername($userinfo->username);
-            //prepare the variables
-            $user = new stdClass;
-            $user->id = NULL;
-            $user->username = $userinfo->username;
-            $user->username_clean = $username_clean;
-
-            if (isset($userinfo->password_clear)) {
-                //we can update the password
-                require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
-                $t_hasher = new PasswordHash(8, TRUE);
-                $user->user_password = $t_hasher->HashPassword($userinfo->password_clear);
-                unset($t_hasher);
-            } else {
-                $user->user_password = $userinfo->password;
-            }
-
-
-            $user->user_pass_convert = 0;
-            $user->user_email = strtolower($userinfo->email);
-            $user->user_email_hash = crc32(strtolower($userinfo->email)) . strlen($userinfo->email);
-            $user->group_id = $usergroup;
-            $user->user_type = 0;
-            $user->user_permissions = '';
-            $user->user_allow_pm = 1;
-            $user->user_actkey = '';
-            $user->user_ip = '';
-            $user->user_regdate = time();
-            $user->user_passchg = time();
-            $user->user_options = 895;
-            $user->user_inactive_reason = 0;
-            $user->user_inactive_time = 0;
-            $user->user_lastmark = time();
-            $user->user_lastvisit = 0;
-            $user->user_lastpost_time = 0;
-            $user->user_lastpage = '';
-            $user->user_posts = 0;
-            $user->user_colour = '';
-            $user->user_occ = '';
-            $user->user_interests = '';
-            $user->user_avatar = '';
-            $user->user_avatar_type = 0;
-            $user->user_avatar_width = 0;
-            $user->user_avatar_height = 0;
-            $user->user_new_privmsg = 0;
-            $user->user_unread_privmsg = 0;
-            $user->user_last_privmsg = 0;
-            $user->user_message_rules = 0;
-            $user->user_emailtime = 0;
-            $user->user_notify = 0;
-            $user->user_notify_pm = 1;
-            $user->user_allow_pm = 1;
-            $user->user_allow_viewonline = 1;
-            $user->user_allow_viewemail = 1;
-            $user->user_allow_massemail = 1;
-            $user->user_sig = '';
-            $user->user_sig_bbcode_uid = '';
-            $user->user_sig_bbcode_bitfield = '';
-
-            //Find some default values
-            $query = "SELECT config_name, config_value FROM #__config WHERE config_name IN ('board_timezone', 'default_dateformat', 'default_lang', 'default_style', 'board_dst', 'rand_seed');";
-            $db->setQuery($query);
-            $rows = $db->loadObjectList();
-            foreach($rows as $row ) {
-                $config[$row->config_name] = $row->config_value;
-            }
-
-            $user->user_timezone = $config['board_timezone'];
-            $user->user_dateformat = $config['default_dateformat'];
-            $user->user_lang = $config['default_lang'];
-            $user->user_style = $config['default_style'];
-            $user->user_dst = $config['board_dst'];
-            $user->user_full_folder = -4;
-            $user->user_notify_type = 0;
-
-            //generate a unique id
-            jimport('joomla.user.helper');
-            $user->user_form_salt = JUserHelper::genRandomPassword(13);
-
-            //now append the new user data
-            if (!$db->insertObject('#__users', $user, 'id' )) {
-                //return the error
-                $status['error'] = 'Error while creating the user: ' . $db->stderr();
-                return $status;
-            } else {
-                //now create a user_group entry
-                $query = 'INSERT INTO #__user_group (group_id, user_id, group_leader, user_pending) VALUES (' .$usergroup.','. $user->id .', 0,0 )';
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    //return the error
-                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
-                    return $status;
-                }
-
-                //update the total user count
-                $query = 'UPDATE #__config SET config_value = config_value + 1 WHERE config_name = \'num_users\'';
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    //return the error
-                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
-                    return $status;
-                }
-
-                //update the newest username
-                $query = 'UPDATE #__config SET config_value = '. $db->quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    //return the error
-                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
-                    return $status;
-                }
-
-                //update the newest userid
-                $query = 'UPDATE #__config SET config_value = ' . $user->id . ' WHERE config_name = \'newest_user_id\'';
-                $db->setQuery($query);
-                if (!$db->query()) {
-                    //return the error
-                    $status['error'] = 'Error while creating the user: ' . $db->stderr();
-                    return $status;
-                }
-
-
-                //return the good news
-                $status['debug'] = 'Created new user with userid:' . $user->id;
-                $status['error'] = false;
-                $status['userinfo'] = $this->getUser($username_clean);
+            $this->createUser($userinfo, $status);
+            if (empty($status['error'])) {
                 $status['action'] = 'created';
-                return $status;
+                $status['debug'] .= ' ,User created.';
+            }
+            return $status;
 
+        }
+    }
+
+
+    function &getUser($username)
+    {
+        // Get a database object
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $username = $this->filterUsername($username);
+
+        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation FROM #__users '.
+        'WHERE username_clean=' . $db->Quote($username);
+        $db->setQuery($query);
+        $result = $db->loadObject();
+
+        if ($result) {
+            //Check to see if they are banned
+            $query = 'SELECT userid FROM #__banlist WHERE userid=' . $result->userid;
+            $db->setQuery($query);
+            if ($db->loadObject()) {
+                $result->block = 1;
+            } else {
+                $result->block = 0;
             }
         }
+        return $result;
     }
 
     function getJname()
@@ -395,10 +230,10 @@
                     $jautologin = $phpbb_allow_autologin;
                 }
 
-                if ($jautologin){
-                	$expires = 60*60*24*365;
+                if ($jautologin) {
+                    $expires = 60*60*24*365;
                 } else {
-                	$expires = 60*30;
+                    $expires = 60*30;
                 }
 
                 $session_start = time();
@@ -421,8 +256,8 @@
                     return $status;
                 } else {
                     //Set cookies
-    				JFusionFunction::addCookie($phpbb_cookie_name . '_u', $userid, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
-    				JFusionFunction::addCookie($phpbb_cookie_name . '_sid', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
+                    JFusionFunction::addCookie($phpbb_cookie_name . '_u', $userid, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
+                    JFusionFunction::addCookie($phpbb_cookie_name . '_sid', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
                     $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
 
                     // Remember me option?
@@ -438,7 +273,7 @@
                             $status['error'] = JText::_('ERROR_CREATE_USER') . $database->stderr();
                             return $status;
                         } else {
-		    				JFusionFunction::addCookie($phpbb_cookie_name . '_k', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
+                            JFusionFunction::addCookie($phpbb_cookie_name . '_k', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
                             $status['debug'] .= 'Created session_key:' . $session_key;
                         }
 
@@ -467,4 +302,220 @@
         $username_clean = utf8_clean_string($username);
         return $username_clean;
     }
+
+    function updatePassword($userinfo, &$existinguser, &$status)
+    {
+        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->jname.DS.'PasswordHash.php');
+        $t_hasher = new PasswordHash(8, TRUE);
+        $existinguser->password = $t_hasher->HashPassword($userinfo->password_clear);
+        unset($t_hasher);
+
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'UPDATE #__users SET user_password =' . $db->quote($existinguser->password) . ' WHERE user_id =' . $existinguser->userid;
+        $db->setQuery($query);
+        if (!$db->query()) {
+            //return the error
+            $status['error'] .= 'Error while updating the password: ' . $db->stderr();
+            return $status;
+        }
+        $status['debug'] .= 'the password was updated to:' . $existinguser->password;
+
+    }
+
+    function updateUsername($userinfo, &$existinguser, &$status)
+    {
+
+    }
+
+    function updateEmail($userinfo, &$existinguser, &$status)
+    {
+        //we need to update the email
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'UPDATE #__users SET user_email ='.$db->quote($userinfo->email) .' WHERE user_id =' . $existinguser->userid;
+        $db->setQuery($query);
+        if (!$db->query()) {
+            $status['error'] .= 'Error while updating the user email: ' . $db->stderr();
+        } else {
+	        $status['debug'] = ' Update the email address from: ' . $existinguser->email . ' to:' . $userinfo->email;
+        }
+    }
+
+    function blockUser($userinfo, &$existinguser, &$status)
+    {
+        //block the user
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'INSERT INTO #__banlist (ban_userid) VALUES ('.$existinguser->userid.')';
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was blocked in phpBB3. ';
+
+    }
+
+    function unblockUser($userinfo, &$existinguser, &$status)
+    {
+        //unblock the user
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'DELETE FROM #__banlist WHERE userid=' . $existinguser->userid;
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was unblocked in phpBB3. ';
+
+    }
+
+    function activateUser($userinfo, &$existinguser, &$status)
+    {
+        //activate the user
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'UPDATE #__users SET user_actkey = \'\'  WHERE user_id =' . $existinguser->userid;
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was activated in phpBB3. ';
+
+    }
+
+    function inactivateUser($userinfo, &$existinguser, &$status)
+    {
+        //set activation key
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'UPDATE #__users SET user_actkey =' . $db->quote($userinfo->activation) . ' WHERE user_id =' . $existinguser->userid;
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was disactiavted in phpBB3. ';
+
+    }
+
+    function createUser($userinfo, &$status)
+    {
+        //found out what usergroup should be used
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $params = JFusionFactory::getParams($this->getJname());
+        $usergroup = $params->get('usergroup');
+
+        $username_clean = $this->filterUsername($userinfo->username);
+        //prepare the variables
+        $user = new stdClass;
+        $user->id = NULL;
+        $user->username = $userinfo->username;
+        $user->username_clean = $username_clean;
+
+        if (isset($userinfo->password_clear)) {
+            //we can update the password
+            require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
+            $t_hasher = new PasswordHash(8, TRUE);
+            $user->user_password = $t_hasher->HashPassword($userinfo->password_clear);
+            unset($t_hasher);
+        } else {
+            $user->user_password = $userinfo->password;
+        }
+
+
+        $user->user_pass_convert = 0;
+        $user->user_email = strtolower($userinfo->email);
+        $user->user_email_hash = crc32(strtolower($userinfo->email)) . strlen($userinfo->email);
+        $user->group_id = $usergroup;
+        $user->user_type = 0;
+        $user->user_permissions = '';
+        $user->user_allow_pm = 1;
+        $user->user_actkey = '';
+        $user->user_ip = '';
+        $user->user_regdate = time();
+        $user->user_passchg = time();
+        $user->user_options = 895;
+        $user->user_inactive_reason = 0;
+        $user->user_inactive_time = 0;
+        $user->user_lastmark = time();
+        $user->user_lastvisit = 0;
+        $user->user_lastpost_time = 0;
+        $user->user_lastpage = '';
+        $user->user_posts = 0;
+        $user->user_colour = '';
+        $user->user_occ = '';
+        $user->user_interests = '';
+        $user->user_avatar = '';
+        $user->user_avatar_type = 0;
+        $user->user_avatar_width = 0;
+        $user->user_avatar_height = 0;
+        $user->user_new_privmsg = 0;
+        $user->user_unread_privmsg = 0;
+        $user->user_last_privmsg = 0;
+        $user->user_message_rules = 0;
+        $user->user_emailtime = 0;
+        $user->user_notify = 0;
+        $user->user_notify_pm = 1;
+        $user->user_allow_pm = 1;
+        $user->user_allow_viewonline = 1;
+        $user->user_allow_viewemail = 1;
+        $user->user_allow_massemail = 1;
+        $user->user_sig = '';
+        $user->user_sig_bbcode_uid = '';
+        $user->user_sig_bbcode_bitfield = '';
+
+        //Find some default values
+        $query = "SELECT config_name, config_value FROM #__config WHERE config_name IN('board_timezone', 'default_dateformat', 'default_lang', 'default_style', 'board_dst', 'rand_seed');
+        ";
+        $db->setQuery($query);
+        $rows = $db->loadObjectList();
+        foreach($rows as $row ) {
+            $config[$row->config_name] = $row->config_value;
+        }
+
+        $user->user_timezone = $config['board_timezone'];
+        $user->user_dateformat = $config['default_dateformat'];
+        $user->user_lang = $config['default_lang'];
+        $user->user_style = $config['default_style'];
+        $user->user_dst = $config['board_dst'];
+        $user->user_full_folder = -4;
+        $user->user_notify_type = 0;
+
+        //generate a unique id
+        jimport('joomla.user.helper');
+        $user->user_form_salt = JUserHelper::genRandomPassword(13);
+
+        //now append the new user data
+        if (!$db->insertObject('#__users', $user, 'id' )) {
+            //return the error
+            $status['error'] .= 'Error while creating the user: ' . $db->stderr();
+            return $status;
+        } else {
+            //now create a user_group entry
+            $query = 'INSERT INTO #__user_group (group_id, user_id, group_leader, user_pending) VALUES (' .$usergroup.','. $user->id .', 0,0 )';
+            $db->setQuery($query);
+            if (!$db->query()) {
+                //return the error
+                $status['error'] .= 'Error while creating the user: ' . $db->stderr();
+                return $status;
+            }
+
+            //update the total user count
+            $query = 'UPDATE #__config SET config_value = config_value + 1 WHERE config_name = \'num_users\'';
+            $db->setQuery($query);
+            if (!$db->query()) {
+                //return the error
+                $status['error'] .= 'Error while creating the user: ' . $db->stderr();
+                return $status;
+            }
+
+            //update the newest username
+            $query = 'UPDATE #__config SET config_value = '. $db->quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
+            $db->setQuery($query);
+            if (!$db->query()) {
+                //return the error
+                $status['error'] .= 'Error while creating the user: ' . $db->stderr();
+                return $status;
+            }
+
+            //update the newest userid
+            $query = 'UPDATE #__config SET config_value = ' . $user->id . ' WHERE config_name = \'newest_user_id\'';
+            $db->setQuery($query);
+            if (!$db->query()) {
+                //return the error
+                $status['error'] .= 'Error while creating the user: ' . $db->stderr();
+                return $status;
+            }
+
+            //return the good news
+            $status['debug'] = 'Created new user with userid:' . $user->id;
+        }
+    }
 }
+

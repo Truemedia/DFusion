@@ -10,6 +10,10 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+//use an output buffer, in order for cookies to be passed onto the header
+ob_start();
+
+
 /**
 * Load the JFusion framework
 */
@@ -36,12 +40,14 @@ $options['remember'] = 0;
 //check to see if a password was submitted
 if (empty($credentials['password'])) {
     echo JText::_('NO_PASSWORD');
+    ob_end_flush();
     return false;
 }
 
 //check to see if a username was submitted
 if (empty($credentials['username'])) {
     echo JText::_('NO_USERNAME');
+    ob_end_flush();
     return false;
 }
 
@@ -111,6 +117,7 @@ if ($userinfo) {
     } else {
         echo JText::_('INVALID_PASSWORD');
         //no password found: abort the login checker
+    	ob_end_flush();
         return false;
     }
 
@@ -182,6 +189,7 @@ if ($userinfo) {
                 //no Joomla session could be created -> deny login
             	echo JText::_('SESSION'). ' '. JText::_('CREATE') . ' ' . JText::_('ERROR'). ':' . $master_session['error'] .'<br/>';
             	echo JText::_('FATAL_ERROR');
+            	ob_end_flush();
                 return false;
             } else {
             echo JText::_('SESSION'). ' '. JText::_('CREATE') . ' ' . JText::_('SUCCESS'). ':' . $master_session['debug'] .'<br/>';
@@ -200,6 +208,7 @@ if ($userinfo) {
                 echo JText::_('USER') . ' ' . JText::_('CONFLICT') . '. ' . JText::_('USERNAME'). ':' . $joomla_user['userinfo']->username . ' ' . JText::_('USERID') . ':' . $joomla_user['userinfo']->userid . ' ' . JText::_('EMAIL'). ':' . $joomla_user['userinfo']->email .'<br/>';
             }
             echo JText::_('FATAL_ERROR');
+            ob_end_flush();
             return false;
         } else {
             echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('SUCCESS'). ':' . $joomla_user['debug'] .'<br/>';
@@ -262,6 +271,7 @@ if ($userinfo) {
             unset($JFusionPlugin,$plugin_user, $session_result);
         }
     }
+    ob_end_flush();
     return true;
 
 } else {

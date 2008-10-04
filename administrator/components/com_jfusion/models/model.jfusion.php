@@ -403,8 +403,11 @@ class JFusionFunction{
         if ($httponly == true) {
             $cookie .= "; HttpOnly";
         }
-        $document	= JFactory::getDocument();
-	    $document->addCustomTag($cookie);
+
+   		header($cookie, false);
+
+        //$document	= JFactory::getDocument();
+	    //$document->addCustomTag($cookie);
 
     }
 
