@@ -241,7 +241,7 @@
     	    $oldgroup = $db->loadResult();
 
     	    //delete the ban
-            $query = 'DELETE #__banned WHERE uid=' . $existinguser->userid;
+            $query = 'DELETE FROM #__banned WHERE uid = ' . $existinguser->userid;
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error

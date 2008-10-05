@@ -80,6 +80,9 @@
             //get the JFusion master
             $jname = JFusionFunction::getMaster();
 
+			//prevent any output by the plugins (this could prevent cookies from being passed to the header)
+			ob_start();
+
             if (!$jname->name || $jname->name == 'joomla_int') {
                 //use Joomla as the master
                 //get the master userinfo
@@ -89,6 +92,7 @@
                 // If the user is blocked, redirect with an error
                 if ($userinfo->block == 1) {
                     JError::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'));
+                    ob_end_clean();
                     return false;
                 }
 
@@ -104,6 +108,7 @@
                     if ($user_update['userinfo']) {
                         JError::raiseWarning('500', 'joomla_int ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $jname->name . ' '. JText::_('USERID') . ' ' . $user_update['userinfo']->userid);
                     }
+                    ob_end_clean();
                     return false;
                 }
 
@@ -112,6 +117,7 @@
                 if ($joomla_session['error']) {
                     //no Joomla session could be created -> deny login
                     JError::raiseWarning('500', 'joomla_int' . ': '. $joomla_session['error']);
+                    ob_end_clean();
                     return false;
                 }
 
@@ -149,6 +155,7 @@
                     if ($joomla_user['userinfo']) {
                         JError::raiseWarning('500', 'joomla_int ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $jname->name . ' '. JText::_('USERID') . ' ' . $joomla_user['userinfo']->userid);
                     }
+                    ob_end_clean();
                     return false;
                 }
 
@@ -157,6 +164,7 @@
                 if ($joomla_session['error']) {
                     //no Joomla session could be created -> deny login
                     JError::raiseWarning('500', $jname->name . ': '. $joomla_session ['error']);
+                    ob_end_clean();
                     return false;
                 }
             }
@@ -216,7 +224,7 @@
                     unset($JFusionPlugin,$plugin_user, $session_result);
                 }
             }
-
+			ob_end_clean();
             return true;
         }
 
@@ -235,6 +243,9 @@
 			global $JFusionActive;
 			$JFusionActive = true;
             $my =& JFactory::getUser();
+
+			//prevent any output by the plugins (this could prevent cookies from being passed to the header)
+			ob_start();
 
             //logout from the JFusion plugins if done through frontend
             if ($options['clientid'][0] != 1) {
@@ -295,12 +306,15 @@
                 $session =& JFactory::getSession();
                 $session->destroy();
             }
-
+			ob_end_clean();
             return true;
         }
 
         function onAfterStoreUser($user, $isnew, $succes, $msg)
         {
+
+			//prevent any output by the plugins (this could prevent cookies from being passed to the header)
+			ob_start();
 
             global $JFusionActive;
 
@@ -331,6 +345,8 @@
                     }
                 }
             }
+            //stop output buffer
+            ob_end_clean();
         }
     }
 

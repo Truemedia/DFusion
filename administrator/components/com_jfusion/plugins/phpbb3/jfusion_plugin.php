@@ -392,7 +392,7 @@ ORDER BY left_id';
             $replace_body	= array();
 
             //convert relative links from images into absolute links
-            $regex_body[]	= '#(src="|background="|url\()./(.*?)("|\))#mS';
+            $regex_body[]	= '#(src="|background="|url\(\')./(.*?)("|\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
 
@@ -411,7 +411,7 @@ ORDER BY left_id';
             $replace_header	= array();
 
             //convert relative links into absolute links
-            $regex_header[]	= 'href="\/test\/\.\/(.*?)"#mS';
+            $regex_header[]	= '#href="\/test\/\.\/(.*?)"#mS';
             $replace_header[]	= 'href="'.$integratedURL.'$1"';
         }
         $buffer = preg_replace($regex_header, $replace_header, $buffer);

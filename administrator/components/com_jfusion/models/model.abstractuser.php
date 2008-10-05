@@ -94,6 +94,55 @@ class JFusionUser{
     function updateUser($userinfo)
     {
     }
+
+    function updatePassword($userinfo, &$existinguser, &$status)
+    {
+        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'PasswordHash.php');
+        $t_hasher = new PasswordHash(8, TRUE);
+        $existinguser->password = $t_hasher->HashPassword($userinfo->password_clear);
+        unset($t_hasher);
+
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'UPDATE #__users SET user_password =' . $db->quote($existinguser->password) . ' WHERE user_id =' . $existinguser->userid;
+        $db->setQuery($query);
+        if (!$db->query()) {
+            //return the error
+            $status['error'] .= 'Error while updating the password: ' . $db->stderr();
+            return $status;
+        }
+        $status['debug'] .= 'the password was updated to:' . $existinguser->password;
+
+    }
+
+    function updateUsername($userinfo, &$existinguser, &$status)
+    {
+    }
+
+    function updateEmail($userinfo, &$existinguser, &$status)
+    {
+    }
+
+    function blockUser($userinfo, &$existinguser, &$status)
+    {
+    }
+
+    function unblockUser($userinfo, &$existinguser, &$status)
+    {
+    }
+
+    function activateUser($userinfo, &$existinguser, &$status)
+    {
+    }
+
+    function inactivateUser($userinfo, &$existinguser, &$status)
+    {
+    }
+
+    function createUser($userinfo, &$status)
+    {
+    }
+
+
 }
 
 

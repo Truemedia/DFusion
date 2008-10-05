@@ -305,7 +305,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
     function updatePassword($userinfo, &$existinguser, &$status)
     {
-        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->jname.DS.'PasswordHash.php');
+        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'PasswordHash.php');
         $t_hasher = new PasswordHash(8, TRUE);
         $existinguser->password = $t_hasher->HashPassword($userinfo->password_clear);
         unset($t_hasher);

@@ -28,6 +28,9 @@ class JFusionUser_joomla_int extends JFusionUser{
         $db =& JFactory::getDBO();
         $status = array();
         $status['debug'] = '';
+        $status['error'] = '';
+
+        //prevent the JFusion user plugin from launching JFusion updateUser() again
         global $JFusionActive;
         $JFusionActive = true;
 
@@ -74,8 +77,22 @@ class JFusionUser_joomla_int extends JFusionUser{
             }
             return $status;
         } else {
-            //we need to create a new user
-            $this->createUser($userinfo, $status);
+            //joomla does not allow duplicate email addresses, check to see if the email is unique
+            $db =& JFactory::getDBO();
+            $query = 'SELECT id as userid, username, email from #__users WHERE email ='.$db->quote($userinfo->email);
+            $db->setQuery($query);
+            $existinguser = $db->loadObject();
+
+            if (empty($existinguser)) {
+                $this->createUser($userinfo, $status);
+            } else if ($overwrite) {
+                $this->updateUsername($userinfo, $existinguser, $status);
+            } else {
+                //return a conflict
+                $status['error'] = JText::_('EMAIL_CONFLICT');
+            }
+
+            $status['userinfo'] = $existinguser;
             if (empty($status['error'])) {
                 $status['action'] = 'created';
                 $status['debug'] .= ' ,User created.';
@@ -241,13 +258,14 @@ class JFusionUser_joomla_int extends JFusionUser{
         $userinfo->password_salt  = JUserHelper::genRandomPassword(32);
         $userinfo->password = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
         $new_password = $userinfo->password . ':' . $userinfo->password_salt;
+        $db =& JFactory::getDBO();
         $query = 'UPDATE #__users SET password =' . $db->quote($new_password) . ' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
 
         if (!$db->query()) {
             $status['error'] .= 'Error while updating the password: ' . $db->stderr();
         } else {
-	        $status['debug'] .= 'the password was updated to:' . $new_password;
+            $status['debug'] .= 'the password was updated to:' . $new_password;
         }
 
 
@@ -255,180 +273,185 @@ class JFusionUser_joomla_int extends JFusionUser{
 
     function updateUsername($userinfo, &$existinguser, &$status)
     {
+        //generate the filtered integration username
+        $username_clean = $this->filterUsername($userinfo->username);
+
+        $db =& JFactory::getDBO();
+        $query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . 'WHERE id =' . $existinguser->userid;
+        $db->setQuery($query);
+        if (!$db->query()) {
+            //update failed, return error
+            $status['error'] .= 'Error while updating the username: ' . $db->stderr();
+        } else {
+            $status['debug'] .= ' Updated the username to : ' . $username_clean;
+        }
 
     }
 
     function updateEmail($userinfo, &$existinguser, &$status)
     {
-        //joomla does not allow duplicate email addresses, check to see if the email is unique
-        $db =& JFactory::getDBO();
-        $query = 'SELECT id from #__users WHERE email ='.$db->quote($userinfo->email);
+        $query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
-        $conflict_id = $db->loadResult();
+        if (!$db->query()) {
+            //update failed, return error
+            $status['error'] .= 'Error while updating the user email: ' . $db->stderr();
+        } else {
+            $status['debug'] .= ' Update the email address from: ' . $existinguser->email . ' to:' . $userinfo->email;
+        }
+    }
 
-        if (!$conflict_id) {
-            $query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE id =' . $existinguser->userid;
-            $db->setQuery($query);
-            if (!$db->query()) {
-                //update failed, return error
-                $status['error'] .= 'Error while updating the user email: ' . $db->stderr();
-            } else {
-                $status['debug'] .= ' Update the email address from: ' . $existinguser->email . ' to:' . $userinfo->email;
-            }
+    function blockUser($userinfo, &$existinguser, &$status)
+    {
+        //block the user
+        $db =& JFactory::getDBO();
+        $query = 'UPDATE #__users SET block = 1 WHERE id =' . $existinguser->userid;
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was blocked in joomla. ';
+
+    }
+
+    function unblockUser($userinfo, &$existinguser, &$status)
+    {
+
+        //unblock the user
+        $db =& JFactory::getDBO();
+        $query = 'UPDATE #__users SET block = 0, WHERE id =' . $existinguser->userid;
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was unblocked in joomla. ';
+
+    }
+
+    function activateUser($userinfo, &$existinguser, &$status)
+    {
+        //unblock the user
+        $db =& JFactory::getDBO();
+        $query = 'UPDATE #__users SET activation = \'\' WHERE id =' . $existinguser->userid;
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was activated in joomla. ';
+    }
+
+    function inactivateUser($userinfo, &$existinguser, &$status)
+    {
+        //unblock the user
+        $db =& JFactory::getDBO();
+        $query = 'UPDATE #__users SET activation = '.$userinfo->activation .' WHERE id =' . $existinguser->userid;
+        $db->setQuery($query);
+        $db->query();
+        $status['debug'] .= 'the user was inactivated in joomla. ';
+    }
+
+    function createUser($userinfo, &$status)
+    {
+        //generate the filtered integration username
+        $db =& JFactory::getDBO();
+        $username_clean = $this->filterUsername($userinfo->username);
+
+        //make sure the username is at least 3 characters long
+        while (strlen($username_clean) < 3) {
+            $username_clean .= '_';
         }
 
-        function blockUser($userinfo, &$existinguser, &$status)
-        {
-            //block the user
-            $db =& JFactory::getDBO();
-            $query = 'UPDATE #__users SET block = 1 WHERE id =' . $existinguser->userid;
-            $db->setQuery($query);
-            $db->query();
-            $status['debug'] .= 'the user was blocked in joomla. ';
-
-        }
-
-        function unblockUser($userinfo, &$existinguser, &$status)
-        {
-
-            //unblock the user
-        	$db =& JFactory::getDBO();
-            $query = 'UPDATE #__users SET block = 0, WHERE id =' . $existinguser->userid;
-            $db->setQuery($query);
-            $db->query();
-            $status['debug'] .= 'the user was unblocked in joomla. ';
-
-        }
-
-        function activateUser($userinfo, &$existinguser, &$status)
-        {
-            //unblock the user
-        	$db =& JFactory::getDBO();
-            $query = 'UPDATE #__users SET activation = \'\' WHERE id =' . $existinguser->userid;
-            $db->setQuery($query);
-            $db->query();
-            $status['debug'] .= 'the user was activated in joomla. ';
-        }
-
-        function inactivateUser($userinfo, &$existinguser, &$status)
-        {
-            //unblock the user
-        	$db =& JFactory::getDBO();
-            $query = 'UPDATE #__users SET activation = '.$userinfo->activation .' WHERE id =' . $existinguser->userid;
-            $db->setQuery($query);
-            $db->query();
-            $status['debug'] .= 'the user was inactivated in joomla. ';
-        }
-
-        function createUser($userinfo, &$status)
-        {
-            //generate the filtered integration username
-        	$db =& JFactory::getDBO();
-            $username_clean = $this->filterUsername($userinfo->username);
-
-            //make sure the username is at least 3 characters long
-            while (strlen($username_clean) < 3) {
-                $username_clean .= '_';
-            }
-
-            //now we need to make sure the username is unique in Joomla
+        //now we need to make sure the username is unique in Joomla
+        $db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
+        while ($db->loadResult()) {
+            $username_clean .= '_';
             $db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
-            while ($db->loadResult()) {
-                $username_clean .= '_';
-                $db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
-            }
+        }
 
-            //check for conlicting email addresses
-            $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.email='.$db->Quote($userinfo->email)) ;
-            $conflict_user = $db->loadObject();
+        //check for conlicting email addresses
+        $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.email='.$db->Quote($userinfo->email)) ;
+        $conflict_user = $db->loadObject();
 
-            if ($conflict_user) {
-                if ($overwrite) {
-                    //we need to update the username
-                    $db =& JFactory::getDBO();
-                    $query = 'UPDATE #__users SET username ='.$db->quote($username_clean) .' WHERE email =' . $db->Quote($conflict_user->email) ;
-                    $db->setQuery($query);
-                    if (!$db->query()) {
-                        //update failed, return error
-                        $status['userinfo'] = $existinguser;
-                        $status['error'] = 'unable to update the email address: ' . $db->stderr();
-                        return $status;
-                    } else {
-                        $status['userinfo'] = $userinfo;
-                        $status['error'] = false;
-                        $status['action'] = 'updated';
-                        $status['debug'] = ' Updated the username from: ' . $conflict_user->username . ' to:' . $username_clean;
-                        return $status;
-                    }
-
-
-
+        if ($conflict_user) {
+            if ($overwrite) {
+                //we need to update the username
+                $db =& JFactory::getDBO();
+                $query = 'UPDATE #__users SET username ='.$db->quote($username_clean) .' WHERE email =' . $db->Quote($conflict_user->email) ;
+                $db->setQuery($query);
+                if (!$db->query()) {
+                    //update failed, return error
+                    $status['userinfo'] = $existinguser;
+                    $status['error'] = 'unable to update the email address: ' . $db->stderr();
+                    return $status;
                 } else {
-                    $status = array();
-                    $status['userinfo'] = $conflict_user;
-                    $status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_user->userid . ' JFusionPlugin:' . $this->getJname();
+                    $status['userinfo'] = $userinfo;
+                    $status['error'] = false;
+                    $status['action'] = 'updated';
+                    $status['debug'] = ' Updated the username from: ' . $conflict_user->username . ' to:' . $username_clean;
                     return $status;
                 }
-            }
 
 
-            //also store the salt if present
-            if ($userinfo->password_salt) {
-                $password = $userinfo->password . ':' . $userinfo->password_salt;
+
             } else {
-                $password = $userinfo->password;
-            }
-
-            //now we can create the new Joomla user
-            $instance = new JUser();
-            $instance->set('name'         , $userinfo->name );
-            $instance->set('username'     , $username_clean );
-            $instance->set('password'     , $password);
-            $instance->set('email'        , $userinfo->email );
-            $instance->set('block'        , $userinfo->block );
-            $instance->set('sendEmail '   , 1 );
-
-            //find out what usergroup the new user should have
-            $params = JFusionFactory::getParams($this->getJname());
-            $gid = $params->get('usergroup', 18);
-            $query = 'SELECT name FROM #__core_acl_aro_groups WHERE id = ' . $gid;
-            $db->setQuery($query);
-            $usergroup = $db->loadResult();
-
-            $instance->set('usertype'     , $usergroup );
-            $instance->set('gid'          , $gid );
-
-
-            // save the user
-            if (!$instance->save(false)) {
-                //report the error
                 $status = array();
-                $status['error'] = $instance->getError() . 'plugin_username:' . $plugin_username . 'username:'. $username_clean . ' email:' . $email;
+                $status['userinfo'] = $conflict_user;
+                $status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $conflict_user->userid . ' JFusionPlugin:' . $this->getJname();
+                return $status;
+            }
+        }
+
+
+        //also store the salt if present
+        if ($userinfo->password_salt) {
+            $password = $userinfo->password . ':' . $userinfo->password_salt;
+        } else {
+            $password = $userinfo->password;
+        }
+
+        //now we can create the new Joomla user
+        $instance = new JUser();
+        $instance->set('name'         , $userinfo->name );
+        $instance->set('username'     , $username_clean );
+        $instance->set('password'     , $password);
+        $instance->set('email'        , $userinfo->email );
+        $instance->set('block'        , $userinfo->block );
+        $instance->set('sendEmail '   , 1 );
+
+        //find out what usergroup the new user should have
+        $params = JFusionFactory::getParams($this->getJname());
+        $gid = $params->get('usergroup', 18);
+        $query = 'SELECT name FROM #__core_acl_aro_groups WHERE id = ' . $gid;
+        $db->setQuery($query);
+        $usergroup = $db->loadResult();
+
+        $instance->set('usertype'     , $usergroup );
+        $instance->set('gid'          , $gid );
+
+
+        // save the user
+        if (!$instance->save(false)) {
+            //report the error
+            $status = array();
+            $status['error'] = $instance->getError() . 'plugin_username:' . $plugin_username . 'username:'. $username_clean . ' email:' . $email;
+            return $status;
+        } else {
+
+            //check to see if the user exists now
+            $joomla_user = $this->getUser($userinfo->username);
+
+            if ($joomla_user) {
+                //report back success
+                $status = array();
+                $status['userinfo'] = $joomla_user;
+                $status['error'] = false;
+                $status['action'] = 'created';
                 return $status;
             } else {
-
-                //check to see if the user exists now
-                $joomla_user = $this->getUser($userinfo->username);
-
-                if ($joomla_user) {
-                    //report back success
-                    $status = array();
-                    $status['userinfo'] = $joomla_user;
-                    $status['error'] = false;
-                    $status['action'] = 'created';
-                    return $status;
-                } else {
-                    //report back error
-                    $status = array();
-                    $status['error'] = 'Could not create Joomla user';
-                    return $status;
-                }
+                //report back error
                 $status = array();
                 $status['error'] = 'Could not create Joomla user';
                 return $status;
-
             }
+            $status = array();
+            $status['error'] = 'Could not create Joomla user';
+            return $status;
 
         }
+
     }
 }
+
