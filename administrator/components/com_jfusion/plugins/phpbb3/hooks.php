@@ -102,26 +102,17 @@ class JFusionHook
 			$uri->setFragment($anchor);
 		}
 
-		if(!$uri->getVar('jfile'))
-		{
-			$view = basename($uri->getPath());
-
-			if(JRequest::getVar('jfile') == 'adm')
-			{
-				$config =& JFactory::getConfig();
-				if(strpos($url, $config->getValue('config.phpbb_path')) === false) {
-					$view = 'adm';
-				}
-			}
-
-			if(strpos($url, "adm")) {
-				$view = 'adm';
-			}
-
-			if($view != 'index') {
-				$uri->setVar('jfile', $view);
-			}
+		$view = basename($url);
+		//add an excemption for the admincp
+		if(strpos($url, 'adm')) {
+				$view = 'adm/index.php';
 		}
+		//add an excemption for editing profiles
+		if($arrParams['i'] == 'profile') {
+				$view = 'ucp.php';
+		}
+		$uri->setVar('jfile', $view);
+
 
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));
 

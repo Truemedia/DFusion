@@ -135,10 +135,16 @@ class JFusionUser_vbulletin extends JFusionUser{
         $vbCookieDomain = $params->get('cookie_domain');
         $vbCookiePath = $params->get('cookie_path');
 
-        setcookie($vbCookiePrefix.'userid', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain );
-        setcookie($vbCookiePrefix.'password', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain );
-        setcookie($vbCookiePrefix.'styleid', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain );
-        setcookie($vbCookiePrefix.'sessionhash', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain );
+   		JFusionFunction::addCookie($vbCookiePrefix.'userid', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
+        JFusionFunction::addCookie($vbCookiePrefix.'password', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
+        JFusionFunction::addCookie($vbCookiePrefix.'styleid', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
+        JFusionFunction::addCookie($vbCookiePrefix.'sessionhash', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
+
+        //also destroy the session in the database
+        $db = JFusionFactory::getDatabase($this->getJname());
+   	    $query = 'DELETE FROM #__session WHERE userid =' . $userinfo->userid;
+  		$db->setQuery($query);
+		$db->query();
     }
 
     function createSession($userinfo, $options)
@@ -168,8 +174,7 @@ class JFusionUser_vbulletin extends JFusionUser{
    				JFusionFunction::addCookie('userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
 
             $status['error'] = false;
-       		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain;
-            $status['debug'] = 'created session';
+       	    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain . ' password:'.$userinfo->password ;
             return $status;
         } else {
             //could not find a valid userid
@@ -188,15 +193,15 @@ class JFusionUser_vbulletin extends JFusionUser{
     function updatePassword ($userinfo, &$existinguser, &$status)
     {
         		jimport('joomla.user.helper');
-        		$password_salt = JUserHelper::genRandomPassword(3);
-				$password = md5(md5($userinfo->password_clear).$password_salt);
+        		$existinguser->password_salt = JUserHelper::genRandomPassword(3);
+				$existinguser->password = md5(md5($userinfo->password_clear).$existinguser->password_salt);
         		$db = JFusionFactory::getDatabase($this->getJname());
-                $query = 'UPDATE #__user SET password = ' . $db->quote($password). ', salt = ' . $db->quote($password_salt). ' WHERE userid  = ' . $existinguser->userid;
+                $query = 'UPDATE #__user SET password = ' . $db->quote($existinguser->password). ', salt = ' . $db->quote($existinguser->password_salt). ' WHERE userid  = ' . $existinguser->userid;
             	$db->setQuery($query );
             	if (!$db->Query()) {
 	                $status['error'] .= 'Could not update the vbulletin password: ' . $db->stderr();
 	            } else {
-	    	    	$status['debug'] .= ', password was updated to:' . $password . 'with salt: ' .$password_salt;
+	    	    	$status['debug'] .= ', password was updated to:' . $existinguser->password . 'with salt: ' .$existinguser->password_salt;
 	            }
 
 

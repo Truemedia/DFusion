@@ -133,6 +133,9 @@ class JFusionUser_smf extends JFusionUser{
 
     function createSession($userinfo, $options)
     {
+
+
+
         //check to see if the smf_api.php file exists
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
@@ -176,16 +179,16 @@ class JFusionUser_smf extends JFusionUser{
     function updatePassword($userinfo, &$existinguser, &$status)
     {
 
-        $password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
-        $password_salt = substr(md5(rand()), 0, 4);
+        $existinguser->password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
+        $existinguser->password_salt = substr(md5(rand()), 0, 4);
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__members SET passwd = ' . $db->quote($password). ', passwordSalt = ' . $db->quote($password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
+        $query = 'UPDATE #__members SET passwd = ' . $db->quote($existinguser->password). ', passwordSalt = ' . $db->quote($existinguser->password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
         $db = JFusionFactory::getDatabase($this->getJname());
         $db->setQuery($query );
         if (!$db->Query()) {
             $status['debug'] .= 'Could not update the SMF password: ' . $db->stderr();
         } else {
-            $status['debug'] .= 'Updated the SMF password to: ' . $password . ' with salt:' . $password_salt;
+            $status['debug'] .= 'Updated the SMF password to: ' . $existinguser->password . ' with salt:' . $existinguser->password_salt;
         }
 
     }
@@ -232,6 +235,7 @@ class JFusionUser_smf extends JFusionUser{
     function createUser($userinfo, &$status)
     {
         //we need to create a new SMF user
+        $db = JFusionFactory::getDatabase($this->getJname());
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
 

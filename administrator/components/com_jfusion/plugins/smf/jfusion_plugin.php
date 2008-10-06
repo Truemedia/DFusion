@@ -232,6 +232,7 @@ class JFusionPlugin_smf extends JFusionPlugin{
         return 0;
     }
 
+
 	function & getBuffer()
 	{
 		// We're going to want a few globals... these are all set later.
@@ -243,6 +244,9 @@ class JFusionPlugin_smf extends JFusionPlugin{
 
 		// Required to avoid a warning about a license violation even though this is not the case
 		global $forum_version;
+
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
+
 
 		// Get the path
         $params = JFusionFactory::getParams($this->getJname());
