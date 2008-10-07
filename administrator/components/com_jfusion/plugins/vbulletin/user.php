@@ -227,21 +227,70 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function blockUser ($userinfo, &$existinguser, &$status)
     {
+            $db = JFusionFactory::getDatabase($this->getJname());
+            $ban = new stdClass;
+            $ban->userid = $existinguser->userid;
+            $ban->usergroupid = $existinguser->usergroup;
+            $ban->displaygroupid = $existinguser->usergroup;
+            $ban->customtitle = 0;
+            $ban->adminid = 1;
+            $ban->bandate = time();
+            $ban->liftdate = 0;
+            $ban->reason = 'You have been banned from this software. Please contact your site admin for more details';
 
+            //now append the new user data
+            if (!$db->insertObject('#__userban', $ban, 'userid' )) {
+                //return the error
+                $status['debug'] .= 'Error while banning the user: ' . $db->stderr();
+            } else {
+                $status['debug'] .= ' user was bannded';
+            }
     }
 
     function unblockUser ($userinfo, &$existinguser, &$status)
     {
-
+        	$db = JFusionFactory::getDatabase($this->getJname());
+            $query = 'DELETE FROM #__userban WHERE userid='. $existinguser->userid;
+            $db->setQuery($query);
+        	if (!$db->Query()) {
+            	$status['debug'] .= 'Could not unblock user: ' . $db->stderr();
+        	} else {
+            	$status['debug'] .= ', unblocked user ';
+        	}
     }
 
     function activateUser ($userinfo, &$existinguser, &$status)
     {
+            //found out what usergroup should be used
+            $params = JFusionFactory::getParams($this->getJname());
+            $usergroup = $params->get('usergroup');
 
+            //update the usergroup
+	        $db = JFusionFactory::getDatabase($this->getJname());
+	        $query = 'UPDATE #__members SET usergroupid = ' . $usergroup . ' WHERE userid  = ' . $existinguser->userid;
+    	    $db->setQuery($query );
+        	if (!$db->Query()) {
+            	$status['debug'] .= 'Could not inactivate user: ' . $db->stderr();
+	        } else {
+    	        $status['debug'] .= ', inactivated user ';
+        	}
     }
 
     function inactivateUser ($userinfo, &$existinguser, &$status)
     {
+            //found out what usergroup should be used
+            $params = JFusionFactory::getParams($this->getJname());
+            $usergroup = $params->get('activationgroup');
+
+            //update the usergroup
+	        $db = JFusionFactory::getDatabase($this->getJname());
+	        $query = 'UPDATE #__members SET usergroupid = ' . $usergroup . ' WHERE userid  = ' . $existinguser->userid;
+    	    $db->setQuery($query );
+        	if (!$db->Query()) {
+            	$status['debug'] .= 'Could not inactivate user: ' . $db->stderr();
+	        } else {
+    	        $status['debug'] .= ', inactivated user ';
+        	}
 
     }
 

@@ -93,16 +93,21 @@ class JFusionUser_smf extends JFusionUser{
         $params = JFusionFactory::getParams($this->getJname());
         $db = JFusionFactory::getDatabase($this->getJname());
 
-        $query = 'SELECT ID_MEMBER as userid, memberName as username, realName as name, emailAddress as email, passwd as password, passwordSalt as password_salt FROM #__members WHERE memberName=' . $db->Quote($username) ;
+        $query = 'SELECT ID_MEMBER as userid, memberName as username, realName as name, emailAddress as email, passwd as password, passwordSalt as password_salt, validation_code as activation FROM #__members WHERE memberName=' . $db->Quote($username) ;
         $db->setQuery($query );
         $result = $db->loadObject();
 
         if ($result) {
             //Check to see if they are banned
-            $query = 'SELECT ID_MEMBER FROM #__ban_items WHERE ID_MEMBER= ' . $result->userid;
+            $query = 'SELECT ID_BAN_GROUP, expire_time FROM #__ban_groups WHERE name= ' . $result->username;
             $db->setQuery($query);
-            if ($db->loadObject()) {
-                $result->block = 1;
+            $expire_time = $db->loadObject();
+            if ($expire_time) {
+            	if ($expire_time->expire_time == '' || $expire_time->expire_time > time() ){
+                	$result->block = 1;
+            	} else {
+                	$result->block = 0;
+            	}
             } else {
                 $result->block = 0;
             }
@@ -215,20 +220,64 @@ class JFusionUser_smf extends JFusionUser{
     function blockUser($userinfo, &$existinguser, &$status)
     {
 
+            $db = JFusionFactory::getDatabase($this->getJname());
+            $ban = new stdClass;
+            $ban->ID_BAN_GROUP = NULL;
+            $ban->name = $existinguser->username;
+            $ban->ban_time = time();
+            $ban->expire_time = NULL;
+            $ban->cannot_access = 1;
+            $ban->cannot_register = 0;
+            $ban->cannot_post = 0;
+            $ban->cannot_login = 0;
+            $ban->reason = 'You have been banned from this software. Please contact your site admin for more details';
+
+            //now append the new user data
+            if (!$db->insertObject('#__ban_groups', $ban, 'ID_BAN_GROUP' )) {
+                //return the error
+                $status['debug'] .= 'Error while banning the user: ' . $db->stderr();
+            } else {
+                $status['debug'] .= ' user was bannded';
+            }
     }
 
     function unblockUser($userinfo, &$existinguser, &$status)
     {
+        	$db = JFusionFactory::getDatabase($this->getJname());
+            $query = 'DELETE FROM #__ban_groups WHERE name = ' . $existinguser->username;
+            $db->setQuery($query);
+        	if (!$db->Query()) {
+            	$status['debug'] .= 'Could not unblock user: ' . $db->stderr();
+        	} else {
+            	$status['debug'] .= ', unblocked user ';
+        	}
 
     }
 
     function activateUser($userinfo, &$existinguser, &$status)
     {
-
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'UPDATE #__members SET is_activated = 1, validation_code = \'\' WHERE ID_MEMBER  = ' . $existinguser->userid;
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $db->setQuery($query );
+        if (!$db->Query()) {
+            $status['debug'] .= 'Could not activate user: ' . $db->stderr();
+        } else {
+            $status['debug'] .= ', activated user ';
+        }
     }
 
     function inactivateUser($userinfo, &$existinguser, &$status)
     {
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'UPDATE #__members SET is_activated = 0, validation_code = '.$db->Quote($userinfo->activation).' WHERE ID_MEMBER  = ' . $existinguser->userid;
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $db->setQuery($query );
+        if (!$db->Query()) {
+            $status['debug'] .= 'Could not inactivate user: ' . $db->stderr();
+        } else {
+            $status['debug'] .= ', inactivated user ';
+        }
 
     }
 
