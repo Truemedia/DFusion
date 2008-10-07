@@ -295,17 +295,21 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
     function filterUsername($username)
     {
-        if (!function_exists('utf8_clean_string')) {
+        if (!function_exists('utf8_clean_string_phpbb')) {
             //load the filtering functions for phpBB3
             require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'username_clean.php');
         }
-        $username_clean = utf8_clean_string($username);
+        $username_clean = utf8_clean_string_phpbb($username);
         return $username_clean;
     }
 
     function updatePassword($userinfo, &$existinguser, &$status)
     {
-        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'PasswordHash.php');
+        // get the encryption PHP file
+        if(!class_exists('PasswordHash')){
+	        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $this->getJname().DS.'PasswordHash.php');
+        }
+
         $t_hasher = new PasswordHash(8, TRUE);
         $existinguser->password = $t_hasher->HashPassword($userinfo->password_clear);
         unset($t_hasher);

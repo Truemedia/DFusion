@@ -24,7 +24,9 @@ class JFusionAuth_phpbb3 extends JFusionAuth{
     function generateEncryptedPassword($userinfo)
     {
         // get the encryption PHP file
-        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'PasswordHash.php');
+        if(!class_exists('PasswordHash')){
+	        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $this->getJname().DS.'PasswordHash.php');
+        }
 
         $t_hasher = new PasswordHash(8, TRUE);
         $check = $t_hasher->CheckPassword($userinfo->password_clear, $userinfo->password);

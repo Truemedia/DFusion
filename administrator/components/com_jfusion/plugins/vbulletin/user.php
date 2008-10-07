@@ -309,6 +309,11 @@ class JFusionUser_vbulletin extends JFusionUser{
             //prepare the variables
             $user = new stdClass;
 			$user->userid = NULL;
+			if(empty($userinfo->activation)){
+            	$usergroup = $params->get('usergroup');
+			} else {
+            	$usergroup = $params->get('activationgroup');
+			}
 			$user->usergroupid = $usergroup;
 			$user->displaygroupid = $usergroup;
 			$user->usertitle = $usergroupname;
@@ -330,7 +335,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             //now append the new user data
             if (!$db->insertObject('#__user', $user, 'userid' )) {
                 //return the error
-                $status['error'] = 'Error while creating the user: ' . $db->stderr();
+                $status['error'] .= 'Error while creating the user: ' . $db->stderr();
                 return $status;
             }
 
@@ -340,17 +345,13 @@ class JFusionUser_vbulletin extends JFusionUser{
 
             if (!$db->insertObject('#__userfield', $userfield )) {
                 //return the error
-                $status['error'] = 'Error while creating the userfield: ' . $db->stderr();
+                $status['error'] .= 'Error while creating the userfield: ' . $db->stderr();
                 return $status;
             }
 
             //return the good news
-            $status['debug'] = 'Created new user with userid:' . $user->userid;
-            $status['error'] = false;
-            $status['action'] = 'created';
-            $status['userinfo'] = $this->getUser($userinfo->username);
-            return $status;
-
+            $status['debug'] .= 'Created new user with userid:' . $user->userid;
+            $status['error'] .= false;
     }
 
 

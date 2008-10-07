@@ -22,17 +22,17 @@
 * @param string $text An unclean string, mabye user input (has to be valid UTF-8!)
 * @return string Cleaned up version of the input string
 */
-function utf8_clean_string($text)
+function utf8_clean_string_phpbb($text)
 {
 
 static $homographs = array();
 if (empty($homographs))
 {
-$homographs = include (JPATH_ADMINISTRATOR .'/components/com_jfusion/plugins/phpbb3/confusables.php');
+$homographs = include (JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'confusables.php');
 
 }
 
-$text = utf8_case_fold_nfkc($text);
+$text = utf8_case_fold_nfkc_phpbb($text);
 $text = strtr($text, $homographs);
 // Other control characters
 $text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
@@ -53,7 +53,7 @@ return trim($text);
 * @param string $option determines how we will fold the cases
 * @return string case folded text
 */
-function utf8_case_fold_nfkc($text, $option = 'full')
+function utf8_case_fold_nfkc_phpbb($text, $option = 'full')
 {
 static $fc_nfkc_closure = array(
 "\xCD\xBA" => "\x20\xCE\xB9",
@@ -624,7 +624,7 @@ static $fc_nfkc_closure = array(
 );
 
 // do the case fold
-$text = utf8_case_fold($text, $option);
+$text = utf8_case_fold_phpbb($text, $option);
 
 // convert to NFKC
 //utf_normalizer::nfkc($text);
@@ -644,7 +644,7 @@ return $text;
 * @param	string	$option	determines how we will fold the cases
 * @return	string			case folded text
 */
-function utf8_case_fold($text, $option = 'full')
+function utf8_case_fold_phpbb($text, $option = 'full')
 {
 	static $uniarray = array();
 
@@ -654,19 +654,19 @@ function utf8_case_fold($text, $option = 'full')
 	// common is always set
 	if (!isset($uniarray['c']))
 	{
-		$uniarray['c'] = include (JPATH_ADMINISTRATOR . '/components/com_jfusion/plugins/phpbb3/case_fold_c.php');
+		$uniarray['c'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'case_fold_c.php');
 	}
 
 	// only set full if we need to
 	if ($option === 'full' && !isset($uniarray['f']))
 	{
-		$uniarray['f'] = include (JPATH_ADMINISTRATOR . '/components/com_jfusion/plugins/phpbb3/case_fold_f.php');
+		$uniarray['f'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'case_fold_f.php');
 	}
 
 	// only set simple if we need to
 	if ($option !== 'full' && !isset($uniarray['s']))
 	{
-		$uniarray['s'] = include (JPATH_ADMINISTRATOR . '/components/com_jfusion/plugins/phpbb3/case_fold_s.php');
+		$uniarray['s'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'case_fold_s.php');
 	}
 
 	// common is always replaced
@@ -686,4 +686,3 @@ function utf8_case_fold($text, $option = 'full')
 	return $text;
 }
 
-?>
