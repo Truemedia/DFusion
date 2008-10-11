@@ -300,7 +300,7 @@ class JFusionFunction{
         if ($view == 'wrapper') {
             $url_root = JURI::root();
             $url = $url_root . 'index.php?option=com_jfusion&amp;view=wrapper&amp;jname=' . $jname . '&amp;wrap='. urlencode($url);
-        } else {
+        } elseif ($view == 'frameles') {
             $params = JFusionFactory::getParams($jname);
             $url = $params->get('source_url') . $url;
         }

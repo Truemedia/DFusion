@@ -327,8 +327,12 @@ ORDER BY left_id';
 
         //redirect directly to admincp if needed
         if ($jfile == 'adm/index.php') {
-
             $url ="Location: " . $params->get('source_url') . 'adm/index.php?' . $_SERVER['QUERY_STRING'] ;
+            header($url);
+        }
+
+        if ($jfile == 'file.php') {
+            $url ="Location: " . $params->get('source_url') . 'download/file.php?' . $_SERVER['QUERY_STRING'] ;
             header($url);
         }
 

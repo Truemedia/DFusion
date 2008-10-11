@@ -21,6 +21,11 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
  */
 class JFusionAuth_phpbb3 extends JFusionAuth{
 
+    function getJname()
+    {
+        return 'phpbb3';
+    }
+
     function generateEncryptedPassword($userinfo)
     {
         // get the encryption PHP file

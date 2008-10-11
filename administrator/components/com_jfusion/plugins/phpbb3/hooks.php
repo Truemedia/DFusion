@@ -119,4 +119,7 @@ class JFusionHook
 		return JRoute::_($url, $is_amp);
 	}
 
+	function template_display() {}
+
 }
+

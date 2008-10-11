@@ -439,6 +439,8 @@ class JFusionController extends JController
         $model = new JFusionModelInstaller();
         $model->install();
 
+
+
         JRequest::setVar('view', 'pluginmanager');
         parent::display();
 

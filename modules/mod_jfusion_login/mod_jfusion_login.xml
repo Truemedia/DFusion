@@ -44,7 +44,7 @@
 			disable="separator" label="LOGOUT_REDIRECT"
 			description="LOGOUT_REDIRECT_DESCR" />
 		<param name="name" type="list" default="0"
-			label="DISPLAY_USERNAME_NAME" description="DISPLAY_NAME_USERNAME_DESCR">
+			label="DISPLAY_USERNAME_NAME" description="DISPLAY_USERNAME_NAME_DESCR">
 			<option value="0">USERNAME</option>
 			<option value="1">NAME</option>
 		</param>
