@@ -357,7 +357,7 @@ ORDER BY left_id';
         chdir($source_path);
 
         /* set scope for variables required later */
-        global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template, $phpbb_hook;
+        global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template, $phpbb_hook, $module;
 
         //define the phpBB3 hooks
         require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $this->getJname().DS.'hooks.php');
@@ -396,7 +396,8 @@ ORDER BY left_id';
             $replace_body	= array();
 
             //convert relative links from images into absolute links
-            $regex_body[]	= '#(src="|background="|url\(\')./(.*?)("|\))#mS';
+			$regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
+
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
 

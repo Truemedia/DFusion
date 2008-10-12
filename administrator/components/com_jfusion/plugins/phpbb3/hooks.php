@@ -119,7 +119,18 @@ class JFusionHook
 		return JRoute::_($url, $is_amp);
 	}
 
-	function template_display() {}
+	function phpbb_user_session_handler($hook)
+	{
+	}
+
+	function template_display($hook, $handle, $include_once = true)
+	{
+	}
+
+	function msg_handler($errno, $msg_text, $errfile, $errline) {
+		msg_handler($errno, $msg_text, $errfile, $errline);
+	}
+
 
 }
 

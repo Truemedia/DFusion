@@ -321,10 +321,6 @@
                     $plugin_user = $JFusionPlugin->updateUser($joomla_user,0);
                     if ($plugin_user['error']) {
                         JError::raiseWarning('500', $plugin->name . ': '. $plugin_user['error']);
-                        if ($joomla_user['userinfo']) {
-                            JError::raiseWarning('500', $jname->name . ' ' . JText::_('USERNAME'). ' ' . $userinfo->username . ' ' . JText::_('CONFLICT') . ': ' . $plugin->name . ' '. JText::_('USERID') . ' ' . $plugin_user['userinfo']->userid);
-                        }
-                        JError::raiseWarning('500', $plugin_user['error']);
                     }
                 }
             }

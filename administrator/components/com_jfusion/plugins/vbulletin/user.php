@@ -316,6 +316,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 			}
 			$user->usergroupid = $usergroup;
 			$user->displaygroupid = $usergroup;
+			$user->membergroupids = $usergroup;
 			$user->usertitle = $usergroupname;
 			$user->username = $userinfo->username;
 
