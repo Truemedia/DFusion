@@ -72,7 +72,7 @@ class JFusionUser_smf extends JFusionUser{
             }
 
             //check the activation status
-            if ($existinguser->activation != $userinfo->activation) {
+            if (empty($existinguser->activation) != empty($userinfo->activation)) {
             	if ($update_activation || $overwrite) {
 	                if ($userinfo->activation) {
     	                //inactiva the user
