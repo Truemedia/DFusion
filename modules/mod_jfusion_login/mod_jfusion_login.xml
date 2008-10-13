@@ -26,6 +26,7 @@
 			description="LINK_MODE_DESCR">
 			<option value="wrapper">LINK_MODE_0</option>
 			<option value="direct">LINK_MODE_1</option>
+			<option value="frameless">LINK_MODE_2</option>
 		</param>
 		<param name="WRAPPER_OPTIONS" type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
 			description="" />

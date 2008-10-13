@@ -297,14 +297,25 @@ class JFusionFunction{
 
     function createURL($url, $jname, $view)
     {
-        if ($view == 'wrapper') {
-            $url_root = JURI::root();
-            $url = $url_root . 'index.php?option=com_jfusion&amp;view=wrapper&amp;jname=' . $jname . '&amp;wrap='. urlencode($url);
-        } elseif ($view == 'frameles') {
+        if ($view == 'direct') {
             $params = JFusionFactory::getParams($jname);
             $url = $params->get('source_url') . $url;
-        }
+        } elseif ($view == 'wrapper') {
+            $url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname . '&amp;wrap='. urlencode($url);
+            $url = JRoute::_($url);
+        } elseif ($view == 'frameless'){
+            $base_url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname;
 
+            //split the filename from the query
+            $parts = explode('?', $url);
+            if (isset($parts[1])) {
+            	$base_url .= '&amp;jfile=' . $parts[0] . '&amp;' . $parts[1];
+            } else {
+            	$base_url .= '&amp;jfile=' . $parts[0];
+            }
+
+            $url = JRoute::_($base_url);
+        }
         return $url;
 
     }
