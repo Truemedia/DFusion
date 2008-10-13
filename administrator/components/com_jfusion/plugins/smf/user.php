@@ -29,9 +29,12 @@ class JFusionUser_smf extends JFusionUser{
     {
         // Initialise some variables
         $db = JFusionFactory::getDatabase($this->getJname());
+        $params = JFusionFactory::getParams($this->getJname());
+        $update_block = $params->get('update_block');
+        $update_activation = $params->get('update_activation');
+        $update_email = $params->get('update_email');
+
         $status = array();
-        $status['debug'] = '';
-        $status['error'] = '';
 
         //find out if the user already exists
         $existinguser = $this->getUser($userinfo->username);
@@ -39,7 +42,12 @@ class JFusionUser_smf extends JFusionUser{
         if (!empty($existinguser)) {
             //a matching user has been found
             if ($existinguser->email != $userinfo->email) {
-                $this->updateEmail($userinfo, $existinguser, $status);
+            	if ($update_email || $overwrite) {
+                	$this->updateEmail($userinfo, $existinguser, $status);
+            	} else {
+            		//return a debug to inform we skiped this step
+            		$status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+            	}
             }
 
             if (!empty($userinfo->password_clear)) {
@@ -49,38 +57,47 @@ class JFusionUser_smf extends JFusionUser{
 
             //check the blocked status
             if ($existinguser->block != $userinfo->block) {
-                if ($userinfo->block) {
-                    //block the user
-                    $this->blockUser($userinfo, $existinguser, &$status);
-                } else {
-                    //unblock the user
-                    $this->unblockUser($userinfo, $existinguser, &$status);
-                }
+            	if ($update_block || $overwrite) {
+	                if ($userinfo->block) {
+    	                //block the user
+        	            $this->blockUser($userinfo, $existinguser, &$status);
+            	    } else {
+                	    //unblock the user
+                    	$this->unblockUser($userinfo, $existinguser, &$status);
+                	}
+            	} else {
+            		//return a debug to inform we skiped this step
+            		$status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
+            	}
             }
 
-            //check the blocked status
-            if ($existinguser->block != $userinfo->block) {
-                if ($userinfo->block) {
-                    //block the user
-                    $this->blockUser($userinfo, $existinguser, &$status);
-                } else {
-                    //unblock the user
-                    $this->unblockUser($userinfo, $existinguser, &$status);
-                }
+            //check the activation status
+            if ($existinguser->activation != $userinfo->activation) {
+            	if ($update_activation || $overwrite) {
+	                if ($userinfo->activation) {
+    	                //inactiva the user
+        	            $this->inactivateUser($userinfo, $existinguser, &$status);
+            	    } else {
+                	    //activate the user
+	                    $this->activateUser($userinfo, $existinguser, &$status);
+    	            }
+            	} else {
+            		//return a debug to inform we skiped this step
+            		$status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+            	}
             }
 
             $status['userinfo'] = $existinguser;
             if (empty($status['error'])) {
                 $status['action'] = 'updated';
-                $status['debug'] .= ' ,User already exists.';
             }
             return $status;
+
         } else {
             //we need to create a new user
             $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
-                $status['debug'] .= ' ,User created.';
             }
             return $status;
 
@@ -183,19 +200,17 @@ class JFusionUser_smf extends JFusionUser{
 
     function updatePassword($userinfo, &$existinguser, &$status)
     {
-
         $existinguser->password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
         $existinguser->password_salt = substr(md5(rand()), 0, 4);
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'UPDATE #__members SET passwd = ' . $db->quote($existinguser->password). ', passwordSalt = ' . $db->quote($existinguser->password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
         $db = JFusionFactory::getDatabase($this->getJname());
         $db->setQuery($query );
-        if (!$db->Query()) {
-            $status['debug'] .= 'Could not update the SMF password: ' . $db->stderr();
+        if (!$db->query()) {
+            $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
         } else {
-            $status['debug'] .= 'Updated the SMF password to: ' . $existinguser->password . ' with salt:' . $existinguser->password_salt;
+	        $status['debug'][] = JText::_('PASSWORD_UPDATE') . $existinguser->password;
         }
-
     }
 
     function updateUsername($userinfo, &$existinguser, &$status)
@@ -210,10 +225,9 @@ class JFusionUser_smf extends JFusionUser{
         $query = 'UPDATE #__users SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
-            //update failed, return error
-            $status['error'] .= 'Error while updating the user email: ' . $db->stderr();
+            $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();
         } else {
-            $status['debug'] .= ' Update the email address from: ' . $existinguser->email . ' to:' . $userinfo->email;
+	        $status['debug'][] = JText::_('PASSWORD_UPDATE'). ': ' . $existinguser->email . ' -> ' . $userinfo->email;
         }
     }
 
@@ -234,11 +248,10 @@ class JFusionUser_smf extends JFusionUser{
 
             //now append the new user data
             if (!$db->insertObject('#__ban_groups', $ban, 'ID_BAN_GROUP' )) {
-                //return the error
-                $status['debug'] .= 'Error while banning the user: ' . $db->stderr();
-            } else {
-                $status['debug'] .= ' user was bannded';
-            }
+         	   $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
+	        } else {
+		        $status['debug'][] = JText::_('BLOCK_UPDATE'). ': ' . $existinguser->block . ' -> ' . $userinfo->block;
+        	}
     }
 
     function unblockUser($userinfo, &$existinguser, &$status)
@@ -246,12 +259,11 @@ class JFusionUser_smf extends JFusionUser{
         	$db = JFusionFactory::getDatabase($this->getJname());
             $query = 'DELETE FROM #__ban_groups WHERE name = ' . $existinguser->username;
             $db->setQuery($query);
-        	if (!$db->Query()) {
-            	$status['debug'] .= 'Could not unblock user: ' . $db->stderr();
+		    if (!$db->query()) {
+        	    $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
         	} else {
-            	$status['debug'] .= ', unblocked user ';
+	        	$status['debug'][] = JText::_('BLOCK_UPDATE'). ': ' . $existinguser->block . ' -> ' . $userinfo->block;
         	}
-
     }
 
     function activateUser($userinfo, &$existinguser, &$status)
@@ -260,10 +272,10 @@ class JFusionUser_smf extends JFusionUser{
         $query = 'UPDATE #__members SET is_activated = 1, validation_code = \'\' WHERE ID_MEMBER  = ' . $existinguser->userid;
         $db = JFusionFactory::getDatabase($this->getJname());
         $db->setQuery($query );
-        if (!$db->Query()) {
-            $status['debug'] .= 'Could not activate user: ' . $db->stderr();
+        if (!$db->query()) {
+            $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
         } else {
-            $status['debug'] .= ', activated user ';
+	        $status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
         }
     }
 
@@ -273,12 +285,11 @@ class JFusionUser_smf extends JFusionUser{
         $query = 'UPDATE #__members SET is_activated = 0, validation_code = '.$db->Quote($userinfo->activation).' WHERE ID_MEMBER  = ' . $existinguser->userid;
         $db = JFusionFactory::getDatabase($this->getJname());
         $db->setQuery($query );
-        if (!$db->Query()) {
-            $status['debug'] .= 'Could not inactivate user: ' . $db->stderr();
+        if (!$db->query()) {
+            $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
         } else {
-            $status['debug'] .= ', inactivated user ';
+	        $status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
         }
-
     }
 
     function createUser($userinfo, &$status)
@@ -329,23 +340,21 @@ class JFusionUser_smf extends JFusionUser{
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error
-                $status['error'] = 'Error while updating the user stats: ' . $db->stderr();
-                return $status;
+                $status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
+                return;
             }
 
             $query = 'REPLACE INTO #__settings (variable, value) VALUES (\'latestMember\', ' . $user->ID_MEMBER . '), (\'latestRealName\', ' . $db->quote($userinfo->username) . ')';
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error
-                $status['error'] = 'Error while updating the user stats: ' . $db->stderr();
-                return $status;
+                $status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
+                return;
             }
 
             //return the good news
-            $status['debug'] .= 'Created new user with userid:' . $user->ID_MEMBER;
-            $status['error'] = false;
+            $status['debug'][] = JText::_('USER_CREATION');
             $status['userinfo'] = $this->getUser($userinfo->username);
-            $status['action'] = 'created';
             return $status;
         }
     }

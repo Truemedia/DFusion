@@ -40,5 +40,18 @@
 		<param name="allow_autologin" type="text" size="10" default="/" description="ALLOW_AUTOLOGIN" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+
+		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
+			<option value="1">YES</option>
+			<option value="">NO</option>
+		</param>
+		<param name="update_block" type="list" default="1" label="" description="UPDATE_BLOCK">
+			<option value="1">YES</option>
+			<option value="">NO</option>
+		</param>
+		<param name="update_email" type="list" default="1" label="" description="UPDATE_EMAIL">
+			<option value="1">YES</option>
+			<option value="">NO</option>
+		</param>
 	</params>
 </install>

@@ -18,13 +18,6 @@ JFusionFunction::displayDonate();
 
 ?>
 
-
-<table class="adminform"><tr>
-<td><a href="index.php?option=com_jfusion&task=syncmaster"><?php echo JText::_('SYNC_MASTER');?></a></td>
-<td><a href="index.php?option=com_jfusion&task=syncslave"><?php echo JText::_('SYNC_SLAVE');?></a></td>
-<td><a href="index.php?option=com_jfusion&task=synchistory"><?php echo JText::_('SYNC_HISTORY');?></a></td>
-</tr></table></br><br/>
-
 <table><tr><td width="100px">
 <img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">

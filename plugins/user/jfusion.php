@@ -102,7 +102,7 @@
         	        $JFusionSlave = JFusionFactory::getUser($slave->name);
             	    $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
                 	if ($SlaveUser['error']) {
-                    	JError::raiseWarning('500', $slave->name . ': '. $SlaveUser['error']);
+                    	JError::raiseWarning('500', $slave->name . ': '. print_r($SlaveUser['error']));
 	                }
     	        }
 
@@ -122,7 +122,7 @@
             $MasterSession = $JFusionMaster->createSession($userinfo, $options);
             if ($MasterSession['error']) {
             	//report the error back
-                JError::raiseWarning('500', $master->name . ': '. $MasterSession['error']);
+                JError::raiseWarning('500', $master->name . ': '. print_r($MasterSession['error']));
                 if ($master->name == 'joomla_int'){
                   	//we can not tolerate Joomla session failures
 	                ob_end_clean();
@@ -138,7 +138,7 @@
                 $JoomlaUser = $JFusionJoomla->updateUser($userinfo,0);
                 if ($JoomlaUser['error']) {
                     //no Joomla user could be created
-                    JError::raiseWarning('500', 'joomla_int: '. $JoomlaUser['error']);
+                    JError::raiseWarning('500', 'joomla_int: '. print_r($JoomlaUser['error']));
                     ob_end_clean();
                     $success = false;
                     return $success;
@@ -192,7 +192,7 @@
                 $JFusionSlave = JFusionFactory::getUser($slave->name);
                 $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
                 if ($SlaveUser['error']) {
-                    JError::raiseWarning('500', $slave->name . ': '. $SlaveUser['error']);
+                    JError::raiseWarning('500', $slave->name . ': '. print_r($SlaveUser['error']));
                 } else {
 
                     //apply the cleartext password to the user object
@@ -250,11 +250,7 @@
                         JError::raiseWarning('500', $master->name . ': ' . JText::_('COULD_NOT_FIND_USER'));
                     }
 
-
-                    //logout from the master
                 }
-
-
 
                 $slaves = JFusionFunction::getPlugins();
                 foreach($slaves as $slave) {
@@ -264,7 +260,7 @@
                         $userlookup = JFusionFunction::lookupUser($slave->name, $my->get('id'));
                         $SlaveUser = $JFusionSlave->getUser($userlookup->username);
                         //check if a user was found
-                        if ($SlaveUser) {
+                        if (!$SlaveUser['error']) {
                             $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
                             if ($SlaveSession['error']) {
                                 JError::raiseWarning('500', $slave->name . ': ' . $SlaveSession['error']);
@@ -320,7 +316,7 @@
                     $JFusionPlugin = JFusionFactory::getUser($plugin->name);
                     $plugin_user = $JFusionPlugin->updateUser($joomla_user,0);
                     if ($plugin_user['error']) {
-                        JError::raiseWarning('500', $plugin->name . ': '. $plugin_user['error']);
+                        JError::raiseWarning('500', $plugin->name . ': '. print_r($plugin_user['error']));
                     }
                 }
             }

@@ -341,6 +341,7 @@ ORDER BY left_id';
             $jfile = 'index.php';
         }
 
+
         //combine the path and filename
         if (substr($source_path, -1) == DS) {
             $index_file = $source_path . basename($jfile);
@@ -396,9 +397,13 @@ ORDER BY left_id';
             $replace_body	= array();
 
             //convert relative links from images into absolute links
-			$regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
-
+	    $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
+
+            //fix up and ampersands that slipped past the parse url function.
+	    $regex_body[]	= '#/\&amp\;(.*?)\=#mS';
+            $replace_body[]	= '/$1,';
+
 
 
         }
@@ -416,8 +421,9 @@ ORDER BY left_id';
             $replace_header	= array();
 
             //convert relative links into absolute links
-            $regex_header[]	= '#href="\/test\/\.\/(.*?)"#mS';
-            $replace_header[]	= 'href="'.$integratedURL.'$1"';
+           $regex_header[]	= '#(href="|src=")./(.*?")#mS';
+           $replace_header[]	= '$1'.$integratedURL.'$2"';
+
         }
         $buffer = preg_replace($regex_header, $replace_header, $buffer);
     }

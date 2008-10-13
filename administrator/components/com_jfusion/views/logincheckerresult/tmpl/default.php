@@ -143,13 +143,9 @@ if ($userinfo) {
         $user_update = $JFusionMaster->updateUser($userinfo,0);
         if ($user_update['error']) {
             //report any errors
-            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $user_update['error'] .'<br/>';
-            if ($user_update['userinfo']) {
-                //output the details of the conflicting user
-                echo JText::_('USER') . ' ' . JText::_('CONFLICT') . '. ' . JText::_('USERNAME'). ':' . $user_update['userinfo']->username . ' ' . JText::_('USERID') . ':' . $user_update['userinfo']->userid . ' ' . JText::_('EMAIL'). ':' . $user_update['userinfo']->email .'<br/>';
-            }
+            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . print_r($user_update['error']) .'<br/>';
         } else {
-            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('SUCCESS'). ':' . $user_update['debug'] .'<br/>';
+            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('SUCCESS'). ':' . print_r($user_update['debug']) .'<br/>';
         }
 
         //skip Joomla session
@@ -173,13 +169,9 @@ if ($userinfo) {
         $user_update = $JFusionMaster->updateUser($userinfo,0);
         if ($user_update['error']) {
             //report any errors
-            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $user_update['error'] .'<br/>';
-            if ($user_update['userinfo']) {
-                //output the details of the conflicting user
-                echo JText::_('USER') . ' ' . JText::_('CONFLICT') . '. ' . JText::_('USERNAME'). ':' . $user_update['userinfo']->username . ' ' . JText::_('USERID') . ':' . $user_update['userinfo']->userid . ' ' . JText::_('EMAIL'). ':' . $user_update['userinfo']->email .'<br/>';
-            }
+            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . print_r($user_update['error']) .'<br/>';
         } else {
-            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('SUCCESS'). ':' . $user_update['debug'] .'<br/>';
+            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('SUCCESS'). ':' . print_r($user_update['debug']) .'<br/>';
         }
 
         //setup the master session
@@ -202,11 +194,7 @@ if ($userinfo) {
         $joomla_user = $joomla_int->updateUser($userinfo,0);
         if ($joomla_user['error']) {
             //no Joomla user could be created
-            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $joomla_user['error'] .'<br/>';
-            if ($joomla_user['userinfo']) {
-                //output the details of the conflicting user
-                echo JText::_('USER') . ' ' . JText::_('CONFLICT') . '. ' . JText::_('USERNAME'). ':' . $joomla_user['userinfo']->username . ' ' . JText::_('USERID') . ':' . $joomla_user['userinfo']->userid . ' ' . JText::_('EMAIL'). ':' . $joomla_user['userinfo']->email .'<br/>';
-            }
+            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . print_r($joomla_user['error']) .'<br/>';
             echo JText::_('FATAL_ERROR');
             ob_end_flush();
             return false;
@@ -244,11 +232,7 @@ if ($userinfo) {
         $JFusionPlugin = JFusionFactory::getUser($plugin->name);
         $plugin_user = $JFusionPlugin->updateUser($userinfo,0);
         if ($plugin_user['error']) {
-            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . $plugin_user['error'] .'<br/>';
-            if ($plugin_user['userinfo']) {
-                //output the details of the conflicting user
-                echo JText::_('USER') . ' ' . JText::_('CONFLICT') . '. ' . JText::_('USERNAME'). ':' . $plugin_user['userinfo']->username . ' ' . JText::_('USERID') . ':' . $plugin_user['userinfo']->userid . ' ' . JText::_('EMAIL'). ':' . $plugin_user['userinfo']->email .'<br/>';
-            }
+            echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('ERROR'). ':' . print_r($plugin_user['error']) .'<br/>';
         } else {
             echo JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' . JText::_('SUCCESS'). ':' . $plugin_user['debug'] .'<br/>';
             echo JText::_('USERNAME') .': ' . $plugin_user['userinfo']->username .'<br/>';

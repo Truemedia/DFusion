@@ -80,7 +80,8 @@ class JFusionHook
 		//Process the extra array
 		if(!empty($_EXTRA_URL))
 		{
-			$extra = implode('&', $_EXTRA_URL);
+			$extra_url = str_replace( '&amp;', '&', $_EXTRA_URL);
+			$extra = implode('&', $extra_url);
 			parse_str($extra, $arrExtra);
 		}
 
@@ -102,17 +103,21 @@ class JFusionHook
 			$uri->setFragment($anchor);
 		}
 
+		if(strpos($url, 'jfile=')) {
+            $url = preg_replace('#.*jfile=(.*?\.php).*#mS', '$1', $url);
+		}
+
 		$view = basename($url);
+
 		//add an excemption for the admincp
 		if(strpos($url, 'adm')) {
-				$view = 'adm/index.php';
+				$view = 'adm';
 		}
 		//add an excemption for editing profiles
 		if($arrParams['i'] == 'profile') {
 				$view = 'ucp.php';
 		}
 		$uri->setVar('jfile', $view);
-
 
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));
 
