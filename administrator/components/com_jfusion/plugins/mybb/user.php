@@ -42,7 +42,7 @@
             //a matching user has been found
             if ($existinguser->email != $userinfo->email) {
             	if ($update_email || $overwrite) {
-                	$this->updateEmail($userinfo, $existinguser, $status);
+                	$this->updateEmail($userinfo, &$existinguser, $status);
             	} else {
             		//return a debug to inform we skiped this step
             		$status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
@@ -51,7 +51,7 @@
 
             if (!empty($userinfo->password_clear)) {
                 //we can update the password
-                $this->updatePassword($userinfo, $existinguser, $status);
+                $this->updatePassword($userinfo, &$existinguser, &$status);
             }
 
             //check the blocked status
@@ -59,10 +59,10 @@
             	if ($update_block || $overwrite) {
 	                if ($userinfo->block) {
     	                //block the user
-        	            $this->blockUser($userinfo, $existinguser, &$status);
+        	            $this->blockUser($userinfo, &$existinguser, &$status);
             	    } else {
                 	    //unblock the user
-                    	$this->unblockUser($userinfo, $existinguser, &$status);
+                    	$this->unblockUser($userinfo, &$existinguser, &$status);
                 	}
             	} else {
             		//return a debug to inform we skiped this step
@@ -75,10 +75,10 @@
             	if ($update_activation || $overwrite) {
 	                if ($userinfo->activation) {
     	                //inactiva the user
-        	            $this->inactivateUser($userinfo, $existinguser, &$status);
+        	            $this->inactivateUser($userinfo, &$existinguser, &$status);
             	    } else {
                 	    //activate the user
-	                    $this->activateUser($userinfo, $existinguser, &$status);
+	                    $this->activateUser($userinfo, &$existinguser, &$status);
     	            }
             	} else {
             		//return a debug to inform we skiped this step
@@ -94,7 +94,7 @@
 
         } else {
             //we need to create a new user
-            $this->createUser($userinfo, $status);
+            $this->createUser($userinfo, &$status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
@@ -355,5 +355,46 @@
 	        $status['debug'][] = JText::_('PASSWORD_UPDATE'). ': ' . $existinguser->email . ' -> ' . $userinfo->email;
         }
     }
+    function deleteUsername($username)
+    {
+    }
+
+    function activateUser ($userinfo, &$existinguser, &$status)
+    {
+            //found out what usergroup should be used
+            $params = JFusionFactory::getParams($this->getJname());
+            $usergroup = $params->get('usergroup');
+
+            //update the usergroup
+	        $db = JFusionFactory::getDatabase($this->getJname());
+	        $query = 'UPDATE #__users SET usergroup = ' .$usergroup.' WHERE uid  = ' . $existinguser->userid;
+    	    $db->setQuery($query );
+        	if (!$db->Query()) {
+         	    $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
+	        } else {
+		        $status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
+        	}
+    }
+
+    function inactivateUser ($userinfo, &$existinguser, &$status)
+    {
+            //found out what usergroup should be used
+            $params = JFusionFactory::getParams($this->getJname());
+            $usergroup = $params->get('activationgroup');
+
+            //update the usergroup
+	        $db = JFusionFactory::getDatabase($this->getJname());
+	        $query = 'UPDATE #__users SET usergroup = ' .$usergroup.' WHERE uid  = ' . $existinguser->userid;
+    	    $db->setQuery($query );
+        	if (!$db->Query()) {
+	            $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
+    	    } else {
+	    	    $status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
+        	}
+
+    }
+
+
+
 }
 

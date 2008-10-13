@@ -93,6 +93,13 @@
             //apply the cleartext password to the user object
             $userinfo->password_clear = $user['password'];
 
+            $MasterUser = $JFusionMaster->updateUser($userinfo,0);
+            if ($MasterUser['error']) {
+               	JError::raiseWarning('500', $master->name . ': '. print_r($MasterUser['error']));
+	        }
+
+
+
             // See if the user has been blocked or is not activated
             if (!empty($userinfo->block) || !empty($userinfo->activation)) {
 
@@ -260,7 +267,7 @@
                         $userlookup = JFusionFunction::lookupUser($slave->name, $my->get('id'));
                         $SlaveUser = $JFusionSlave->getUser($userlookup->username);
                         //check if a user was found
-                        if (!$SlaveUser['error']) {
+                        if ($SlaveUser) {
                             $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
                             if ($SlaveSession['error']) {
                                 JError::raiseWarning('500', $slave->name . ': ' . $SlaveSession['error']);
@@ -301,8 +308,8 @@
                 //A change has been made to a user without JFusion knowing about it
 
                 /**
-* Load the JFusion framework
-*/
+				* Load the JFusion framework
+				*/
                 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
                 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 

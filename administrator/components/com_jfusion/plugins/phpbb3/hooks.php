@@ -113,10 +113,14 @@ class JFusionHook
 		if(strpos($url, 'adm')) {
 				$view = 'adm';
 		}
+
+
 		//add an excemption for editing profiles
 		if($arrParams['i'] == 'profile') {
 				$view = 'ucp.php';
 		}
+
+
 		$uri->setVar('jfile', $view);
 
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));

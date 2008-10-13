@@ -31,6 +31,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         $update_email = $params->get('update_email');
 
         $status = array();
+        $status['debug'] = array();
 
         //find out if the user already exists
         $existinguser = $this->getUser($userinfo->username);
@@ -39,7 +40,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             //a matching user has been found
             if ($existinguser->email != $userinfo->email) {
             	if ($update_email || $overwrite) {
-                	$this->updateEmail($userinfo, $existinguser, $status);
+                	$this->updateEmail($userinfo, &$existinguser, &$status);
             	} else {
             		//return a debug to inform we skiped this step
             		$status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
@@ -48,7 +49,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
             if (!empty($userinfo->password_clear)) {
                 //we can update the password
-                $this->updatePassword($userinfo, $existinguser, $status);
+                $this->updatePassword($userinfo, &$existinguser, &$status);
             }
 
             //check the blocked status
@@ -56,10 +57,10 @@ class JFusionUser_phpbb3 extends JFusionUser{
             	if ($update_block || $overwrite) {
 	                if ($userinfo->block) {
     	                //block the user
-        	            $this->blockUser($userinfo, $existinguser, &$status);
+        	            $this->blockUser($userinfo, &$existinguser, &$status);
             	    } else {
                 	    //unblock the user
-                    	$this->unblockUser($userinfo, $existinguser, &$status);
+                    	$this->unblockUser($userinfo, &$existinguser, &$status);
                 	}
             	} else {
             		//return a debug to inform we skiped this step
@@ -72,10 +73,10 @@ class JFusionUser_phpbb3 extends JFusionUser{
             	if ($update_activation || $overwrite) {
 	                if ($userinfo->activation) {
     	                //inactiva the user
-        	            $this->inactivateUser($userinfo, $existinguser, &$status);
+        	            $this->inactivateUser($userinfo, &$existinguser, &$status);
             	    } else {
                 	    //activate the user
-	                    $this->activateUser($userinfo, $existinguser, &$status);
+	                    $this->activateUser($userinfo, &$existinguser, &$status);
     	            }
             	} else {
             		//return a debug to inform we skiped this step
@@ -91,7 +92,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
         } else {
             //we need to create a new user
-            $this->createUser($userinfo, $status);
+            $this->createUser($userinfo, &$status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
@@ -114,7 +115,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
         if ($result) {
             //Check to see if they are banned
-            $query = 'SELECT userid FROM #__banlist WHERE userid=' . $result->userid;
+            $query = 'SELECT ban_userid FROM #__banlist WHERE ban_userid =' . $result->userid;
             $db->setQuery($query);
             if ($db->loadObject()) {
                 $result->block = 1;
@@ -320,7 +321,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         return $username_clean;
     }
 
-    function updatePassword($userinfo, &$existinguser, &$status)
+    function updatePassword($userinfo, $existinguser, $status)
     {
         // get the encryption PHP file
         if(!class_exists('PasswordHash')){
@@ -355,7 +356,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();
         } else {
-	        $status['debug'][] = JText::_('PASSWORD_UPDATE'). ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+	        $status['debug'][] = JText::_('EMAIL_UPDATE'). ': ' . $existinguser->email . ' -> ' . $userinfo->email;
         }
     }
 
@@ -363,7 +364,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     {
         //block the user
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'INSERT INTO #__banlist (ban_userid) VALUES ('.$existinguser->userid.')';
+        $query = 'INSERT INTO #__banlist (ban_userid, ban_start) VALUES ('.$existinguser->userid.',' . time() .')';
         $db->setQuery($query);
         $db->query();
         if (!$db->query()) {
@@ -377,7 +378,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     {
         //unblock the user
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'DELETE FROM #__banlist WHERE userid=' . $existinguser->userid;
+        $query = 'DELETE FROM #__banlist WHERE ban_userid=' . $existinguser->userid;
         $db->setQuery($query);
         $db->query();
         if (!$db->query()) {
@@ -546,5 +547,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
             //return the good news
             $status['debug'][] = JText::_('USER_CREATION');
         }
+    }
+    function deleteUsername($username)
+    {
     }
 }
