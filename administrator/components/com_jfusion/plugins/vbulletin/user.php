@@ -108,7 +108,7 @@ class JFusionUser_vbulletin extends JFusionUser{
     {
         // Get user info from database
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT userid, username, username as name, email, password, salt as password_salt,  FROM #__user WHERE username=' . $db->Quote($username);
+        $query = 'SELECT userid, username, username as name, email, password, salt as password_salt  FROM #__user WHERE username=' . $db->Quote($username);
         $db->setQuery($query );
         $result = $db->loadObject();
 
@@ -132,13 +132,6 @@ class JFusionUser_vbulletin extends JFusionUser{
             } else {
                 $result->activation = '';
             }
-
-
-            //update the usergroup
-	        $db = JFusionFactory::getDatabase($this->getJname());
-	        $query = 'UPDATE #__user SET membergroupids = ' . $usergroup . ', usergroupid = ' . $usergroup . ', displaygroupid = ' . $usergroup . ' WHERE userid  = ' . $existinguser->userid;
-
-
         }
         return $result;
     }
