@@ -111,7 +111,7 @@ class JFusionHook
 
 		//add an excemption for the admincp
 		if(strpos($url, 'adm')) {
-				$view = 'adm';
+			$view = 'adm/index.php';
 		}
 
 

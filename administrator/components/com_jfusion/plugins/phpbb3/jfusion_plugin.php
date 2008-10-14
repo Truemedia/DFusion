@@ -401,7 +401,7 @@ ORDER BY left_id';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
             //fix up and ampersands that slipped past the parse url function.
-	    $regex_body[]	= '#/\&amp\;(.*?)\=#mS';
+	    $regex_body[]	= '#&amp\;(.*?)\=#mS';
             $replace_body[]	= '/$1,';
 
 

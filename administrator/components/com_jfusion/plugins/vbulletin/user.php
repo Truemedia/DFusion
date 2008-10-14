@@ -335,9 +335,9 @@ class JFusionUser_vbulletin extends JFusionUser{
             $user = new stdClass;
 			$user->userid = NULL;
 			if(empty($userinfo->activation)){
-            	$usergroup = $params->get('usergroup');
-			} else {
             	$usergroup = $params->get('activationgroup');
+			} else {
+            	$usergroup = $params->get('usergroup');
 			}
 			$user->usergroupid = $usergroup;
 			$user->displaygroupid = $usergroup;

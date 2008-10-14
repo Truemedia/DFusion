@@ -177,7 +177,7 @@ class JFusionFunction{
         $db = JFusionFactory::getDatabase($jname);
         $jdb =& JFactory::getDBO();
 
-        if (JError::isError($db) || !$db) {
+        if (JError::isError($db) || !$db || !method_exists($jdb,'setQuery')) {
             //Save this error for the integration
             $query = 'UPDATE #__jfusion SET status = 1 WHERE name =' . $jdb->quote($jname);
             $jdb->setQuery($query );

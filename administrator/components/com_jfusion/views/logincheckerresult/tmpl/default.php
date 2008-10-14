@@ -232,32 +232,6 @@ if ($userinfo) {
         $JoomlaUser = array('userinfo' => $userinfo, 'error' => '');
     }
 
-    //update the JFusion user lookup table
-    //Delete old user data in the lookup table
-    $db =& JFactory::getDBO();
-    $query = 'DELETE FROM #__jfusion_users WHERE id =' . $JoomlaUser['userinfo']->userid . ' OR username =' . $db->quote($username_clean);
-    $db->setQuery($query);
-    if (!$db->query()) {
-        echo '<br/>' . $db->stderr(). '<br/>';
-    }
-    $db =& JFactory::getDBO();
-    $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $JoomlaUser['userinfo']->userid ;
-    $db->setQuery($query);
-    if (!$db->query()) {
-        echo '<br/>' . $db->stderr(). '<br/>';
-    }
-
-    //create a new entry in the lookup table
-    $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $JoomlaUser['userinfo']->userid . ', ' . $db->quote($username_clean) . ')';
-    $db->setQuery($query);
-    if (!$db->query()) {
-        echo '<br/>' . $db->stderr(). '<br/>';
-    }
-
-    if ($master->name != 'joomla_int') {
-        JFusionFunction::updateLookup($userinfo, $master->name, $JoomlaUser['userinfo']->userid);
-    }
-
     //setup the other slave JFusion plugins
     $slaves = JFusionFunction::getPlugins();
     foreach($slaves as $slave) {
@@ -277,8 +251,6 @@ if ($userinfo) {
 
             //apply the cleartext password to the user object
             $SlaveUser['userinfo']->password_clear = $user['password'];
-
-            JFusionFunction::updateLookup($SlaveUser['userinfo'], $slave->name, $JoomlaUser['userinfo']->userid);
 
             if (!isset($options['group']) && $slave->dual_login == 1) {
                 $SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);

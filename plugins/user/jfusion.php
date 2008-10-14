@@ -166,28 +166,6 @@
             	$JoomlaUser = array( 'userinfo' => $userinfo, 'error' => '');
             }
 
-            //update the JFusion user lookup table
-            //Delete old user data in the lookup table
-            $db =& JFactory::getDBO();
-            $query = 'DELETE FROM #__jfusion_users WHERE id =' . $JoomlaUser['userinfo']->userid . ' OR username =' . $db->quote($username_clean);
-            $db->setQuery($query);
-            if (!$db->query()) {
-                JError::raiseWarning(0,$db->stderr());
-            }
-            $db =& JFactory::getDBO();
-            $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $JoomlaUser['userinfo']->userid ;
-            $db->setQuery($query);
-            if (!$db->query()) {
-                JError::raiseWarning(0,$db->stderr());
-            }
-
-            //create a new entry in the lookup table
-            $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $JoomlaUser['userinfo']->userid . ', ' . $db->quote($username_clean) . ')';
-            $db->setQuery($query);
-            if (!$db->query()) {
-                JError::raiseWarning(0,$db->stderr());
-            }
-
             if ($master->name != 'joomla_int') {
                 JFusionFunction::updateLookup($userinfo, $master->name, $JoomlaUser['userinfo']->userid);
             }

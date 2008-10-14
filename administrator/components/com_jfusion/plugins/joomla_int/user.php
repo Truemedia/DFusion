@@ -159,6 +159,31 @@ class JFusionUser_joomla_int extends JFusionUser{
             $filtered_username = $JFusionUser->filterUsername($username);
             $db->setQuery('SELECT a.id as userid, a.activation, a.username, a.name, a.password, a.email, a.block FROM #__users as a WHERE a.username=' . $db->quote($filtered_username));
             $result = $db->loadObject();
+
+            if($result){
+            //update the JFusion user lookup table
+            //Delete old user data in the lookup table
+            $db =& JFactory::getDBO();
+            $query = 'DELETE FROM #__jfusion_users WHERE id =' . $result->userid . ' OR username =' . $db->quote($username);
+            $db->setQuery($query);
+            if (!$db->query()) {
+                JError::raiseWarning(0,$db->stderr());
+            }
+            $db =& JFactory::getDBO();
+            $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $result->userid;
+            $db->setQuery($query);
+            if (!$db->query()) {
+                JError::raiseWarning(0,$db->stderr());
+            }
+
+            //create a new entry in the lookup table
+            $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ', ' . $db->quote($username) . ')';
+            $db->setQuery($query);
+            if (!$db->query()) {
+                JError::raiseWarning(0,$db->stderr());
+            }
+
+            }
         }
 
         if ($result) {
