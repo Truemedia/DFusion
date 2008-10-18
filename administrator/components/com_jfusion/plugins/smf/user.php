@@ -110,7 +110,7 @@ class JFusionUser_smf extends JFusionUser{
         $params = JFusionFactory::getParams($this->getJname());
         $db = JFusionFactory::getDatabase($this->getJname());
 
-        $query = 'SELECT ID_MEMBER as userid, memberName as username, realName as name, emailAddress as email, passwd as password, passwordSalt as password_salt, validation_code as activation FROM #__members WHERE memberName=' . $db->Quote($username) ;
+        $query = 'SELECT ID_MEMBER as userid, memberName as username, realName as name, emailAddress as email, passwd as password, passwordSalt as password_salt, validation_code, is_activated FROM #__members WHERE memberName=' . $db->Quote($username) ;
         $db->setQuery($query );
         $result = $db->loadObject();
 
@@ -127,6 +127,12 @@ class JFusionUser_smf extends JFusionUser{
             	}
             } else {
                 $result->block = 0;
+            }
+
+            if ($result->is_activated == 1){
+				$result->activation = '';
+            } else {
+				$result->activation = $result->validation_code;
             }
         }
 
@@ -322,12 +328,21 @@ class JFusionUser_smf extends JFusionUser{
 
         $user->posts = 0 ;
         $user->dateRegistered = time();
-        $user->is_activated = 1;
+
+        if ($userinfo->activation){
+        	$user->is_activated = 0;
+        	$user->validation_code = $userinfo->activation;
+        } else {
+        	$user->is_activated = 1;
+        	$user->validation_code = '';
+        }
+
+
         $user->personalText = '';
         $user->pm_email_notify = 1;
         $user->ID_THEME = 0;
         $user->ID_GROUP = $params->get('usergroup', 4);
-        $user->ID_POST_GROUP = 4;
+        $user->ID_POST_GROUP = $params->get('usergroup', 4);
 
         //now append the new user data
         if (!$db->insertObject('#__members', $user, 'ID_MEMBER' )) {

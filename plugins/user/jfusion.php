@@ -1,4 +1,4 @@
-    <?php
+<?php
     /**
 * @package JFusion
 * @subpackage Plugin_User

@@ -377,8 +377,9 @@ ORDER BY left_id';
             ob_end_clean();
         }
 
-        // continue with joomla here
-        //die($buffer);
+		global $mainframe;
+		$mainframe->setPageTitle('');
+
         //change the current directory back to Joomla.
         chdir(JPATH_SITE);
 
@@ -401,8 +402,8 @@ ORDER BY left_id';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
             //fix up and ampersands that slipped past the parse url function.
-	    $regex_body[]	= '#&amp\;(.*?)\=#mS';
-            $replace_body[]	= '/$1,';
+	        $regex_body[]	= '#(/&amp\;|/\?|&amp;)(.*?)\=#mS';
+            $replace_body[]	= '/$2,';
 
 
 

@@ -71,6 +71,12 @@ class jfusionViewframeless extends JView {
             $head = $html->child[0];
             $body = $html->child[1];
 
+            //change the page title
+			$pattern = '#<title>(.*?)<\/title>#';
+			preg_match($pattern, $head, $page_title);
+			global $mainframe;
+			$mainframe->setPageTitle($page_title[1]);
+
             // Output the headers
             $document	= JFactory::getDocument();
             foreach($head->child as $child ) {
@@ -103,6 +109,14 @@ class jfusionViewframeless extends JView {
                     $document	= JFactory::getDocument();
                     $JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
                     $document->addCustomTag($data[1][0]);
+
+		            //change the page title
+					$pattern = '#<title>(.*?)<\/title>#';
+					preg_match($pattern, $data[1][0], $page_title);
+					global $mainframe;
+					$mainframe->setPageTitle($page_title[1]);
+
+
                 }
 
                 // Output the body
