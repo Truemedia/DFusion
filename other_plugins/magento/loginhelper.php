@@ -1,7 +1,7 @@
 <?php
 /**
  * @package JFusion_myplugin
- * @version 1.0.7
+ * @version 1.0.8
  * @author Henk Wevers
  * @copyright Copyright (C) 2008 Henk Wevers. All rights reserved, HtmlFormparser copyright 2004 Peter Valicek Peter Valicek
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL

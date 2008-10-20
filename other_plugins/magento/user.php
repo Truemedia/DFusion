@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_magento
-* @version 1.0.7
+* @version 1.0.8
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
