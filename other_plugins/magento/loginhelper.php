@@ -1,4 +1,11 @@
 <?php
+/**
+ * @package JFusion_myplugin
+ * @version 1.0.7
+ * @author Henk Wevers
+ * @copyright Copyright (C) 2008 Henk Wevers. All rights reserved, HtmlFormparser copyright 2004 Peter Valicek Peter Valicek
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 /*
   * @copyright  Copyright (C) 2008 BreinCoach (Henk Wevers: www.mijnbreincoach.nl) for indicated portions of the code. All rights reserved.
   * Note: code will move to open source as soon as I am content with it. So in the meantime, use it for your own test
