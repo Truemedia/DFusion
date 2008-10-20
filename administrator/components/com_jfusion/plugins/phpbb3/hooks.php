@@ -111,7 +111,8 @@ class JFusionHook
 
 		//add an excemption for the admincp
 		if(strpos($url, 'adm')) {
-			$view = 'adm/index.php';
+	        global $jfusion_source_url;
+	        return $jfusion_source_url . 'adm/index.php?sid=' . $session_id;
 		}
 
 

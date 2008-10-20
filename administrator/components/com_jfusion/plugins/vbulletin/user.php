@@ -98,6 +98,8 @@ class JFusionUser_vbulletin extends JFusionUser{
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
+            $status['userinfo'] = $this->getUser($userinfo->username);
+
             return $status;
 
         }
@@ -190,13 +192,15 @@ class JFusionUser_vbulletin extends JFusionUser{
             $vbLicense = $params->get('source_license','');
 
             $bypost = 1;
-            $expires = 60*30;
 
             if (isset($options['remember'])) {
                 $expires = 365*24*60*60;
+            } else {
+            	$expires = 60*30;
+            }
+
    				JFusionFunction::addCookie('usercookie[username]' , $userinfo->username, $expires, $vbCookiePath, $vbCookieDomain, true);
    				JFusionFunction::addCookie('usercookie[password]' , $userinfo->password, $expires, $vbCookiePath, $vbCookieDomain, true);
-            }
    				JFusionFunction::addCookie($vbCookiePrefix.'userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
    				JFusionFunction::addCookie($vbCookiePrefix.'password' , md5($userinfo->password . $vbLicense ), $expires, $vbCookiePath, $vbCookieDomain, true);
    				JFusionFunction::addCookie('userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
@@ -229,7 +233,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		        if (!$db->query()) {
     		        $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
         		} else {
-	        		$status['debug'][] = JText::_('PASSWORD_UPDATE') . $existinguser->password;
+			        $status['debug'][] = JText::_('PASSWORD_UPDATE') . ' ' . substr($existinguser->password,0,6) . '********';
         		}
     }
 

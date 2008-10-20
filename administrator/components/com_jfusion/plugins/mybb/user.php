@@ -287,7 +287,7 @@
 	        if (!$db->query()) {
     	        $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
         	} else {
-	        	$status['debug'][] = JText::_('PASSWORD_UPDATE') . $existinguser->password;
+		        $status['debug'][] = JText::_('PASSWORD_UPDATE') . ' ' . substr($existinguser->password,0,6) . '********';
 	        }
 
         }

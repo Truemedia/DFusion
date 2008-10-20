@@ -90,7 +90,7 @@ echo JText::_('LOGIN') .' ' .JText::_('USERNAME') .': ' . $credentials['username
 echo $jname->name . ' ' . JText::_('USERNAME') .': ' . $userinfo->username .'<br/>';
 echo $jname->name . ' ' . JText::_('USERID') . ': ' . $userinfo->userid .'<br/>';
 echo $jname->name . ' ' . JText::_('NAME') .': ' . $userinfo->name .'<br/>';
-echo $jname->name . ' ' . JText::_('PASSWORD') .': ' . $userinfo->password .'<br/>';
+echo $jname->name . ' ' . JText::_('PASSWORD') .': ' . substr($userinfo->password,0,6) .'********<br/>';
 echo $jname->name . ' ' . JText::_('SALT') .': ' . $userinfo->password_salt .'<br/>';
 echo $jname->name . ' ' . JText::_('EMAIL') .': ' . $userinfo->email .'<br/>';
 
@@ -107,7 +107,7 @@ if ($userinfo) {
         //Generate an encrypted password for comparison
         $model = JFusionFactory::getAuth($auth_model->name);
         $testcrypt = $model->generateEncryptedPassword($userinfo);
-        echo $auth_model->name . ' -> ' . $testcrypt . '<br/>';
+        echo $auth_model->name . ' -> ' . substr($testcrypt,0,6) . '********<br/>';
         if ($testcrypt == $userinfo->password) {
             $match = $auth_model->name;
         }
@@ -259,6 +259,8 @@ if ($userinfo) {
                 } else {
                     echo JText::_('SESSION'). ' '. JText::_('CREATE') . ' ' . JText::_('SUCCESS'). ':' . $SlaveSession['debug'] .'<br/>';
                 }
+            } else {
+                echo JText::_('DUAL_LOGIN'). ' '. JText::_('DISABLED') .'<br/>';
             }
         }
     }

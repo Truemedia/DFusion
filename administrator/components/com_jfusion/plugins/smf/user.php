@@ -215,7 +215,7 @@ class JFusionUser_smf extends JFusionUser{
         if (!$db->query()) {
             $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
         } else {
-	        $status['debug'][] = JText::_('PASSWORD_UPDATE') . $existinguser->password;
+	        $status['debug'][] = JText::_('PASSWORD_UPDATE') . ' ' . substr($existinguser->password,0,6) . '********';
         }
     }
 
@@ -228,7 +228,7 @@ class JFusionUser_smf extends JFusionUser{
     {
         //we need to update the email
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__users SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
+        $query = 'UPDATE #__members SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();

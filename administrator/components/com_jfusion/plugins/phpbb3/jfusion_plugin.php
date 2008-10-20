@@ -322,6 +322,10 @@ ORDER BY left_id';
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
 
+        //Allow for admin redirects in the hooks
+        global $jfusion_source_url;
+        $jfusion_source_url = $params->get('source_url');
+
         //get the filename
         $jfile = JRequest::getVar('jfile');
 
