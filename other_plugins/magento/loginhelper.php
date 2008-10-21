@@ -273,7 +273,7 @@ class HtmlFormParser {
   #read_header is essential as it processes all cookies and keeps track of the current location url
   function read_header($ch, $string)
   {
-	global $location;
+  global $location;
     global $cookiearr;
     global $ch;
     global $cookies_to_set;
@@ -307,28 +307,28 @@ class HtmlFormParser {
     return $length;
   }
 
-	/*
+  /*
 
-	out[0] = full url
-	out[1] = scheme or '' if no scheme was found
-	out[2] = username or '' if no auth username was found
-	out[3] = password or '' if no auth password was found
-	out[4] = domain name or '' if no domain name was found
-	out[5] = port number or '' if no port number was found
-	out[6] = path or '' if no path was found
-	out[7] = query or '' if no query was found
-	out[8] = fragment or '' if no fragment was found
-	*/
+  out[0] = full url
+  out[1] = scheme or '' if no scheme was found
+  out[2] = username or '' if no auth username was found
+  out[3] = password or '' if no auth password was found
+  out[4] = domain name or '' if no domain name was found
+  out[5] = port number or '' if no port number was found
+  out[6] = path or '' if no path was found
+  out[7] = query or '' if no query was found
+  out[8] = fragment or '' if no fragment was found
+  */
 
-	function parseUrl ( $url )
-	{
-    	$r  = '!(?:(\w+)://)?(?:(\w+)\:(\w+)@)?([^/:]+)?';
-    	$r .= '(?:\:(\d*))?([^#?]+)?(?:\?([^#]+))?(?:#(.+$))?!i';
+  function parseUrl ( $url )
+  {
+      $r  = '!(?:(\w+)://)?(?:(\w+)\:(\w+)@)?([^/:]+)?';
+      $r .= '(?:\:(\d*))?([^#?]+)?(?:\?([^#]+))?(?:#(.+$))?!i';
 
-    	preg_match ( $r, $url, $out );
+      preg_match ( $r, $url, $out );
 
-    	return $out;
-	}
+      return $out;
+  }
 
     function parsecookies($cookielines){
         $line=array();
@@ -359,10 +359,12 @@ class HtmlFormParser {
 
         $cookies=array();
         $cookies=parsecookies($mycookies_to_set);
+
         foreach ($cookies as $cookie){
+            global $hnd;
             $name="";
             $value="";
-            $expires_time="";
+            $expires_time=time()+30*60;
             $cookiepath="";
             $cookiedomain="";
             $httponly="true";
@@ -371,7 +373,10 @@ class HtmlFormParser {
             if (isset($cookie[expires]))        {$expires_time=$cookie[expires];}
             if (isset($cookie[path]))           {$cookiepath=$cookie[path];}
             if (isset($cookie[domain]))         {$cookiedomain=$cookie[domain];}
-            setcookie($name, $value,$expires_time,$cookiepath,$cookiedomain,0,1);
+
+            setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,0,1);
+            // fwrite($hnd, "$name--$value--$expires_time--$cookiepath--$cookiedomain\n");
+
         }
 
     }
@@ -384,14 +389,17 @@ class HtmlFormParser {
         # and even set the cookies returned by the logijn procedure.
         # The code is smart enough to find the fiels for name and password (I hope :-) )
     function RemoteLogin($post_url,$formid,$username,$password){
+    global $hnd;
+        //$hnd = fopen('c:\programData\dump.txt','w');
         $status['error'] = '';
         global $ch;
         global $cookiearr;
         global $cookies_to_set;
         global $cookies_to_set_index;
         $tmpurl = array();
-         # read the login page
-
+        # read the login page
+        $cookies_to_set=array();
+        $cookies_to_set_index=0;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$post_url);
         curl_setopt($ch, CURLOPT_REFERER, "");
@@ -401,7 +409,11 @@ class HtmlFormParser {
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
         $remotedata = curl_exec($ch);
         curl_close($ch);
-         #find out if we have the form with the name/id specified
+        setmycookies($cookies_to_set);
+        $cookies_to_set_index=0;
+
+
+        #find out if we have the form with the name/id specified
         $parser =& new HtmlFormParser( $remotedata);
         $result = $parser->parseForms();
         $frmcount = count($result);
@@ -415,7 +427,7 @@ class HtmlFormParser {
            $i +=1;
         } while ($i<$frmcount);
         if ($myfrm == -1) {
-            $status['error']= 'Could not find a valid Magento loginform, check Magento plugin parameters!';
+            $status['error']= 'Could not find a valid Magento loginform, check plugin parameters!';
             return $status;
         }
 
@@ -431,34 +443,34 @@ class HtmlFormParser {
         #now construct the action parameter
         #first make it not use ssl (TO DO, cURL ssl support)
         $form_action = str_replace ('https://','http://',$form_action);
-		# websites provide a full url (easy), or a relative url to their domain. We have to add in the
-		# domain if not present. We can extract the domain from the post_url passed to this function
+        # websites provide a full url (easy), or a relative url to the post directory. We have to add in the
+        # domain if not present. We can extract the domain from the post_url passed to this function
 
         if (strpos($form_action,'http://') === false) {
-			$tmpurl = parseUrl($post_url);
-			$form_action = 'http://'.$tmpurl[4].$form_action;
+        //      $tmpurl = parseUrl($post_url);
+        //      $form_action = 'http://'.$tmpurl[4].$form_action;
+        $form_action = $post_url.$form_action;
         }
 
         #now try to find the fieldnames for the username and password entries
-        #as far as I have seen, matchin user or name will do together with pass:
+        #as far as I have seen, matching user or name will do together with pass:
         $input_username_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
-          if (strpos(strtolower($elements_keys[$i]),'user')!=false){$input_username_name=$elements_keys[$i];break;}
-          if (strpos(strtolower($elements_keys[$i]),'name')!=false){$input_username_name=$elements_keys[$i];break;}
+          if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
+          if (strpos(strtolower($elements_keys[$i]),'name')!==false){$input_username_name=$elements_keys[$i];break;}
         }
-
         if ($input_username_name==""){
-            $status['error']='Could not find a valid namefield in Magento login form, contact pluginauthor, or adjust your loginform';
+            $status['error']='Could not find a valid namefield in the login form, contact the pluginauthor, or adjust your loginform';
             return $status;
         }
 
         $input_password_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
-          if (strpos(strtolower($elements_keys[$i]),'pass')!=false){$input_password_name=$elements_keys[$i];break;}
+          if (strpos(strtolower($elements_keys[$i]),'pass')!==false){$input_password_name=$elements_keys[$i];break;}
         }
 
         if ($input_password_name==""){
-            $status['error']='Could not find a valid namefield in Magento login form, contact pluginauthor, or adjust your loginform';
+            $status['error']='Could not find a valid passwordfield in the login form, contact pluginauthor, or adjust your loginform';
             return $status;
         }
 
@@ -472,12 +484,19 @@ class HtmlFormParser {
             $strParameters .= '&'.$elements_keys[$i].'='.urlencode($elements_values[$i] ['value']);
           }
         }
+        // fwrite($hnd,"1.strParameters-$strParameters\n");
+        /* have to figure out how to handle this. No name/id for parameter
         if (isset($result[$myfrm] [buttons][0]['type'])) {
             if ($result[$myfrm] [buttons][0]['type'] =='submit'){
                 $strParameters .= '&'.($result[$myfrm] [buttons][0]['name']).'='.urlencode(($result[$myfrm] [buttons][0]['value']));
             }
         }
+        */
+        // still problems logging into moodle with extra hidden parameters
+        // for now, I leave it until I have time to investigate.It works without
+        $strParameters='';
 
+        // fwrite($hnd,"2. strParameters-$strParameters\n");
         $post_params = $input_username_name."=".urlencode($username)."&".$input_password_name."=".urlencode($password);
         $ch = curl_init();
         #submit the login form:
@@ -493,6 +512,13 @@ class HtmlFormParser {
         curl_close($ch);
         #we have to set the cookies now
         setmycookies($cookies_to_set);
+        $cookies_to_set_index=0;
+        //fwrite($hnd,"form_action-$form_action\n");
+        //fwrite($hnd,"post_params-$post_params\n");
+
+
+
+        //fclose($hnd);
         return $status;
      }
 

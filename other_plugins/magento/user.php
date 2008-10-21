@@ -34,6 +34,8 @@ defined('_JEXEC' ) or die('Restricted access' );
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
 require_once('loginhelper.php');
+//require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'loginhelper.php');
+
 /**
 * @package JFusion_myplugin
 */
@@ -67,6 +69,7 @@ class JFusionUser_magento extends JFusionUser{
         8  Password hash
 
     */
+
 
 
 

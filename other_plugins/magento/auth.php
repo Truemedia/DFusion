@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package JFusion_myplugin
+ * @package JFusion_Magento
  * @version 1.0.8
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
