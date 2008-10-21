@@ -3,6 +3,7 @@
 	<name>Jfusion Moodle plugin</name>
 	<comment></comment>
 	<projects>
+		<project>JFusion Magento plugin</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -14,4 +15,11 @@
 	<natures>
 		<nature>net.sourceforge.phpeclipse.phpnature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>loginhelper.php</name>
+			<type>1</type>
+			<location>C:/Users/Henk/workspace/JFusion Magento plugin/loginhelper.php</location>
+		</link>
+	</linkedResources>
 </projectDescription>
