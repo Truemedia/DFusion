@@ -53,6 +53,14 @@ if (empty($credentials['username'])) {
     return false;
 }
 
+$version =& new JVersion;
+$short_version = $version->getShortVersion();
+echo '<br/>Joomla version:' . $short_version . '<br/>';
+echo 'PHP version: ' . phpversion() .  '<br/>';
+
+
+
+
 //output the current configuration
 $db =& JFactory::getDBO();
 $query = 'SELECT * from #__jfusion WHERE master = 1 OR slave = 1 or check_encryption = 1 ORDER BY master DESC;';

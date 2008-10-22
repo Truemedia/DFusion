@@ -30,6 +30,7 @@ class jfusionViewWrapper extends JView {
 
         //get the forum url
         $wrap = urldecode(JRequest::getVar('wrap', '', 'get'));
+        $wrap = base64_decode($wrap);
         $jname = urldecode(JRequest::getVar('jname', '', 'get'));
 
         if(!$jname) {

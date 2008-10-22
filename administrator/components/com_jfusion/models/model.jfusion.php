@@ -301,7 +301,7 @@ class JFusionFunction{
             $params = JFusionFactory::getParams($jname);
             $url = $params->get('source_url') . $url;
         } elseif ($view == 'wrapper') {
-            $url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname . '&amp;wrap='. urlencode($url);
+            $url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname . '&amp;wrap='. base64_encode($url);
             $url = JRoute::_($url);
         } elseif ($view == 'frameless'){
             $base_url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname;
