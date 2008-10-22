@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8
+* @version 1.0.8-001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -24,18 +24,15 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
 class JFusionPlugin_moodle extends JFusionPlugin{
 
-    function getJname()
-    {
+    function getJname(){
         return 'moodle';
     }
 
-    function getTablename()
-    {
+    function getTablename(){
         return 'user';
     }
 
-    function setupFromPath($forumPath)
-    {
+    function setupFromPath($forumPath){
         //check for trailing slash and generate file path
         if (substr($forumPath, -1) == DS) {
             $myfile = $forumPath . 'config.php';
@@ -82,18 +79,15 @@ class JFusionPlugin_moodle extends JFusionPlugin{
     }
 
 
-    function getRegistrationURL()
-    {
+    function getRegistrationURL(){
         return 'login/signup.php';
     }
 
-    function getLostPasswordURL()
-    {
+    function getLostPasswordURL(){
         return 'login/forgot_password.php';
     }
 
-    function getLostUsernameURL()
-    {
+    function getLostUsernameURL(){
         return 'login/forgot_password.php';
     }
 /*
@@ -219,8 +213,7 @@ ORDER BY left_id';
         return $db->loadObjectList();
     }
 */
-    function getUserList()
-    {
+    function getUserList(){
         //getting the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT username, email from #__user';
@@ -232,8 +225,7 @@ ORDER BY left_id';
         return $userlist;
     }
 
-    function getUserCount()
-    {
+    function getUserCount(){
         //getting the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT count(*) from #__user';
@@ -245,8 +237,7 @@ ORDER BY left_id';
         return $no_users;
     }
 
-    function getUsergroupList()
-    {
+    function getUsergroupList(){
         //get the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT id, name from #__role;';
@@ -256,8 +247,7 @@ ORDER BY left_id';
         return $db->loadObjectList();
     }
 
-    function getDefaultUsergroup()
-    {
+    function getDefaultUsergroup(){
         $params = JFusionFactory::getParams($this->getJname());
         $usergroup_id = $params->get('usergroup');
 

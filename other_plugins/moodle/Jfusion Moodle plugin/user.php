@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8
+* @version 1.0.8-001
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -33,17 +33,13 @@ defined('_JEXEC' ) or die('Restricted access' );
 * load the Abstract User Class
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-require_once('loginhelper.php');
-//require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'loginhelper.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.curl.php');
 /**
 * @package JFusion_Moodle
 */
 class JFusionUser_moodle extends JFusionUser{
 
-
-
-    function &getUser($username)
-    {
+    function &getUser($username){
         // Get a database object
         $db = JFusionFactory::getDatabase($this->getJname());
         $username = $this->filterUsername($username);
@@ -57,8 +53,7 @@ class JFusionUser_moodle extends JFusionUser{
         return $result;
      }
 
-    function updateUser($userinfo)  //TODO!!
-    {
+    function updateUser($userinfo){  //TODO!!
         // Initialise some variables
         $db = JFusionFactory::getDatabase($this->getJname());
         $status = array();
@@ -66,61 +61,38 @@ class JFusionUser_moodle extends JFusionUser{
         //find out if the user already exists
         $userlookup = $this->getUser($userinfo->username);
         if ($userlookup->email == $userinfo->email) {
-          //emails match up
+        	//emails match up
+          	$status['userinfo'] = $userlookup;
+          	$status['error'] = false;
+          	$status['debug'] = JText::_('USER_EXISTS');
+          	return $status;
+      	} elseif ($userlookup) {
+        	//emails match up
             $status['userinfo'] = $userlookup;
-          $status['error'] = false;
-          $status['debug'] = JText::_('USER_EXISTS');
+          	$status['error'] = JText::_('EMAIL_CONFLICT');
             return $status;
-      } elseif ($userlookup) {
-          //emails match up
+      	} else {
             $status['userinfo'] = $userlookup;
-          $status['error'] = JText::_('EMAIL_CONFLICT');
+          	$status['error'] = JText::_('UNABLE_CREATE_USER');
             return $status;
-      } else {
-            $status['userinfo'] = $userlookup;
-          $status['error'] = JText::_('UNABLE_CREATE_USER');
-            return $status;
-      }
+      	}
     }
 
-    function getJname()
-    {
+    function getJname(){
         return 'moodle';
     }
 
-    function destroySession($userinfo, $options)
-    {
+    function destroySession($userinfo, $options){
         $status['error'] = '';
         $params = JFusionFactory::getParams($this->getJname());
         $source_url = $params->get('source_url');
         $post_url = $source_url.$params->get('logout_url');
-        $cookies = array();
-        $cookie  = array();
-        $status['error'] = '';
-        global $ch;
-        global $cookiearr;
-        global $cookies_to_set;
-        global $cookies_to_set_index;
-        $cookies_to_set = array();
-        $cookies_to_set_index = 0;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-        curl_setopt($ch, CURLOPT_URL,$post_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_POST, 0);
-        curl_setopt($ch, CURLOPT_REFERER, "");
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
-        $remotedata = curl_exec($ch);
-        curl_close($ch);
-        #we have to set the cookies now
-        setmycookies($cookies_to_set);
+        $status = JFusionCurl::RemoteLogout($post_url);
         return $status;
-    }
+     }
 
 
-    function createSession($userinfo, $options)
-    {
+    function createSession($userinfo, $options){
         $status['error'] = '';
         $params = JFusionFactory::getParams($this->getJname());
         $source_url = $params->get('source_url');
@@ -136,12 +108,13 @@ class JFusionUser_moodle extends JFusionUser{
         $cookiearr = array();
         $cookies_to_set = array();
         $cookies_to_set_index = 0;
-        $status=RemoteLogin($post_url,$formid,$userinfo->username,$userinfo->password_clear);
+//      $JCurl =& new JFusionCurl();
+//      $status=$JCurl->RemoteLogin($post_url,$formid,$userinfo->username,$userinfo->password_clear);
+        $status = JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->username,$userinfo->password_clear,false,true);
         return $status;
     }
 
-    function filterUsername($username)
-    {
+    function filterUsername($username){
       //no username filtering implemented yet
       return $username;
     }
