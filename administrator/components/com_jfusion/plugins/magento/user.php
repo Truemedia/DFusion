@@ -116,7 +116,7 @@ class JFusionUser_magento extends JFusionUser{
         $status = array();
 
         //find out if the user already exists
-        $userlookup = $this->getUser($userinfo->username);
+        $userlookup = $this->getUser($userinfo->email);
         if ($userlookup->email == $userinfo->email) {
           //emails match up
             $status['userinfo'] = $userlookup;
@@ -165,11 +165,11 @@ class JFusionUser_magento extends JFusionUser{
         $cookiearr = array();
         $cookies_to_set = array();
         $cookies_to_set_index = 0;
-        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->username,$userinfo->password_clear,true,true);
+        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->email,$userinfo->password_clear,true,true);
         return $status;
     }
 
-    function filterUsername($username){
+    function filterUsername($username){e
       //no username filtering implemented yet
       return $username;
     }
