@@ -296,30 +296,20 @@ class JFusionPlugin_smf extends JFusionPlugin{
 			$replace_body	= array();
 
 			//convert relative links with query into absolute links
-			$regex_body[]	= '#href="./(.*?)\?(.*?)"#mS';
-			$replace_body[]	= 'href="'.$baseURL.'&jfile=$1&$2"';
+			$regex_body[]	= '#' . $integratedURL . 'index.php\?(.*?)"#mS';
+			$replace_body[]	=  $baseURL . '&$1"';
 
 			//convert relative links without query into absolute links
-			$regex_body[]	= '#href="./(.*?)"#mS';
-			$replace_body[]	= 'href="'.$baseURL.'&jfile=$1"';
+			$regex_body[]	= '#' . $integratedURL . 'index.php"#mS';
+			$replace_body[]	= $baseURL . '"';
 
 			//convert relative links from images into absolute links
-			$regex_body[]	= '#(src="|url\()./(.*?)("|\))#mS';
-			$replace_body[]	= '$1'.$integratedURL.'$2$3"';
+			$regex_body[]	= '#\./(.*?)("|\))#mS';
+			$replace_body[]	= $integratedURL.'$1$2"';
 
 			//convert links to the same page with anchors
 			$regex_body[]	= '#href="\#(.*?)"#';
 			$replace_body[]	= 'href="'.$fullURL.'&#$1"';
-
-			//update site URLs to the new Joomla URLS
-			$regex_body[]	= "#$integratedURL(.*?)\?(.*?)\"#mS";
-			$replace_body[]	= $baseURL . '&jfile=$1&$2"';
-
-			//update site URLs to the new Joomla URLS
-			$regex_body[]	= "#$integratedURL(.*?)\"#mS";
-			$replace_body[]	= $baseURL . '&jfile=$1"';
-
-
 		}
 
 		$buffer = preg_replace($regex_body, $replace_body, $buffer);

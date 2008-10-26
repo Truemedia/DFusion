@@ -402,8 +402,12 @@ ORDER BY left_id';
             $replace_body	= array();
 
             //convert relative links from images into absolute links
-	    $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
+	        $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
+
+            //fix for search action
+	        $regex_body[]	= '#action="\./(.*?)">#mS';
+            $replace_body[]	= 'action="'.$baseURL.'"><input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="Itemid" value="125"><input type="hidden" name="jfile" value="$1">';
 
             //fix up and ampersands that slipped past the parse url function.
 	        $regex_body[]	= '#(/&amp\;|/\?|&amp;)(.*?)\=#mS';
