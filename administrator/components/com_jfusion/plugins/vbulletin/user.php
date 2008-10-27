@@ -206,7 +206,7 @@ class JFusionUser_vbulletin extends JFusionUser{
    				JFusionFunction::addCookie('userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
 
             $status['error'] = false;
-       	    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain . ' password:'.$userinfo->password ;
+       	    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain . ' password:'.substr($userinfo->password,0,6) . '********' ;
             return $status;
         } else {
             //could not find a valid userid
@@ -325,62 +325,39 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function createUser ($userinfo, &$status)
     {
-            //found out what usergroup should be used
+            //get the params object
             $params = JFusionFactory::getParams($this->getJname());
-            $usergroup = $params->get('usergroup');
 
-            //lookup the name of the usergroup
-	        $db = JFusionFactory::getDatabase($this->getJname());
-    	    $query = 'SELECT group_name from #__groups WHERE group_id = ' . $usergroup;
-        	$db->setQuery($query );
-        	$usergroupname = $db->loadResult();
+			//load the vbulletin framework
+			define('VB_AREA', 'External');
+			define('SKIP_SESSIONCREATE', 1);
+			define('SKIP_USERINFO', 1);
+			define('CWD', $params->get('source_path'));
+			global $vbulletin;
+			require_once(CWD . '/includes/init.php');
 
-            //prepare the variables
-            $user = new stdClass;
-			$user->userid = NULL;
 			if(empty($userinfo->activation)){
-            	$usergroup = $params->get('activationgroup');
-			} else {
             	$usergroup = $params->get('usergroup');
+			} else {
+            	$usergroup = $params->get('activationgroup');
 			}
-			$user->usergroupid = $usergroup;
-			$user->displaygroupid = $usergroup;
-			$user->membergroupids = $usergroup;
-			$user->usertitle = $usergroupname;
-			$user->username = $userinfo->username;
+
+			//setup the new user
+			$newuser =& datamanager_init('User', $vbulletin, ERRTYPE_ARRAY);
+			$newuser->set('username', $userinfo->username);
+			$newuser->set('email', $userinfo->email);
+			$newuser->set('password', $userinfo->password_clear);
+			$newuser->set('usergroupid', $usergroup);
 
             if(isset($userinfo->password_clear)){
-        		jimport('joomla.user.helper');
-        		$user->salt = JUserHelper::genRandomPassword(3);
-				$user->password = md5(md5($userinfo->password_clear).$user->salt);
-            } else {
-				$user->salt = $userinfo->password_salt;
-				$user->password = $userinfo->password;
-            }
+				$newuser->set('password', $userinfo->password_clear);
+			} else {
+				$newuser->set('password', $userinfo->password);
+			}
 
-			$user->email = $userinfo->email;
-			$user->passworddate = date("Y/m/d");
-			$user->joindate = time();
-
-            //now append the new user data
-            if (!$db->insertObject('#__user', $user, 'userid' )) {
-                //return the error
-                $status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
-                return;
-            }
-
-	        //prepare the variables
-    	    $userfield = new stdClass;
-			$userfield->userid = $user->userid;
-
-            if (!$db->insertObject('#__userfield', $userfield )) {
-                //return the error
-                $status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
-                return;
-            }
-
+			$newuserid = $newuser->save();
             //return the good news
-            $status['debug'][] = JText::_('USER_CREATION');
+            $status['debug'][] = JText::_('USER_CREATION') .'. '. JText::_('USERID') . $newuserid;
     }
 
     function deleteUsername($username)

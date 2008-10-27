@@ -17,17 +17,5 @@
 	<files folder="plugins/user">
 		<filename plugin="jfusion">jfusion.php</filename>
 	</files>
-
-		<languages folder="language/en-GB">
-			<language tag="en-GB">en-GB.plg_user_jfusion.ini</language>
-		</languages>
-
-	<params>
-		<param name="autoregister" type="radio" default="1"
-			label="Auto Create Users" description="PARAMAUTOCREATEUSERS">
-			<option value="0">No</option>
-			<option value="1">Yes</option>
-		</param>
-	</params>
 </install>
 

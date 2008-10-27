@@ -103,6 +103,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
+            $status['userinfo'] = $this->getUser($userinfo->username);
             return $status;
         }
     }

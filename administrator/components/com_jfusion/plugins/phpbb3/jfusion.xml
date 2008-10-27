@@ -43,15 +43,19 @@
 
 		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
 			<option value="1">YES</option>
-			<option value="">NO</option>
+			<option value="0">NO</option>
 		</param>
 		<param name="update_block" type="list" default="1" label="" description="UPDATE_BLOCK">
 			<option value="1">YES</option>
-			<option value="">NO</option>
+			<option value="0">NO</option>
 		</param>
 		<param name="update_email" type="list" default="1" label="" description="UPDATE_EMAIL">
 			<option value="1">YES</option>
-			<option value="">NO</option>
+			<option value="0">NO</option>
+		</param>
+		<param name="sh404sef_parse" type="list" default="1" label="" description="SH404SEF_PARSE">
+			<option value="1">YES</option>
+			<option value="0">NO</option>
 		</param>
 	</params>
 </install>

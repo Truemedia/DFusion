@@ -96,6 +96,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
+            $status['userinfo'] = $this->getUser($userinfo->username);
             return $status;
 
         }
@@ -275,8 +276,9 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 } else {
                     //Set cookies
                     JFusionFunction::addCookie($phpbb_cookie_name . '_u', $userid, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
+                    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_u' . ', ' . JText::_('VALUE') . '=' . $userid .', ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
                     JFusionFunction::addCookie($phpbb_cookie_name . '_sid', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
-                    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userid . ', ' . JText::_('SESSIONID') . '=' . $session_key . ', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
+                    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_sid' . ', ' . JText::_('VALUE') . '=' . substr($session_key,0,6) .'********, ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
 
                     // Remember me option?
                     if ($jautologin>0) {
@@ -292,7 +294,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
                             return $status;
                         } else {
                             JFusionFunction::addCookie($phpbb_cookie_name . '_k', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
-                            $status['debug'] .= 'Created session_key:' . $session_key;
+                    		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_k' . ', ' . JText::_('VALUE') . '=' . substr($session_key,0,6) .'********, ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
                         }
 
                     }

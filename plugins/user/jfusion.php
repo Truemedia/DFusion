@@ -39,6 +39,9 @@
         function plgUserJfusion(& $subject, $config)
         {
             parent::__construct($subject, $config);
+
+            //load the language
+            $this->loadLanguage('com_jfusion', JPATH_BASE);
         }
 
         /**

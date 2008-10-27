@@ -99,6 +99,7 @@
                 $status['action'] = 'created';
             }
             return $status;
+            $status['userinfo'] = $this->getUser($userinfo->username);
 
         }
     }
@@ -203,7 +204,7 @@
             JFusionFunction::addCookie($name, $value, $expires, $cookiepath, $cookiedomain, $httponly);
 
             $status = array();
-            $status['debug'] = JText::_('NAME') . '=' . $name . ', ' . JText::_('VALUE') . '=' . $value . ', ' . JText::_('COOKIE_PATH') . '=' . $cookiepath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $cookiedomain;
+            $status['debug'] = JText::_('NAME') . '=' . $name . ', ' . JText::_('VALUE') . '=' . substr($value,0,6) . '********, ' . JText::_('COOKIE_PATH') . '=' . $cookiepath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $cookiedomain;
             $status['error'] = false;
             return $status;
 

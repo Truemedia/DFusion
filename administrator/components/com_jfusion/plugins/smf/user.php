@@ -99,6 +99,8 @@ class JFusionUser_smf extends JFusionUser{
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
+            $status['userinfo'] = $this->getUser($userinfo->username);
+
             return $status;
 
         }
