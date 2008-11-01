@@ -36,6 +36,15 @@ class JFusionController extends JController
     }
 
     /**
+* Displays the JFusion control panel
+*/
+    function cpanel()
+    {
+        JRequest::setVar('view', 'cpanel');
+        parent::display();
+    }
+
+    /**
 * Displays specific JFusion plugin parameters
 */
     function plugineditor()

@@ -45,10 +45,13 @@
 		</languages>
 
 	<administration>
-		<menu img="components/com_jfusion/images/jfusion.png" link="option=com_jfusion&amp;task=plugindisplay">
+		<menu img="components/com_jfusion/images/jfusion.png" link="option=com_jfusion">
 			jfusion
 		</menu>
 		<submenu>
+			<menu img="components/com_jfusion/images/process.png" link="option=com_jfusion&amp;task=cpanel">
+				Control Panel
+			</menu>
 			<menu img="components/com_jfusion/images/process.png" link="option=com_jfusion&amp;task=plugindisplay">
 				Plugin Configuration
 			</menu>

@@ -422,6 +422,16 @@ class JFusionFunction{
 
     }
 
+    function raiseWarning($type, $warning){
+    	if(is_array($warning)){
+			foreach ($warning as $warningtext){
+				JError::raiseWarning('500', $type . ': '. $warningtext);
+			}
+    	} else {
+			JError::raiseWarning('500', $type .': '. $warning);
+    	}
+    }
+
     function displayDonate(){
     	?>
 <table class="adminform"><tr><td><font size="5"><b>Please help support the JFusion project with a donation. This will ensure the continued development of this revolutionary project.</b></font></td><td>

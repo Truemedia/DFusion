@@ -333,7 +333,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 			define('SKIP_SESSIONCREATE', 1);
 			define('SKIP_USERINFO', 1);
 			define('CWD', $params->get('source_path'));
-			global $vbulletin;
 			require_once(CWD . '/includes/init.php');
 
 			if(empty($userinfo->activation)){
@@ -346,18 +345,24 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$newuser =& datamanager_init('User', $vbulletin, ERRTYPE_ARRAY);
 			$newuser->set('username', $userinfo->username);
 			$newuser->set('email', $userinfo->email);
-			$newuser->set('password', $userinfo->password_clear);
 			$newuser->set('usergroupid', $usergroup);
 
             if(isset($userinfo->password_clear)){
 				$newuser->set('password', $userinfo->password_clear);
 			} else {
-				$newuser->set('password', $userinfo->password);
+				//clear password is not available, set a random password for now
+				$random_password = JUtility::getHash(JUserHelper::genRandomPassword(10));
+				$newuser->set('password', $random_password);
 			}
+			$newuser->set_bitfield('options', 'coppauser', 0);
 
-			$newuserid = $newuser->save();
-            //return the good news
-            $status['debug'][] = JText::_('USER_CREATION') .'. '. JText::_('USERID') . $newuserid;
+		    if($newuser->errors){
+				$newuserid = $newuser->save();
+	            //return the good news
+    	        $status['debug'][] = JText::_('USER_CREATION') .'. '. JText::_('USERID') . $newuserid;
+		    } else {
+		    	$status['error'][] = print_r($newuser->errors);
+		    }
     }
 
     function deleteUsername($username)

@@ -32,7 +32,7 @@ $controller   = new $classname( );
 
 // Perform the Request task
 $task = JRequest::getVar( 'task');
-if (!$task) {$task = 'plugindisplay';}
+if (!$task) {$task = 'cpanel';}
 
 $controller->execute( $task );
 
