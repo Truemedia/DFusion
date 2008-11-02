@@ -17,55 +17,38 @@ jimport('joomla.application.component.view');
 * @package JFusion
 */
 
-class jfusionViewplugindisplay extends JView {
+class jfusionViewcpanel extends JView {
 
     function display($tpl = null)
     {
-        //prepare the toolbar
-        $bar =& new JToolBar('My Toolbar' );
-        $bar->appendButton('Standard', 'edit', JText::_('EDIT'), 'plugineditor', false, false );
-        $bar->appendButton('Standard', 'help', JText::_('WIZARD'), 'wizard', false, false );
-        $toolbar = $bar->render();
+    	//get the jfusion news
+		$url = 'http://www.jfusion.org/jfusion_news.xml';
+    	if(function_exists('curl_init')){
+    		//curl is the preferred function
+	        $crl = curl_init();
+    	    $timeout = 5;
+        	curl_setopt ($crl, CURLOPT_URL,$url);
+	        curl_setopt ($crl, CURLOPT_RETURNTRANSFER, 1);
+    	    curl_setopt ($crl, CURLOPT_CONNECTTIMEOUT, $timeout);
+        	$JFusionNewsRaw = curl_exec($crl);
+	        curl_close($crl);
+    	} else {
+    		//get the file directly if curl is disabled
+		    $JFusionNewsRaw = file_get_contents($url);
+		    if (!strpos($JFusionNewsRaw, '<document>')){
+		    	//file_get_content is often blocked by hosts, return an error message
+				$JFusionNewsRaw = '<?xml version=\'1.0\' standalone=\'yes\'?>
+					<document><item><date></date>
+					<title>' . JText::_('CURL_DISABLED') . '</title>
+					<link>www.jfusion.org</link><body></body></item></document>';
+		    }
+    	}
 
+		$JFusionNews = new SimpleXMLElement($JFusionNewsRaw);
+		$this->assignRef('JFusionNews', $JFusionNews);
 
-        //get the data about the JFusion plugins
-        $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion';
-        $db->setQuery($query );
-        $rows = $db->loadObjectList();
+        parent::display($tpl);
 
-        if ($rows) {
-            //print out results to user
-            $this->assignRef('rows', $rows);
-            $this->assignRef('toolbar', $toolbar);
-            parent::display($tpl);
-        } else {
-        	//for some reason the Joomla installer did no create the needed tables
-        	$sqlfile = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'sql'.DS.'install.jfusion.sql';
-        	if (($file_handle = @fopen($sqlfile, 'r')) === FALSE) {
-            	JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE'). ' ' . JText::_('NO_SQL_FILE'));
-	        } else {
-    	        //parse the file line by line to get only the config variables
-        	    $sqlquery = fopen($sqlfile, 'r');
-        	    $db->setQuery($sqlquery);
-        	    if (!$db->query) {
-            		JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE') . ': ' . $db->stderr());
-        	    } else {
-			        //get the data about the JFusion plugins
-			        $query = 'SELECT * from #__jfusion';
-        			$db->setQuery($query );
-        			$rows = $db->loadObjectList();
-			        if ($rows) {
-            			//print out results to user
-            			$this->assignRef('rows', $rows);
-            			$this->assignRef('toolbar', $toolbar);
-            			parent::display($tpl);
-              	    } else {
-            			JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE'));
-			        }
-        	    }
-        	}
-        }
     }
 }
 
