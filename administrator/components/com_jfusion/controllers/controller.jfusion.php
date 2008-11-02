@@ -348,6 +348,15 @@ class JFusionController extends JController
     }
 
     /**
+* Displays the version check screen
+*/
+    function versioncheck()
+    {
+        JRequest::setVar('view', 'versioncheck');
+        parent::display();
+    }
+
+    /**
 * Displays the usersync status
 */
     function syncstatus()

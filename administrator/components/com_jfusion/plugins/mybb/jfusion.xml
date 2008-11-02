@@ -8,7 +8,7 @@
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
-	<version>1.01</version>
+	<version>1.0.8-001</version>
 	<description>myBB 1.4.0</description>
 	<slave>3</slave>
 	<dual_login>3</dual_login>

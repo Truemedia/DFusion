@@ -8,7 +8,7 @@
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <authorEmail>admin@mijnbreincoach.nl</authorEmail>
   <authorUrl>www.mijnbreincoach.nl</authorUrl>
-  <version>1.08-beta002</version>
+  <version>1.0.8-002</version>
   <description>JFusion (1.08+) plugin for Magento ecommerce 1.1</description>
   <slave>0</slave>
   <dual_login>0</dual_login>

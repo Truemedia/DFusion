@@ -58,18 +58,7 @@ $short_version = $version->getShortVersion();
 echo '<br/>Joomla version:' . $short_version . '<br/>';
 echo 'PHP version: ' . phpversion() .  '<br/>';
 
-//get the phpinfo and parse it into an array
-ob_start();
-phpinfo();
-$phpinfo = array('phpinfo' => array());
-if(preg_match_all('#(?:<h2>(?:<a name=".*?">)?(.*?)(?:</a>)?</h2>)|(?:<tr(?: class=".*?")?><t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>(?:<t[hd](?: class=".*?")?>(.*?)\s*</t[hd]>)?)?</tr>)#s', ob_get_clean(), $matches, PREG_SET_ORDER))
-    foreach($matches as $match)
-        if(strlen($match[1]))
-            $phpinfo[$match[1]] = array();
-        elseif(isset($match[3]))
-            $phpinfo[end(array_keys($phpinfo))][$match[2]] = isset($match[4]) ? array($match[3], $match[4]) : $match[3];
-        else
-            $phpinfo[end(array_keys($phpinfo))][] = $match[2];
+$phpinfo = JFusionFunction::phpinfo_array();
 
 echo "System: {$phpinfo['phpinfo']['System']}<br />\n";
 echo "MySQL: {$phpinfo['mysql']['Client API version']}<br />\n";

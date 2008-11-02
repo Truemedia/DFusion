@@ -79,7 +79,7 @@
 		</param>
 		<param name="@spacer" type="spacer" default="" label=""
 			description="" />
-		<param name="JFusionPlugin" type="JFusionPlugins" default=""
+		<param name="JFusionPlugin" type="JFusionActivePlugins" default=""
 			label="JFUSION_PLUGIN"
 			description="JFUSION_PLUGIN_DESCR" />
 		<param name="avatar" type="radio" default="1"

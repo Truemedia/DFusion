@@ -8,7 +8,7 @@
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
-	<version>1.0</version>
+	<version>1.0.8-001</version>
 	<description>phpBB3 plugin for JFusion</description>
 	<files>
 		<filename>auth.php</filename>

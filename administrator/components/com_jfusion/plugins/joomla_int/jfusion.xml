@@ -8,7 +8,7 @@
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
-	<version>1.00</version>
+	<version>1.0.8-001</version>
 	<description>internal Joomla plugin for JFusion</description>
 	<files>
 		<filename>auth.php</filename>
@@ -19,13 +19,30 @@
 	</files>
 	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="description" type="text" size="20" default="internal Joomla plugin" description="DESCRIPTION"/>
-		<param name="username_filter" type="list" default="1" description="USERNAME_FILTER">
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name="user_options" type="helptext" default="JOOMLA_USER_OPTIONS" />
+		<param name="usergroup" default="18" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
-		<param name="usergroup" default="18" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="update_block" type="list" default="1" label="" description="UPDATE_BLOCK">
+			<option value="1">YES</option>
+			<option value="0">NO</option>
+		</param>
+		<param name="update_email" type="list" default="1" label="" description="UPDATE_EMAIL">
+			<option value="1">YES</option>
+			<option value="0">NO</option>
+		</param>
+		<param name="username_filter" type="JFusionPlugins" default="1" description="USERNAME_FILTER" />
+		<param name="allow_email_login" type="list" default="0" description="ALLOW_EMAIL_LOGIN">
+			<option value="0">NO</option>
+			<option value="1">YES</option>
+		</param>
 
-				<param name="wrapper_scroll" type="radio" default="auto"
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name="visual_options" type="helptext" default="JOOMLA_VISUAL_OPTIONS" />
+		<param name="wrapper_scroll" type="radio" default="auto"
 			description="WRAPPER_SCROLL">
 			<option value="no">NO</option>
 			<option value="yes">YES</option>
@@ -46,17 +63,5 @@
 			<option value="1">YES</option>
 		</param>
 
-		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
-			<option value="1">YES</option>
-			<option value="0">NO</option>
-		</param>
-		<param name="update_block" type="list" default="1" label="" description="UPDATE_BLOCK">
-			<option value="1">YES</option>
-			<option value="0">NO</option>
-		</param>
-		<param name="update_email" type="list" default="1" label="" description="UPDATE_EMAIL">
-			<option value="1">YES</option>
-			<option value="0">NO</option>
-		</param>
 	</params>
 </install>
