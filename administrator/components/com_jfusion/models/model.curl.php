@@ -3,9 +3,9 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.0.8.001
+ * @version 1.0.8.004
  * @author JFusion development team -- Henk Wevers
- * @copyright Copyright (C) 2008 JFusion. All rights reserved.
+ * @copyright Copyright (C) 2008 JFusion -- Henk Wevers. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
@@ -53,7 +53,9 @@ class JFusionCurlHtmlFormParser {
 
     function parseForms() {
         if ( preg_match_all("/<form.*>.+<\/form>/isU", $this->html_data, $forms) ) {
+
             foreach ( $forms[0] as $form ) {
+
                 $this->button_counter = 0;
 
                 #form details
@@ -69,7 +71,8 @@ class JFusionCurlHtmlFormParser {
                 $this->_return[$this->_counter]['form_data']['id'] = preg_replace("/[\"'<>]/", "", $id[1]);
 
                 # form elements: input type = hidden
-                if ( preg_match_all("/<input.*type=[\"']?hidden[\"']?.*>$/im", $form, $hiddens) ) {
+                if ( preg_match_all("/<input.*type=[\"']?hidden[\"']?.*>/iU", $form, $hiddens) ) {                       //MODS!
+
                     foreach ( $hiddens[0] as $hidden ) {
                         $this->_return[$this->_counter]['form_elements'][$this->_getName($hidden)] = array(
                                                                                             'type'    => 'hidden',
@@ -282,65 +285,65 @@ class JFusionCurlHtmlFormParser {
 
 class JFusionCurl{
 
-	/*
-	* function read_header
+   /*
+    * function read_header
     * Basic  code was found on Svetlozar Petrovs website http://svetlozar.net/page/free-code.html.
     * The code is free to use and similar code can be found on other places on the net.
     */
 
-    function read_header($ch, $string){
-  		global $location;
-    	global $cookiearr;
-    	global $ch;
-    	global $cookies_to_set;
-    	global $cookies_to_set_index;
+  function read_header($ch, $string){
+        global $location;
+        global $cookiearr;
+        global $ch;
+        global $cookies_to_set;
+        global $cookies_to_set_index;
 
-    	$length = strlen($string);
-    	if(!strncmp($string, "Location:", 9)){
-      		$location = trim(substr($string, 9, -1));
-    	}
-    	if(!strncmp($string, "Set-Cookie:", 11)){
-      		header($string,false);
-      		$cookiestr = trim(substr($string, 11, -1));
-      		$cookie = explode(';', $cookiestr);
-      		$cookies_to_set[$cookies_to_set_index] = $cookie;
-      		$cookies_to_set_index++;
-      		$cookie = explode('=', $cookie[0]);
-      		$cookiename = trim(array_shift($cookie));
-      		$cookiearr[$cookiename] = trim(implode('=', $cookie));
-    	}
-    	$cookie = "";
-    	if(trim($string) == ""){
-      		foreach ($cookiearr as $key=>$value){
- 		       	$cookie .= "$key=$value ";
-      		}
-      		curl_setopt($ch, CURLOPT_COOKIE, $cookie);    //echo $cookie."<br>";
-    	}
-    	return $length;
-  	}
+        $length = strlen($string);
+        if(!strncmp($string, "Location:", 9)){
+          $location = trim(substr($string, 9, -1));
+        }
+        if(!strncmp($string, "Set-Cookie:", 11)){
+            header($string,false);
+            $cookiestr = trim(substr($string, 11, -1));
+            $cookie = explode(';', $cookiestr);
+            $cookies_to_set[$cookies_to_set_index] = $cookie;
+            $cookies_to_set_index++;
+            $cookie = explode('=', $cookie[0]);
+            $cookiename = trim(array_shift($cookie));
+            $cookiearr[$cookiename] = trim(implode('=', $cookie));
+        }
 
-	/*
-	* function parseURL
-  	* out[0] = full url
-  	* out[1] = scheme or '' if no scheme was found
-  	* out[2] = username or '' if no auth username was found
-  	* out[3] = password or '' if no auth password was found
-  	* out[4] = domain name or '' if no domain name was found
-  	* out[5] = port number or '' if no port number was found
-  	* out[6] = path or '' if no path was found
-  	* out[7] = query or '' if no query was found
-  	* out[8] = fragment or '' if no fragment was found
-  	*/
+        $cookie = "";
+        if(trim($string) == ""){                                                            // MODS!
+          foreach ($cookiearr as $key=>$value){
+                $cookie .= "$key=$value ";
+            }
+          curl_setopt($ch, CURLOPT_COOKIE, $cookie);    //echo $cookie."<br>";
+        }
+        return $length;
+    }
+    /*
+    * function parseURL
+    * out[0] = full url
+    * out[1] = scheme or '' if no scheme was found
+    * out[2] = username or '' if no auth username was found
+    * out[3] = password or '' if no auth password was found
+    * out[4] = domain name or '' if no domain name was found
+    * out[5] = port number or '' if no port number was found
+    * out[6] = path or '' if no path was found
+    * out[7] = query or '' if no query was found
+    * out[8] = fragment or '' if no fragment was found
+    */
 
-  	function parseUrl ($url){
-		$r  = '!(?:(\w+)://)?(?:(\w+)\:(\w+)@)?([^/:]+)?';
-      	$r .= '(?:\:(\d*))?([^#?]+)?(?:\?([^#]+))?(?:#(.+$))?!i';
-      	preg_match ( $r, $url, $out );
-      	return $out;
-  	}
+    function parseUrl ($url){
+      $r = '!(?:(\w+)://)?(?:(\w+)\:(\w+)@)?([^/:]+)?';
+      $r .= '(?:\:(\d*))?([^#?]+)?(?:\?([^#]+))?(?:#(.+$))?!i';
+        preg_match ( $r, $url, $out );
+        return $out;
+    }
 
     function parsecookies($cookielines){
-        $line=array();
+      $line=array();
         $cookies=array();
         foreach ($cookielines as $line){
             $cdata = array();
@@ -386,18 +389,19 @@ class JFusionCurl{
         }
     }
 
-	/*
-	 * function RemoteLogin
-	 * Smart function to programatically login to an JFusion integration
-	 * Will determine what to post (including, optionally, hidden form inputs) and what cookies to set.
-	 * Will then login.
-	 * In addition to username and password the function only needs an URL to a page with a loginform
-	 * and the ID of the loginform.
-	 * Including button information and hidden input posts is optionally
-	 */
+  /*
+   * function RemoteLogin
+   * Smart function to programatically login to an JFusion integration
+   * Will determine what to post (including, optionally, hidden form inputs) and what cookies to set.
+   * Will then login.
+   * In addition to username and password the function only needs an URL to a page with a loginform
+   * and the ID of the loginform.
+   * Including button information and hidden input posts is optionally
+   */
 
-    function RemoteLogin($post_url,$formid,$username,$password,$hidden=false,$buttons=false){
-        $status['error'] = '';
+    function RemoteLogin($post_url,$formid,$username,$password,$integrationtype,$relpath=false,$hidden=false,$buttons=false,$override=NULL){
+        $status=array();
+        $status['debug']='';
         global $ch;
         global $cookiearr;
         global $cookies_to_set;
@@ -405,6 +409,11 @@ class JFusionCurl{
         $tmpurl = array();
         $cookies_to_set=array();
         $cookies_to_set_index=0;
+
+        # prevent usererror by not supplying trailing backslash
+        if (!(substr($post_url,-1) == "/")) {
+            $post_url = $post_url."/";
+        }
 
         # read the login page
         $ch = curl_init();
@@ -415,27 +424,44 @@ class JFusionCurl{
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'JFusionCurl::read_header');
         $remotedata = curl_exec($ch);
-        curl_close($ch);
 
-        JFusionCurl::setmycookies($cookies_to_set);
+        if ($integrationtype ==1){
+            curl_close($ch);
+        }
         $cookies_to_set_index=0;
+        JFusionCurl::setmycookies($cookies_to_set);
 
         #find out if we have the form with the name/id specified
-        $parser =& new JFusionCurlHtmlFormParser( $remotedata);
+        $parser = new JFusionCurlHtmlFormParser( $remotedata);
         $result = $parser->parseForms();
+
         $frmcount = count($result);
         $myfrm = -1;
         $i = 0;
         do {
-        	if (($result[$i]['form_data']['name']==$formid) || ($result[$i]['form_data']['id']==$formid)) {
+          if (isset($result[$i]['form_data']['name'])){
+             if ($result[$i]['form_data']['name']==$formid){
                $myfrm = $i;
                break;
-           	}
-           	$i +=1;
+             }
+          }
+          if (isset($result[$i]['form_data']['id'])){
+             if ($result[$i]['form_data']['id']==$formid){
+               $myfrm = $i;
+               break;
+             }
+          }
+          $i +=1;
         } while ($i<$frmcount);
 
         if ($myfrm == -1) {
-            $status['error']= 'Could not find a valid Magento loginform, check plugin parameters!';
+            $i = 0;
+            $helpthem = 'I found';
+            do {
+              $helpthem = $helpthem.' -- Name='.$result[$i]['form_data']['name'].'&ID='.$result[$i]['form_data']['id'];
+              $i +=1;
+            } while ($i<$frmcount);
+            $status['error']= 'Could not find a valid loginform, check plugin parameters! '.$helpthem;              //MODS!!
             return $status;
         }
 
@@ -448,50 +474,73 @@ class JFusionCurl{
         $elements_values= array_values($result[$myfrm]['form_elements']);
         $elements_count  = count($result[$myfrm]['form_elements']);
 
+      // override keys/values from hidden inputs
+      // the $override is an array of keys/values that override existing keys/values
+
+      if ($override){
+           $overridearr = array();
+           $newhidden = array();
+           $lines = array();
+           $line=array();
+           $lines = explode(',',$override);
+           foreach ($lines as $line) {
+              $cinfo = explode ('=',$line);
+              $overridearr[$cinfo[0]][value] = $cinfo[1];
+              $overridearr[$cinfo[0]][type] = 'hidden';
+           }
+           $newhidden= array_merge($result[$myfrm]['form_elements'],$overridearr);
+           $elements_keys  = array_keys($newhidden);
+           $elements_values= array_values($newhidden);
+           $elements_count  = count($newhidden);
+      }
+
         // now construct the action parameter
         // first make it not use ssl (TO DO, cURL ssl support)
+
         $form_action = str_replace ('https://','http://',$form_action);
 
         // websites provide a full url (easy), or a relative url to the post directory. We have to add in the
         // domain if not present. We can extract the domain from the post_url passed to this function
 
-        if (strpos($form_action,'http://') === false) {
-        	// $tmpurl = parseUrl($post_url);
-        	// $form_action = 'http://'.$tmpurl[4].$form_action;
-        	$form_action = $post_url.$form_action;
+        if ((strpos($form_action,'http://') === false) && !$relpath) {
+           $tmpurl = $this->parseUrl($post_url);                       // MODS!
+           $form_action = 'http://'.$tmpurl[4].$form_action;
+          //$form_action = $post_url.$form_action;
         }
+        if ($relpath){$form_action = $post_url.$form_action;}
+        if ($username != '') { //if the username is empty we have a logout form, so just post the hidden parameters        // MODS!
 
-        // now try to find the fieldnames for the username and password entries
-        // as far as I have seen, matching user or name will do together with pass:
-        $input_username_name="";
-        for ($i = 0; $i <= $elements_count-1; $i++) {
-          if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
-          if (strpos(strtolower($elements_keys[$i]),'name')!==false){$input_username_name=$elements_keys[$i];break;}
-        }
-        if ($input_username_name==""){
-            $status['error']='Could not find a valid namefield in the login form, contact the pluginauthor, or adjust your loginform';
-            return $status;
-        }
+           // now try to find the fieldnames for the username and password entries
+           // as far as I have seen, matching user or name will do together with pass:
+             $input_username_name="";
+          for ($i = 0; $i <= $elements_count-1; $i++) {
+               if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
+                if (strpos(strtolower($elements_keys[$i]),'name')!==false){$input_username_name=$elements_keys[$i];break;}
+             }
+            if ($input_username_name==""){
+                $status['error']='Could not find a valid namefield in the login form, contact the pluginauthor, or adjust your loginform';
+                return $status;
+            }
 
-        $input_password_name="";
-        for ($i = 0; $i <= $elements_count-1; $i++) {
-          if (strpos(strtolower($elements_keys[$i]),'pass')!==false){$input_password_name=$elements_keys[$i];break;}
-        }
+            $input_password_name="";
+            for ($i = 0; $i <= $elements_count-1; $i++) {
+                if (strpos(strtolower($elements_keys[$i]),'pass')!==false){$input_password_name=$elements_keys[$i];break;}
+            }
 
-        if ($input_password_name==""){
-            $status['error']='Could not find a valid passwordfield in the login form, contact pluginauthor, or adjust your loginform';
-            return $status;
-        }
-
+            if ($input_password_name==""){
+                $status['error']='Could not find a valid passwordfield in the login form, contact pluginauthor, or adjust your loginform';
+                return $status;
+            }
+       }
         // we now set the submit parameters. These are:
         // all form_elements name=value combinations with value != '' and type hidden
         $strParameters="";
         if ($hidden) {
-           for ($i = 0; $i <= $elements_count-1; $i++) {
-                 if (($elements_values[$i] ['value'] != '')&& ($elements_values[$i] ['type'] == 'hidden')){
+             for ($i = 0; $i <= $elements_count-1; $i++) {
+              if (($elements_values[$i] ['value'] != '')&& ($elements_values[$i] ['type'] == 'hidden')){
                   $strParameters .= '&'.$elements_keys[$i].'='.urlencode($elements_values[$i] ['value']);
-                  }
-                  }
+                }
+           }
         }
 
         // have to figure out how to handle buttons exactly, seems not important anyway. leave it for now
@@ -506,15 +555,17 @@ class JFusionCurl{
         $post_params = $input_username_name."=".urlencode($username)."&".$input_password_name."=".urlencode($password);
 
         // finally submit the login form:
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+        if ($integrationtype == 1){
+             $ch = curl_init();
+             curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+             curl_setopt($ch, CURLOPT_REFERER, "");
+             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+             curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'JFusionCurl::read_header');
+        }
         curl_setopt($ch, CURLOPT_URL,$form_action);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_params.$strParameters);
-        curl_setopt($ch, CURLOPT_REFERER, "");
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'JFusionCurl::read_header');
         $remotedata = curl_exec($ch);
         curl_close($ch);
 
@@ -524,7 +575,14 @@ class JFusionCurl{
         return $status;
      }
 
-    function RemoteLogout($post_url){
+    /*
+      *   @function RemoteLogout
+      *   @returns $status
+      */
+
+  function RemoteLogout($post_url) {
+      $status=array();
+        $status['debug']='';
         global $ch;
         global $cookiearr;
         global $cookies_to_set;
@@ -532,19 +590,23 @@ class JFusionCurl{
         $tmpurl = array();
         $cookies_to_set=array();
         $cookies_to_set_index=0;
-        $status['error'] = '';
+
+        # prevent usererror by not supplying trailing backslash
+        if (!(substr($post_url,-1) == "/")) {
+            $post_url = $post_url."/";
+        }
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-        curl_setopt($ch, CURLOPT_URL,$post_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_POST, 0);
         curl_setopt($ch, CURLOPT_REFERER, "");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'JFusionCurl::read_header');
+        curl_setopt($ch, CURLOPT_URL,$post_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         $remotedata = curl_exec($ch);
         curl_close($ch);
         #we have to set the cookies now
         JFusionCurl::setmycookies($cookies_to_set);
+        $cookies_to_set_index=0;
         return $status;
-    }
-}
+     }
+  }
