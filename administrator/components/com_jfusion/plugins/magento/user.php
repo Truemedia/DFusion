@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_magento
-* @version 1.0.8-beta 004
+* @version 1.0.8-005
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion.--Henk Wevers All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -273,8 +273,10 @@ class JFusionUser_magento extends JFusionUser{
         $status['error'] = '';
         $params = JFusionFactory::getParams($this->getJname());
         $source_url = $params->get('source_url');
-        $post_url = $source_url.$params->get('logout_url');
-        $status = JFusionCurl::RemoteLogout($post_url);
+        $cookiedomain = $params->get('cookie_domain');  // MB: added
+        $cookiepath = $params->get('cookie_path');  // MB: added
+         $post_url = $source_url.$params->get('logout_url');
+        $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain='',$cookiepath='');
         return $status;
     }
 
@@ -293,8 +295,11 @@ class JFusionUser_magento extends JFusionUser{
         $status['error'] = '';
         $params = JFusionFactory::getParams($this->getJname());
         $source_url = $params->get('source_url');
+        $cookiedomain = $params->get('cookie_domain');  // MB: added
+        $cookiepath = $params->get('cookie_path');  // MB: added
         $post_url = $source_url.$params->get('login_url');
         $formid = $params->get('loginform_id');
+        $override = $params->get('override');
         $cookies = array();
         $cookie  = array();
         $status['error'] = '';
@@ -305,7 +310,7 @@ class JFusionUser_magento extends JFusionUser{
         $cookiearr = array();
         $cookies_to_set = array();
         $cookies_to_set_index = 0;
-        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->email,$userinfo->password_clear,1,false,true,true,$params->override);
+        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->email,$userinfo->password_clear,1,false,true,true,$override,$cookiedomain='',$cookiepath='');
        return $status;
     }
 
