@@ -453,7 +453,7 @@ class JFusionUser_magento extends JFusionUser{
           $password_salt = $this->getRandomString(2);
           $this->fillMagentouser($magento_user,'password_hash',md5($password_salt.$userinfo->password_clear).':'.$password_salt);
         } else {
-            $this->fillMagentouser($magento_user.'password_hash',$userinfo->password);
+            $this->fillMagentouser($magento_user,'password_hash',$userinfo->password);
         }
 /*     $this->fillMagentouser($magento_user,'prefix','');
      $this->fillMagentouser($magento_user,'suffix','');
