@@ -68,16 +68,15 @@ class JFusionUser_magento extends JFusionUser{
   function getMagentoEntityTypeID($eav_entity_code){
     static $eav_entity_types;
         if (!isset($eav_entity_types)){
-          $db = JFusionFactory::getDatabase($this->getJname());
-          $db->setQuery("SELECT entity_type_id,entity_type_code FROM #__eav_entity_type");
+          	$db = JFusionFactory::getDatabase($this->getJname());
+          	$db->setQuery("SELECT entity_type_id,entity_type_code FROM #__eav_entity_type");
         if ($db->_errorNum != 0){
-          return false;
+          	return false;
         }
-           $result =  $db->loadObjectList();
-           for ($i=0;$i< count($result); $i++) {
-
-             $eav_entity_types[$result[$i]->entity_type_code]=$result[$i]->entity_type_id;
-           }
+        $result =  $db->loadObjectList();
+        	for ($i=0;$i< count($result); $i++) {
+             	$eav_entity_types[$result[$i]->entity_type_code]=$result[$i]->entity_type_id;
+            }
         }
         return $eav_entity_types[$eav_entity_code];
   }
@@ -90,28 +89,28 @@ class JFusionUser_magento extends JFusionUser{
     */
   function getMagentoDataObjectRaw($entity_type_code){
     static $eav_attributes;
-         if (!isset($eav_attributes[$entity_type_code])){
-           // first get the entity_type_id to access the attribute table
-      $entity_type_id = $this->getMagentoEntityTypeID('customer');
-         $db = JFusionFactory::getDatabase($this->getJname());
+    if (!isset($eav_attributes[$entity_type_code])){
+       	// first get the entity_type_id to access the attribute table
+    	$entity_type_id = $this->getMagentoEntityTypeID('customer');
+       	$db = JFusionFactory::getDatabase($this->getJname());
 
-          // Get a database object
-          $db->setQuery('SELECT attribute_id, attribute_code, backend_type FROM #__eav_attribute WHERE entity_type_id ='.$entity_type_id);
-      if ($db->_errorNum != 0){
-        return false;
-      }
-           //getting the results
-           $result =  $db->loadObjectList();
-           for ($i=0;$i< count($result); $i++) {
-              $db->setQuery('SELECT attribute_id, attribute_code, backend_type FROM #__eav_attribute WHERE entity_type_id ='.$entity_type_id);
-             $eav_attributes[$entity_type_code][$i][attribute_code]=$result[$i]->attribute_code;
-             $eav_attributes[$entity_type_code][$i][attribute_id]=$result[$i]->attribute_id;
-             $eav_attributes[$entity_type_code][$i][backend_type]=$result[$i]->backend_type;
-        if ($db->_errorNum != 0){
-          return false;
-        }
-           }
-         }
+       	// Get a database object
+       	$db->setQuery('SELECT attribute_id, attribute_code, backend_type FROM #__eav_attribute WHERE entity_type_id ='.$entity_type_id);
+    	if ($db->_errorNum != 0){
+       		return false;
+    	}
+       	//getting the results
+       	$result =  $db->loadObjectList();
+       	for ($i=0;$i< count($result); $i++) {
+          	$db->setQuery('SELECT attribute_id, attribute_code, backend_type FROM #__eav_attribute WHERE entity_type_id ='.$entity_type_id);
+           	$eav_attributes[$entity_type_code][$i]['attribute_code']=$result[$i]->attribute_code;
+           	$eav_attributes[$entity_type_code][$i]['attribute_id']=$result[$i]->attribute_id;
+           	$eav_attributes[$entity_type_code][$i]['backend_type']=$result[$i]->backend_type;
+        	if ($db->_errorNum != 0){
+          		return false;
+        	}
+      	}
+    }
     return $eav_attributes[$entity_type_code];
   }
 
@@ -119,8 +118,8 @@ class JFusionUser_magento extends JFusionUser{
     $result = $this->getMagentoDataObjectRaw($entity_type_code);
     $dataObject = array();
     for ($i=0;$i< count($result); $i++) {
-      $dataObject[$result[$i][attribute_code]][attribute_id]=$result[$i][attribute_id];
-      $dataObject[$result[$i][attribute_code]][backend_type]=$result[$i][backend_type];
+      	$dataObject[$result[$i]['attribute_code']]['attribute_id']=$result[$i]['attribute_id'];
+      	$dataObject[$result[$i]['attribute_code']]['backend_type']=$result[$i]['backend_type'];
     }
     return $dataObject;
   }
@@ -129,42 +128,43 @@ class JFusionUser_magento extends JFusionUser{
     $result = array();
     $result = $this->getMagentoDataObjectRaw($entity_type_code);
     if (!$result){
-      return false;
+      	return false;
     }
+
     // walk through the array and fill the object requested
     // TODO This can be smarter by reading types at once and put the data them in the right place
     // for now I'm trying to get this working. optimising comes next
     $filled_object = array();
-       $db = JFusionFactory::getDatabase($this->getJname());
+    $db = JFusionFactory::getDatabase($this->getJname());
     for ($i=0;$i< count($result); $i++) {
-      if ($result[$i][backend_type] == 'static'){
-        $query = 'SELECT '. $result[$i][attribute_code].' FROM #__'.$entity_type_code.'_entity'.
-          ' WHERE entity_type_id ='.$entity_type_id.
-          ' AND entity_id ='. $entity_id;
-        $db->setQuery($query);
-        if ($db->_errorNum != 0){
-          return false;
-        }
-      } else {
-        $query = 'SELECT value FROM #__'.$entity_type_code.'_entity_'.$result[$i][backend_type].
-          ' WHERE entity_type_id ='.$entity_type_id.
-          ' AND attribute_id ='.$result[$i][attribute_id].
-          ' AND entity_id ='. $entity_id;
-        $db->setQuery($query);
-        if ($db->_errorNum != 0){
-          return false;
-        }
-      }
-      $filled_object[$result[$i][attribute_code]][value]=$db->loadResult();
-      $filled_object[$result[$i][attribute_code]][attribute_id]=$result[$i][attribute_id];
-      $filled_object[$result[$i][attribute_code]][backend_type]=$result[$i][backend_type];
+      	if ($result[$i]['backend_type'] == 'static'){
+        	$query = 'SELECT '. $result[$i]['attribute_code'].' FROM #__'.$entity_type_code.'_entity'.
+          	' WHERE entity_type_id ='.$entity_type_id.
+          	' AND entity_id ='. $entity_id;
+        	$db->setQuery($query);
+        	if ($db->_errorNum != 0){
+          		return false;
+        	}
+    	} else {
+      		$query = 'SELECT value FROM #__'.$entity_type_code.'_entity_'.$result[$i]['backend_type'].
+          	' WHERE entity_type_id ='.$entity_type_id.
+          	' AND attribute_id ='.$result[$i]['attribute_id'].
+          	' AND entity_id ='. $entity_id;
+        	$db->setQuery($query);
+        	if ($db->_errorNum != 0){
+          		return false;
+    		}
+      	}
+      	$filled_object[$result[$i]['attribute_code']]['value']=$db->loadResult();
+      	$filled_object[$result[$i]['attribute_code']]['attribute_id']=$result[$i]['attribute_id'];
+      	$filled_object[$result[$i]['attribute_code']]['backend_type']=$result[$i]['backend_type'];
     }
     return $filled_object;
   }
 
     function &getUser($username){
 
-     // get the user from Magento
+     	// get the user from Magento
         $db = JFusionFactory::getDatabase($this->getJname());
         $username = $this->filterUsername($username);
 
@@ -177,29 +177,29 @@ class JFusionUser_magento extends JFusionUser{
         if (!$entity) {
             return false;
         }
-    // Return a Magento customer array
-    $magento_user = $this->fillMagentoDataObject("customer",$entity,1);
-    If (!$magento_user){
-      return false;
-    }
+    	// Return a Magento customer array
+    	$magento_user = $this->fillMagentoDataObject("customer",$entity,1);
+    	If (!$magento_user){
+      		return false;
+    	}
         $instance = array();
-        $instance[userid] = $entity;
-        $instance[username] = $magento_user[email][value];
-        $name = $magento_user[firstname][value];
-        if ($magento_user[middlename][value]) {$name = $name . ' '.$magento_user[middlename][value];}
-        if ($magento_user[lastname][value]) {$name = $name . ' '.$magento_user[lastname][value];}
-        $instance[name] = $name;
-        $instance[email] = $magento_user[email][value];
-        $password = $magento_user[password_hash][value];
+        $instance['userid'] = $entity;
+        $instance['username'] = $magento_user['email']['value'];
+        $name = $magento_user['firstname']['value'];
+        if ($magento_user['middlename']['value']) {$name = $name . ' '.$magento_user['middlename']['value'];}
+        if ($magento_user['lastname']['value']) {$name = $name . ' '.$magento_user['lastname']['value'];}
+        $instance['name'] = $name;
+        $instance['email'] = $magento_user['email']['value'];
+        $password = $magento_user['password_hash']['value'];
         $hashArr = explode(':', $password);
-        $instance[password] = $hashArr[0];
-        $instance[password_salt] = $hashArr[1];
-        $instance[activation] = '';
-        if ($magento_user[confirmation][value]){$instance[activation] = $magento_user[confirmation][value]; }
-        $instance[registerDate] = $magento_user[created_at][value];
-        $instance[lastvisitDate] = $magento_user[updated_at][value];
-        if ($instance[activation]) {
-            $instance[block] = 1;
+        $instance['password'] = $hashArr[0];
+        $instance['password_salt'] = $hashArr[1];
+        $instance['activation'] = '';
+        if ($magento_user['confirmation']['value']){$instance['activation'] = $magento_user['confirmation']['value']; }
+        $instance['registerDate'] = $magento_user['created_at']['value'];
+        $instance['lastvisitDate'] = $magento_user['updated_at']['value'];
+        if ($instance['activation']) {
+            $instance['block'] = 1;
         }
         return (object) $instance;
     }
@@ -276,7 +276,7 @@ class JFusionUser_magento extends JFusionUser{
         $cookiedomain = $params->get('cookie_domain');  // MB: added
         $cookiepath = $params->get('cookie_path');  // MB: added
          $post_url = $source_url.$params->get('logout_url');
-        $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain='',$cookiepath='');
+        $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain,$cookiepath);
         return $status;
     }
 
@@ -295,8 +295,9 @@ class JFusionUser_magento extends JFusionUser{
         $status['error'] = '';
         $params = JFusionFactory::getParams($this->getJname());
         $source_url = $params->get('source_url');
-        $cookiedomain = $params->get('cookie_domain');  // MB: added
-        $cookiepath = $params->get('cookie_path');  // MB: added
+        $cookiedomain = $params->get('cookie_domain'); 
+        $cookiepath = $params->get('cookie_path');
+        $cookieexpire = $params->get('cookie_epires');
         $post_url = $source_url.$params->get('login_url');
         $formid = $params->get('loginform_id');
         $override = $params->get('override');
@@ -310,7 +311,8 @@ class JFusionUser_magento extends JFusionUser{
         $cookiearr = array();
         $cookies_to_set = array();
         $cookies_to_set_index = 0;
-        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->email,$userinfo->password_clear,1,false,true,true,$override,$cookiedomain='',$cookiepath='');
+        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->email,$userinfo->password_clear,
+        			1,false,true,true,$override,$cookiedomain,$cookiepath,$cookieexpires);
        return $status;
     }
 
@@ -416,19 +418,17 @@ class JFusionUser_magento extends JFusionUser{
    function fillMagentouser(&$Magento_user, $attribute_code,$value){
     $result= array();
      for ($i=0;$i< count($Magento_user); $i++) {
-       if($Magento_user[$i][attribute_code]==$attribute_code) {$Magento_user[$i][value]=$value;}
+       if($Magento_user[$i]['attribute_code']==$attribute_code) {$Magento_user[$i]['value']=$value;}
       }
    }
 
-    function createUser($userinfo, &$status)
-    {
-
-       //found out what usergroup should be used
+    function createUser($userinfo, &$status){
+	 	//found out what usergroup should be used
         $db = JFusionFactory::getDatabase($this->getJname());
 
         //prepare the variables
-    // first get some default stuff from Magento
-      $db->setQuery("SELECT default_group_id FROM #__core_website WHERE is_default = 1");
+    	// first get some default stuff from Magento
+      	$db->setQuery("SELECT default_group_id FROM #__core_website WHERE is_default = 1");
         $default_group_id = (int) $db->loadResult();
         $db->setQuery("SELECT default_store_id FROM #__core_store_group WHERE group_id =".$default_group_id);
         $default_store_id = (int) $db->loadResult();
@@ -436,53 +436,53 @@ class JFusionUser_magento extends JFusionUser{
         $result = $db->loadObject();
         $default_website_id = (int) $result->website_id;
         $default_created_in_store = $result->name;
-     $magento_user = $this->getMagentoDataObjectRaw('customer');
+     	$magento_user = $this->getMagentoDataObjectRaw('customer');
 
-    if ($userinfo->activation){$this->fillMagentouser($magento_user,'confirmation',$userinfo->activation);}
-     $this->fillMagentouser($magento_user,'created_in',$default_created_in_store);
-     $this->fillMagentouser($magento_user,'email',$userinfo->email);
-     $parts = explode(' ', $userinfo->name);
-     $this->fillMagentouser($magento_user,'firstname',$parts[0]);
-     $this->fillMagentouser($magento_user,'lastname',$parts[(count($parts)-1)]);
-     $middlename='';
-      for ($i=1;$i< (count($parts)-1); $i++) {
-       $middlename= $middlename.' '.$parts[$i];
-    }
-     if ($middlename) {$this->fillMagentouser($magento_user,'middlename',$middlename);}
-        if (isset($userinfo->password_clear)) {
-          $password_salt = $this->getRandomString(2);
-          $this->fillMagentouser($magento_user,'password_hash',md5($password_salt.$userinfo->password_clear).':'.$password_salt);
-        } else {
-            $this->fillMagentouser($magento_user,'password_hash',$userinfo->password);
+    	if ($userinfo->activation){$this->fillMagentouser($magento_user,'confirmation',$userinfo->activation);}
+     	$this->fillMagentouser($magento_user,'created_in',$default_created_in_store);
+     	$this->fillMagentouser($magento_user,'email',$userinfo->email);
+     	$parts = explode(' ', $userinfo->name);
+     	$this->fillMagentouser($magento_user,'firstname',$parts[0]);
+     	$this->fillMagentouser($magento_user,'lastname',$parts[(count($parts)-1)]);
+     	$middlename='';
+     	for ($i=1;$i< (count($parts)-1); $i++) {
+       		$middlename= $middlename.' '.$parts[$i];
+     	}
+     	if ($middlename) {$this->fillMagentouser($magento_user,'middlename',$middlename);}
+        	if (isset($userinfo->password_clear)) {
+          		$password_salt = $this->getRandomString(2);
+          		$this->fillMagentouser($magento_user,'password_hash',md5($password_salt.$userinfo->password_clear).':'.$password_salt);
+        	} else {
+            	$this->fillMagentouser($magento_user,'password_hash',$userinfo->password);
         }
-/*     $this->fillMagentouser($magento_user,'prefix','');
-     $this->fillMagentouser($magento_user,'suffix','');
-     $this->fillMagentouser($magento_user,'taxvat','');
-*/     $this->fillMagentouser($magento_user,'group_id',$default_group_id);
-     $this->fillMagentouser($magento_user,'store_id',$default_store_id);
-     $this->fillMagentouser($magento_user,'website_id',$default_website_id);
+/*     	$this->fillMagentouser($magento_user,'prefix','');
+     	$this->fillMagentouser($magento_user,'suffix','');
+     	$this->fillMagentouser($magento_user,'taxvat','');
+*/     	$this->fillMagentouser($magento_user,'group_id',$default_group_id);
+     	$this->fillMagentouser($magento_user,'store_id',$default_store_id);
+     	$this->fillMagentouser($magento_user,'website_id',$default_website_id);
         //now append the new user data
 
 
-    $errors = $this->update_create_Magentouser($magento_user,0);
-      if ($errors){
-          $status['error'][] = JText::_('USER_CREATION_ERROR') . $errors;
-          return;
-      }
+    	$errors = $this->update_create_Magentouser($magento_user,0);
+      	if ($errors){
+          	$status['error'][] = JText::_('USER_CREATION_ERROR') . $errors;
+          	return;
+      	}
         //return the good news
         $status['debug'][] = JText::_('USER_CREATION');
         $status['userinfo'] = $this->getUser($userinfo->email);
    }
 
-    function updatePassword($userinfo, $existinguser, $status){
-     $magento_user = $this->getMagentoDataObjectRaw('customer');
-       $password_salt = $this->getRandomString(2);
-         $this->fillMagentouser($magento_user,'password_hash',md5($password_salt.$userinfo->password_clear).':'.$password_salt);
-      $errors = $this->update_create_Magentouser($magento_user,$existinguser->userid);
+   function updatePassword($userinfo, $existinguser, $status){
+     	$magento_user = $this->getMagentoDataObjectRaw('customer');
+       	$password_salt = $this->getRandomString(2);
+        $this->fillMagentouser($magento_user,'password_hash',md5($password_salt.$userinfo->password_clear).':'.$password_salt);
+      	$errors = $this->update_create_Magentouser($magento_user,$existinguser->userid);
         if ($errors) {
             $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
         } else {
-          $status['debug'][] = JText::_('PASSWORD_UPDATE') . $existinguser->password;
+          	$status['debug'][] = JText::_('PASSWORD_UPDATE') . $existinguser->password;
         }
     }
 
@@ -491,10 +491,10 @@ class JFusionUser_magento extends JFusionUser{
     }
 
     function activateUser($userinfo, &$existinguser, &$status){
-     $magento_user = $this->getMagentoDataObjectRaw('customer');
+     	$magento_user = $this->getMagentoDataObjectRaw('customer');
        $password_salt = $this->getRandomString(2);
-         $this->fillMagentouser($magento_user,'confirmation','');
-      $errors = $this->update_create_Magentouser($magento_user,$existinguser->userid);
+       $this->fillMagentouser($magento_user,'confirmation','');
+      	$errors = $this->update_create_Magentouser($magento_user,$existinguser->userid);
         if ($errors) {
             $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
         } else {
@@ -503,19 +503,18 @@ class JFusionUser_magento extends JFusionUser{
     }
 
     function inactivateUser($userinfo, &$existinguser, &$status) {
-      $magento_user = $this->getMagentoDataObjectRaw('customer');
-       $password_salt = $this->getRandomString(2);
-         $this->fillMagentouser($magento_user,'confirmation',$userinfo->activation);
-      $errors = $this->update_create_Magentouser($magento_user,$existinguser->userid);
+      	$magento_user = $this->getMagentoDataObjectRaw('customer');
+       	$password_salt = $this->getRandomString(2);
+    	$this->fillMagentouser($magento_user,'confirmation',$userinfo->activation);
+      	$errors = $this->update_create_Magentouser($magento_user,$existinguser->userid);
         if ($errors) {
             $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
         } else {
           $status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
         }
-   }
+   	}
 
-    //TODO update username code
-   function deleteUsername($username){
+    //TODO delete username code
+   	function deleteUsername($username){
     }
-
 }
