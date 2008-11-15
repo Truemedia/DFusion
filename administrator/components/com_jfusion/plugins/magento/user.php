@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_magento
-* @version 1.0.8-005
+* @version 1.0.8-006
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion.--Henk Wevers All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -221,12 +221,12 @@ class JFusionUser_magento extends JFusionUser{
 
             if (!empty($userinfo->password_clear)) {
                 //we can update the password but first find out if we need to
-            if($existinguser->password_salt) {
-                $existingpassword = md5($existinguser->password_salt.$userinfo->password_clear);
-            } else {
-                $existingpassword = md5($userinfo->password_clear);
-            }
-               if ($existingpassword != $existinguser->password) {$this->updatePassword($userinfo, &$existinguser, &$status);}
+            	if($existinguser->password_salt) {
+                	$existingpassword = md5($existinguser->password_salt.$userinfo->password_clear);
+            	} else {
+                	$existingpassword = md5($userinfo->password_clear);
+            	}
+               	if ($existingpassword != $existinguser->password) {$this->updatePassword($userinfo, $existinguser, $status);}
             }
 
 
@@ -237,10 +237,10 @@ class JFusionUser_magento extends JFusionUser{
               if ($update_activation || $overwrite) {
                     if ($userinfo->activation) {
                       //inactiva the user
-                      $this->inactivateUser($userinfo, &$existinguser, &$status);
+                      $this->inactivateUser($userinfo, $existinguser, $status);
                     } else {
                         //activate the user
-                       $this->activateUser($userinfo, &$existinguser, &$status);
+                       $this->activateUser($userinfo, $existinguser, $status);
                     }
                 } else {
                   //return a debug to inform we skiped this step
@@ -256,12 +256,11 @@ class JFusionUser_magento extends JFusionUser{
 
         } else {
             //we need to create a new user
-            $this->createUser($userinfo, &$status);
+            $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
             return $status;
-
         }
     }
 
@@ -275,7 +274,7 @@ class JFusionUser_magento extends JFusionUser{
         $source_url = $params->get('source_url');
         $cookiedomain = $params->get('cookie_domain');  // MB: added
         $cookiepath = $params->get('cookie_path');  // MB: added
-         $post_url = $source_url.$params->get('logout_url');
+        $post_url = $source_url.$params->get('logout_url');
         $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain,$cookiepath);
         return $status;
     }
@@ -297,10 +296,14 @@ class JFusionUser_magento extends JFusionUser{
         $source_url = $params->get('source_url');
         $cookiedomain = $params->get('cookie_domain'); 
         $cookiepath = $params->get('cookie_path');
-        $cookieexpire = $params->get('cookie_epires');
+        $cookieexpires = $params->get('cookie_expires');
         $post_url = $source_url.$params->get('login_url');
         $formid = $params->get('loginform_id');
         $override = $params->get('override');
+		$hidden = true;
+		$buttons = true;
+		$integrationtype = 1;
+		$relpath=false;
         $cookies = array();
         $cookie  = array();
         $status['error'] = '';
@@ -312,7 +315,7 @@ class JFusionUser_magento extends JFusionUser{
         $cookies_to_set = array();
         $cookies_to_set_index = 0;
         $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->email,$userinfo->password_clear,
-        			1,false,true,true,$override,$cookiedomain,$cookiepath,$cookieexpires);
+        			$integrationtype,$relpath,$hidden,$buttons,$override,$cookiedomain,$cookiepath,$cookieexpires);
        return $status;
     }
 
@@ -443,7 +446,9 @@ class JFusionUser_magento extends JFusionUser{
      	$this->fillMagentouser($magento_user,'email',$userinfo->email);
      	$parts = explode(' ', $userinfo->name);
      	$this->fillMagentouser($magento_user,'firstname',$parts[0]);
-     	$this->fillMagentouser($magento_user,'lastname',$parts[(count($parts)-1)]);
+		if ($parts[(count($parts)-1)]){
+     		$this->fillMagentouser($magento_user,'lastname',$parts[(count($parts)-1)]);
+		}
      	$middlename='';
      	for ($i=1;$i< (count($parts)-1); $i++) {
        		$middlename= $middlename.' '.$parts[$i];

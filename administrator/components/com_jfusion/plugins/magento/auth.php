@@ -2,7 +2,7 @@
 
 /**
  * @package JFusion_Magento
- * @version 1.0.8- beta 002
+ * @version 1.0.8- 006
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -27,19 +27,5 @@ class JFusionAuth_magento extends JFusionAuth{
         } else {
           return md5($userinfo->password_clear);
         }
-/*
-        $hashArr = explode(':', $userinfo->password);
-        switch (count($hashArr)) {
-        case 1:
-          return md5($userinfo->password_clear);
-        case 2:
-          return md5($hashArr[1].$userinfo->password_clear.':'.$hashArr[1]);
-        default:
-            'invalid pasword';
-        }
-*/
     }
-
-
-
 }

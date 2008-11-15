@@ -2,12 +2,12 @@
 <!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
 <install type="jfusion" version="1.5.0">
   <name>magento</name>
+  <creationDate>15 November 2008</creationDate>
   <author>Henk Wevers</author>
-  <creationDate>12 November 2008</creationDate>
-  <copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
-  <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <authorEmail>admin@mijnbreincoach.nl</authorEmail>
   <authorUrl>www.mijnbreincoach.nl</authorUrl>
+  <copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
+  <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <version>1.08-006</version>
   <description>JFusion (1.08+) plugin for Magento ecommerce 1.1</description>
   <slave>0</slave>
@@ -21,38 +21,39 @@
     <filename>index.html</filename>
   </files>
   <params addpath="/administrator/components/com_jfusion/elements">
-    <param name="database_type" type="text" size="20" default="mysql"
+    <param name="database_type" type="text" size="20" label="" default="mysql"
       description="DATABASE_TYPE" />
-    <param name="database_host" type="text" size="20" default=""
+    <param name="database_host" type="text" size="20" label="" default=""
       description="DATABASE_HOST" />
-    <param name="database_name" type="text" size="20" default=""
+    <param name="database_name" type="text" size="20" label="" default=""
       description="DATABASE_NAME" />
-    <param name="database_user" type="text" size="20" default=""
+    <param name="database_user" type="text" size="20" label="" default=""
       description="DATABASE_USER" />
-    <param name="database_password" type="text" size="20" default=""
+    <param name="database_password" type="text" size="20" label="" default=""
       description="DATABASE_PASSWORD" />
+    <param name="database_prefix" type="text" size="20" label="" default=""
+      description="DATABASE_PREFIX" />
     <param name="@spacer" type="spacer" default="" label=""
       description="" />
-    <param name="database_prefix" type="text" size="20" default=""
-      description="DATABASE_PREFIX" />
-    <param name="source_url" type="text" size="100"
+    <param name="source_url" type="text" size="100" label="" 
       default="http://www.yourdomain.com/magento/" description="SOURCE_URL" />
-    <param name="source_path" type="text" size="100"
+    <param name="source_path" type="text" size="100" label="" 
       default="" description="SOURCE_PATH" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
-  <param name="cookie_domain" type="text" size="40" default=""
+  	<param name="cookie_domain" type="text" size="40" default="" label="" 
     description="COOKIE_DOMAIN" />
-  <param name="cookie_path" type="text" size="40" default=""
+  	<param name="cookie_path" type="text" size="40" default="" label="" 
     description="COOKIE_PATH" />
-  <param name="cookie_expires" type="text" size="5" default="1800"
+  	<param name="cookie_expires" type="text" size="5" default="1800" label="" 
     description="COOKIE_EXPIRES" />
-    <param name="login_url" type="text" size="100"
-      default="index.php/customer/account/login/" description="LOGIN_URL" />
-    <param name="loginform_id" type="text" size="100"
-      default="login-form" description="LOGINFORM_ID" />
-    <param name="override" type="text" size="100"
+    <param name="override" type="text" size="100" label="" 
       default="login[indirect]=no" description="COOKIE_OVERRIDE" />
-   <param name="logout_url" type="text" size="100"
+    <param name="@spacer" type="spacer" default="" label="" description="" />
+    <param name="login_url" type="text" size="100" label="" 
+      default="index.php/customer/account/login/" description="LOGIN_URL" />
+    <param name="loginform_id" type="text" size="100" label="" 
+      default="login-form" description="LOGINFORM_ID" />
+   <param name="logout_url" type="text" size="100" label="" 
       default="" description="LOGOUT_URL" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
     <param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP (not used)" />
