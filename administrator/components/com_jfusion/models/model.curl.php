@@ -427,8 +427,7 @@ class JFusionCurl{
    * Including button information and hidden input posts is optionally
    */
 
-    function RemoteLogin($post_url,$formid,$username,$password,$integrationtype,$relpath=false,
-    						$hidden=false,$buttons=false,$override=NULL,$cookiedomain='',$cookiepath='',$expires=1800){
+    function RemoteLogin($post_url,$formid,$username,$password,$integrationtype,$relpath=false,$hidden=false,$buttons=false,$override=NULL,$cookiedomain='',$cookiepath='',$expires=1800){
         $status=array();
         $status['debug']='';
         global $ch;
