@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install version="1.5" type="module">
+<install version="1.5" type="module" method="upgrade">
 	<name>JFusion Activity Module</name>
 	<author>JFusion Development Team</author>
 	<creationDate>June 2008</creationDate>
@@ -37,8 +37,8 @@
 			<option value="direct">LINK_MODE_1</option>
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
-		
-		<param name="frameless_limits" type="helptext" default="FRAMELESS_LIMITS" />		
+
+		<param name="frameless_limits" type="helptext" default="FRAMELESS_LIMITS" />
 
 		<param name="WRAPPER_OPTIONS" type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
 			description="" />

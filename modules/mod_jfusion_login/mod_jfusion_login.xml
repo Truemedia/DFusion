@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install type="module" version="1.5">
+<install type="module" version="1.5" method="upgrade">
 	<name>JFusion Login Module</name>
 	<author>JFusion Development Team</author>
 	<creationDate>June 2008</creationDate>

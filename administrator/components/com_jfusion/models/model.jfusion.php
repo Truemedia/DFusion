@@ -113,9 +113,9 @@ class JFusionFunction{
 
     function saveParameters($jname, $post)
     {
-
+        $mergedpost = array_merge((array) JFusionFunction::getparameters($jname)->_registry[_default][data],$post);  //HJW 15-11-08
         //serialize the $post to allow storage in a SQL field
-        $serialized = base64_encode(serialize($post));
+        $serialized = base64_encode(serialize($mergedpost));
 
         //set the current parameters in the jfusion table
         $db = & JFactory::getDBO();

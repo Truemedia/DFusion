@@ -75,10 +75,13 @@
 * @return boolean True on success
 * @since 1.5
 */
-        function onLoginUser($user, $options = array())
+        function onLoginUser($user, &$options)
         {
 			//prevent any output by the plugins (this could prevent cookies from being passed to the header)
 			ob_start();
+
+			//suppress the standard Joomla error on failure
+			$options['silent'] = true;
 
             jimport('joomla.user.helper');
 			global $JFusionActive;
@@ -291,9 +294,11 @@
                 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
                 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 
-                //get the Joomla user details
-                $JFusionJoomla = JFusionFactory::getUser('joomla_int');
-                $JoomlaUser = $JFusionJoomla->getUser($user['username']);
+                //convert the user array into a user object
+                $JoomlaUser = new stdClass();
+                foreach ($user as $key => $value) {
+                	$JoomlaUser->$key = $value;
+                }
 
 	            //check to see if we need to update the master
     	        $master = JFusionFunction::getMaster();

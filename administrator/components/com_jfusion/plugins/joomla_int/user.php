@@ -148,10 +148,22 @@ class JFusionUser_joomla_int extends JFusionUser{
     {
         //get database object
         $db =& JFactory::getDBO();
+        $params = JFusionFactory::getParams($this->getJname());
         $username = $this->filterUsername($username);
 
+		if ($params->allow_email_login){
+			if(strpos($username, '@')) {
+		        $identifier = 'b.username';
+			} else {
+	        	$identifier = 'b.email';
+			}
+		} else {
+		        $identifier = 'b.username';
+		}
+
+
         //first check the JFusion user table
-        $db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE b.username=' . $db->quote($username));
+        $db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier . '=' . $db->quote($username));
         $result = $db->loadObject();
 
         if (!$result) {

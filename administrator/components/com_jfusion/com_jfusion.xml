@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
-<install type="component" version="1.5">
+<install type="component" version="1.5" method="upgrade">
 	<name>jfusion</name>
 	<creationDate>July 2008</creationDate>
 	<author>JFusion Development Team</author>
@@ -13,19 +13,13 @@
 		This is the JFusion component, used to configure the JFusion behaviour.
 		Please ONLY install the JFusion user and authentication plugin after the JFusion component has been fully configured.
 	</description>
-
-    <params addpath="/administrator/components/com_jfusion/elements">
-		<param name="JFusionPlugin" type="JFusionPlugins" default=""
-			description="PLUGIN_PARAM" />
-
-    </params>
-
+	<installfile>jfusion.install.php</installfile>
+ 	<uninstallfile>jfusion.uninstall.php</uninstallfile>
 	<install>
 		<sql>
 			<file driver="mysql" charset="utf8">sql/install.jfusion.sql</file>
 		</sql>
 	</install>
-
 	<uninstall>
 		<sql>
 			<file driver="mysql" charset="utf8">sql/uninstall.jfusion.sql</file>
@@ -73,10 +67,11 @@
 			<filename>index.html</filename>
 			<filename>admin.jfusion.php</filename>
 			<filename>config.xml</filename>
-
+			<filename>jfusion.install.php</filename>
+			<filename>jfusion.uninstall.php</filename>
 			<filename>controllers/controller.jfusion.php</filename>
 			<filename>controllers/index.html</filename>
-
+    		<folder>packages</folder>
     		<folder>images</folder>
     		<folder>js</folder>
     		<folder>css</folder>

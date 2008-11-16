@@ -46,6 +46,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 
 	<input type="hidden" name="option" value="com_user" />
 	<input type="hidden" name="task" value="logout" />
+	<input type="hidden" name="silent" value="true" />
 	<input type="hidden" name="return" value="<?php echo $return; ?>" />
 </form>
 <?php else : ?>
@@ -99,6 +100,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 
 	<input type="hidden" name="option" value="com_user" />
 	<input type="hidden" name="task" value="login" />
+	<input type="hidden" name="silent" value="true" />
 	<input type="hidden" name="return" value="<?php echo $return; ?>" />
     <?php echo JHTML::_( 'form.token' ); ?>
 </form>
