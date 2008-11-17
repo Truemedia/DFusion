@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8-006
+* @version 1.0.8-007
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -262,25 +262,21 @@ ORDER BY left_id';
         $db->setQuery($query );
         return $db->loadResult();
     }
-/*
+
     function allowRegistration()
     {
-
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = "SELECT config_value FROM #__config WHERE config_name = 'require_activation'";
+        $query = "SELECT value FROM #__config WHERE name = 'auth'";
         $db->setQuery($query );
-        //getting the results
-
-        $new_registration = $db->loadResult();
-
-        if ($new_registration == 3) {
+        $auths = $db->loadResult();
+        if (empty($auths)) {
             return false;
         } else {
             return true;
         }
     }
 
-*/
+
 
 /*
     function & getBuffer()
