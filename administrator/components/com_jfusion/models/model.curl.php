@@ -3,7 +3,7 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.0.8.006
+ * @version 1.0.8.007
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion -- Henk Wevers. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -543,6 +543,7 @@ class JFusionCurl{
         for ($i = 0; $i <= $elements_count-1; $i++) {
         	if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
                 if (strpos(strtolower($elements_keys[$i]),'name')!==false){$input_username_name=$elements_keys[$i];break;}
+                	if (strpos(strtolower($elements_keys[$i]),'email')!==false){$input_username_name=$elements_keys[$i];break;}	
             }
             if ($input_username_name==""){
                 $status['error']='Could not find a valid namefield in the login form, contact the pluginauthor, or adjust your loginform';
