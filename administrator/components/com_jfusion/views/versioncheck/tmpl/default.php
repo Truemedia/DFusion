@@ -209,6 +209,16 @@ foreach ($plugins as $plugin) {
 }
 
 echo '</table>';
+?>
 
+<form enctype="multipart/form-data" action="index.php" method="post" name="adminForm">
+	<input type="submit" value="<?php echo JText::_( 'UPGRADE_JFUSION' ); ?>"/>
+	<input type="hidden" name="install_url" value="http://www.jfusion.org/jfusion_latest_package.zip" />
+	<input type="hidden" name="type" value="" />
+	<input type="hidden" name="installtype" value="url" />
+	<input type="hidden" name="task" value="doInstall" />
+	<input type="hidden" name="option" value="com_installer" />
+	<?php echo JHTML::_( 'form.token' ); ?>
+</form>
 
 

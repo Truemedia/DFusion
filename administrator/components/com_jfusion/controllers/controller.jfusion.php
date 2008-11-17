@@ -279,29 +279,16 @@ class JFusionController extends JController
 */
     function syncresume()
     {
-
     	$syncid = JRequest::getVar('syncid', '', 'GET');
-
 		if ($syncid) {
 			/**
 			* 	Load usersync library
 			*/
 			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
-
 			$syncdata = JFusionUsersync::getSyncdata($syncid);
-
-			if ($syncdata['action'] == 'master'){
-        		JFusionUsersync::SyncMaster($syncdata,$syncdata['plugin_offset'],$syncdata['user_offset']);
-        	} elseif ($syncdata['action'] == 'slave') {
-        		JFusionUsersync::SyncSlave($syncdata,$syncdata['plugin_offset'],$syncdata['user_offset']);
-        	}
-
-		}
-
-
-
-
-
+		    //start the usersync
+       	    JFusionUsersync::SyncExecute($syncdata,$syncdata['action'],$syncdata['plugin_offset'],$syncdata['user_offset']);
+       	}
     }
 
     /**

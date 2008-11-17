@@ -206,6 +206,10 @@ class JFusionUser_joomla_int extends JFusionUser{
                 $result->password_salt = $parts[1];
                 $result->password = $parts[0];
             }
+            //unset the activation status if not blocked
+            if($result->block == 0){
+            	$result->activation = '';
+            }
         }
         return $result;
     }
