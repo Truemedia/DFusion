@@ -3,7 +3,7 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.0.8.007
+ * @version 1.0.8.008
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion -- Henk Wevers. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -427,7 +427,8 @@ class JFusionCurl{
    * Including button information and hidden input posts is optionally
    */
 
-    function RemoteLogin($post_url,$formid,$username,$password,$integrationtype,$relpath=false,$hidden=false,$buttons=false,$override=NULL,$cookiedomain='',$cookiepath='',$expires=1800){
+    function RemoteLogin($post_url,$formid,$username,$password,$integrationtype,$relpath=false,$hidden=false,$buttons=false,
+    					$override=NULL,$cookiedomain='',$cookiepath='',$expires=1800,$input_username_id='',$input_password_id=''){
         $status=array();
         $status['debug']='';
         global $ch;
@@ -535,31 +536,38 @@ class JFusionCurl{
           //$form_action = $post_url.$form_action;
         }
         if ($relpath){$form_action = $post_url.$form_action;}
-        if ($username != '') { //if the username is empty we have a logout form, so just post the hidden parameters    
-
         // now try to find the fieldnames for the username and password entries
         // as far as I have seen, matching user or name will do together with pass:
         $input_username_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
         	if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
                 if (strpos(strtolower($elements_keys[$i]),'name')!==false){$input_username_name=$elements_keys[$i];break;}
-                	if (strpos(strtolower($elements_keys[$i]),'email')!==false){$input_username_name=$elements_keys[$i];break;}	
-            }
-            if ($input_username_name==""){
-                $status['error']='Could not find a valid namefield in the login form, contact the pluginauthor, or adjust your loginform';
-                return $status;
-            }
-
-            $input_password_name="";
-            for ($i = 0; $i <= $elements_count-1; $i++) {
-                if (strpos(strtolower($elements_keys[$i]),'pass')!==false){$input_password_name=$elements_keys[$i];break;}
-            }
-
-            if ($input_password_name==""){
-                $status['error']='Could not find a valid passwordfield in the login form, contact pluginauthor, or adjust your loginform';
-                return $status;
-            }
+ 					if ($input_username_id) {
+ 							if (strpos(strtolower($elements_keys[$i]),strtolower($input_username_id))!==false){
+ 								$input_username_name=$elements_keys[$i];break;
+ 							}
+ 					}			
         }
+        if ($input_username_name==""){
+            $status['error']='Could not find a valid namefield in the login form, contact the pluginauthor, or adjust your loginform';
+            return $status;
+        }
+
+        $input_password_name="";
+        for ($i = 0; $i <= $elements_count-1; $i++) {
+            if (strpos(strtolower($elements_keys[$i]),'pass')!==false){$input_password_name=$elements_keys[$i];break;}
+				if ($input_password_id) {
+ 					if (strpos(strtolower($elements_keys[$i]),strtolower($input_password_id))!==false){
+ 						$input_password_name=$elements_keys[$i];break;
+ 					}
+ 				}			
+        }
+
+        if ($input_password_name==""){
+            $status['error']='Could not find a valid passwordfield in the login form, contact pluginauthor, or adjust your loginform';
+            return $status;
+        }
+
         // we now set the submit parameters. These are:
         // all form_elements name=value combinations with value != '' and type hidden
         $strParameters="";
