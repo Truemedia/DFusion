@@ -307,7 +307,7 @@ class JFusionUser_moodle extends JFusionUser{
 			if ($params->get('passwordsaltmain')){
 				$user->password = md5($userinfo->password_clear.$params->get('passwordsaltmain'));	
 		 	} else {
-				$user->password == md5($userinfo->password_clear);	
+				$user->password = md5($userinfo->password_clear);	
 			}
        	} else {
             $user->password = $userinfo->password;
