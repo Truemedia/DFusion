@@ -58,23 +58,23 @@ class JFusionCurlHtmlFormParser {
 
                 #form details
                 preg_match("/<form.*name=[\"']?([\w\s-]*)[\"']?[\s>]/i", $form, $form_name);
-        		if ($form_name) {$this->_return[$this->_counter]['form_data']['name'] = preg_replace("/[\"'<>]/", "", $form_name[1]);}
+            if ($form_name) {$this->_return[$this->_counter]['form_data']['name'] = preg_replace("/[\"'<>]/", "", $form_name[1]);}
                 preg_match("/<form.*action=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $form, $action);
-        		if ($action) {$this->_return[$this->_counter]['form_data']['action'] = preg_replace("/[\"'<>]/", "", $action[1]);}
+            if ($action) {$this->_return[$this->_counter]['form_data']['action'] = preg_replace("/[\"'<>]/", "", $action[1]);}
                 preg_match("/<form.*method=[\"']?([\w\s]*)[\"']?[\s>]/i", $form, $method);
-        		if ($method) {$this->_return[$this->_counter]['form_data']['method'] = preg_replace("/[\"'<>]/", "", $method[1]);}
+            if ($method) {$this->_return[$this->_counter]['form_data']['method'] = preg_replace("/[\"'<>]/", "", $method[1]);}
                 preg_match("/<form.*enctype=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $form, $enctype);
-        		if ($enctype) {$this->_return[$this->_counter]['form_data']['enctype'] = preg_replace("/[\"'<>]/", "", $enctype[1]);}
+            if ($enctype) {$this->_return[$this->_counter]['form_data']['enctype'] = preg_replace("/[\"'<>]/", "", $enctype[1]);}
                 preg_match("/<form.*id=[\"']?([\w\s-]*)[\"']?[\s>]/i", $form, $id);
-        		if ($id) {$this->_return[$this->_counter]['form_data']['id'] = preg_replace("/[\"'<>]/", "", $id[1]);}
+            if ($id) {$this->_return[$this->_counter]['form_data']['id'] = preg_replace("/[\"'<>]/", "", $id[1]);}
 
                 # form elements: input type = hidden
-                if ( preg_match_all("/<input.*type=[\"']?hidden[\"']?.*>/iU", $form, $hiddens) ) { 
+                if ( preg_match_all("/<input.*type=[\"']?hidden[\"']?.*>/iU", $form, $hiddens) ) {
                     foreach ( $hiddens[0] as $hidden ) {
-                        $this->_return[$this->_counter]['form_elements'][$this->_getName($hidden)] = 
-                        			array(
-				                      	'type' => 'hidden',
-                                    	'value'=> $this->_getValue($hidden)
+                        $this->_return[$this->_counter]['form_elements'][$this->_getName($hidden)] =
+                              array(
+                                'type' => 'hidden',
+                                      'value'=> $this->_getValue($hidden)
                                     );
                     }
                 }
@@ -82,9 +82,9 @@ class JFusionCurlHtmlFormParser {
                 # form elements: input type = text
                 if ( preg_match_all("/<input.*type=[\"']?text[\"']?.*>/iU", $form, $texts) ) {
                     foreach ( $texts[0] as $text ) {
-                        $this->_return[$this->_counter]['form_elements'][$this->_getName($text)] = 
-                        			array(
-                                     	'type'    => 'text',
+                        $this->_return[$this->_counter]['form_elements'][$this->_getName($text)] =
+                              array(
+                                       'type'    => 'text',
                                         'value'   => $this->_getValue($text),
                                         'id'      => $this->_getId($text),
                                         'class'   => $this->_getClass($text)
@@ -95,9 +95,9 @@ class JFusionCurlHtmlFormParser {
                 # form elements: input type = password
                 if ( preg_match_all("/<input.*type=[\"']?password[\"']?.*>/iU", $form, $passwords) ) {
                     foreach ( $passwords[0] as $password ) {
-                        $this->_return[$this->_counter]['form_elements'][$this->_getName($password)] = 
-                        			array(
-                                    	'type'    => 'password',
+                        $this->_return[$this->_counter]['form_elements'][$this->_getName($password)] =
+                              array(
+                                      'type'    => 'password',
                                         'value'   => $this->_getValue($password)
                                     );
                     }
@@ -107,9 +107,9 @@ class JFusionCurlHtmlFormParser {
                 if ( preg_match_all("/<textarea.*>.*<\/textarea>/isU", $form, $textareas) ) {
                     foreach ( $textareas[0] as $textarea ) {
                         preg_match("/<textarea.*>(.*)<\/textarea>/isU", $textarea, $textarea_value);
-                        $this->_return[$this->_counter]['form_elements'][$this->_getName($textarea)] = 
-                        			array(
-                                    	'type'    => 'textarea',
+                        $this->_return[$this->_counter]['form_elements'][$this->_getName($textarea)] =
+                              array(
+                                      'type'    => 'textarea',
                                         'value'   => $textarea_value[1]
                                     );
                     }
@@ -119,15 +119,15 @@ class JFusionCurlHtmlFormParser {
                 if ( preg_match_all("/<input.*type=[\"']?checkbox[\"']?.*>/iU", $form, $checkboxes) ) {
                     foreach ( $checkboxes[0] as $checkbox ) {
                         if ( preg_match("/checked/i", $checkbox) ) {
-                            $this->_return[$this->_counter]['form_elements'][$this->_getName($checkbox)] = 
-                            		array(
-                                    	'type'    => 'checkbox',
+                            $this->_return[$this->_counter]['form_elements'][$this->_getName($checkbox)] =
+                                array(
+                                      'type'    => 'checkbox',
                                         'value'   => 'on'
                                     );
                         } else {
-                            $this->_return[$this->_counter]['form_elements'][$this->_getName($checkbox)] = 
-                            		array(
-                                    	'type'    => 'checkbox',
+                            $this->_return[$this->_counter]['form_elements'][$this->_getName($checkbox)] =
+                                array(
+                                      'type'    => 'checkbox',
                                         'value'   => ''
                                     );
                         }
@@ -138,9 +138,9 @@ class JFusionCurlHtmlFormParser {
                 if ( preg_match_all("/<input.*type=[\"']?radio[\"']?.*>/iU", $form, $radios) ) {
                     foreach ( $radios[0] as $radio ) {
                         if ( preg_match("/checked/i", $radio) ) {
-                            $this->_return[$this->_counter]['form_elements'][$this->_getName($radio)] = 
-                            		array(
-                                    	'type'    => 'radio',
+                            $this->_return[$this->_counter]['form_elements'][$this->_getName($radio)] =
+                                array(
+                                      'type'    => 'radio',
                                         'value'   => $this->_getValue($radio)
                                     );
                         }
@@ -150,9 +150,9 @@ class JFusionCurlHtmlFormParser {
                  # form elements: input type = submit
                 if ( preg_match_all("/<input.*type=[\"']?submit[\"']?.*>/iU", $form, $submits) ) {
                     foreach ( $submits[0] as $submit ) {
-                        $this->_return[$this->_counter]['buttons'][$this->button_counter] = 
-                        			array(
-                                    	'type'    => 'submit',
+                        $this->_return[$this->_counter]['buttons'][$this->button_counter] =
+                              array(
+                                      'type'    => 'submit',
                                         'name'    => $this->_getName($submit),
                                         'value'   => $this->_getValue($submit)
                                     );
@@ -163,9 +163,9 @@ class JFusionCurlHtmlFormParser {
                 # form elements: input type = button
                 if ( preg_match_all("/<input.*type=[\"']?button[\"']?.*>/iU", $form, $buttons) ) {
                     foreach ( $buttons[0] as $button ) {
-                        $this->_return[$this->_counter]['buttons'][$this->button_counter] = 
-                        			array(
-                                    	'type'    => 'button',
+                        $this->_return[$this->_counter]['buttons'][$this->button_counter] =
+                              array(
+                                      'type'    => 'button',
                                         'name'    => $this->_getName($button),
                                         'value'   => $this->_getValue($button)
                                     );
@@ -176,9 +176,9 @@ class JFusionCurlHtmlFormParser {
                 # form elements: input type = reset
                 if ( preg_match_all("/<input.*type=[\"']?reset[\"']?.*>/iU", $form, $resets) ) {
                     foreach ( $resets[0] as $reset ) {
-                        $this->_return[$this->_counter]['buttons'][$this->button_counter] = 
-                        			array(
-                                    	'type'    => 'reset',
+                        $this->_return[$this->_counter]['buttons'][$this->button_counter] =
+                              array(
+                                      'type'    => 'reset',
                                         'name'    => $this->_getName($reset),
                                         'value'   => $this->_getValue($reset)
                                     );
@@ -189,9 +189,9 @@ class JFusionCurlHtmlFormParser {
                 # form elements: input type = image
                 if ( preg_match_all("/<input.*type=[\"']?image[\"']?.*>/iU", $form, $images) ) {
                     foreach ( $images[0] as $image ) {
-                        $this->_return[$this->_counter]['buttons'][$this->button_counter] = 
-                        			array(
-                                    	'type'    => 'reset',
+                        $this->_return[$this->_counter]['buttons'][$this->button_counter] =
+                              array(
+                                      'type'    => 'reset',
                                         'name'    => $this->_getName($image),
                                         'value'   => $this->_getValue($image)
                                     );
@@ -227,9 +227,9 @@ class JFusionCurlHtmlFormParser {
                             } else {
                                 unset($found_selected);
                             }
-                            $this->_return[$this->_counter]['form_elements'][$this->_getName($select)] = 
-                            			array(
-                                        	'type'    => 'select',
+                            $this->_return[$this->_counter]['form_elements'][$this->_getName($select)] =
+                                  array(
+                                          'type'    => 'select',
                                             'value'   => trim($option_value)
                                         );
                         }
@@ -428,7 +428,7 @@ class JFusionCurl{
    */
 
     function RemoteLogin($post_url,$formid,$username,$password,$integrationtype,$relpath=false,$hidden=false,$buttons=false,
-    					$override=NULL,$cookiedomain='',$cookiepath='',$expires=1800,$input_username_id='',$input_password_id=''){
+              $override=NULL,$cookiedomain='',$cookiepath='',$expires=1800,$input_username_id='',$input_password_id=''){
         $status=array();
         $status['debug']='';
         global $ch;
@@ -502,10 +502,10 @@ class JFusionCurl{
         $elements_values= array_values($result[$myfrm]['form_elements']);
         $elements_count  = count($result[$myfrm]['form_elements']);
 
-      	// override keys/values from hidden inputs
-      	// the $override is an array of keys/values that override existing keys/values
+        // override keys/values from hidden inputs
+        // the $override is an array of keys/values that override existing keys/values
 
-      	if ($override){
+        if ($override){
            $overridearr = array();
            $newhidden = array();
            $lines = array();
@@ -520,18 +520,18 @@ class JFusionCurl{
            $elements_keys  = array_keys($newhidden);
            $elements_values= array_values($newhidden);
            $elements_count  = count($newhidden);
-      	}
+        }
 
-      	// now construct the action parameter
-      	// first make it not use ssl (TO DO, cURL ssl support)
+        // now construct the action parameter
+        // first make it not use ssl (TO DO, cURL ssl support)
 
-      	$form_action = str_replace ('https://','http://',$form_action);
+        $form_action = str_replace ('https://','http://',$form_action);
 
-      	// websites provide a full url (easy), or a relative url to the post directory. We have to add in the
+        // websites provide a full url (easy), or a relative url to the post directory. We have to add in the
         // domain if not present. We can extract the domain from the post_url passed to this function
 
         if ((strpos($form_action,'http://') === false) && !$relpath) {
-           $tmpurl = JFusionCurlparseUrl($post_url); 
+           $tmpurl = JFusionCurlparseUrl($post_url);
            $form_action = 'http://'.$tmpurl[4].$form_action;
           //$form_action = $post_url.$form_action;
         }
@@ -540,13 +540,13 @@ class JFusionCurl{
         // as far as I have seen, matching user or name will do together with pass:
         $input_username_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
-        	if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
+          if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
                 if (strpos(strtolower($elements_keys[$i]),'name')!==false){$input_username_name=$elements_keys[$i];break;}
- 					if ($input_username_id) {
- 							if (strpos(strtolower($elements_keys[$i]),strtolower($input_username_id))!==false){
- 								$input_username_name=$elements_keys[$i];break;
- 							}
- 					}			
+           if ($input_username_id) {
+               if (strpos(strtolower($elements_keys[$i]),strtolower($input_username_id))!==false){
+                 $input_username_name=$elements_keys[$i];break;
+               }
+           }
         }
         if ($input_username_name==""){
             $status['error']='Could not find a valid namefield in the login form, contact the pluginauthor, or adjust your loginform';
@@ -556,11 +556,11 @@ class JFusionCurl{
         $input_password_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
             if (strpos(strtolower($elements_keys[$i]),'pass')!==false){$input_password_name=$elements_keys[$i];break;}
-				if ($input_password_id) {
- 					if (strpos(strtolower($elements_keys[$i]),strtolower($input_password_id))!==false){
- 						$input_password_name=$elements_keys[$i];break;
- 					}
- 				}			
+        if ($input_password_id) {
+           if (strpos(strtolower($elements_keys[$i]),strtolower($input_password_id))!==false){
+             $input_password_name=$elements_keys[$i];break;
+           }
+         }
         }
 
         if ($input_password_name==""){
@@ -573,8 +573,8 @@ class JFusionCurl{
         $strParameters="";
         if ($hidden) {
              for ($i = 0; $i <= $elements_count-1; $i++) {
-             	if (($elements_values[$i] ['value'] != '')&& ($elements_values[$i] ['type'] == 'hidden')){
-                	$strParameters .= '&'.$elements_keys[$i].'='.urlencode($elements_values[$i] ['value']);
+               if (($elements_values[$i] ['value'] != '')&& ($elements_values[$i] ['type'] == 'hidden')){
+                  $strParameters .= '&'.$elements_keys[$i].'='.urlencode($elements_values[$i] ['value']);
                 }
            }
         }
@@ -583,7 +583,7 @@ class JFusionCurl{
         if ($buttons){
              if (isset($result[$myfrm] ['buttons'][0]['type'])) {
                  if ($result[$myfrm] ['buttons'][0]['type'] =='submit'){
-                   	$strParameters .= '&'.'submit'.'='.urlencode($result[$myfrm] ['buttons'][0]['value']);
+                     $strParameters .= '&'.'submit'.'='.urlencode($result[$myfrm] ['buttons'][0]['value']);
                  }
              }
         }
