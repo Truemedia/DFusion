@@ -15,16 +15,6 @@
 	</description>
 	<installfile>jfusion.install.php</installfile>
  	<uninstallfile>jfusion.uninstall.php</uninstallfile>
-	<install>
-		<sql>
-			<file driver="mysql" charset="utf8">sql/install.jfusion.sql</file>
-		</sql>
-	</install>
-	<uninstall>
-		<sql>
-			<file driver="mysql" charset="utf8">sql/uninstall.jfusion.sql</file>
-		</sql>
-	</uninstall>
 
 	<files folder="components/com_jfusion">
 		<filename>index.html</filename>

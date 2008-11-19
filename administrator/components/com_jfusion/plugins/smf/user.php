@@ -43,7 +43,7 @@ class JFusionUser_smf extends JFusionUser{
             //a matching user has been found
             if ($existinguser->email != $userinfo->email) {
             	if ($update_email || $overwrite) {
-                	$this->updateEmail($userinfo, &$existinguser, &$status);
+                	$this->updateEmail($userinfo, $existinguser, $status);
             	} else {
             		//return a debug to inform we skiped this step
             		$status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
@@ -60,10 +60,10 @@ class JFusionUser_smf extends JFusionUser{
             	if ($update_block || $overwrite) {
 	                if ($userinfo->block) {
     	                //block the user
-        	            $this->blockUser($userinfo, &$existinguser, &$status);
+        	            $this->blockUser($userinfo, $existinguser, $status);
             	    } else {
                 	    //unblock the user
-                    	$this->unblockUser($userinfo, &$existinguser, &$status);
+                    	$this->unblockUser($userinfo, $existinguser, $status);
                 	}
             	} else {
             		//return a debug to inform we skiped this step
@@ -76,10 +76,10 @@ class JFusionUser_smf extends JFusionUser{
             	if ($update_activation || $overwrite) {
 	                if ($userinfo->activation) {
     	                //inactiva the user
-        	            $this->inactivateUser($userinfo, &$existinguser, &$status);
+        	            $this->inactivateUser($userinfo, $existinguser, $status);
             	    } else {
                 	    //activate the user
-	                    $this->activateUser($userinfo, &$existinguser, &$status);
+	                    $this->activateUser($userinfo, $existinguser, $status);
     	            }
             	} else {
             		//return a debug to inform we skiped this step
@@ -95,7 +95,7 @@ class JFusionUser_smf extends JFusionUser{
 
         } else {
             //we need to create a new user
-            $this->createUser($userinfo, &$status);
+            $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
