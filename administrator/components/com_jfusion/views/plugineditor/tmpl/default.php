@@ -42,9 +42,9 @@ return;
 <?php echo $this->toolbar; ?>
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'editor.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/editor.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('PLUGIN_EDITOR'); ?></h2></td></tr></table><br/>
 
 <?php echo $this->parameters; ?>

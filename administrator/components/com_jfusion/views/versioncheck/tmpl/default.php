@@ -221,7 +221,7 @@ if($up2date){
 	//output the good news?>
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'usersync.png'; ?>" height="75px" width="75px">
+<img src="<?php echo 'components/com_jfusion/images/usersync.png'; ?>" height="75px" width="75px">
 <td><h2><? echo JText::_('USERSYNC'); ?></h2></td></tr></table><br/><br/>
 <?php
 } else {

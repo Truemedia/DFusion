@@ -123,14 +123,14 @@ if ($plugin_user && $plugin_auth){
 
 ?>
 <table bgcolor="#d9f9e2" width ="100%"><tr><td width="50px"><td>
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'check_good.png'; ?>" height="30px" width="30px">
-<td><h2><? echo JText::_('PLUGINS_ENABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=disableplugins"><?php echo JText::_('PLUGINS_DISABLE');?></a></td></tr></table>
+<img src="<?php echo 'components/com_jfusion/images/check_good.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('PLUGINS_ENABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=disableplugins" onCLick="return confirm('<?php echo JText::_('PLUGINS_DISABLE_CONFIRM');?>')"><?php echo JText::_('PLUGINS_DISABLE');?></a></td></tr></table>
 <?php
 } else {
 ?>
 <table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
-<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'check_bad.png'; ?>" height="30px" width="30px">
-<td><h2><? echo JText::_('PLUGINS_DISABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=enableplugins"><?php echo JText::_('PLUGINS_ENABLE');?></a></td></tr></table>
+<img src="<?php echo 'components/com_jfusion/images/check_bad.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('PLUGINS_DISABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=enableplugins" onCLick="return confirm('<?php echo JText::_('PLUGINS_ENABLE_CONFIRM');?>')"><?php echo JText::_('PLUGINS_ENABLE');?></a></td></tr></table>
 <?php
 }
 
