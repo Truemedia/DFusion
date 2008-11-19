@@ -34,7 +34,6 @@ defined('_JEXEC') or die('Restricted access'); ?>
 <?php endif; ?>
 <form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" name="login" id="form-login" >
 	<?php echo $params->get('pretext'); ?>
-	<fieldset class="input">
 	<p id="form-login-username">
 		<label for="modlgn_username"><?php echo JText::_('USERNAME') ?></label><br />
 		<input id="modlgn_username" type="text" name="username" class="inputbox" alt="username" size="18" />
@@ -50,7 +49,6 @@ defined('_JEXEC') or die('Restricted access'); ?>
 	</p>
 	<?php endif; ?>
 	<input type="submit" name="Submit" class="button" value="<?php echo JText::_('BUTTON_LOGIN') ?>" />
-	</fieldset>
 	<ul>
         <?php if($params->get('show_lostpass')) : ?>
 		<li>

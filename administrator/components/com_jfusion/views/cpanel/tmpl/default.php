@@ -29,8 +29,8 @@ JFusionFunction::displayDonate();
 	display: block;
 	float: left;
 	border: 1px solid #f0f0f0;
-	height: 147px;
-	width: 150px;
+	height: 97px;
+	width: 100px;
 	color: #666;
 	vertical-align: middle;
 	text-decoration: none;
@@ -56,7 +56,7 @@ JFusionFunction::displayDonate();
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=plugineditor&jname=joomla_int" >
-				<img src="components/com_jfusion/images/joomla.png" height="75px" width="75px">
+				<img src="components/com_jfusion/images/joomla.png" height="50px" width="50px">
 				<span>Joomla Options</span>
 				</a>
 			</div>
@@ -64,7 +64,7 @@ JFusionFunction::displayDonate();
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=plugindisplay" >
-				<img src="components/com_jfusion/images/controlpanel.png" height="75px" width="75px">
+				<img src="components/com_jfusion/images/controlpanel.png" height="50px" width="50px">
 				<span>Configure Plugins</span>
 				</a>
 			</div>
@@ -72,7 +72,7 @@ JFusionFunction::displayDonate();
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=pluginmanager" >
-				<img src="components/com_jfusion/images/manager.png" height="75px" width="75px">
+				<img src="components/com_jfusion/images/manager.png" height="50px" width="50px">
 				<span>Manage Plugins</span>
 				</a>
 			</div>
@@ -80,7 +80,7 @@ JFusionFunction::displayDonate();
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=sync" >
-				<img src="components/com_jfusion/images/usersync.png" height="75px" width="75px">
+				<img src="components/com_jfusion/images/usersync.png" height="50px" width="50px">
 				<span>Usersync</span>
 				</a>
 			</div>
@@ -88,7 +88,7 @@ JFusionFunction::displayDonate();
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=loginchecker" >
-				<img src="components/com_jfusion/images/login_checker.png" height="75px" width="75px">
+				<img src="components/com_jfusion/images/login_checker.png" height="50px" width="50px">
 				<span>Login checker</span>
 				</a>
 			</div>
@@ -96,7 +96,7 @@ JFusionFunction::displayDonate();
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index2.php?option=com_jfusion&task=help" >
-				<img src="components/com_jfusion/images/help.png" height="75px" width="75px">
+				<img src="components/com_jfusion/images/help.png" height="50px" width="50px">
 				<span>Help</span>
 				</a>
 			</div>
@@ -105,7 +105,7 @@ JFusionFunction::displayDonate();
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index2.php?option=com_jfusion&task=versioncheck" >
-				<img src="components/com_jfusion/images/versioncheck.png" height="75px" width="75px">
+				<img src="components/com_jfusion/images/versioncheck.png" height="50px" width="50px">
 				<span>Version Check</span>
 				</a>
 			</div>
@@ -115,6 +115,24 @@ JFusionFunction::displayDonate();
 <td width="45%" valign="top">
 
 <?php
+//check to see if JFusion is enabled
+$plugin_user = JFusionFunction::isPluginInstalled('jfusion', 'user', 1);
+$plugin_auth = JFusionFunction::isPluginInstalled('jfusion', 'authentication', 1);
+
+if ($plugin_user && $plugin_auth){
+
+?>
+<table bgcolor="#d9f9e2" width ="100%"><tr><td width="50px"><td>
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'check_good.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('PLUGINS_ENABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=disableplugins"><?php echo JText::_('PLUGINS_DISABLE');?></a></td></tr></table>
+<?php
+} else {
+?>
+<table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'check_bad.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('PLUGINS_DISABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=enableplugins"><?php echo JText::_('PLUGINS_ENABLE');?></a></td></tr></table>
+<?php
+}
 
 jimport('joomla.html.pane');
 $pane =& JPane::getInstance('tabs');

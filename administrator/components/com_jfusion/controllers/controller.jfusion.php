@@ -519,6 +519,47 @@ class JFusionController extends JController
         parent::display();
     }
 
+    /**
+* Enables the JFusion Plugins
+*/
+    function enableplugins()
+    {
+		//enable the JFusion login behaviour
+		$db =& JFactory::getDBO();
+		$db->setQuery('UPDATE #__plugins SET published = 0 WHERE element =\'joomla\' and folder = \'authentication\'');
+		$db->Query();
+		$db->setQuery('UPDATE #__plugins SET published = 0 WHERE element =\'joomla\' and folder = \'user\'');
+		$db->Query();
+		$db->setQuery('UPDATE #__plugins SET published = 1 WHERE element =\'jfusion\' and folder = \'authentication\'');
+		$db->Query();
+		$db->setQuery('UPDATE #__plugins SET published = 1 WHERE element =\'jfusion\' and folder = \'user\'');
+		$db->Query();
+
+        JRequest::setVar('view', 'cpanel');
+        parent::display();
+    }
+
+    /**
+* Disables the JFusion Plugins
+*/
+    function disableplugins()
+    {
+		//restore the normal login behaviour
+		$db =& JFactory::getDBO();
+		$db->setQuery('UPDATE #__plugins SET published = 1 WHERE element =\'joomla\' and folder = \'authentication\'');
+		$db->Query();
+		$db->setQuery('UPDATE #__plugins SET published = 1 WHERE element =\'joomla\' and folder = \'user\'');
+		$db->Query();
+		$db->setQuery('UPDATE #__plugins SET published = 0 WHERE element =\'jfusion\' and folder = \'authentication\'');
+		$db->Query();
+		$db->setQuery('UPDATE #__plugins SET published = 0 WHERE element =\'jfusion\' and folder = \'user\'');
+		$db->Query();
+
+        JRequest::setVar('view', 'cpanel');
+        parent::display();
+    }
+
+
 }
 
 

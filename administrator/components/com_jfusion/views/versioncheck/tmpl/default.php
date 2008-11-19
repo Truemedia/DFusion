@@ -72,12 +72,14 @@ $user_xml = JPATH_SITE .DS.'plugins'.DS.'user'.DS.'jfusion.xml';
 $activity_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_activity'.DS.'mod_jfusion_activity.xml';
 $login_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_login'.DS.'mod_jfusion_login.xml';
 $row_count = 0;
+$up2date = true;
 
 if (file_exists($component_xml)) {
 	//get the version number
 	$xml = simplexml_load_file($component_xml);
 	if (version_compare($xml->version, $this->JFusionVersion->component) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
+		$up2date = false;
 	} else {
 		echo '<tr class = "good'.$row_count.'">';
 	}	?>
@@ -98,6 +100,7 @@ if (file_exists($auth_xml)) {
 	$xml = simplexml_load_file($auth_xml);
 	if (version_compare($xml->version, $this->JFusionVersion->auth) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
+		$up2date = false;
 	} else {
 		echo '<tr class = "good'.$row_count.'">';
 	}	?>
@@ -116,6 +119,7 @@ if (file_exists($user_xml)) {
 	$xml = simplexml_load_file($user_xml);
 	if (version_compare($xml->version, $this->JFusionVersion->user) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
+		$up2date = false;
 	} else {
 		echo '<tr class = "good'.$row_count.'">';
 	}	?>
@@ -134,6 +138,7 @@ if (file_exists($activity_xml)) {
 	$xml = simplexml_load_file($activity_xml);
 	if (version_compare($xml->version, $this->JFusionVersion->activity) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
+		$up2date = false;
 	} else {
 		echo '<tr class = "good'.$row_count.'">';
 	}	?>
@@ -152,6 +157,7 @@ if (file_exists($login_xml)) {
 	$xml = simplexml_load_file($login_xml);
 	if (version_compare($xml->version, $this->JFusionVersion->login) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
+		$up2date = false;
 	} else {
 		echo '<tr class = "good'.$row_count.'">';
 	}	?>
@@ -165,7 +171,7 @@ if (file_exists($login_xml)) {
 		$row_count = 1;
 	}
 }
-echo '</table><br/><br/>';
+echo '</table><br/>';
 
 ?>
 <table class="adminform" cellspacing="1"><thead><tr>
@@ -186,6 +192,7 @@ foreach ($plugins as $plugin) {
 	if($this->JFusionVersion->{$plugin->name}){
 		if (version_compare($xml->version, $this->JFusionVersion->{$plugin->name}) == -1){
 			echo '<tr class = "bad'.$row_count.'">';
+			$up2date = false;
 		} else {
 			echo '<tr class = "good'.$row_count.'">';
 		}
@@ -209,7 +216,16 @@ foreach ($plugins as $plugin) {
 }
 
 echo '</table>';
-?>
+
+if($up2date){
+	//output the good news?>
+
+<table><tr><td width="100px">
+<img src="<?php echo 'components'.DS.'com_jfusion'.DS.'images'.DS.'usersync.png'; ?>" height="75px" width="75px">
+<td><h2><? echo JText::_('USERSYNC'); ?></h2></td></tr></table><br/><br/>
+<?php
+} else {
+	//output the bad news and automatic upgrade option ?>
 
 <form enctype="multipart/form-data" action="index.php" method="post" name="adminForm">
 	<input type="submit" value="<?php echo JText::_( 'UPGRADE_JFUSION' ); ?>"/>
@@ -221,4 +237,6 @@ echo '</table>';
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
 
+<?php
+}
 
