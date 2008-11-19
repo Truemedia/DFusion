@@ -54,7 +54,7 @@ class JFusionPlugin_magento extends JFusionPlugin{
             $params['database_type']     = "mysql";
             $params['source_path']       = $forumpath;
             return $params;
-      	} else {
+        } else {
             JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). " $xmlfile " . JText::_('WIZARD_MANUAL'));
             return false;
         }
@@ -73,7 +73,7 @@ class JFusionPlugin_magento extends JFusionPlugin{
         return 'index.php/customer/account/forgotpassword/'; // not available in Magento, map to lostpassword
     }
 
-	/*
+  /*
     function getThreadURL($threadid)
     {
         return  'viewtopic.php?t=' . $threadid;
@@ -231,7 +231,7 @@ ORDER BY left_id';
     }
 
     function getDefaultUsergroup(){
-        $params = JFusionFactory::getParams($this->getJname());
+/*        $params = JFusionFactory::getParams($this->getJname());
         $usergroup_id = $params->get('usergroup');
 
         //we want to output the usergroup name
@@ -239,5 +239,7 @@ ORDER BY left_id';
         $query = 'SELECT customer_group_code from #__customer_group WHERE customer_group_id = ' . $usergroup_id;
         $db->setQuery($query );
         return $db->loadResult();
+*/      return JText::_('USING_PLUGIN_DEFAULT');
+
     }
 }

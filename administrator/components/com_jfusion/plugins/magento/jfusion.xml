@@ -8,7 +8,7 @@
   <authorUrl>www.mijnbreincoach.nl</authorUrl>
   <copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-  <version>1.08-006</version>
+  <version>1.08-008</version>
   <description>JFusion (1.08+) plugin for Magento ecommerce 1.1</description>
   <slave>0</slave>
   <dual_login>0</dual_login>
@@ -56,7 +56,7 @@
    <param name="logout_url" type="text" size="100" label="" 
       default="" description="LOGOUT_URL" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
-    <param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP (not used)" />
+   <param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
     <param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
       <option value="1">YES</option>
       <option value="">NO</option>
