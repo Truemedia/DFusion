@@ -332,7 +332,42 @@ if ($userinfo) {
 	//check to see if we need to debug the logout process
 	$debug_logout = JRequest::getVar('debug_logout', '', 'POST', 'STRING' );
     if($debug_logout){
+        //get the JFusion master
+        $master = JFusionFunction::getMaster();
+        if ($master->name && $master->name != 'joomla_int') {
+            $JFusionMaster = JFusionFactory::getUser($master->name);
+            $userlookup = JFusionFunction::lookupUser($master->name, $my->get('id'));
+            $MasterUser = $JFusionMaster->getUser($userlookup->username);
+            //check if a user was found
+            if ($MasterUser) {
+                $MasterSession = $JFusionMaster->destroySession($MasterUser, $options);
+                    if ($MasterSession['error']) {
+                        JFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['error']);
+                    }
+                } else {
+                    JFusionFunction::raiseWarning($master->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
+                }
+            }
 
+            $slaves = JFusionFunction::getPlugins();
+            foreach($slaves as $slave) {
+                //check if sessions are enabled
+                if ($slave->dual_login == 1) {
+                    $JFusionSlave = JFusionFactory::getUser($slave->name);
+                    $userlookup = JFusionFunction::lookupUser($slave->name, $my->get('id'));
+                    $SlaveUser = $JFusionSlave->getUser($userlookup->username);
+                    //check if a user was found
+                    if ($SlaveUser) {
+                        $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
+                        if ($SlaveSession['error']) {
+                            JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['error']);
+                        }
+                    } else {
+                        JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
+                    }
+                }
+            }
+        }
     }
     ob_end_flush();
     return;
