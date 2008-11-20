@@ -36,7 +36,7 @@ $credentials['password'] = JRequest::getVar('check_password', '', 'POST', 'STRIN
 $user['username'] = JRequest::getVar('check_username', '', 'POST', 'STRING' );
 $user['password'] = JRequest::getVar('check_password', '', 'POST', 'STRING' );
 $options['group'] = 'USERS';
-$options['remember'] = 0;
+$options['remember'] = JRequest::getVar('remember', '', 'POST', 'STRING' );;
 
 
 //check to see if a password was submitted
@@ -329,7 +329,12 @@ if ($userinfo) {
             }
         }
     }
-            ob_end_flush();
+	//check to see if we need to debug the logout process
+	$debug_logout = JRequest::getVar('debug_logout', '', 'POST', 'STRING' );
+    if($debug_logout){
+
+    }
+    ob_end_flush();
     return;
 
 } else {

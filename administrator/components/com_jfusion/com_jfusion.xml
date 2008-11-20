@@ -48,6 +48,9 @@
 			<menu img="components/com_jfusion/images/disconnect.png" link="option=com_jfusion&amp;task=loginchecker">
 				Login Checker
 			</menu>
+			<menu img="components/com_jfusion/images/info.png" link="option=com_jfusion&amp;task=versioncheck">
+				Version Checker
+			</menu>
 			<menu img="components/com_jfusion/images/info.png" link="option=com_jfusion&amp;task=help">
 				JFusion Help
 			</menu>

@@ -33,8 +33,10 @@ tr.bad1 { background-color: #fb8b8b; }
 </tr></thead><tbody>
 
 <?php
+$server_compatible = true;
 if (version_compare(phpversion(), $this->JFusionVersion->php) == -1){
 	echo '<tr class = "bad0">';
+	$server_compatible = false;
 } else {
 	echo '<tr class = "good0">';
 }?>
@@ -45,20 +47,56 @@ if (version_compare(phpversion(), $this->JFusionVersion->php) == -1){
 <td><?php echo $this->JFusionVersion->php;?></td></tr>
 
 <?
-$phpinfo = JFusionFunction::phpinfo_array();
-if (version_compare($phpinfo['mysql']['Client API version'], $this->JFusionVersion->mysql) == -1){
+$version =& new JVersion;
+$joomla_version = $version->getShortVersion();
+if (version_compare($joomla_version, $this->JFusionVersion->joomla) == -1){
 	echo '<tr class = "bad1">';
+	$server_compatible = false;
 } else {
 	echo '<tr class = "good1">';
+}?>
+
+<td>Joomla</td>
+<td><?php echo $joomla_version;?></td>
+<td><?php echo $this->JFusionVersion->joomla;?></td></tr>
+
+<?
+$phpinfo = JFusionFunction::phpinfo_array();
+if (version_compare($phpinfo['mysql']['Client API version'], $this->JFusionVersion->mysql) == -1){
+	echo '<tr class = "bad0">';
+	$server_compatible = false;
+} else {
+	echo '<tr class = "good0">';
 }?>
 
 <td>MySQL</td>
 <td><?php echo $phpinfo['mysql']['Client API version'];?></td>
 <td><?php echo $this->JFusionVersion->mysql;?></td></tr>
-</table>
-<br/><br/>
 
-<table class="adminform" cellspacing="1"><thead><tr>
+</table>
+<?php
+if($server_compatible){
+	//output the good news
+	?>
+<table bgcolor="#d9f9e2" width ="100%"><tr><td>
+<img src="<?php echo 'components/com_jfusion/images/check_good.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('SERVER_UP2DATE'); ?></h2></td><td></td></tr></table>
+
+<?php
+} else {
+	//output the bad news and automatic upgrade option ?>
+<table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
+<img src="<?php echo 'components/com_jfusion/images/check_bad.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('SERVER_OUTDATED'); ?></h2></td>
+
+<td></td></tr></table>
+
+<?php
+}
+
+?>
+
+<br/><br/><table class="adminform" cellspacing="1"><thead><tr>
 <th class="title" align="left"><?php echo JText::_('JFUSION_SOFTWARE'); ?></th>
 <th class="title" align="center"><?php echo JText::_('YOUR_VERSION'); ?></th>
 <th class="title" align="center"><?php echo JText::_('CURRENT_VERSION'); ?></th>
@@ -218,17 +256,35 @@ foreach ($plugins as $plugin) {
 echo '</table>';
 
 if($up2date){
-	//output the good news?>
+	//output the good news
+	?>
+<table bgcolor="#d9f9e2" width ="100%"><tr><td>
+<img src="<?php echo 'components/com_jfusion/images/check_good.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('JFUSION_UP2DATE'); ?></h2></td><td></td></tr></table>
 
-<table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/usersync.png'; ?>" height="75px" width="75px">
-<td><h2><? echo JText::_('USERSYNC'); ?></h2></td></tr></table><br/><br/>
 <?php
 } else {
 	//output the bad news and automatic upgrade option ?>
+<table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
+<img src="<?php echo 'components/com_jfusion/images/check_bad.png'; ?>" height="30px" width="30px">
+<td><h2><? echo JText::_('JFUSION_OUTDATED'); ?></h2></td>
+
+<td>
+<script language="javascript" type="text/javascript">
+<!--
+function confirmSubmit()
+{
+var agree=confirm("<?php echo JText::_( 'UPGRADE_CONFIRM' ); ?>");
+if (agree)
+	return true ;
+else
+	return false ;
+}
+// -->
+</script>
 
 <form enctype="multipart/form-data" action="index.php" method="post" name="adminForm">
-	<input type="submit" value="<?php echo JText::_( 'UPGRADE_JFUSION' ); ?>"/>
+	<input type="submit" value="<?php echo JText::_( 'UPGRADE_JFUSION' ); ?>" onCLick="return confirmSubmit();"/>
 	<input type="hidden" name="install_url" value="http://www.jfusion.org/jfusion_latest_package.zip" />
 	<input type="hidden" name="type" value="" />
 	<input type="hidden" name="installtype" value="url" />
@@ -236,6 +292,7 @@ if($up2date){
 	<input type="hidden" name="option" value="com_installer" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
+</td></tr></table>
 
 <?php
 }
