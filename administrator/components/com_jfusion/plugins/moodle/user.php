@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8-007
+* @version 1.0.8-008
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -112,11 +112,17 @@ class JFusionUser_moodle extends JFusionUser{
             if (!empty($userinfo->password_clear)) {
                 if (!($params->get('passwordsaltmain'))) {
                    $existingpassword = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
-              } else {
-                  $existingpassword = md5($userinfo->password_clear);
-              }
-              if ($existingpassword != $existinguser->password) {$this->updatePassword($userinfo, $existinguser, $status);}
-          }
+              	} else {
+                  	$existingpassword = md5($userinfo->password_clear);
+              	}
+              	if ($existingpassword != $existinguser->password) {
+	              	$this->updatePassword($userinfo, $existinguser, $status);
+              	} else {
+                  	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' .substr($existingpassword,0,6) . '********';
+              	}
+            } else {
+            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': No password_clear available';
+            }
 
       //check the activation status
           if ($existinguser->activation != $userinfo->activation) {
