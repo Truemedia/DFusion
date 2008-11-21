@@ -20,11 +20,12 @@ ob_start();
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
 JFusionFunction::displayDonate();
 
-//output the header?>
+//output the header
+?>
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/login_checker2.png'; ?>" height="75px" width="75px">
+<img src="components/com_jfusion/images/login_checker2.png" height="75px" width="75px">
 <td><h2><? echo JText::_('LOGIN_CHECKER_RESULT');
 ?></h2></td></tr></table><br/>
 
@@ -329,6 +330,7 @@ if ($userinfo) {
             }
         }
     }
+
 	//check to see if we need to debug the logout process
 	$debug_logout = JRequest::getVar('debug_logout', '', 'POST', 'STRING' );
     if($debug_logout){
@@ -341,30 +343,28 @@ if ($userinfo) {
             //check if a user was found
             if ($MasterUser) {
                 $MasterSession = $JFusionMaster->destroySession($MasterUser, $options);
-                    if ($MasterSession['error']) {
-                        JFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['error']);
+                if ($MasterSession['error']) {
+                    JFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['error']);
+                }
+            } else {
+                JFusionFunction::raiseWarning($master->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
+            }
+        }
+        $slaves = JFusionFunction::getPlugins();
+        foreach($slaves as $slave) {
+            //check if sessions are enabled
+            if ($slave->dual_login == 1) {
+                $JFusionSlave = JFusionFactory::getUser($slave->name);
+                $userlookup = JFusionFunction::lookupUser($slave->name, $my->get('id'));
+                $SlaveUser = $JFusionSlave->getUser($userlookup->username);
+                //check if a user was found
+                if ($SlaveUser) {
+                    $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
+                    if ($SlaveSession['error']) {
+                        JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['error']);
                     }
                 } else {
-                    JFusionFunction::raiseWarning($master->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
-                }
-            }
-
-            $slaves = JFusionFunction::getPlugins();
-            foreach($slaves as $slave) {
-                //check if sessions are enabled
-                if ($slave->dual_login == 1) {
-                    $JFusionSlave = JFusionFactory::getUser($slave->name);
-                    $userlookup = JFusionFunction::lookupUser($slave->name, $my->get('id'));
-                    $SlaveUser = $JFusionSlave->getUser($userlookup->username);
-                    //check if a user was found
-                    if ($SlaveUser) {
-                        $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
-                        if ($SlaveSession['error']) {
-                            JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['error']);
-                        }
-                    } else {
-                        JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
-                    }
+                    JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
                 }
             }
         }

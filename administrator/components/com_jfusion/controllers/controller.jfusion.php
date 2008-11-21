@@ -242,13 +242,10 @@ class JFusionController extends JController
             $post['source_url'] .= '/';
         }
 
-
-
         //now also check to see that the url starts with http:// or https://
         if (substr($post['source_url'], 0, 7) != 'http://' && substr($post['source_url'], 0, 8) != 'https://') {
             $post['source_url'] = 'http://' . $post['source_url'];
         }
-
 
         if (JFusionFunction::saveParameters($jname, $post)) {
             JError::raiseNotice(0, JText::_('SAVE_SUCCESS'));
@@ -260,8 +257,22 @@ class JFusionController extends JController
         } else {
             JError::raiseWarning(500, JText::_('SAVE_FAILURE'));
         }
-        JRequest::setVar('view', 'plugindisplay');
-        parent::display();
+        $action = JRequest::getVar('action', '', 'POST', 'STRING' );
+        if ($action == 'apply'){
+
+            $parameters = JFusionFactory::getParams($jname);
+            $param_output = $parameters->render();
+
+            $view = &$this->getView('plugineditor', 'html');
+            $view->assignRef('parameters', $param_output);
+            $view->assignRef('jname', $jname);
+            $view->setLayout('default');
+            $view->display();
+        } else {
+            JRequest::setVar('view', 'plugindisplay');
+            parent::display();
+        }
+
 
     }
 

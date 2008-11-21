@@ -19,9 +19,9 @@ JFusionFunction::displayDonate();
 ?>
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/usersync.png'; ?>" height="75px" width="75px">
+<img src="components/com_jfusion/images/usersync.png" height="75px" width="75px">
 <td><h2><? echo JText::_('RESOLVE_CONLFICTS'); ?></h2></td></tr></table><br/>
 <br/>
 

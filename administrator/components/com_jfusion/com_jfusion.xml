@@ -30,8 +30,11 @@
 			jfusion
 		</menu>
 		<submenu>
-			<menu img="components/com_jfusion/images/process.png" link="option=com_jfusion&amp;task=cpanel">
+			<menu img="components/com_jfusion/images/control.png" link="option=com_jfusion&amp;task=cpanel">
 				Control Panel
+			</menu>
+			<menu img="components/com_jfusion/images/joomla_small.png" link="option=com_jfusion&amp;task=plugineditor&amp;jname=joomla_int">
+				Joomla Options
 			</menu>
 			<menu img="components/com_jfusion/images/process.png" link="option=com_jfusion&amp;task=plugindisplay">
 				Plugin Configuration
@@ -40,12 +43,12 @@
 				Plugin Manager
 			</menu>
 			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=sync">
-				User Synchronisation
+				User Sync
 			</menu>
 			<menu img="components/com_jfusion/images/disconnect.png" link="option=com_jfusion&amp;task=loginchecker">
 				Login Checker
 			</menu>
-			<menu img="components/com_jfusion/images/info.png" link="option=com_jfusion&amp;task=versioncheck">
+			<menu img="components/com_jfusion/images/version.png" link="option=com_jfusion&amp;task=versioncheck">
 				Version Checker
 			</menu>
 			<menu img="components/com_jfusion/images/info.png" link="option=com_jfusion&amp;task=help">

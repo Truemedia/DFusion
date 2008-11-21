@@ -24,9 +24,9 @@ JFusionFunction::displayDonate();
 
 
 <table><tr><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/jfusion_large.png'; ?>" height="75px" width="75px">
+<img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
-<img src="<?php echo 'components/com_jfusion/images/synchistory.png'; ?>" height="75px" width="75px">
+<img src="components/com_jfusion/images/synchistory.png" height="75px" width="75px">
 <td><h2><? echo JText::_('SYNC_HISTORY'); ?></h2></td></tr></table><br/><br/><br/>
 <br/><br/><br/>
 

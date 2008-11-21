@@ -79,14 +79,14 @@ if($server_compatible){
 	//output the good news
 	?>
 <table bgcolor="#d9f9e2" width ="100%"><tr><td>
-<img src="<?php echo 'components/com_jfusion/images/check_good.png'; ?>" height="30px" width="30px">
+<img src="components/com_jfusion/images/check_good.png" height="30px" width="30px">
 <td><h2><? echo JText::_('SERVER_UP2DATE'); ?></h2></td><td></td></tr></table>
 
 <?php
 } else {
 	//output the bad news and automatic upgrade option ?>
 <table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
-<img src="<?php echo 'components/com_jfusion/images/check_bad.png'; ?>" height="30px" width="30px">
+<img src="components/com_jfusion/images/check_bad.png" height="30px" width="30px">
 <td><h2><? echo JText::_('SERVER_OUTDATED'); ?></h2></td>
 
 <td></td></tr></table>
@@ -259,14 +259,14 @@ if($up2date){
 	//output the good news
 	?>
 <table bgcolor="#d9f9e2" width ="100%"><tr><td>
-<img src="<?php echo 'components/com_jfusion/images/check_good.png'; ?>" height="30px" width="30px">
+<img src="components/com_jfusion/images/check_good.png" height="30px" width="30px">
 <td><h2><? echo JText::_('JFUSION_UP2DATE'); ?></h2></td><td></td></tr></table>
 
 <?php
 } else {
 	//output the bad news and automatic upgrade option ?>
 <table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
-<img src="<?php echo 'components/com_jfusion/images/check_bad.png'; ?>" height="30px" width="30px">
+<img src="components/com_jfusion/images/check_bad.png" height="30px" width="30px">
 <td><h2><? echo JText::_('JFUSION_OUTDATED'); ?></h2></td>
 
 <td>

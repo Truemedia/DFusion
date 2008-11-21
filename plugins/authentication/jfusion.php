@@ -92,6 +92,8 @@ class plgAuthenticationjfusion extends JPlugin
                 if ($testcrypt == $userinfo->password){
                     //found a match
                     $response->status = JAUTHENTICATE_STATUS_SUCCESS;
+                    $response->email = $userinfo->email;
+                    $response->fullname = $userinfo->name;
                     $response->error_message = '';
                     return true;
                 }

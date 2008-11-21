@@ -18,10 +18,22 @@
 		<filename>user.php</filename>
 	</files>
 	<params addpath="/administrator/components/com_jfusion/elements">
-		<param name="description" type="text" size="20" default="internal Joomla plugin" description="DESCRIPTION"/>
+		<param name="description" type="text" size="60" default="Current Joomla Site" description="DESCRIPTION"/>
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name="user_options" type="helptext" default="JOOMLA_USER_OPTIONS" />
+		<param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
+		<param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
+			<option value="1">USERNAME</option>
+			<option value="2">EMAIL</option>
+			<option value="3">USERNAME_OR_EMAIL</option>
+		</param>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="USERNAME_FILTER_DESCR"/>
+		<param name="username_filter" type="JFusionPlugins" default="" description="USERNAME_FILTER" />
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
 		<param name="usergroup" default="18" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
 		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
@@ -34,14 +46,15 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
-		<param name="username_filter" type="JFusionPlugins" default="1" description="USERNAME_FILTER" />
-		<param name="allow_email_login" type="list" default="0" description="ALLOW_EMAIL_LOGIN">
-			<option value="0">NO</option>
-			<option value="1">YES</option>
-		</param>
 
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name="visual_options" type="helptext" default="JOOMLA_VISUAL_OPTIONS" />
+		<param name="" type="helptext" default="JOOMLA_VISUAL_DEFAULT" />
+		<param name="default_plugin" type="JFusionPlugins" default="" label="DEFAULT_JFUSION_PLUGIN"/>
+		<param name="link_mode" type="list" default="direct" label="LINK_MODE">
+			<option value="wrapper">LINK_MODE_0</option>
+			<option value="direct">LINK_MODE_1</option>
+			<option value="frameless">LINK_MODE_2</option>
+		</param>
 		<param name="wrapper_scroll" type="radio" default="auto"
 			description="WRAPPER_SCROLL">
 			<option value="no">NO</option>

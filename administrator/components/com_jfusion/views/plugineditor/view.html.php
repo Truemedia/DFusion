@@ -23,6 +23,7 @@ class jfusionViewplugineditor extends JView {
     {
     $bar =& new JToolBar('My Toolbar' );
     $bar->appendButton('Standard', 'save', JText::_('SAVE'), 'saveconfig', false, false );
+    $bar->appendButton('Standard', 'apply', JText::_('APPLY'), 'applyconfig', false, false );
     $bar->appendButton('Standard', 'cancel', JText::_('CANCEL'), 'plugindisplay', false, false );
     $toolbar = $bar->render();
 
