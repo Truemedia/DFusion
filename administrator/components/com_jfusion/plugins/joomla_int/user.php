@@ -100,7 +100,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
         } else {
 
-             $this->createUser($userinfo, $overwrite, status);
+             $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
@@ -427,7 +427,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
           if ($existinguser) {
               if ($overwrite) {
-            $this->updateUsername($userinfo, &$existinguser, &$status);
+            $this->updateUsername($userinfo, $existinguser, $status);
               } else {
                   $status['error'] = JText::_('EMAIL_CONFLICT') . '. UserID:' . $existinguser->userid . ' JFusionPlugin:' . $this->getJname();
               }
