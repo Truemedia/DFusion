@@ -106,8 +106,7 @@ if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 }
 
 if (array_search($table_prefix . 'jfusion_sync',$table_list) == false) {
-	$query = 'DROP TABLE IF EXISTS #__jfusion_sync;
-CREATE TABLE #__jfusion_sync (
+	$query = 'CREATE TABLE #__jfusion_sync (
   syncid varchar(10),
   action varchar(255),
   syncdata text,
