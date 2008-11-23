@@ -26,9 +26,8 @@ JFusionFunction::displayDonate();
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/login_checker2.png" height="75px" width="75px">
-<td><h2><? echo JText::_('LOGIN_CHECKER_RESULT');
-?></h2></td></tr></table><br/>
-
+<td><h2><? echo JText::_('LOGIN_CHECKER_RESULT');?></h2></td>
+</tr></table><br/>
 
 <?php
 //get the submitted login details
@@ -56,6 +55,7 @@ if (empty($credentials['username'])) {
 
 $version =& new JVersion;
 $short_version = $version->getShortVersion();
+
 echo '<br/>Joomla version:' . $short_version . '<br/>';
 echo 'PHP version: ' . phpversion() .  '<br/>';
 

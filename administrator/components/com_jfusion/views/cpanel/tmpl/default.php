@@ -95,6 +95,14 @@ JFusionFunction::displayDonate();
 	</div>
 	<div style="float:left;">
 			<div class="icon">
+				<a href="index2.php?option=com_jfusion&task=versioncheck" >
+				<img src="components/com_jfusion/images/versioncheck.png" height="50px" width="50px">
+				<span>Version Check</span>
+				</a>
+			</div>
+	</div>
+	<div style="float:left;">
+			<div class="icon">
 				<a href="index2.php?option=com_jfusion&task=help" >
 				<img src="components/com_jfusion/images/help.png" height="50px" width="50px">
 				<span>Help</span>
@@ -102,14 +110,6 @@ JFusionFunction::displayDonate();
 			</div>
 	</div>
 
-	<div style="float:left;">
-			<div class="icon">
-				<a href="index2.php?option=com_jfusion&task=versioncheck" >
-				<img src="components/com_jfusion/images/versioncheck.png" height="50px" width="50px">
-				<span>Version Check</span>
-				</a>
-			</div>
-	</div>
 </div>
 
 <td width="45%" valign="top">

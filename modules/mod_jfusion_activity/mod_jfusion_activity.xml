@@ -14,6 +14,7 @@
 	</description>
 	<files  folder="modules/mod_jfusion_activity">
 		<filename module="mod_jfusion_activity">mod_jfusion_activity.php</filename>
+		<filename>index.php</filename>
 	</files>
 
 	<languages folder="language/en-GB">

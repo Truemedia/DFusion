@@ -8,7 +8,7 @@
 	<authorUrl>http://www.jfusion.org</authorUrl>
 	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<version>1.0.8</version>
+	<version>1.0.9.175</version>
 	<description></description>
 	<installfile>jfusion.install.php</installfile>
  	<uninstallfile>jfusion.uninstall.php</uninstallfile>
@@ -72,7 +72,6 @@
 	    	<folder>views</folder>
 		    <folder>elements</folder>
 		    <folder>plugins</folder>
-		    <folder>sql</folder>
 		</files>
 
 		<languages folder="administrator/language/en-GB">

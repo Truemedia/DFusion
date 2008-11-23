@@ -144,60 +144,64 @@ class JFusionUser_joomla_int extends JFusionUser{
     }
 
 
-    function &getUser($username)
+    function &getUser($identifier)
     {
         //get database object
         $db =& JFactory::getDBO();
         $params = JFusionFactory::getParams($this->getJname());
-        $username = $this->filterUsername($username);
 
-        if ($params->get('allow_email_login')){
-           if(strpos($username, '@')) {
-               $identifier = 'b.email';
+        //decide what can be used as a login credential
+		$login_identifier = $params->get('login_identifier');
+        if ($login_identifier == 1){
+            $identifier_type = 'b.username';
+			if ($params->get('username_filter' != 'joomla_int')) {
+	        	$JFusionPlugin = JFusionFactory::getUser($jname->name);
+   	            $identifier = $JFusionPlugin->filterUsername($identifier);
+			}
+        } elseif ($login_identifier == 2){
+           if(strpos($identifier, '@')) {
+               $identifier_type = 'b.email';
            } else {
-               $identifier = 'b.username';
+               $identifier_type = 'b.username';
+				if ($params->get('username_filter' != 'joomla_int')) {
+		        	$JFusionPlugin = JFusionFactory::getUser($jname->name);
+   	    	        $identifier = $JFusionPlugin->filterUsername($identifier);
+				}
            }
         } else {
-            $identifier = 'b.username';
+            $identifier_type = 'b.email';
         }
 
 
         //first check the JFusion user table
-        $db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier . '=' . $db->quote($username));
+        $db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier_type . '=' . $db->quote($identifier));
         $result = $db->loadObject();
 
         if (!$result) {
-            //no user found, now check the Joomla user table
-            $JFusionUser = JFusionfactory::getUser('joomla_int');
-            $filtered_username = $JFusionUser->filterUsername($username);
-
- //HJW   we should use either email or username, not username pursang
-            $db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier . '=' .$db->quote($filtered_username));
+			//check directly in the joomla user table
+            $db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier . '=' .$db->quote($identifier));
             $result = $db->loadObject();
 
             if($result){
-            //update the JFusion user lookup table
-            //Delete old user data in the lookup table
-            $db =& JFactory::getDBO();
-            $query = 'DELETE FROM #__jfusion_users WHERE id =' . $result->userid . ' OR username =' . $db->quote($username);
-            $db->setQuery($query);
-            if (!$db->query()) {
-                JError::raiseWarning(0,$db->stderr());
-            }
-            $db =& JFactory::getDBO();
-            $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $result->userid;
-            $db->setQuery($query);
-            if (!$db->query()) {
-                JError::raiseWarning(0,$db->stderr());
-            }
+	            //Delete old user data in the lookup table
+        	    $query = 'DELETE FROM #__jfusion_users WHERE id =' . $result->userid . ' OR username =' . $db->quote($result->username);
+            	$db->setQuery($query);
+            	if (!$db->query()) {
+                	JError::raiseWarning(0,$db->stderr());
+            	}
 
-            //create a new entry in the lookup table
-            $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ', ' . $db->quote($username) . ')';
-            $db->setQuery($query);
-            if (!$db->query()) {
-                JError::raiseWarning(0,$db->stderr());
-            }
+	            $query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $result->userid;
+    	        $db->setQuery($query);
+        	    if (!$db->query()) {
+            	    JError::raiseWarning(0,$db->stderr());
+            	}
 
+	            //create a new entry in the lookup table
+    	        $query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ', ' . $db->quote($identifier) . ')';
+        	    $db->setQuery($query);
+            	if (!$db->query()) {
+                	JError::raiseWarning(0,$db->stderr());
+            	}
             }
         }
 
@@ -208,6 +212,7 @@ class JFusionUser_joomla_int extends JFusionUser{
                 $result->password_salt = $parts[1];
                 $result->password = $parts[0];
             }
+
             //unset the activation status if not blocked
             if($result->block == 0){
               $result->activation = '';
@@ -224,9 +229,15 @@ class JFusionUser_joomla_int extends JFusionUser{
 
     function filterUsername($username)
     {
-        //define which characters have to be replaced
-        $trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
+		//check to see if additional username filtering need to be applied
+        $params = JFusionFactory::getParams($this->getJname());
+		if ($params->get('username_filter' != 'joomla_int')) {
+	        $JFusionPlugin = JFusionFactory::getUser($jname->name);
+	        $username = $JFusionPlugin->filterUsername($username);
+		}
 
+        //define which characters which Joomla forbids in usernames
+        $trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
         //remove forbidden characters for the username
         $username_esc = strtr($username, $trans);
         return $username_esc;

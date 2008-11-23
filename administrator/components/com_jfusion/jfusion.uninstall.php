@@ -32,14 +32,17 @@ function _uninstallPlugin($type, $id, $group, $description) {
 	if ($result){
 		$tmpinstaller = new JInstaller();
 		$installer_result = $tmpinstaller->uninstall($type, $result, 0 );
-		echo $description . ' Uninstall ';
-		if(!$result) {
-			echo 'Failed <br/>';
-		} else {
-			echo 'Success <br/>';
-		}
+		if(!$result) { ?>
+			<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px">
+			<td><font size="2"><b><?php echo JText::_('UNINSTALL') . ' ' . $description . ' '. JText::_('FAILED'); ?></b></font></td></tr></table>
+		<?php } else { ?>
+			<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px">
+			<td><font size="2"><b><?php echo JText::_('UNINSTALL') . ' ' . $description . ' '. JText::_('SUCCESS'); ?></b></font></td></tr></table>
+		<?php }
 	}
 }
+
+echo '<h2>JFusion Uninstall</h2><br/>';
 
 //uninstall the JFusion Modules
 _uninstallPlugin('module','mod_jfusion_login', '', 'JFusion Login module');
@@ -51,19 +54,16 @@ $db->setQuery('UPDATE #__plugins SET published = 1 WHERE element =\'joomla\' and
 $db->Query();
 $db->setQuery('UPDATE #__plugins SET published = 1 WHERE element =\'joomla\' and folder = \'user\'');
 $db->Query();
+?>
+			<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
+			<img src="templates/khepri/images/toolbar/icon-32-apply.png" height="20px" width="20px">
+			<td><font size="2"><b>Restored normal Joomla login behaviour</b></font></td></tr></table>
+<?php
 
 //uninstall the JFusion plugins
 _uninstallPlugin('plugin','jfusion', 'user', 'JFusion User Plugin');
 _uninstallPlugin('plugin','jfusion', 'authentication', 'JFusion Authentication Plugin');
 
-//remove the JFusion SQL tables
-$batch_query = 'DROP TABLE #__jfusion;
-DROP TABLE #__jfusion_users_plugin;
-DROP TABLE #__jfusion_users;
-DROP TABLE #__jfusion_sync;';
-//$db->setQuery($batch_query);
-//if (!$db->queryBatch()){
-	//echo $db->stderr() . '<br/>';
-//}
+
 
 

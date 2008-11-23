@@ -17,14 +17,19 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 JFusionFunction::displayDonate();
 ?>
 
+<table><tr><td width="100px">
+<img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
+</td><td width="100px">
+<img src="components/com_jfusion/images/versioncheck.png" height="75px" width="75px">
+<td><h2><? echo JText::_('VERSION_CHECKER');?></h2></td>
+</tr></table><br/>
+
 <style type="text/css">
-tr.good0 { background-color: #a6fda6; }
-tr.good1 { background-color: #8bfb8b; }
-tr.bad0 { background-color: #f9aaaa; }
-tr.bad1 { background-color: #fb8b8b; }
+tr.good0 { background-color: #ecfbf0; }
+tr.good1 { background-color: #d9f9e2; }
+tr.bad0 { background-color: #f9ded9; }
+tr.bad1 { background-color: #f9e5e2; }
 </style>
-
-
 
 <table class="adminform" cellspacing="1"><thead><tr>
 <th class="title" align="left"><?php echo JText::_('SERVER_SOFTWARE'); ?></th>
@@ -49,6 +54,9 @@ if (version_compare(phpversion(), $this->JFusionVersion->php) == -1){
 <?
 $version =& new JVersion;
 $joomla_version = $version->getShortVersion();
+//remove any letters from the version
+$joomla_version = ereg_replace("[A-Za-z]", "", $joomla_version);
+
 if (version_compare($joomla_version, $this->JFusionVersion->joomla) == -1){
 	echo '<tr class = "bad1">';
 	$server_compatible = false;
@@ -293,6 +301,54 @@ else
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
 </td></tr></table>
+<br/><br/>
+
+<table bgcolor="#ffffce" width ="100%"><tr><td width="50px"><td>
+<img src="components/com_jfusion/images/advanced.png" height="75px" width="75px">
+<td><h3><? echo JText::_('ADVANCED') . ' ' . JText::_('VERSION'). ' ' . JText::_('MANAGEMENT'); ?></h3>
+<script language="javascript" type="text/javascript">
+<!--
+function confirmSubmit2(action)
+{
+alert(action);
+if (action == 'build'){
+	var confirm_text = '<?php echo JText::_( 'UPGRADE_CONFIRM' ); ?>';
+	var install_url = 'http://jfusion.googlecode.com/svn/trunk/jfusion_package.zip';
+} else if (action == 'release'){
+	var confirm_text = '<?php echo JText::_( 'UPGRADE_CONFIRM' ); ?>';
+	var install_url = 'http://www.jfusion.org/jfusion_package.zip';
+} else if (action == 'svn'){
+	var confirm_text = '<?php echo JText::_( 'UPGRADE_CONFIRM' ); ?>';
+	var install_url = 'http://jfusion.googlecode.com/svn-history/r' + document.adminForm2.svn_build.value + '/trunk/jfusion_package.zip';
+}
+
+var agree=confirm(confirm_text);
+if (agree){
+    document.adminForm2.install_url.value = install_url;
+	return true ;
+} else {
+	return false ;
+}
+}
+// -->
+</script>
+
+
+<form enctype="multipart/form-data" action="index.php" method="post" name="adminForm2">
+	<input type="hidden" name="install_url" value="" />
+	<input type="hidden" name="type" value="" />
+	<input type="hidden" name="installtype" value="url" />
+	<input type="hidden" name="task" value="doInstall" />
+	<input type="hidden" name="option" value="com_installer" />
+	<?php echo JHTML::_( 'form.token' ); ?>
+<b><?php echo JText::_('ADVANCED_WARNING');?></b><br/>
+
+<input type="submit" value="<?php echo JText::_('INSTALL') . ' ' . JText::_('LATEST') . ' ' . JText::_('RELEASE') ; ?>" onCLick="return confirmSubmit2('release');"/><br/>
+<input type="submit" value="<?php echo JText::_('INSTALL') . ' ' . JText::_('LATEST') . ' SVN Build';?>" onCLick="return confirmSubmit2('build');"/><br/>
+SVN build:<input type="text" name="svn_build" size="4"/> <input type="submit" value="<?php echo JText::_('INSTALL') . ' ' . JText::_('SPECIFIC') . ' SVN Build'; ?>" onCLick="return confirmSubmit2('svn');"/><br/>
+</td></tr></table>
+<br/><br/>
+
 
 <?php
 }
