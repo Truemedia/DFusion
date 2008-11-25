@@ -154,19 +154,13 @@ class JFusionUser_joomla_int extends JFusionUser{
 		$login_identifier = $params->get('login_identifier');
         if ($login_identifier == 1){
             $identifier_type = 'b.username';
-			if ($params->get('username_filter' != 'joomla_int')) {
-	        	$JFusionPlugin = JFusionFactory::getUser($jname->name);
-   	            $identifier = $JFusionPlugin->filterUsername($identifier);
-			}
+            $identifier = $this->filterUsername($identifier);
         } elseif ($login_identifier == 2){
            if(strpos($identifier, '@')) {
                $identifier_type = 'b.email';
            } else {
                $identifier_type = 'b.username';
-				if ($params->get('username_filter' != 'joomla_int')) {
-		        	$JFusionPlugin = JFusionFactory::getUser($jname->name);
-   	    	        $identifier = $JFusionPlugin->filterUsername($identifier);
-				}
+    	       $identifier = $this->filterUsername($identifier);
            }
         } else {
             $identifier_type = 'b.email';
@@ -231,16 +225,13 @@ class JFusionUser_joomla_int extends JFusionUser{
     {
 		//check to see if additional username filtering need to be applied
         $params = JFusionFactory::getParams($this->getJname());
-		if ($params->get('username_filter' != 'joomla_int')) {
-	        $JFusionPlugin = JFusionFactory::getUser($jname->name);
+        $added_filter = $params->get('username_filter');
+		if ($added_filter && $added_filter != 'joomla_int') {
+	        $JFusionPlugin = JFusionFactory::getUser($added_filter);
 	        $username = $JFusionPlugin->filterUsername($username);
 		}
 
-        //define which characters which Joomla forbids in usernames
-        $trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
-        //remove forbidden characters for the username
-        $username_esc = strtr($username, $trans);
-        return $username_esc;
+        return $username;
     }
 
     function createSession($userinfo, $options)
@@ -417,8 +408,13 @@ class JFusionUser_joomla_int extends JFusionUser{
         $existinguser = $db->loadObject();
         if (empty($existinguser)) {
 
-          //clean the username
+          //apply username filtering
           $username_clean = $this->filterUsername($userinfo->username);
+
+          //define which characters which Joomla forbids in usernames
+          $trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
+          //remove forbidden characters for the username
+          $username_clean = strtr($username_clean, $trans);
 
           //make sure the username is at least 3 characters long
           while (strlen($username_clean) < 3) {

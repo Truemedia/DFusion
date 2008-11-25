@@ -28,7 +28,7 @@ function utf8_clean_string_phpbb($text)
 static $homographs = array();
 if (empty($homographs))
 {
-$homographs = include (JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'confusables.php');
+$homographs = include (JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'utf'.DS.'confusables.php');
 
 }
 
@@ -627,9 +627,8 @@ static $fc_nfkc_closure = array(
 $text = utf8_case_fold_phpbb($text, $option);
 
 // convert to NFKC
-//utf_normalizer::nfkc($text);
-//TODO add the the NFKC conversion function.
-
+require_once (JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'utf_normalizer.php');
+utf_normalizer_phpbb::nfkc($text);
 
 // FC_NFKC_Closure, http://www.unicode.org/Public/5.0.0/ucd/DerivedNormalizationProps.txt
 $text = strtr($text, $fc_nfkc_closure);
@@ -654,19 +653,19 @@ function utf8_case_fold_phpbb($text, $option = 'full')
 	// common is always set
 	if (!isset($uniarray['c']))
 	{
-		$uniarray['c'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'case_fold_c.php');
+		$uniarray['c'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'utf'.DS.'case_fold_c.php');
 	}
 
 	// only set full if we need to
 	if ($option === 'full' && !isset($uniarray['f']))
 	{
-		$uniarray['f'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'case_fold_f.php');
+		$uniarray['f'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'utf'.DS.'case_fold_f.php');
 	}
 
 	// only set simple if we need to
 	if ($option !== 'full' && !isset($uniarray['s']))
 	{
-		$uniarray['s'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'case_fold_s.php');
+		$uniarray['s'] = include (JPATH_ADMINISTRATOR . DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'utf'.DS.'case_fold_s.php');
 	}
 
 	// common is always replaced

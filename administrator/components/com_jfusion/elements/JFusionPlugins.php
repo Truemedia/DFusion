@@ -29,7 +29,7 @@ defined('_JEXEC') or die();
             $rows = $db->loadObjectList();
 
             if (!empty($rows)) {
-                return JHTML::_('select.genericlist', $rows, $control_name.'['.$name.'][]', 'size="1" class="inputbox"',
+                return JHTML::_('select.genericlist', $rows, $control_name.'['.$name.']', 'size="1" class="inputbox"',
                 'id', 'name', $value);
         	} else {
                 return JText::_('NO_VALID_PLUGINS');
