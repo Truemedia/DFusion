@@ -29,6 +29,7 @@ tr.good0 { background-color: #ecfbf0; }
 tr.good1 { background-color: #d9f9e2; }
 tr.bad0 { background-color: #f9ded9; }
 tr.bad1 { background-color: #f9e5e2; }
+table.adminform td {width: 33%;}
 </style>
 
 <table class="adminform" cellspacing="1"><thead><tr>
@@ -55,9 +56,9 @@ if (version_compare(phpversion(), $this->JFusionVersion->php) == -1){
 $version =& new JVersion;
 $joomla_version = $version->getShortVersion();
 //remove any letters from the version
-$joomla_version = ereg_replace("[A-Za-z]", "", $joomla_version);
+$joomla_versionclean = ereg_replace("[A-Za-z !]","", $joomla_version);
 
-if (version_compare($joomla_version, $this->JFusionVersion->joomla) == -1){
+if (version_compare($joomla_versionclean, $this->JFusionVersion->joomla) == -1){
 	echo '<tr class = "bad1">';
 	$server_compatible = false;
 } else {
