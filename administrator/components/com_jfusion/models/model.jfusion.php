@@ -422,13 +422,21 @@ class JFusionFunction{
 
     }
 
-    function raiseWarning($type, $warning){
+    function raiseWarning($type, $warning, $jerror){
     	if(is_array($warning)){
 			foreach ($warning as $warningtext){
-				JError::raiseWarning('500', $type . ': '. $warningtext);
+				if ($jerror){
+					JError::raiseWarning('500', $type . ': '. $warningtext);
+				} else {
+					echo $type . ': '. $warningtext . '<br/>';
+				}
 			}
     	} else {
-			JError::raiseWarning('500', $type .': '. $warning);
+    		if ($jerror) {
+				JError::raiseWarning('500', $type .': '. $warning);
+    		} else {
+				echo $type . ': '. $warning . '<br/>';
+    		}
     	}
     }
 

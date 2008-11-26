@@ -60,31 +60,27 @@ class plgAuthenticationjfusion extends JPlugin
             $response->error_message = 'Empty password not allowed';
             return false;
         }
+
         // Initialize variables
         $conditions = '';
         $db =& JFactory::getDBO();
 
-        //check to see if a JFusion plugin is enabled
-        $jname = JFusionFunction::getMaster();
+        //get the JFusion master
+        $master = JFusionFunction::getMaster();
+        $JFusionMaster = JFusionFactory::getUser($master->name);
+        $userinfo = $JFusionMaster->getUser($credentials['username']);
 
-        //if no master set then use the Joomla default
-        if (!$jname->name) {
-            $jname->name = 'joomla_int';
-        }
-
-        //initialize the forum object
-        $JFusionPlugin = JFusionFactory::getUser($jname->name);
-        //Get the stored encrypted password
-        $userinfo = $JFusionPlugin->getUser($credentials['username']);
-
-        if ($userinfo) {
+		//check if a user was found
+        if (!empty($userinfo)) {
             //apply the cleartext password to the user object
             $userinfo->password_clear = $credentials['password'];
 
-            $query = "SELECT name FROM #__jfusion WHERE master = 1 OR check_encryption = 1 ORDER BY master DESC";
+			//get a list of authentication models
+            $query = 'SELECT name FROM #__jfusion WHERE master = 1 OR check_encryption = 1 ORDER BY master DESC';
             $db->setQuery($query);
             $auth_models = $db->loadObjectList();
 
+			//loop through the different models
             foreach($auth_models as $auth_model) {
                 //Generate an encrypted password for comparison
                 $model = JFusionFactory::getAuth($auth_model->name);

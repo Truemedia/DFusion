@@ -55,10 +55,18 @@ class JFusionUser_joomla_int extends JFusionUser{
               }
             }
 
-            if (!empty($userinfo->password_clear)) {
-                //we can update the password
-                $this->updatePassword($userinfo,$existinguser, $status);
-            }
+			if (isset($userinfo->password_clear)){
+			    //check if the password needs to be updated
+	    	    $model = JFusionFactory::getAuth($this->getJname());
+        		$testcrypt = $model->generateEncryptedPassword($existinguser);
+            	if ($testcrypt != $userinfo->password) {
+                	$this->updatePassword($userinfo, $existinguser, $status);
+            	} else {
+                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+            	}
+        	} else {
+            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
+        	}
 
             //check the blocked status
             if ($existinguser->block != $userinfo->block) {
@@ -166,14 +174,13 @@ class JFusionUser_joomla_int extends JFusionUser{
             $identifier_type = 'b.email';
         }
 
-
         //first check the JFusion user table
         $db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier_type . '=' . $db->quote($identifier));
         $result = $db->loadObject();
 
         if (!$result) {
 			//check directly in the joomla user table
-            $db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier . '=' .$db->quote($identifier));
+            $db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier_type . '=' .$db->quote($identifier));
             $result = $db->loadObject();
 
             if($result){
