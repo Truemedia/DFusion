@@ -27,7 +27,7 @@
 
 	<administration>
 		<menu img="components/com_jfusion/images/jfusion.png" link="option=com_jfusion">
-			jfusion
+			JFusion
 		</menu>
 		<submenu>
 			<menu img="components/com_jfusion/images/control.png" link="option=com_jfusion&amp;task=cpanel">
