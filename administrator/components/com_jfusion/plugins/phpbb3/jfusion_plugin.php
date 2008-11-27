@@ -340,6 +340,15 @@ ORDER BY left_id';
             header($url);
         }
 
+        //add check for thread subscriptions
+        $subscribe = JRequest::getVar('e');
+        if($subscribe){
+            $jfile = 'viewtopic.php';
+            $_GET['p'] = $subscribe;
+            $_REQUEST['p'] = $subscribe;
+            $_POST['p'] = $subscribe;
+        }
+
         if (!$jfile) {
             //use the default index.php
             $jfile = 'index.php';
@@ -413,6 +422,10 @@ ORDER BY left_id';
 	        $regex_body[]	= '#(/&amp\;|/\?|&amp;)(.*?)\=#mS';
             $replace_body[]	= '/$2,';
 
+
+
+
+
             //see if sh404sef parsing is needed
             //$params = JFusionFactory::getParams('joomla_int');
 			//$sh404sef_parse = $params->get('sh404sef_parse');
@@ -443,6 +456,10 @@ ORDER BY left_id';
             //convert relative links into absolute links
            $regex_header[]	= '#(href="|src=")./(.*?")#mS';
            $replace_header[]	= '$1'.$integratedURL.'$2"';
+
+           //fix for URL redirects
+           $regex_header[]	= '#jfile,(t|e)#mS';
+           $replace_header[]	= '$1';
 
         }
         $buffer = preg_replace($regex_header, $replace_header, $buffer);

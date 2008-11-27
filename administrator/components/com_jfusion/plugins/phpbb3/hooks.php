@@ -105,6 +105,7 @@ class JFusionHook
 
 		if(strpos($url, 'jfile=')) {
             $url = preg_replace('#.*jfile=(.*?\.php).*#mS', '$1', $url);
+            return $url;
 		}
 
 		$view = basename($url);
@@ -115,15 +116,12 @@ class JFusionHook
 	        return $jfusion_source_url . 'adm/index.php?sid=' . $session_id;
 		}
 
-
 		//add an excemption for editing profiles
 		if($arrParams['i'] == 'profile') {
 				$view = 'ucp.php';
 		}
 
-
 		$uri->setVar('jfile', $view);
-
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));
 
 		return JRoute::_($url, $is_amp);

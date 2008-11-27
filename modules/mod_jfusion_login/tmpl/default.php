@@ -45,7 +45,7 @@ defined('_JEXEC') or die('Restricted access'); ?>
 	<?php if($params->get('show_rememberme')) : ?>
 	<p id="form-login-remember">
 		<label for="modlgn_remember"><?php echo JText::_('REMEMBER_ME') ?></label>
-		<input id="modlgn_remember" type="checkbox" name="remember" class="inputbox" value="yes" alt="Remember Me" />
+		<input id="modlgn_remember" type="checkbox" name="remember" value="yes" alt="Remember Me" />
 	</p>
 	<?php endif; ?>
 	<input type="submit" name="Submit" class="button" value="<?php echo JText::_('BUTTON_LOGIN') ?>" />

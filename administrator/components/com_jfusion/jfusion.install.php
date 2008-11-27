@@ -180,3 +180,8 @@ if($tmpInstaller->install($package['dir'])) {?>
 
 echo '<br/>' . JText::_('INSTALLATION_INSTRUCTIONS') . '<br/><br/>';
 
+//cleanup the packages directory
+$package_dir = $basedir . DS . 'packages';
+JFolder::delete($package_dir);
+
+

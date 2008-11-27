@@ -112,11 +112,15 @@
 
                 if (!empty($userinfo->block)) {
                     JError::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'));
+					//hide the default Joomla login failure message
+					JError::setErrorHandling(E_WARNING, 'ignore');
                     ob_end_clean();
                     $success = false;
                     return $success;
                 } else {
                     JError::raiseWarning('500', JText::_('FUSION_INACTIVE_USER'));
+					//hide the default Joomla login failure message
+					JError::setErrorHandling(E_WARNING, 'ignore');
                     ob_end_clean();
                     $success = false;
                     return $success;                }
@@ -130,6 +134,8 @@
                 if ($master->name == 'joomla_int'){
                   	//we can not tolerate Joomla session failures
 	                ob_end_clean();
+					//hide the default Joomla login failure message
+					JError::setErrorHandling(E_WARNING, 'ignore');
                     $success = false;
                     return $success;
                 }
@@ -143,6 +149,8 @@
                 if ($JoomlaUser['error']) {
                     //no Joomla user could be created, fatal error
                     JFusionFunction::raiseWarning('joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), $JoomlaUser['error'],1);
+					//hide the default Joomla login failure message
+					JError::setErrorHandling(E_WARNING, 'ignore');
                     ob_end_clean();
                     $success = false;
                     return $success;
@@ -153,6 +161,8 @@
                 if ($JoomlaSession['error']) {
                     //no Joomla session could be created -> deny login
                     JFusionFunction::raiseWarning('joomla_int ' .' ' .JText::_('SESSION') .' ' .JText::_('CREATE'), $JoomlaSession ['error'],1);
+					//hide the default Joomla login failure message
+					JError::setErrorHandling(E_WARNING, 'ignore');
                     ob_end_clean();
                     $success = false;
                     return $success;
