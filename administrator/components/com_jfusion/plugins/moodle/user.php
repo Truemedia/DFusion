@@ -32,21 +32,27 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 */
 class JFusionUser_moodle extends JFusionUser{
 
-    function &getUser($username){
+    function &getUser($identifier){
         $db = JFusionFactory::getDatabase($this->getJname());
         $params = JFusionFactory::getParams($this->getJname());
         $update_block = $params->get('update_block');
-        $username = $this->filterUsername($username);
-        if ($params->get('allow_email_login')){
-           if(strpos($username, '@')) {
-              $identifier = 'email';
+        //decide what can be used as a login credential
+		$login_identifier = $params->get('login_identifier');
+        if ($login_identifier == 1){
+            $identifier_type = 'username';
+            $identifier = $this->filterUsername($identifier);
+        } elseif ($login_identifier == 3){
+           if(strpos($identifier, '@')) {
+               $identifier_type = 'email';
            } else {
-             $identifier = 'username';
+               $identifier_type = 'username';
+    	       $identifier = $this->filterUsername($identifier);
            }
         } else {
-           $identifier = 'username';
+            $identifier_type = 'email';
         }
-        $query = 'SELECT id as userid, username, firstname as name, lastname, email, password, NULL as password_salt, confirmed as activation,policyagreed as block  FROM #__user WHERE '.$identifier.' = ' . $db->Quote($username);
+
+        $query = 'SELECT id as userid, username, firstname as name, lastname, email, password, NULL as password_salt, confirmed as activation,policyagreed as block  FROM #__user WHERE '.$identifier_type.' = ' . $db->Quote($identifier);
         $db->setQuery($query);
         $result = $db->loadObject();
       	if ($result) {
@@ -110,7 +116,7 @@ class JFusionUser_moodle extends JFusionUser{
             }
 
             if (!empty($userinfo->password_clear)) {
-                if (!($params->get('passwordsaltmain'))) {
+                if ($params->get('passwordsaltmain')) {
                    $existingpassword = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
               	} else {
                   	$existingpassword = md5($userinfo->password_clear);
@@ -118,13 +124,13 @@ class JFusionUser_moodle extends JFusionUser{
               	if ($existingpassword != $existinguser->password) {
 	              	$this->updatePassword($userinfo, $existinguser, $status);
               	} else {
-                  	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' .substr($existingpassword,0,6) . '********';
+                  	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
               	}
             } else {
-            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': No password_clear available';
+            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
             }
 
-      //check the activation status
+      	//check the activation status
           if ($existinguser->activation != $userinfo->activation) {
             if ($update_activation || $overwrite) {
                 if ($userinfo->activation) {
@@ -162,7 +168,7 @@ class JFusionUser_moodle extends JFusionUser{
         $params = JFusionFactory::getParams($this->getJname());
         $source_url = $params->get('source_url');
         $post_url = $source_url.$params->get('logout_url');
-         $cookiedomain = $params->get('cookie_domain');
+        $cookiedomain = $params->get('cookie_domain');
         $cookiepath = $params->get('cookie_path');
         $leavealone = $params->get('leavealone');
         $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain,$cookiepath,$leavealone);
@@ -178,10 +184,10 @@ class JFusionUser_moodle extends JFusionUser{
         $post_url = $source_url.$params->get('login_url');
         $formid = $params->get('loginform_id');
         $override = $params->get('override');
-      $hidden = false;
-      $buttons = true;
-      $integrationtype = 1;
-      $relpath=true;
+      	$hidden = false;
+      	$buttons = true;
+      	$integrationtype = 1;
+      	$relpath=true;
         $cookies = array();
         $cookie  = array();
         $status['error'] = '';
@@ -197,15 +203,15 @@ class JFusionUser_moodle extends JFusionUser{
         return $status;
     }
     function filterUsername($username){
-      //no username filtering implemented yet
-      return $username;
+      	//no username filtering implemented yet
+     	return $username;
     }
     function updatePassword($userinfo, $existinguser, &$status){
-     $params = JFusionFactory::getParams('moodle');
+     	$params = JFusionFactory::getParams('moodle');
     if ($params->get('passwordsaltmain')){
-      $existinguser->password = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
+      	$existinguser->password = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
      } else {
-      $existinguser->password = md5($userinfo->password_clear);
+      	$existinguser->password = md5($userinfo->password_clear);
     }
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'UPDATE #__user SET password =' . $db->quote($existinguser->password) . ' WHERE id =' . $existinguser->userid;
@@ -233,13 +239,13 @@ class JFusionUser_moodle extends JFusionUser{
     }
 
     function blockUser($userinfo, &$existinguser, &$status){
-    $db = JFusionFactory::getDatabase($this->getJname());
+    	$db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT value FROM #__config WHERE  name = sitepolicy';
-    $db->setQuery($query);
-    $sitepolicy = $db->loadObject();
+    	$db->setQuery($query);
+    	$sitepolicy = $db->loadObject();
     if ($sitepolicy->value){
-          $query = 'UPDATE #__user SET policyagreed = false WHERE id =' . $existinguser->userid;
-      $db->setQuery($query);
+        $query = 'UPDATE #__user SET policyagreed = false WHERE id =' . $existinguser->userid;
+      	$db->setQuery($query);
           if (!$db->query()) {
               $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
           } else {
@@ -251,28 +257,28 @@ class JFusionUser_moodle extends JFusionUser{
     }
 
     function unblockUser($userinfo, &$existinguser, &$status){
-    $db = JFusionFactory::getDatabase($this->getJname());
+    	$db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT value FROM #__config WHERE  name = sitepolicy';
-    $db->setQuery($query);
-    $sitepolicy = $db->loadObject();
-    if ($sitepolicy->value){
-          $query = 'UPDATE #__user SET policyagreed = true WHERE id =' . $existinguser->userid;
-      $db->setQuery($query);
-          if (!$db->query()) {
-              $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
-          } else {
-            $status['debug'][] = JText::_('BLOCK_UPDATE'). ': ' . $existinguser->block . ' -> ' . $userinfo->block;
-          }
-    } else {
+    	$db->setQuery($query);
+    	$sitepolicy = $db->loadObject();
+    	if ($sitepolicy->value){
+        	$query = 'UPDATE #__user SET policyagreed = true WHERE id =' . $existinguser->userid;
+      		$db->setQuery($query);
+          	if (!$db->query()) {
+              	$status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
+          	} else {
+            	$status['debug'][] = JText::_('BLOCK_UPDATE'). ': ' . $existinguser->block . ' -> ' . $userinfo->block;
+          	}
+    	} else {
              $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . JText::_('BLOCK_UPDATE_SITEPOLICY_NOT_SET');
-    }
+    	}
     }
 
     function activateUser($userinfo, &$existinguser, &$status){
         //activate the user
         $db = JFusionFactory::getDatabase($this->getJname());
-         $query = 'UPDATE #__user SET confirmed = true WHERE id =' . $existinguser->userid;
-    $db->setQuery($query);
+        $query = 'UPDATE #__user SET confirmed = true WHERE id =' . $existinguser->userid;
+    	$db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
         } else {
@@ -282,8 +288,8 @@ class JFusionUser_moodle extends JFusionUser{
 
     function inactivateUser($userinfo, &$existinguser, &$status){
         $db = JFusionFactory::getDatabase($this->getJname());
-         $query = 'UPDATE #__user SET confirmed = false WHERE id =' . $existinguser->userid;
-    $db->setQuery($query);
+        $query = 'UPDATE #__user SET confirmed = false WHERE id =' . $existinguser->userid;
+    	$db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
         } else {
@@ -300,35 +306,35 @@ class JFusionUser_moodle extends JFusionUser{
         $user = new stdClass;
         $user->id = NULL;
         $user->username = $userinfo->username;
-       $parts = explode(' ', $userinfo->name);
-    $user->firstname = $parts[0];
-    if ($parts[(count($parts)-1)]){
-      for ($i=1;$i< (count($parts)); $i++) {
-             $lastname= $lastname.' '.$parts[$i];
-         }
-    }
-    $user->lastname = $lastname;
-    $user->email = strtolower($userinfo->email);
-        if (isset($userinfo->password_clear)) {
-       $params = JFusionFactory::getParams('moodle');
-      if ($params->get('passwordsaltmain')){
-        $user->password = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
-       } else {
-        $user->password = md5($userinfo->password_clear);
-      }
-         } else {
-            $user->password = $userinfo->password;
-        }
-    if ($userinfo->activation) {
-      $user->confirmed = 0;
-    } else {
-      $user->confirmed = 1;
-      }
-    $user->policyagreed = !$userinfo->block; // just write, true doesn't harm'
-    // standard moodle stuff
-    $user->auth='manual';
-    $user->mnethostid = 1;
-    $user->timemodified = time();
+       	$parts = explode(' ', $userinfo->name);
+    	$user->firstname = $parts[0];
+    	if ($parts[(count($parts)-1)]){
+      		for ($i=1;$i< (count($parts)); $i++) {
+             	$lastname= $lastname.' '.$parts[$i];
+         	}
+    	}
+    	$user->lastname = $lastname;
+    	$user->email = strtolower($userinfo->email);
+    	if (isset($userinfo->password_clear)) {
+       		$params = JFusionFactory::getParams('moodle');
+      		if ($params->get('passwordsaltmain')){
+        		$user->password = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
+       		} else {
+        		$user->password = md5($userinfo->password_clear);
+      		}
+		} else {
+    		$user->password = $userinfo->password;
+    	}
+    	if ($userinfo->activation) {
+      		$user->confirmed = 0;
+    	} else {
+      		$user->confirmed = 1;
+      	}
+    	$user->policyagreed = !$userinfo->block; // just write, true doesn't harm'
+    	// standard moodle stuff
+    	$user->auth='manual';
+    	$user->mnethostid = 1;
+    	$user->timemodified = time();
 
         //now append the new user data
         if (!$db->insertObject('#__user', $user, 'id' )) {

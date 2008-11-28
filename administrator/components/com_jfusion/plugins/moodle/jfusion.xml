@@ -3,7 +3,7 @@
 <install type="jfusion" version="1.5.0">
   <name>moodle</name>
   <author>Henk Wevers</author>
-  <creationDate>15 November 2008</creationDate>
+  <creationDate>28 November 2008</creationDate>
   <copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <authorEmail>admin@mijnbreincoach.nl</authorEmail>
@@ -51,16 +51,17 @@
     <param name="leavealone" type="text" size="100" label="" 
       default="MOODLEID_=>" description="COOKIE_LEAVEALONE" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
+	<param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
+	<param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
+		<option value="1">USERNAME</option>
+		<option value="2">EMAIL</option>
+		<option value="3">USERNAME_OR_EMAIL</option>
+	</param>
     <param name="login_url" type="text" size="100" label="" 
       default="login/" description="LOGIN_URL" />
     <param name="loginform_id" type="text" size="100" label="" 
       default="login" description="LOGINFORM_ID" />
-    <param name="allow_email_login" type="list" 
-      default="0" label="" description="ALLOW_EMAIL_LOGIN" >
-      <option value="1">YES</option>
-      <option value="">NO</option>
-    </param>
-   <param name="logout_url" type="text" size="100" label="" 
+    <param name="logout_url" type="text" size="100" label="" 
       default="" description="LOGOUT_URL" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
     <param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
