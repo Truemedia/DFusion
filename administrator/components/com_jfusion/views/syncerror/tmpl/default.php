@@ -37,11 +37,11 @@ JFusionFunction::displayDonate();
 <img src="components/com_jfusion/images/usersync.png" height="75px" width="75px">
 <td><h2><? echo JText::_('RESOLVE_CONLFICTS'); ?></h2></td></tr></table><br/>
 <br/>
-<? echo JText::_('CONFLICT_INSTRUCTION'); ?><br/>
+<font size="2"><? echo JText::_('CONFLICT_INSTRUCTION'); ?></font><br/>
 <h3><? echo JText::_('EMAIL') . ' ' . JText::_('CONFLICTS'); ?></h3>
-<? echo JText::_('CONFLICTS_EMAIL'); ?><br/>
+<font size="2"><? echo JText::_('CONFLICTS_EMAIL'); ?></font><br/>
 <h3><? echo JText::_('USERNAME') . ' ' . JText::_('CONFLICTS'); ?></h3>
-<? echo JText::_('CONFLICTS_USERNAME'); ?><br/>
+<font size="2"><? echo JText::_('CONFLICTS_USERNAME'); ?></font><br/>
 
 
 

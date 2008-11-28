@@ -242,12 +242,12 @@ if (!empty($userinfo->block) || !empty($userinfo->activation)) {
     }
 
     if (!empty($userinfo->block)) {
-        JError::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'),0);
+        JFusionFunction::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'),0);
         ob_end_flush();
         $success = false;
         return $success;
     } else {
-        JError::raiseWarning('500', JText::_('FUSION_INACTIVE_USER'),0);
+        JFusionFunction::raiseWarning('500', JText::_('FUSION_INACTIVE_USER'),0);
         ob_end_flush();
         $success = false;
         return $success;

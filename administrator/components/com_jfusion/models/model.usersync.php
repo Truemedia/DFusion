@@ -149,9 +149,13 @@ class JFusionUsersync{
 					if($action =='master'){
                     	$userlist = $SlavePlugin->getUserList();
                     	$action_reverse = 'slave';
+                    	$action_name = $syncdata['master'];
+                    	$action_reverse_name = $jname;
 					} else {
                     	$userlist = $MasterPlugin->getUserList();
                     	$action_reverse = 'master';
+                    	$action_name = $jname;
+                    	$action_reverse_name = $syncdata['master'];
 					}
 
                     //perform the actual sync
@@ -174,11 +178,11 @@ class JFusionUsersync{
                             $sync_error[$action]['username'] = $status['userinfo']->username;
                             $sync_error[$action]['userid'] = $status['userinfo']->userid;
                             $sync_error[$action]['email'] = $status['userinfo']->email;
-                            $sync_error[$action]['jname'] = $syncdata['master'];
-                            $sync_error[$action_reverse]['username'] = $userinfo->username;
+                            $sync_error[$action]['jname'] = $action_name;
+                            $sync_error[$action_reverse]['username'] = $userlist[$j]->username;
                             $sync_error[$action_reverse]['userid'] = $userinfo->userid;
-                            $sync_error[$action_reverse]['email'] = $userinfo->email;
-                            $sync_error[$action_reverse]['jname'] = $jname;
+                            $sync_error[$action_reverse]['email'] = $userlist[$j]->email;
+                            $sync_error[$action_reverse]['jname'] = $action_reverse_name;
 
                             //save the error for later
                             $syncdata['errors'][] = $sync_error;

@@ -382,7 +382,7 @@ class JFusionUser_joomla_int extends JFusionUser{
     {
         //unblock the user
         $db =& JFactory::getDBO();
-        $query = 'UPDATE #__users SET activation = \'\' WHERE id =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET block = 0, activation = \'\' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
@@ -395,7 +395,7 @@ class JFusionUser_joomla_int extends JFusionUser{
     {
         //unblock the user
         $db =& JFactory::getDBO();
-        $query = 'UPDATE #__users SET activation = '.$db->quote($userinfo->activation) .' WHERE id =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET block = 1, activation = '.$db->quote($userinfo->activation) .' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
         $db->query();
         if (!$db->query()) {
