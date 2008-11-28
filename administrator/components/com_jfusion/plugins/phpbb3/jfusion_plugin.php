@@ -335,6 +335,7 @@ ORDER BY left_id';
             header($url);
         }
 
+		//redirect for file download requests
         if ($jfile == 'file.php') {
             $url ="Location: " . $params->get('source_url') . 'download/file.php?' . $_SERVER['QUERY_STRING'] ;
             header($url);

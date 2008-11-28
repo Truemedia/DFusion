@@ -117,11 +117,15 @@ class JFusionHook
 		}
 
 		//add an excemption for editing profiles
-		if($arrParams['i'] == 'profile') {
+		if($arrParams['i'] == 'profile' || $arrParams['i'] == 'prefs') {
 				$view = 'ucp.php';
 		}
 
-		$uri->setVar('jfile', $view);
+		//set the jfile param if needed
+        if(!empty($view)){
+			$uri->setVar('jfile', $view);
+        }
+
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));
 
 		return JRoute::_($url, $is_amp);
