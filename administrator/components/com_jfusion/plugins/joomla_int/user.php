@@ -163,7 +163,7 @@ class JFusionUser_joomla_int extends JFusionUser{
         if ($login_identifier == 1){
             $identifier_type = 'b.username';
             $identifier = $this->filterUsername($identifier);
-        } elseif ($login_identifier == 2){
+        } elseif ($login_identifier == 3){
            if(strpos($identifier, '@')) {
                $identifier_type = 'b.email';
            } else {
