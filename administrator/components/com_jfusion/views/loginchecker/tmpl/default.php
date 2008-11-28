@@ -66,19 +66,20 @@ radioObj[i].checked = true;
 </th></td></thead><tr><td width="200px">
 <?php echo JText::_('USERNAME'); ?>
 </td><td>
-<input type="text" name="check_username" size="40">
+<input type="text" name="username" size="40">
 </td></tr><tr><td width="100px">
 <?php echo JText::_('PASSWORD'); ?>
 </td><td>
-<input type="password" name="skip_password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?> <input type="checkbox" name="skip_password" value="yes" alt="Remember Me" />
+<input type="password" name="password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?> 
+<input type="checkbox" name="skip_password" value="yes" checked alt="Remember Me" />
 </td></tr><tr><td width="100px">
 <?php echo JText::_('DEBUG') . ' ' . JText::_('REMEMBER_ME'); ?>
 </td><td>
-<input type="checkbox" name="remember" value="yes" alt="Remember Me" />
+<input type="checkbox" name="remember" value="yes" checked alt="Remember Me" />
 </td></tr><tr><td width="100px">
 <?php echo JText::_('DEBUG') . ' ' . JText::_('LOGOUT'); ?>
 </td><td>
-<input type="checkbox" name="debug_logout" value="yes" alt="Debug Logout" />
+<input type="checkbox" name="debug_logout" value="yes" checked alt="Debug Logout" />
 </td></tr></table>
 </form>
 
