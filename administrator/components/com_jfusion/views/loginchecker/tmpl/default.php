@@ -63,14 +63,14 @@ radioObj[i].checked = true;
 <br/><br/>
 <table class="adminlist" cellspacing="1"><thead><tr><th colspan="2" class="title" >
 <? echo JText::_('LOGIN_CHECKER'); ?>
-</th></td></thead><tr><td width="100px">
+</th></td></thead><tr><td width="200px">
 <?php echo JText::_('USERNAME'); ?>
 </td><td>
 <input type="text" name="check_username" size="40">
 </td></tr><tr><td width="100px">
 <?php echo JText::_('PASSWORD'); ?>
 </td><td>
-<input type="password" name="check_password" size="40">
+<input type="password" name="skip_password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?> <input type="checkbox" name="skip_password" value="yes" alt="Remember Me" />
 </td></tr><tr><td width="100px">
 <?php echo JText::_('DEBUG') . ' ' . JText::_('REMEMBER_ME'); ?>
 </td><td>

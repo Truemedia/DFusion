@@ -341,6 +341,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
     function updateEmail($userinfo, &$existinguser, &$status)
     {
+        $db =& JFactory::getDBO();
         $query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
@@ -394,7 +395,7 @@ class JFusionUser_joomla_int extends JFusionUser{
     {
         //unblock the user
         $db =& JFactory::getDBO();
-        $query = 'UPDATE #__users SET activation = '.$userinfo->activation .' WHERE id =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET activation = '.$db->quote($userinfo->activation) .' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
         $db->query();
         if (!$db->query()) {

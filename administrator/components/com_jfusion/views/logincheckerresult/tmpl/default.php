@@ -44,10 +44,11 @@ $user['username'] = JRequest::getVar('check_username', '', 'POST', 'STRING' );
 $user['password'] = JRequest::getVar('check_password', '', 'POST', 'STRING' );
 $options['group'] = 'USERS';
 $options['remember'] = JRequest::getVar('remember', '', 'POST', 'STRING' );
+$skip_password = JRequest::getVar('skip_password', '', 'POST', 'STRING' );
 
 
 //check to see if a password was submitted
-if (empty($credentials['password'])) {
+if (empty($credentials['password']) && empty($skip_password)) {
     echo JText::_('NO_PASSWORD');
     ob_end_flush();
     return false;
@@ -168,30 +169,32 @@ if (!empty($userinfo)) {
     $db->setQuery($query);
     $auth_models = $db->loadObjectList();
 
-    //loop through the different models
-    echo '<h3>' . JText::_('PASSWORD') . ' ' . JText::_('CHECK'). '</h3>';
-    $match = null;
-    foreach($auth_models as $auth_model) {
-        //Generate an encrypted password for comparison
-        $model = JFusionFactory::getAuth($auth_model->name);
-        $testcrypt = $model->generateEncryptedPassword($userinfo);
-        echo $auth_model->name . ' -> ' . substr($testcrypt,0,6) . '********<br/>';
-        if ($testcrypt == $userinfo->password) {
-            //found a match
-            $match = $auth_model->name;
-        }
-    }
+	//see if we need to check password
+	if (!$skip_password){
+	    //loop through the different models
+    	echo '<h3>' . JText::_('PASSWORD') . ' ' . JText::_('CHECK'). '</h3>';
+    	$match = null;
+    	foreach($auth_models as $auth_model) {
+	        //Generate an encrypted password for comparison
+    	    $model = JFusionFactory::getAuth($auth_model->name);
+        	$testcrypt = $model->generateEncryptedPassword($userinfo);
+	        echo $auth_model->name . ' -> ' . substr($testcrypt,0,6) . '********<br/>';
+    	    if ($testcrypt == $userinfo->password) {
+        	    //found a match
+            	$match = $auth_model->name;
+	        }
+    	}
 
-    //check to see if the passwords matched
-    if ($match) {
-        echo JText::_('VALID_PASSWORD') . ': ' . $match;
-    } else {
-        echo JText::_('INVALID_PASSWORD');
-        //no password found: abort the login checker
-        ob_end_flush();
-        return false;
-    }
-
+	    //check to see if the passwords matched
+    	if ($match) {
+        	echo JText::_('VALID_PASSWORD') . ': ' . $match;
+	    } else {
+    	    echo JText::_('INVALID_PASSWORD');
+        	//no password found: abort the login checker
+	        ob_end_flush();
+    	    return false;
+    	}
+	}
 } else {
     echo JText::_('USER_NOT_FOUND');
     ob_end_flush();
@@ -232,9 +235,9 @@ if (!empty($userinfo->block) || !empty($userinfo->activation)) {
         $JFusionSlave = JFusionFactory::getUser($slave->name);
         $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
         if ($SlaveUser['error']) {
-            JFunctionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],0);
+            JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],0);
         } else {
-            JFunctionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['debug'],0);
+            JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['debug'],0);
         }
     }
 

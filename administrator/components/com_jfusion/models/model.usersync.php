@@ -172,9 +172,11 @@ class JFusionUsersync{
 
                             $sync_error = array();
                             $sync_error[$action]['username'] = $status['userinfo']->username;
+                            $sync_error[$action]['userid'] = $status['userinfo']->userid;
                             $sync_error[$action]['email'] = $status['userinfo']->email;
                             $sync_error[$action]['jname'] = $syncdata['master'];
                             $sync_error[$action_reverse]['username'] = $userinfo->username;
+                            $sync_error[$action_reverse]['userid'] = $userinfo->userid;
                             $sync_error[$action_reverse]['email'] = $userinfo->email;
                             $sync_error[$action_reverse]['jname'] = $jname;
 

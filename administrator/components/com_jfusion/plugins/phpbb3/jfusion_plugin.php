@@ -254,7 +254,7 @@ ORDER BY left_id';
     {
         //getting the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT username_clean as username, user_email as email from #__users WHERE user_email NOT LIKE \'\'';
+        $query = 'SELECT username_clean as username, user_email as email from #__users WHERE user_email NOT LIKE \'\' and user_email IS NOT NULL';
         $db->setQuery($query );
 
         //getting the results

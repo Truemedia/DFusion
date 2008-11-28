@@ -18,19 +18,38 @@ JFusionFunction::displayDonate();
 
 ?>
 
+<style type="text/css">
+#ajax_bar {
+    background-color: #e4ecf2;
+    border: 1px solid #d6d6d6;
+    border-left-color: #e4e4e4;
+    border-top-color: #e4e4e4;
+    margin-top: 0pt auto;
+    height: 20px;
+    padding: 3px 5px;
+    vertical-align: center;
+}
+</style>
+
 <table><tr><td width="100px">
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/usersync.png" height="75px" width="75px">
 <td><h2><? echo JText::_('RESOLVE_CONLFICTS'); ?></h2></td></tr></table><br/>
 <br/>
+<? echo JText::_('CONFLICT_INSTRUCTION'); ?><br/>
+<h3><? echo JText::_('EMAIL') . ' ' . JText::_('CONFLICTS'); ?></h3>
+<? echo JText::_('CONFLICTS_EMAIL'); ?><br/>
+<h3><? echo JText::_('USERNAME') . ' ' . JText::_('CONFLICTS'); ?></h3>
+<? echo JText::_('CONFLICTS_USERNAME'); ?><br/>
+
 
 
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="syncerror" />
 
-
+<div id="ajax_bar">
 <select name="default_value" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
@@ -53,7 +72,7 @@ var default_value = document.forms['adminForm'].elements['default_value'].select
 //-->
 </script>
 <a href="javascript:void(0);"  onclick="applyAll();">start</a>
-
+</div>
 
 
 <table class="adminlist" cellspacing="1"><thead><tr>
@@ -83,8 +102,8 @@ $error =  $this->syncdata['errors'][$i];
 
 
 </td>
-<td><?php echo $error['master']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['master']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['master']['email'] ; ?></td>
-<td><?php echo $error['slave']['jname'] . ' ' . JText::_('USERNAME') . ': ' . $error['slave']['username'] . JText::_('WITH') . ' ' . JText::_('EMAIL') .': ' . $error['slave']['email'] ; ?></td>
+<td><?php echo $error['master']['jname'] . ': ' . $error['master']['userid'] . ' / ' . $error['master']['username']  .' / ' . $error['master']['email'] ; ?></td>
+<td><?php echo $error['slave']['jname'] . ': ' . $error['slave']['userid'] .' / ' . $error['slave']['username'] .' / ' . $error['slave']['email'] ; ?></td>
 <td><select name="syncerror[<?php echo $i; ?>][action]" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
