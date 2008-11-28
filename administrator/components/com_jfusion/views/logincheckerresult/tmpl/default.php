@@ -48,7 +48,7 @@ $skip_password = JRequest::getVar('skip_password', '', 'POST', 'STRING' );
 
 
 //check to see if a password was submitted
-if (empty($credentials['password']) && empty($skip_password)) {
+if (empty($credentials['password']) && ($skip_password == 'yes')) {
     echo JText::_('NO_PASSWORD');
     ob_end_flush();
     return false;

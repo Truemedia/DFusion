@@ -66,11 +66,11 @@ radioObj[i].checked = true;
 </th></td></thead><tr><td width="200px">
 <?php echo JText::_('USERNAME'); ?>
 </td><td>
-<input type="text" name="username" size="40">
+<input type="text" name="check_username" size="40">
 </td></tr><tr><td width="100px">
 <?php echo JText::_('PASSWORD'); ?>
 </td><td>
-<input type="password" name="password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?> 
+<input type="password" name="check_password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?> 
 <input type="checkbox" name="skip_password" value="yes" checked alt="Remember Me" />
 </td></tr><tr><td width="100px">
 <?php echo JText::_('DEBUG') . ' ' . JText::_('REMEMBER_ME'); ?>
