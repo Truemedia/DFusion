@@ -58,7 +58,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 			if (isset($userinfo->password_clear)){
 			    //check if the password needs to be updated
 	    	    $model = JFusionFactory::getAuth($this->getJname());
-        		$testcrypt = $model->generateEncryptedPassword($existinguser);
+        		$testcrypt = $model->generateEncryptedPassword($userinfo);
             	if ($testcrypt != $userinfo->password) {
                 	$this->updatePassword($userinfo, $existinguser, $status);
             	} else {
