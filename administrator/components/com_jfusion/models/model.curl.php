@@ -397,7 +397,7 @@ class JFusionCurl{
         }
     }
 
-    function deletemycookies($mycookies_to_set,$cookiedomain,$cookiepath){
+    function deletemycookies($mycookies_to_set,$cookiedomain,$cookiepath,$leavealone){
         $cookies=array();
         $cookies=JFusionCurl::parsecookies($mycookies_to_set);
         foreach ($cookies as $cookie){
@@ -407,6 +407,35 @@ class JFusionCurl{
 //          $cookiepath="";
             $cookiedomain="";
 //          $httponly="true";
+        	// leavealone keys/values while deleting
+        	// the $leavealone is an array of key=value that controls cookiedeletion
+        	// key = value
+	        // if key is an existing cookiename then that cookie will be affected depending on the value
+    	    // if value = '>' then the 'name' cookies with an expiration date/time > now() will not be deleted
+        	// if value = '0' then  the 'name' cookies will never be deleted at all
+	        // if name is a string than the cookie with that name will be affected
+    	    // if name = '0' then all cookies will be affected according to the value
+        	// thus
+	        // MOODLEID_=> keeps the cookie with the name MOODLEID_ if expirationtime lies after now()
+        	// 0=> will keep all cookies that are not sessioncookies
+    	    // 0=0 will keep all cookies
+
+        	if ($leavealone){
+           		$leavealonearr = array();
+           		$lines = array();
+           		$line=array();
+           		$lines = explode(',',$leavealone);
+           		$i = 0;
+           		foreach ($lines as $line) {
+              		$cinfo = explode ('=',$line);
+              		$leavealonearr[$i]['value'] = $cinfo[1];
+              		$leavealonearr[$i]['name']  = $cinfo[0];
+              	$i++;
+           	}
+        }
+
+
+
             if (isset($cookie['value']['key']))   {$name= $cookie['value']['key'];}
 //            if (isset($cookie['value']['value'])) {$value=$cookie['value']['value'];}
             if (isset($cookie['expires']))        {$expires_time=$cookie['expires'];}
@@ -616,7 +645,7 @@ class JFusionCurl{
       *   @returns $status
       */
 
-  function RemoteLogout($post_url,$cookiedomain='',$cookiepath='') {
+  function RemoteLogout($post_url,$cookiedomain='',$cookiepath='',$leavealone=NULL) {
         $status=array();
         $status['debug']='';
         global $ch;
@@ -642,7 +671,7 @@ class JFusionCurl{
         curl_close($ch);
         #we have to set the cookies now
 
-        JFusionCurl::deletemycookies($cookies_to_set,$cookiedomain,$cookiepath);
+         JFusionCurl::deletemycookies($cookies_to_set,$cookiedomain,$cookiepath,$leavealone);
         $cookies_to_set_index=0;
         return $status;
      }
