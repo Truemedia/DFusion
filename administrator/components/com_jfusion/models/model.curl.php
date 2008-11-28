@@ -3,7 +3,7 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.0.8.008
+ * @version 1.0.8.009
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion -- Henk Wevers. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -400,48 +400,59 @@ class JFusionCurl{
     function deletemycookies($mycookies_to_set,$cookiedomain,$cookiepath,$leavealone){
         $cookies=array();
         $cookies=JFusionCurl::parsecookies($mycookies_to_set);
+        // leavealone keys/values while deleting
+        // the $leavealone is an array of key=value that controls cookiedeletion
+        // key = value
+        // if key is an existing cookiename then that cookie will be affected depending on the value
+        // if value = '>' then the 'name' cookies with an expiration date/time > now() will not be deleted
+        // if value = '0' then  the 'name' cookies will never be deleted at all
+        // if name is a string than the cookie with that name will be affected
+        // if name = '0' then all cookies will be affected according to the value
+        // thus
+        // MOODLEID_=> keeps the cookie with the name MOODLEID_ if expirationtime lies after now()
+        // 0=> will keep all cookies that are not sessioncookies
+        // 0=0 will keep all cookies
+
+       if ($leavealone){
+           $leavealonearr = array();
+           $lines = array();
+           $line=array();
+           $lines = explode(',',$leavealone);
+           $i = 0;
+           foreach ($lines as $line) {
+              $cinfo = explode ('=',$line);
+              $leavealonearr[$i]['name']  = $cinfo[0];
+              $leavealonearr[$i]['value'] = $cinfo[1];
+              $i++;
+           }
+        }
+
+
         foreach ($cookies as $cookie){
+            // check if we schould leave the cookie alone
+            $leaveit = false;
+            for ($i=0;$i<count($leavealonearr);$i++){
+              if (isset($cookie['value']['key'])){
+                 if (($cookie['value']['key']== $leavealonearr[$i]['name']) ||
+                     ($leavealonearr[$i]['name']=='0')){
+                       if  (($leavealonearr[$i]['value'] == '0')||($cookie['expires'] > time())){
+                            $leaveit = true;
+                       }
+                 }
+              }
+            }
+
+
             $name="";
             $value="";
             $expires_time=time()-30*60;
 //          $cookiepath="";
             $cookiedomain="";
-//          $httponly="true";
-        	// leavealone keys/values while deleting
-        	// the $leavealone is an array of key=value that controls cookiedeletion
-        	// key = value
-	        // if key is an existing cookiename then that cookie will be affected depending on the value
-    	    // if value = '>' then the 'name' cookies with an expiration date/time > now() will not be deleted
-        	// if value = '0' then  the 'name' cookies will never be deleted at all
-	        // if name is a string than the cookie with that name will be affected
-    	    // if name = '0' then all cookies will be affected according to the value
-        	// thus
-	        // MOODLEID_=> keeps the cookie with the name MOODLEID_ if expirationtime lies after now()
-        	// 0=> will keep all cookies that are not sessioncookies
-    	    // 0=0 will keep all cookies
-
-        	if ($leavealone){
-           		$leavealonearr = array();
-           		$lines = array();
-           		$line=array();
-           		$lines = explode(',',$leavealone);
-           		$i = 0;
-           		foreach ($lines as $line) {
-              		$cinfo = explode ('=',$line);
-              		$leavealonearr[$i]['value'] = $cinfo[1];
-              		$leavealonearr[$i]['name']  = $cinfo[0];
-              	$i++;
-           	}
-        }
-
-
-
             if (isset($cookie['value']['key']))   {$name= $cookie['value']['key'];}
-//            if (isset($cookie['value']['value'])) {$value=$cookie['value']['value'];}
             if (isset($cookie['expires']))        {$expires_time=$cookie['expires'];}
             if (isset($cookie['path']))           {$cookiepath=$cookie['path'];}
             if (isset($cookie['domain']))         {$cookiedomain=$cookie['domain'];}
-            setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,0,1);
+            if (!$leaveit){setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,0,1);}
         }
     }
 
@@ -669,9 +680,9 @@ class JFusionCurl{
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         $remotedata = curl_exec($ch);
         curl_close($ch);
-        #we have to set the cookies now
+        #we have to delete the cookies now
 
-         JFusionCurl::deletemycookies($cookies_to_set,$cookiedomain,$cookiepath,$leavealone);
+        JFusionCurl::deletemycookies($cookies_to_set,$cookiedomain,$cookiepath,$leavealone);
         $cookies_to_set_index=0;
         return $status;
      }
