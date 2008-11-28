@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8-008
+* @version 1.0.8-009
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -49,20 +49,20 @@ class JFusionUser_moodle extends JFusionUser{
         $query = 'SELECT id as userid, username, firstname as name, lastname, email, password, NULL as password_salt, confirmed as activation,policyagreed as block  FROM #__user WHERE '.$identifier.' = ' . $db->Quote($username);
         $db->setQuery($query);
         $result = $db->loadObject();
-      if ($result) {
-          // contruct full name
-          $result->name = trim($result->name.' '.$result->lastname);
-          // reverse activation, moodle: require activated = 0, confirmed = 1
-          $result->activation = !$result->activation;
-      // get the policy agreed stuff
-          $query = 'SELECT value FROM #__config WHERE  name = sitepolicy';
-           $db->setQuery($query);
-          $sitepolicy = $db->loadObject();
-      if ($sitepolicy->value){
-        $result->block = !$result->block;
-      }  else {
-              $result->block = 0;
-      }
+      	if ($result) {
+          	// contruct full name
+          	$result->name = trim($result->name.' '.$result->lastname);
+          	// reverse activation, moodle: require activated = 0, confirmed = 1
+          	$result->activation = !$result->activation;
+      		// get the policy agreed stuff
+          	$query = 'SELECT value FROM #__config WHERE  name = sitepolicy';
+          	$db->setQuery($query);
+			$sitepolicy = $db->loadResult();
+      		if ($sitepolicy->value){
+        		$result->block = !$result->block;
+      		}  else {
+              	$result->block = 0;
+      	}
       }
       return $result;
      }
@@ -162,9 +162,10 @@ class JFusionUser_moodle extends JFusionUser{
         $params = JFusionFactory::getParams($this->getJname());
         $source_url = $params->get('source_url');
         $post_url = $source_url.$params->get('logout_url');
-       $cookiedomain = $params->get('cookie_domain');
-      $cookiepath = $params->get('cookie_path');
-        $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain,$cookiepath);
+         $cookiedomain = $params->get('cookie_domain');
+        $cookiepath = $params->get('cookie_path');
+        $leavealone = $params->get('leavealone');
+        $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain,$cookiepath,$leavealone);
         return $status;
      }
     function createSession($userinfo, $options){

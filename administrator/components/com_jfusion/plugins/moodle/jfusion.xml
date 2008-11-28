@@ -8,7 +8,7 @@
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <authorEmail>admin@mijnbreincoach.nl</authorEmail>
   <authorUrl>www.mijnbreincoach.nl</authorUrl>
-  <version>1.08-008</version>
+  <version>1.08-009</version>
   <description>JFusion (1.08+) plugin for Moodle Elearning 1.8+</description>
   <slave>0</slave>
   <dual_login>0</dual_login>
@@ -48,6 +48,8 @@
     description="COOKIE_EXPIRES" />
     <param name="override" type="text" size="100" label="" 
       default="login[indirect]=no" description="COOKIE_OVERRIDE" />
+    <param name="leavealone" type="text" size="100" label="" 
+      default="MOODLEID_=>" description="COOKIE_LEAVEALONE" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
     <param name="login_url" type="text" size="100" label="" 
       default="login/" description="LOGIN_URL" />
