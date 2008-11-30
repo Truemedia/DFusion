@@ -35,6 +35,7 @@
 		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 		<param name="activationgroup" type="JFusionUsergroups" description="DEFAULT_ACTIVATIONGROUP" label="DEFAULT_ACTIVATIONGROUP" />
+		<param name="bannedgroup" type="JFusionUsergroups" description="DEFAULT_BANNEDGROUP" label="DEFAULT_BANNEDGROUP" />
 		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
 			<option value="1">YES</option>
 			<option value="">NO</option>
