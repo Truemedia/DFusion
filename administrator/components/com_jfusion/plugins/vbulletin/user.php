@@ -158,7 +158,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 		define('SKIP_USERINFO', 1);
 		define('CWD', $params->get('source_path'));
 
-		global $vbulletin;
 		require_once(CWD . './includes/init.php');
 
     	//work around to make global vbulletin stick
@@ -343,6 +342,16 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 		require_once(CWD . './includes/init.php');
 
+		//work around to make global vbulletin stick
+		$registry = $vbulletin;
+		unset($vbulletin);
+		$vbDb = $registry->db;
+		//declare as global vbulletin's registry and db objects
+		global $vbulletin,$db;
+		$vbulletin = $registry;
+		//vbulletin db object which is needed for vbulletin's project tools addon
+		$db = $vbDb;
+
 		//setup the existing user
 		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
 		$userinfo = $this->convertUserData($existinguser);
@@ -400,16 +409,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 		$userdm->pre_save();
 	    if(empty($userdm->errors)){
-
-	    	//work around to make global vbulletin stick
-			$registry = $vbulletin;
-			unset($vbulletin);
-			$vbDb = $registry->db;
-			//declare as global vbulletin's registry and db objects
-			global $vbulletin,$db;
-			$vbulletin = $registry;
-			//vbulletin db object which is needed for vbulletin's project tools addon
-			$db = $vbDb;
 
 			$userdm->save();
 
