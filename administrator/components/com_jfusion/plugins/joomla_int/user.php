@@ -56,10 +56,12 @@ class JFusionUser_joomla_int extends JFusionUser{
             }
 
 			if (isset($userinfo->password_clear)){
+				// add password_clear to existinguser for the Joomla helper routines
+				$existinguser->password_clear=$userinfo->password_clear; 
 			    //check if the password needs to be updated
 	    	    $model = JFusionFactory::getAuth($this->getJname());
-        		$testcrypt = $model->generateEncryptedPassword($userinfo);
-            	if ($testcrypt != $userinfo->password) {
+        		$testcrypt = $model->generateEncryptedPassword($existinguser);
+            	if ($testcrypt != $existinguser->password) {
                 	$this->updatePassword($userinfo, $existinguser, $status);
             	} else {
                 	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
