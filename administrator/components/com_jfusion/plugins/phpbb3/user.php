@@ -48,8 +48,24 @@ class JFusionUser_phpbb3 extends JFusionUser{
             }
 
             if (!empty($userinfo->password_clear)) {
-                //we can update the password
-                $this->updatePassword($userinfo, $existinguser, $status);
+			    //check if the password needs to be updated
+	    	    $model = JFusionFactory::getAuth($this->getJname());
+        		$testcrypt = $model->generateEncryptedPassword($userinfo);
+            	if ($testcrypt != $userinfo->password) {
+                	$this->updatePassword($userinfo, $existinguser, $status);
+            	} else {
+                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+            	}
+
+                //this is a proper login attemp, update last visit field
+                $query = 'UPDATE #__users SET user_lastvisit = ' . time() . ' WHERE user_id = ' . $existinguser->userid;
+		        $db->setQuery($query);
+        		$db->query();
+		        if (!$db->query()) {
+        		    $status['error'][] = JText::_('LASTVISIT_UPDATE') . ' ' . JText::_('ERROR') . $db->stderr();
+		        } else {
+	    		    $status['debug'][] = JText::_('LASTVISIT_UPDATE'). ' ' . JText::_('SUCCES');
+        		}
             }
 
             //check the blocked status
@@ -109,7 +125,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         $db = JFusionFactory::getDatabase($this->getJname());
         $username = $this->filterUsername($username);
 
-        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation FROM #__users '.
+        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation, user_lastvisit as lastvisit FROM #__users '.
         'WHERE username_clean=' . $db->Quote($username);
         $db->setQuery($query);
         $result = $db->loadObject();
