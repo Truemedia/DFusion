@@ -282,9 +282,9 @@ if ($master->name != 'joomla_int') {
         //output the userdetails
         echo 'joomla_int' . ' ' . JText::_('USERNAME') .': ' . $JoomlaUser['userinfo']->username .'<br/>';
         echo 'joomla_int' . ' ' . JText::_('USERID') . ': ' . $JoomlaUser['userinfo']->userid .'<br/>';
-        echo 'joomla_int' . ' ' . JText::_('NAME') .': ' . $JoomlaUser['$userinfo']->name .'<br/>';
-        echo 'joomla_int' . ' ' . JText::_('BLOCK') .': ' . $JoomlaUser['$userinfo']->block .'<br/>';
-        echo 'joomla_int' . ' ' . JText::_('ACTIVATION') .': ' . $JoomlaUser['$userinfo']->activation .'<br/>';
+        echo 'joomla_int' . ' ' . JText::_('NAME') .': ' . $JoomlaUser['userinfo']->name .'<br/>';
+        echo 'joomla_int' . ' ' . JText::_('BLOCK') .': ' . $JoomlaUser['userinfo']->block .'<br/>';
+        echo 'joomla_int' . ' ' . JText::_('ACTIVATION') .': ' . $JoomlaUser['userinfo']->activation .'<br/>';
         JFusionFunction::raiseWarning('joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), $JoomlaUser['debug'],0);
         echo JText::_('SKIPPED_SESSION_CREATE').'<br/>';
 
