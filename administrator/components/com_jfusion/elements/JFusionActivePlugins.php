@@ -17,7 +17,7 @@ defined('_JEXEC') or die();
 * Defines the forum select list for JFusion forum plugins
 * @package JFusion
 */
-    class JElementJFusionPlugins extends JElement
+    class JElementJFusionActivePlugins extends JElement
     {
         var $_name = "JFusionActivePlugins";
 

@@ -235,9 +235,10 @@ class JFusionUser_joomla_int extends JFusionUser{
         $added_filter = $params->get('username_filter');
 		if ($added_filter && $added_filter != 'joomla_int') {
 	        $JFusionPlugin = JFusionFactory::getUser($added_filter);
-	        $username = $JFusionPlugin->filterUsername($username);
+	        if(method_exists($JFusionPlugin, 'filterUsername')){
+	        	$username = $JFusionPlugin->filterUsername($username);
+	        }
 		}
-
         return $username;
     }
 
