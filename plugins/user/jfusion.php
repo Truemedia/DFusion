@@ -307,7 +307,7 @@
     	        $master = JFusionFunction::getMaster();
     	        if($master->name != 'joomla_int'){
 		            $JFusionMaster = JFusionFactory::getUser($master->name);
-		            $MasterUser = $JFusionMaster->updateUser($JoomlaUser);
+		            $MasterUser = $JFusionMaster->updateUser($JoomlaUser,1);
                     if ($MasterUser['error']) {
                			JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $MasterUser['error'],1);
                     }
@@ -317,12 +317,13 @@
             	$slaves = JFusionFunction::getPlugins();
             	foreach($slaves as $slave) {
                 	$JFusionSlave = JFusionFactory::getUser($slave->name);
-                	$SlaveUser = $JFusionSlave->updateUser($JoomlaUser);
+                	$SlaveUser = $JFusionSlave->updateUser($JoomlaUser,1);
                     if ($SlaveUser['error']) {
                			JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],1);
                     }
             	}
             }
+
             //stop output buffer
             ob_end_clean();
         }

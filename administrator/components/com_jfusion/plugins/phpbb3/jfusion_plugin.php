@@ -420,22 +420,22 @@ ORDER BY left_id';
 	        $regex_body[]	= '#action="\./(.*?)">#mS';
             $replace_body[]	= 'action="'.$baseURL.'"><input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="Itemid" value="'.$Itemid . '"><input type="hidden" name="jfile" value="$1">';
 
+			//fix for post delete action
+	        $regex_body[]	= '#action="(.*?)\?(.*?)">#mS';
+            $replace_body[]	= 'action="'.$baseURL.'"><input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="Itemid" value="'.$Itemid . '"><input type="hidden" name="jfile" value="$1">';
+
 	        $regex_body[]	= '#(/&amp\;|/\?|&amp;)(.*?)\=#mS';
             $replace_body[]	= '/$2,';
 
-
-
-
-
             //see if sh404sef parsing is needed
-            //$params = JFusionFactory::getParams('joomla_int');
-			//$sh404sef_parse = $params->get('sh404sef_parse');
-			//if ($sh404sef_parse){
-	            //$currentURL = 'http://www.jfusion.org';
+            $params = JFusionFactory::getParams('joomla_int');
+			$sh404sef_parse = $params->get('sh404sef_parse');
+			if ($sh404sef_parse){
+	            $currentURL = 'http://www.jfusion.org';
 	            //fix up and ampersands that slipped past the parse url function.
-		        //$regex_body[]	= '#'.$currentURL.'(.*?)(/&amp\;|/\?|&amp;)(.*?)"#me';
-				//$replace_body[]	= '$this->fixURL("'.$currentURL.'$1$2$3\"")';
-			//}
+		        $regex_body[]	= '#'.$currentURL.'(.*?)(/&amp\;|/\?)(.*?)"#me';
+				$replace_body[]	= '$this->fixURL("'.$currentURL.'$1$2$3\"")';
+			}
         }
 
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
@@ -445,6 +445,12 @@ ORDER BY left_id';
       	$url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
       	return $url;
       }
+
+      function fixAction($url){
+      	$url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
+      	return $url;
+      }
+
     function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
     {
         static $regex_header, $replace_header;
