@@ -77,8 +77,9 @@ var default_value = document.forms['adminForm'].elements['default_value'].select
 
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
-<th class="title" align="center"><?php echo JText::_('MASTER'); ?></th>
-<th class="title" align="center"><?php echo JText::_('SLAVE'); ?></th>
+<th class="title" align="center"><?php echo JText::_('TYPE'); ?></th>
+<th class="title" align="center"><?php echo JText::_('PLUGIN'). ' '. JText::_('NAME'). ': '. JText::_('USERID') . ' / '. JText::_('USERNAME') . ' / '. JText::_('EMAIL'); ?></th>
+<th class="title" align="center"><?php echo JText::_('CONFlICT'); ?></th>
 <th class="title" align="center"><?php echo JText::_('ACTION'); ?></th>
 </tr></thead><tbody>
 
@@ -95,15 +96,25 @@ $error =  $this->syncdata['errors'][$i];
 	}
 ?>
 <td><?php echo $i; ?>
-<input type="hidden" name="syncerror[<?php echo $i; ?>][master_jname]" value="<?php echo $error['master']['jname']?>" />
-<input type="hidden" name="syncerror[<?php echo $i; ?>][slave_jname]" value="<?php echo $error['slave']['jname']?>" />
-<input type="hidden" name="syncerror[<?php echo $i; ?>][master_username]" value="<?php echo $error['master']['username']?>" />
-<input type="hidden" name="syncerror[<?php echo $i; ?>][slave_username]" value="<?php echo $error['slave']['username']?>" />
-
-
+<input type="hidden" name="syncerror[<?php echo $i; ?>][user_jname]" value="<?php echo $error['user']['jname']?>" />
+<input type="hidden" name="syncerror[<?php echo $i; ?>][conflict_jname]" value="<?php echo $error['conflict']['jname']?>" />
+<input type="hidden" name="syncerror[<?php echo $i; ?>][user_username]" value="<?php echo $error['user']['username']?>" />
+<input type="hidden" name="syncerror[<?php echo $i; ?>][conflict_username]" value="<?php echo $error['conflict']['username']?>" />
 </td>
-<td><?php echo $error['master']['jname'] . ': ' . $error['master']['userid'] . ' / ' . $error['master']['username']  .' / ' . $error['master']['email'] ; ?></td>
-<td><?php echo $error['slave']['jname'] . ': ' . $error['slave']['userid'] .' / ' . $error['slave']['username'] .' / ' . $error['slave']['email'] ; ?></td>
+<td>
+<?php
+//check to see what sort of an error it is
+if (empty($error['conflict']['userid'])){
+    $error_type = 'Error';
+} elseif ($error['user']['username'] != $error['conflict']['username']){
+    $error_type = 'Username';
+} elseif ($error['user']['username'] != $error['conflict']['username']){
+    $error_type = 'Email';
+}
+echo $error_type; ?>
+</td>
+<td><?php echo $error['user']['jname'] . ': ' . $error['user']['userid'] . ' / ' . $error['user']['username']  .' / ' . $error['user']['email'] ; ?></td>
+<td><?php echo $error['conflict']['jname'] . ': ' . $error['conflict']['userid'] .' / ' . $error['conflict']['username'] .' / ' . $error['conflict']['email'] ; ?></td>
 <td><select name="syncerror[<?php echo $i; ?>][action]" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>

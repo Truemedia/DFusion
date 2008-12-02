@@ -148,14 +148,12 @@ class JFusionUsersync{
                     $SlaveUser = & JFusionFactory::getUser($jname);
 					if($action =='master'){
                     	$userlist = $SlavePlugin->getUserList();
-                    	$action_reverse = 'slave';
-                    	$action_name = $syncdata['master'];
-                    	$action_reverse_name = $jname;
-					} else {
-                    	$userlist = $MasterPlugin->getUserList();
-                    	$action_reverse = 'master';
                     	$action_name = $jname;
                     	$action_reverse_name = $syncdata['master'];
+					} else {
+                    	$userlist = $MasterPlugin->getUserList();
+                    	$action_name = $syncdata['master'];
+                    	$action_reverse_name = $jname;
 					}
 
                     //perform the actual sync
@@ -175,14 +173,16 @@ class JFusionUsersync{
 							echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('CONFLICT'). ' ' . $syncdata['master'] . ' ' . $userlist[$j]->username . ' / ' . $userlist[$j]->email . '.  ' . $jname . ' ' . $status['userinfo']->username . ' / ' . $status['userinfo']->email . '<br/>';
 
                             $sync_error = array();
-                            $sync_error[$action]['username'] = $status['userinfo']->username;
-                            $sync_error[$action]['userid'] = $status['userinfo']->userid;
-                            $sync_error[$action]['email'] = $status['userinfo']->email;
-                            $sync_error[$action]['jname'] = $action_name;
-                            $sync_error[$action_reverse]['username'] = $userlist[$j]->username;
-                            $sync_error[$action_reverse]['userid'] = $userinfo->userid;
-                            $sync_error[$action_reverse]['email'] = $userlist[$j]->email;
-                            $sync_error[$action_reverse]['jname'] = $action_reverse_name;
+                            $sync_error['conflict']['username'] = $status['userinfo']->username;
+                            $sync_error['conflict']['userid'] = $status['userinfo']->userid;
+                            $sync_error['conflict']['email'] = $status['userinfo']->email;
+                            $sync_error['conflict']['error'] = $status['error'];
+                            $sync_error['conflict']['debug'] = $status['debug'];
+                            $sync_error['conflict']['jname'] = $action_reverse_name;
+                            $sync_error['user']['username'] = $userlist[$j]->username;
+                            $sync_error['user']['userid'] = $userlist[$j]->userid;
+                            $sync_error['user']['email'] = $userlist[$j]->email;
+                            $sync_error['user']['jname'] = $action_name;
 
                             //save the error for later
                             $syncdata['errors'][] = $sync_error;
