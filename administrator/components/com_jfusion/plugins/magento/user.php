@@ -452,24 +452,28 @@ class JFusionUser_magento extends JFusionUser{
        $this->fillMagentouser($magento_user,'email',$userinfo->email);
        $parts = explode(' ', $userinfo->name);
        $this->fillMagentouser($magento_user,'firstname',$parts[0]);
-    if ($parts[(count($parts)-1)]){
+    	if (count($parts)>1){
          $this->fillMagentouser($magento_user,'lastname',$parts[(count($parts)-1)]);
-    }
+    	} else {
+    		 // Magento needs Firstname AND Lastname, so add a dot when lastname is empty
+    		$this->fillMagentouser($magento_user,'lastname','.');
+    	}
        $middlename='';
        for ($i=1;$i< (count($parts)-1); $i++) {
            $middlename= $middlename.' '.$parts[$i];
        }
        if ($middlename) {$this->fillMagentouser($magento_user,'middlename',$middlename);}
-          if (isset($userinfo->password_clear)) {
+
+       if (isset($userinfo->password_clear)) {
               $password_salt = $this->getRandomString(2);
               $this->fillMagentouser($magento_user,'password_hash',md5($password_salt.$userinfo->password_clear).':'.$password_salt);
           } else {
               $this->fillMagentouser($magento_user,'password_hash',$userinfo->password);
-        }
-/*       $this->fillMagentouser($magento_user,'prefix','');
+       }
+/*     $this->fillMagentouser($magento_user,'prefix','');
        $this->fillMagentouser($magento_user,'suffix','');
        $this->fillMagentouser($magento_user,'taxvat','');
-*/       $this->fillMagentouser($magento_user,'group_id',$default_group_id);
+*/     $this->fillMagentouser($magento_user,'group_id',$default_group_id);
        $this->fillMagentouser($magento_user,'store_id',$default_store_id);
        $this->fillMagentouser($magento_user,'website_id',$default_website_id);
         //now append the new user data
