@@ -3,7 +3,7 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.0.8.009
+ * @version 1.0.8.010
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion -- Henk Wevers. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -327,7 +327,7 @@ class JFusionCurl{
           foreach ($cookiearr as $key=>$value){
                 $cookie .= "$key=$value ";
             }
-          curl_setopt($ch, CURLOPT_COOKIE, $cookie);    //echo $cookie."<br>";
+//          curl_setopt($ch, CURLOPT_COOKIE, $cookie);    //echo $cookie."<br>";
         }
         return $length;
     }
@@ -385,14 +385,11 @@ class JFusionCurl{
             $name="";
             $value="";
             $expires_time=time()+$expires;
-            $cookiepath="";
-//          $cookiedomain="";
-//          $httponly="true";
             if (isset($cookie['value']['key']))   {$name= $cookie['value']['key'];}
             if (isset($cookie['value']['value'])) {$value=$cookie['value']['value'];}
             if (isset($cookie['expires']))        {$expires_time=$cookie['expires'];}
-            if (isset($cookie['path']))           {$cookiepath=$cookie['path'];}
-            if (isset($cookie['domain']))         {$cookiedomain=$cookie['domain'];}
+            if (!$cookiepath)  {if (isset($cookie['path']))   {$cookiepath=$cookie['path'];}}
+            if (!$cookiedomain){if (isset($cookie['domain'])) {$cookiedomain=$cookie['domain'];}}
             setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,0,1);
         }
     }
@@ -441,17 +438,13 @@ class JFusionCurl{
                  }
               }
             }
-
-
             $name="";
             $value="";
             $expires_time=time()-30*60;
-//          $cookiepath="";
-            $cookiedomain="";
             if (isset($cookie['value']['key']))   {$name= $cookie['value']['key'];}
             if (isset($cookie['expires']))        {$expires_time=$cookie['expires'];}
-            if (isset($cookie['path']))           {$cookiepath=$cookie['path'];}
-            if (isset($cookie['domain']))         {$cookiedomain=$cookie['domain'];}
+            if (!$cookiepath)  {if (isset($cookie['path']))           {$cookiepath=$cookie['path'];}}
+            if (!$cookiedomain){if (isset($cookie['domain']))         {$cookiedomain=$cookie['domain'];}}
             if (!$leaveit){setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,0,1);}
         }
     }
