@@ -83,19 +83,28 @@ class JFusionUser_moodle extends JFusionUser{
 
         $status = array();
         $status['debug'] = array();
+       	$status['error'] = array();
+
+		//check to see if a valid $userinfo object was passed on
+		if(!is_object($userinfo)){
+			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
+			return $status;
+		}
+
 
         //find out if the user already exists
         $existinguser = $this->getUser($userinfo->username);
 
         if (!empty($existinguser)) {
             //a matching user has been found
-
-             if ($existinguser->email != $userinfo->email) {
+            if ($existinguser->email != $userinfo->email) {
               if ($update_email || $overwrite) {
                   $this->updateEmail($userinfo, $existinguser, $status);
               } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+                //return a email conflict
+                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+                $status['userinfo'] = $existinguser;
+                return $status;
               }
             }
 
