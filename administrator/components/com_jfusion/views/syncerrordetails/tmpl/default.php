@@ -15,12 +15,12 @@ defined('_JEXEC') or die('Restricted access');
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
-JFusionFunction::displayDonate();
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
 
 ?>
 <style type="text/css">
 #ajax_bar {
-    background-color: #e4ecf2;
+    background-color: #7fa9ff;
     border: 1px solid #d6d6d6;
     border-left-color: #e4e4e4;
     border-top-color: #e4e4e4;
@@ -32,17 +32,31 @@ JFusionFunction::displayDonate();
 </style>
 
 
-<div id="ajax_bar">Detailed JFusion Error Report</div>
+<div id="ajax_bar"><font size="3">Detailed JFusion Error Report</font></div>
 
 <?php
+
+//check to see if the sync has already started
+$syncid = JRequest::getVar('syncid', '', 'GET');
+$syncdata = JFusionUsersync::getSyncdata($syncid);
+
 //get the error
 $errorid = JRequest::getVar('errorid', '', 'GET');
-$error =  $this->syncdata['errors'][$errorid];
+$error =  $syncdata['errors'][$errorid];
 
 //display the userlist info
-debug::show($error['user']['userlist'], 'User Info from Usersync List');
+debug::show($error['user']['jname'], 'User from Plugin',1);
+echo '<br/>';
+debug::show($error['user']['userlist'], 'User Info from Usersync List',1);
+echo '<br/>';
 debug::show($error['user']['userinfo'], 'User Info from getUser() function');
+echo '<br/>';
+debug::show($error['conflict']['jname'], 'User target Plugin',1);
+echo '<br/>';
 debug::show($error['conflict']['error'], 'Error Info from updateUser() function');
+echo '<br/>';
 debug::show($error['conflict']['debug'], 'Debug Info from updateUser() function');
+echo '<br/>';
+debug::show($error['conflict']['userinfo'], 'User Info from updateUser() function');
 
 

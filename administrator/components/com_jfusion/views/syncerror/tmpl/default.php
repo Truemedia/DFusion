@@ -80,7 +80,8 @@ var default_value = document.forms['adminForm'].elements['default_value'].select
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
 <th class="title" align="center"><?php echo JText::_('TYPE'); ?></th>
 <th class="title" align="center"><?php echo JText::_('PLUGIN'). ' '. JText::_('NAME'). ': '. JText::_('USERID') . ' / '. JText::_('USERNAME') . ' / '. JText::_('EMAIL'); ?></th>
-<th class="title" align="center"><?php echo JText::_('CONFlICT'); ?></th>
+<th class="title" align="center"><?php echo JText::_('CONFLICT'); ?></th>
+<th class="title" align="center"><?php echo JText::_('DETAILS'); ?></th>
 <th class="title" align="center"><?php echo JText::_('ACTION'); ?></th>
 </tr></thead><tbody>
 
@@ -126,10 +127,10 @@ if ($error_type != 'Error'){
 ?>
 </td>
 <td>
+<a href="index.php?option=com_jfusion&task=syncerrordetails&syncid=<?php echo $this->syncdata['syncid'];?>&errorid=<? echo $i;?>" rel="moodalbox"><? echo JText::_('DETAILS'); ?></a>
+</td><td>
 <?php
-if ($error_type == 'Error'){ ?>
-<a href="index.php?option=com_jfusion&task=syncerrordetails&syncid=<?php echo $this->syncdata['syncid'];?>&errorid=<? echo $i;?>" rel="moodalbox"><? echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a>
-<?php } else { ?>
+if ($error_type != 'Error'){ ?>
 <select name="syncerror[<?php echo $i; ?>][action]" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>

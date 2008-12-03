@@ -331,8 +331,10 @@ class JFusionController extends JController
 */
     function syncerrordetails()
     {
-        JRequest::setVar('view', 'syncerrordetails');
-        parent::display();
+        $view = &$this->getView('syncerrordetails', 'html');
+        $view->setLayout('default');
+        $result = $view->loadTemplate();
+        die($result);
     }
 
 
