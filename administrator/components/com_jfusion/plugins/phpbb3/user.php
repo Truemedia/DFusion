@@ -129,7 +129,9 @@ class JFusionUser_phpbb3 extends JFusionUser{
     {
         // Get a database object
         $db = JFusionFactory::getDatabase($this->getJname());
-        $username = $this->filterUsername($username);
+
+		//temp comment out of filtering to test UTF8 functions
+        //$username = $this->filterUsername($username);
 
         $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation, user_lastvisit as lastvisit FROM #__users '.
         'WHERE username_clean=' . $db->Quote($username);

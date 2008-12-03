@@ -48,7 +48,7 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
-		<param name="update_email" type="list" default="1" label="" description="UPDATE_EMAIL">
+		<param name="update_email" type="list" default="0" label="" description="UPDATE_EMAIL">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>

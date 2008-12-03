@@ -56,8 +56,10 @@ class JFusionUser_joomla_int extends JFusionUser{
               if ($update_email || $overwrite) {
                   $this->updateEmail($userinfo, $existinguser, $status);
               } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+                //return a email conflict
+                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+                $status['userinfo'] = $existinguser;
+                return $status;
               }
             }
 
@@ -510,6 +512,8 @@ class JFusionUser_joomla_int extends JFusionUser{
           }
         } else {
           //Joomla does not allow duplicate emails report error
+
+
 
         }
     }

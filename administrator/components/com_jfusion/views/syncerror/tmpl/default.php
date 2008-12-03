@@ -107,12 +107,14 @@ $error =  $this->syncdata['errors'][$i];
 <td>
 <?php
 //check to see what sort of an error it is
-if (empty($error['conflict']['userid'])){
+if (empty($error['conflict']['userinfo'])){
     $error_type = 'Error';
-} elseif ($error['user']['username'] != $error['conflict']['username']){
+} elseif ($error['user']['userinfo']->username != $error['conflict']['userinfo']->username){
     $error_type = 'Username';
-} elseif ($error['user']['username'] != $error['conflict']['username']){
+} elseif ($error['user']['userinfo']->email != $error['conflict']['userinfo']->email){
     $error_type = 'Email';
+} else {
+    $error_type = 'Error';
 }
 echo $error_type; ?>
 </td>
