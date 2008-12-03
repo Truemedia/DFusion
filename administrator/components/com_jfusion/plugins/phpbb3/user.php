@@ -24,7 +24,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
-        $db = JFusionFactory::getDatabase($this->getJname());
+        $db = & JFactory::getDBO();
         $params = JFusionFactory::getParams($this->getJname());
         $update_block = $params->get('update_block');
         $update_activation = $params->get('update_activation');
@@ -32,10 +32,11 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
         $status = array();
         $status['debug'] = array();
+        $status['error'] = array();
 
 		//check to see if a valid $userinfo object was passed on
 		if(!is_object($userinfo)){
-			$status['error'] = JText::_('NO_USER_DATA_FOUND');
+			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
 			return $status;
 		}
 
@@ -45,19 +46,23 @@ class JFusionUser_phpbb3 extends JFusionUser{
         if (!empty($existinguser)) {
             //a matching user has been found
             if ($existinguser->email != $userinfo->email) {
-            	if ($update_email || $overwrite) {
-                	$this->updateEmail($userinfo, $existinguser, $status);
-            	} else {
-            		//return a debug to inform we skiped this step
-            		$status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-            	}
+              if ($update_email || $overwrite) {
+                  $this->updateEmail($userinfo, $existinguser, $status);
+              } else {
+                //return a email conflict
+                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+                $status['userinfo'] = $existinguser;
+                return $status;
+              }
             }
 
-            if (!empty($userinfo->password_clear)) {
+			if (isset($userinfo->password_clear)){
+				// add password_clear to existinguser for the Joomla helper routines
+				$existinguser->password_clear=$userinfo->password_clear;
 			    //check if the password needs to be updated
 	    	    $model = JFusionFactory::getAuth($this->getJname());
-        		$testcrypt = $model->generateEncryptedPassword($userinfo);
-            	if ($testcrypt != $userinfo->password) {
+        		$testcrypt = $model->generateEncryptedPassword($existinguser);
+            	if ($testcrypt != $existinguser->password) {
                 	$this->updatePassword($userinfo, $existinguser, $status);
             	} else {
                 	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
@@ -72,38 +77,41 @@ class JFusionUser_phpbb3 extends JFusionUser{
 		        } else {
 	    		    $status['debug'][] = JText::_('LASTVISIT_UPDATE'). ' ' . JText::_('SUCCES');
         		}
-            }
+
+        	} else {
+            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
+        	}
 
             //check the blocked status
             if ($existinguser->block != $userinfo->block) {
-            	if ($update_block || $overwrite) {
-	                if ($userinfo->block) {
-    	                //block the user
-        	            $this->blockUser($userinfo, $existinguser, $status);
-            	    } else {
-                	    //unblock the user
-                    	$this->unblockUser($userinfo, $existinguser, $status);
-                	}
-            	} else {
-            		//return a debug to inform we skiped this step
-            		$status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
-            	}
+              if ($update_block || $overwrite) {
+                  if ($userinfo->block) {
+                      //block the user
+                      $this->blockUser($userinfo, $existinguser, $status);
+                  } else {
+                      //unblock the user
+                      $this->unblockUser($userinfo, $existinguser, $status);
+                  }
+              } else {
+                //return a debug to inform we skiped this step
+                $status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
+              }
             }
 
             //check the activation status
             if ($existinguser->activation != $userinfo->activation) {
-            	if ($update_activation || $overwrite) {
-	                if ($userinfo->activation) {
-    	                //inactiva the user
-        	            $this->inactivateUser($userinfo, $existinguser, $status);
-            	    } else {
-                	    //activate the user
-	                    $this->activateUser($userinfo, $existinguser, $status);
-    	            }
-            	} else {
-            		//return a debug to inform we skiped this step
-            		$status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-            	}
+              if ($update_activation || $overwrite) {
+                  if ($userinfo->activation) {
+                      //inactiva the user
+                      $this->inactivateUser($userinfo, $existinguser, $status);
+                  } else {
+                      //activate the user
+                      $this->activateUser($userinfo, $existinguser, $status);
+                  }
+              } else {
+                //return a debug to inform we skiped this step
+                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+              }
             }
 
             $status['userinfo'] = $existinguser;
@@ -113,16 +121,15 @@ class JFusionUser_phpbb3 extends JFusionUser{
             return $status;
 
         } else {
-            //we need to create a new user
-            $this->createUser($userinfo, $status);
+
+            $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
-            $status['userinfo'] = $this->getUser($userinfo->username);
             return $status;
-
         }
     }
+
 
 
     function &getUser($username)

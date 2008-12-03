@@ -21,8 +21,6 @@ jimport('joomla.user.helper');
 */
 
 
-// HJW removed all indirect ampersands in function calls, cheked the functiondeclarations to have these &'s in place.
-// These generated a bunch of deprecation warnings
 class JFusionUser_joomla_int extends JFusionUser{
 
     function updateUser($userinfo, $overwrite)
@@ -36,6 +34,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
         $status = array();
         $status['debug'] = array();
+        $status['error'] = array();
 
         //prevent the JFusion user plugin from launching JFusion updateUser() again
         global $JFusionActive;
@@ -43,7 +42,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
 		//check to see if a valid $userinfo object was passed on
 		if(!is_object($userinfo)){
-			$status['error'] = JText::_('NO_USER_DATA_FOUND');
+			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
 			return $status;
 		}
 
