@@ -329,6 +329,17 @@ class JFusionController extends JController
     /**
 * Displays the usersync history screen
 */
+    function syncerrordetails()
+    {
+        JRequest::setVar('view', 'syncerrordetails');
+        parent::display();
+    }
+
+
+
+    /**
+* Displays the usersync history screen
+*/
     function synchistory()
     {
         JRequest::setVar('view', 'synchistory');

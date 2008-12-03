@@ -17,7 +17,8 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 JFusionFunction::displayDonate();
 
 ?>
-
+<script type="text/javascript" src="<?php echo 'components/com_jfusion/js/moodalbox.js'; ?>"></script>
+<link rel="stylesheet" href="<?php echo 'components/com_jfusion/css/moodalbox.css'; ?>" type="text/css" media="screen" />
 <style type="text/css">
 #ajax_bar {
     background-color: #e4ecf2;
@@ -98,8 +99,8 @@ $error =  $this->syncdata['errors'][$i];
 <td><?php echo $i; ?>
 <input type="hidden" name="syncerror[<?php echo $i; ?>][user_jname]" value="<?php echo $error['user']['jname']?>" />
 <input type="hidden" name="syncerror[<?php echo $i; ?>][conflict_jname]" value="<?php echo $error['conflict']['jname']?>" />
-<input type="hidden" name="syncerror[<?php echo $i; ?>][user_username]" value="<?php echo $error['user']['username']?>" />
-<input type="hidden" name="syncerror[<?php echo $i; ?>][conflict_username]" value="<?php echo $error['conflict']['username']?>" />
+<input type="hidden" name="syncerror[<?php echo $i; ?>][user_username]" value="<?php echo $error['user']['userlist']->username ?>" />
+<input type="hidden" name="syncerror[<?php echo $i; ?>][conflict_username]" value="<?php echo $error['conflict']['userinfo']->username?>" />
 </td>
 <td>
 <?php
@@ -113,18 +114,32 @@ if (empty($error['conflict']['userid'])){
 }
 echo $error_type; ?>
 </td>
-<td><?php echo $error['user']['jname'] . ': ' . $error['user']['userid'] . ' / ' . $error['user']['username']  .' / ' . $error['user']['email'] ; ?></td>
-<td><?php echo $error['conflict']['jname'] . ': ' . $error['conflict']['userid'] .' / ' . $error['conflict']['username'] .' / ' . $error['conflict']['email'] ; ?></td>
-<td><select name="syncerror[<?php echo $i; ?>][action]" default="0">
+<td><?php echo $error['user']['jname'] . ': ' . $error['user']['userlist']->userid . ' / ' . $error['user']['userlist']->username  .' / ' . $error['user']['userlist']->email ;
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
+//debug::show($error, 'Info on Error');
+ ?></td>
+<td>
+<?php
+if ($error_type != 'Error'){
+	echo $error['conflict']['jname'] . ': ' . $error['conflict']['userinfo']->userid .' / ' . $error['conflict']['userinfo']->username .' / ' . $error['conflict']['userinfo']->email ;
+}
+?>
+</td>
+<td>
+<?php
+if ($error_type == 'Error'){ ?>
+<a href="index.php?option=com_jfusion&task=syncerrordetails&syncid=<?php echo $this->syncdata['syncid'];?>&errorid=<? echo $i;?>" rel="moodalbox"><? echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a>
+<?php } else { ?>
+<select name="syncerror[<?php echo $i; ?>][action]" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
 <option value="2"><?php echo JText::_('UPDATE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
 <option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
 <option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
-</select></td></tr>
+</select>
+<?php }
+echo '</td></tr>';
+}
 
-<?php } ?>
-</table>
-The conflict function does not work at the moment. We are working on adding this feature to the JFusion plugins. My apologies for the inconvience.
-<input type="submit" value="<? echo JText::_('RESOLVE_CONLFICTS'); ?>">
-</form>
+//close the table and render submit button
+echo '</table><input type="submit" value="' .JText::_('RESOLVE_CONLFICTS') . '"></form>';

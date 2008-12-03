@@ -128,8 +128,6 @@ if ($row_count == 1){
 <td><?php echo JText::_('SYNC_NOT_FINISHED'); ?></td>
 <?php } ?>
 
-
-
 <td><a href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"><? echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a></td>
 </tr>
 
