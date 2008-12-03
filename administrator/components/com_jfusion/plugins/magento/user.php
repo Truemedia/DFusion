@@ -200,6 +200,8 @@ class JFusionUser_magento extends JFusionUser{
         $instance['lastvisitDate'] = $magento_user['updated_at']['value'];
         if ($instance['activation']) {
             $instance['block'] = 1;
+        } else {
+        	$instance['block'] = 0;
         }
         return (object) $instance;
     }
@@ -229,10 +231,10 @@ class JFusionUser_magento extends JFusionUser{
               	if ($existingpassword != $existinguser->password) {
 	              	$this->updatePassword($userinfo, $existinguser, $status);
               	} else {
-                  	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' .substr($existingpassword,0,6) . '********';
+                  	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
               	}
               } else {
-                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': No password_clear available';
+                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
               }
 
 
