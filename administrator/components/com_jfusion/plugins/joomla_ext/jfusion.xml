@@ -9,7 +9,10 @@
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
 	<version>1.1.0-001</version>
-	<description>external Joomla plugin for JFusion</description>
+	<description>JFusion (1.1+) plugin for extra Joomla 1.5+ site</description>
+  	<slave>0</slave>
+  	<dual_login>0</dual_login>
+  	<activity>0</activity>
 	<files>
 		<filename>auth.php</filename>
 		<filename>index.html</filename>
@@ -33,7 +36,7 @@
     <param name="@spacer" type="spacer" default="" label=""
       description="" />
     <param name="source_url" type="text" size="100"
-      default="http://www.yourdomain.com/moodle/" label="" description="SOURCE_URL" />
+      default="http://www.yourdomain.com/joomla2" label="" description="SOURCE_URL" />
     <param name="source_path" type="text" size="100" label="" 
       default="" description="SOURCE_PATH" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
@@ -46,7 +49,7 @@
     <param name="override" type="text" size="100" label="" 
       default="login[indirect]=no" description="COOKIE_OVERRIDE" />
     <param name="leavealone" type="text" size="100" label="" 
-      default="MOODLEID_=>" description="COOKIE_LEAVEALONE" />
+      default="" description="COOKIE_LEAVEALONE" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
 	<param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
 	<param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
@@ -55,7 +58,7 @@
 		<option value="3">USERNAME_OR_EMAIL</option>
 	</param>
     <param name="login_url" type="text" size="100" label="" 
-      default="login/" description="LOGIN_URL" />
+      default="" description="LOGIN_URL" />
     <param name="loginform_id" type="text" size="100" label="" 
       default="login" description="LOGINFORM_ID" />
     <param name="logout_url" type="text" size="100" label="" 
