@@ -118,11 +118,10 @@ class JFusionUser_joomla_int extends JFusionUser{
 
         } else {
 
-             $this->createUser($userinfo, $overwrite, $status);
+            $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
-            $status['userinfo'] = $this->getUser($userinfo->username);
             return $status;
         }
     }
@@ -511,8 +510,10 @@ class JFusionUser_joomla_int extends JFusionUser{
             }
           }
         } else {
-          //Joomla does not allow duplicate emails report error
-
+	          //Joomla does not allow duplicate emails report error
+              $status['error'][] = JText::_('USERNAME') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->username . ' -> ' . $userinfo->username;
+			  $status['userinfo'] = $existinguser;
+              return;
 
 
         }
