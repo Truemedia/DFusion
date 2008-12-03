@@ -43,14 +43,15 @@ JFusionFunction::displayDonate();
 <font size="2"><? echo JText::_('CONFLICTS_EMAIL'); ?></font><br/>
 <h3><? echo JText::_('USERNAME') . ' ' . JText::_('CONFLICTS'); ?></h3>
 <font size="2"><? echo JText::_('CONFLICTS_USERNAME'); ?></font><br/>
-
+<h3><? echo JText::_('USERSYNC') . ' ' . JText::_('ERROR'); ?></h3>
+<font size="2"><? echo JText::_('CONFLICTS_ERROR'); ?></font><br/><br/>
 
 
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="syncerror" />
 
-<div id="ajax_bar">
+<div id="ajax_bar"><? echo JText::_('APPLY_ACTION_ALL_CONFLICTS'); ?>
 <select name="default_value" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
@@ -72,7 +73,7 @@ var default_value = document.forms['adminForm'].elements['default_value'].select
 }
 //-->
 </script>
-<a href="javascript:void(0);"  onclick="applyAll();">start</a>
+<a href="javascript:void(0);"  onclick="applyAll();"><?php echo JText::_('APPLY'); ?></a>
 </div>
 
 

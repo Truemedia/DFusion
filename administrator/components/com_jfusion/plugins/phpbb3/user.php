@@ -33,6 +33,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
         $status = array();
         $status['debug'] = array();
 
+		//check to see if a valid $userinfo object was passed on
+		if(!is_object($userinfo)){
+			$status['error'] = JText::_('NO_USER_DATA_FOUND');
+			return $status;
+		}
+
         //find out if the user already exists
         $existinguser = $this->getUser($userinfo->username);
 

@@ -41,6 +41,12 @@ class JFusionUser_joomla_int extends JFusionUser{
         global $JFusionActive;
         $JFusionActive = true;
 
+		//check to see if a valid $userinfo object was passed on
+		if(!is_object($userinfo)){
+			$status['error'] = JText::_('NO_USER_DATA_FOUND');
+			return $status;
+		}
+
         //find out if the user already exists
         $existinguser = $this->getUser($userinfo->username);
 
@@ -57,7 +63,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
 			if (isset($userinfo->password_clear)){
 				// add password_clear to existinguser for the Joomla helper routines
-				$existinguser->password_clear=$userinfo->password_clear; 
+				$existinguser->password_clear=$userinfo->password_clear;
 			    //check if the password needs to be updated
 	    	    $model = JFusionFactory::getAuth($this->getJname());
         		$testcrypt = $model->generateEncryptedPassword($existinguser);
