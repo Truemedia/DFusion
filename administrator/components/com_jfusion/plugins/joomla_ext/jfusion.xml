@@ -8,8 +8,8 @@
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
-	<version>1.0.8-001</version>
-	<description>Joomla!-Joomla! plugin for JFusion</description>
+	<version>1.1.0-001</version>
+	<description>external Joomla plugin for JFusion</description>
 	<files>
 		<filename>auth.php</filename>
 		<filename>index.html</filename>
@@ -17,32 +17,57 @@
 		<filename>jfusion_plugin.php</filename>
 		<filename>user.php</filename>
 	</files>
-
-  <params addpath="/administrator/components/com_jfusion/elements">
-  		<param name="description" type="text" size="20" default="external Joomla 1.5.x plugin" description="DESCRIPTION"/>
-		<param name="database_type" type="text" size="20" default="" description="DATABASE_TYPE"/>
-		<param name="database_host" type="text" size="20" default="" description="DATABASE_HOST"/>
-		<param name="database_name" type="text" size="20" default="" description="DATABASE_NAME"/>
-		<param name="database_user" type="text" size="20" default="" description="DATABASE_USER"/>
-		<param name="database_password" type="text" size="20" default="" description="DATABASE_PASSWORD"/>
-		<param name="database_prefix" type="text" size="20" default="" description="DATABASE_PREFIX"/>
+	<params addpath="/administrator/components/com_jfusion/elements">
+    <param name="database_type" type="text" size="20" label="" default="mysql"
+      description="DATABASE_TYPE" />
+    <param name="database_host" type="text" size="20" label="" default=""
+      description="DATABASE_HOST" />
+    <param name="database_name" type="text" size="20" label="" default=""
+      description="DATABASE_NAME" />
+    <param name="database_user" type="text" size="20" label="" default=""
+      description="DATABASE_USER" />
+    <param name="database_password" type="text" size="20" label="" default=""
+      description="DATABASE_PASSWORD" />
+    <param name="database_prefix" type="text" size="20" label="" default=""
+      description="DATABASE_PREFIX" />
+    <param name="@spacer" type="spacer" default="" label=""
+      description="" />
+    <param name="source_url" type="text" size="100"
+      default="http://www.yourdomain.com/moodle/" label="" description="SOURCE_URL" />
+    <param name="source_path" type="text" size="100" label="" 
+      default="" description="SOURCE_PATH" />
+    <param name="@spacer" type="spacer" default="" label="" description="" />
+    <param name="cookie_domain" type="text" size="40" label="" default=""
+    description="COOKIE_DOMAIN" />
+    <param name="cookie_path" type="text" size="40" label="" default=""
+    description="COOKIE_PATH" />
+  	<param name="cookie_expires" type="text" size="5" label="" default="1800"
+    description="COOKIE_EXPIRES" />
+    <param name="override" type="text" size="100" label="" 
+      default="login[indirect]=no" description="COOKIE_OVERRIDE" />
+    <param name="leavealone" type="text" size="100" label="" 
+      default="MOODLEID_=>" description="COOKIE_LEAVEALONE" />
+    <param name="@spacer" type="spacer" default="" label="" description="" />
+	<param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
+	<param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
+		<option value="1">USERNAME</option>
+		<option value="2">EMAIL</option>
+		<option value="3">USERNAME_OR_EMAIL</option>
+	</param>
+    <param name="login_url" type="text" size="100" label="" 
+      default="login/" description="LOGIN_URL" />
+    <param name="loginform_id" type="text" size="100" label="" 
+      default="login" description="LOGINFORM_ID" />
+    <param name="logout_url" type="text" size="100" label="" 
+      default="" description="LOGOUT_URL" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name="source_url" type="text" size="40" default="" description="SOURCE_URL" />
-		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
+		<param name=" " type="helptext" default="USERNAME_FILTER_DESCR" label = ""/>
+		<param name="username_filter" type="JFusionPlugins" default="" description="USERNAME_FILTER"  label = ""/>
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
-		<param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
-			<option value="1">USERNAME</option>
-			<option value="2">EMAIL</option>
-			<option value="3">USERNAME_OR_EMAIL</option>
-		</param>
-		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
+		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR" label = ""/>
 		<param name="usergroup" default="18" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name=" " type="helptext" default="SH404SEF_PARSE"/>
-		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
+		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR" label = ""/>
 		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
@@ -51,7 +76,7 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
-		<param name="update_email" type="list" default="0" label="" description="UPDATE_EMAIL">
+		<param name="update_email" type="list" default="1" label="" description="UPDATE_EMAIL">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
