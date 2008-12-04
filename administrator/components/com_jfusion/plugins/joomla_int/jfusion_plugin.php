@@ -15,87 +15,54 @@ defined('_JEXEC' ) or die('Restricted access' );
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractplugin.php');
-
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
 /**
 * JFusion plugin class for the internal Joomla database
 * @package JFusion_Joomla_Int
 */
 class JFusionPlugin_joomla_int extends JFusionPlugin
 {
-    function getJname()
-    {
+    function getJname(){
         return 'joomla_int';
     }
 
-    function getTablename()
-    {
-        return 'users';
+    function getTablename(){
+        return JFusionJplugin::getTablename();
     }
 
-    function getRegistrationURL()
-    {
-        return 'index.php?option=com_user&task=register';
+    function getRegistrationURL(){
+        return JFusionJplugin::getRegistrationURL();
     }
 
-    function getLostPasswordURL()
-    {
-        return 'index.php?option=com_user&view=reset';
+    function getLostPasswordURL(){
+        return JFusionJplugin::getLostPasswordURL();
     }
 
-    function getLostUsernameURL()
-    {
-        return 'index.php?option=com_user&view=remind';
+    function getLostUsernameURL(){
+             return JFusionJplugin::getLostUsernameURL();
     }
 
 
-    function getUserList()
-    {
-        //getting the connection to the db
+    function getUserList(){
         $db = & JFactory::getDBO();
-        $query = 'SELECT username, email from #__users';
-        $db->setQuery($query );
-        $userlist = $db->loadObjectList();
-
-        return $userlist;
-
+        return JFusionJplugin::getUserList($db);
     }
 
-    function getUserCount()
-    {
-        //getting the connection to the db
+    function getUserCount(){
         $db = & JFactory::getDBO();
-        $query = 'SELECT count(*) from #__users';
-        $db->setQuery($query );
-
-        //getting the results
-        return $db->loadResult();
+        return JFusionJplugin::getUserCount($db);
     }
 
-    function getUsergroupList()
-    {
-        //getting the connection to the db
+    function getUsergroupList(){
         $db = & JFactory::getDBO();
-        $query = 'SELECT id, name FROM #__core_acl_aro_groups';
-        $db->setQuery($query );
-
-        //getting the results
-        return $db->loadObjectList();
+        return JFusionJplugin::getUsergroupList($db);
     }
 
-    function getDefaultUsergroup()
-    {
-        $params = JFusionFactory::getParams($this->getJname());
-        $usergroup_id = $params->get('usergroup', 18);
-
+    function getDefaultUsergroup(){
         //we want to output the usergroup name
         $db = & JFactory::getDBO();
-        $query = 'SELECT name from #__core_acl_aro_groups WHERE id = ' . $usergroup_id;
-        $db->setQuery($query );
-        return $db->loadResult();
+        return JFusionJplugin::getDefaultUsergroup($db,$this->getJname());
     }
-
-
-
 
 
     function allowRegistration()
@@ -114,7 +81,5 @@ class JFusionPlugin_joomla_int extends JFusionPlugin
             return false;
         }
     }
-
-
 
 }
