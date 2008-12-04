@@ -387,7 +387,8 @@ class JFusionUser_moodle extends JFusionUser{
             return;
         }
         //return the good news
-        $status['debug'][] = JText::_('USER_CREATION');
+		$status['userinfo'] = $this->getUser($userinfo->username);
+		$status['debug'][] = JText::_('USER_CREATION');
     }
 
     function deleteUsername($username)
