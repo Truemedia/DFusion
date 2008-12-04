@@ -1,189 +1,159 @@
 <?php
+
 /**
- * @package JFusion_Joomla_Ext
- * @version 1.0.7
- * @author JFusion development team
- * @copyright Copyright (C) 2008 JFusion. All rights reserved.
- * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
- */
+* @package JFusion_Joomla_Ext
+* @version 1.1.0-001
+* @author JFusion development team
+* @copyright Copyright (C) 2008 JFusion. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+*/
 
-
+// no direct access
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
- * load the JFusion framework
- */
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
+* load the Abstract User Class
+*/
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.curl.php');
+jimport('joomla.user.helper');
 /**
- * JFusion plugin class for an external Joomla database
- * @package JFusion_Joomla_Ext
- */
-class JFusionUser_joomla_ext extends JFusionUser
-{
+* @package JFusion_Joomla_Ext
+*/
 
-    function updateUser($userinfo, $overwrite)
-    {
+
+class JFusionUser_joomla_ext extends JFusionUser{
+
+
+    function getJname(){
+        return 'joomla_ext';
+    }
+
+    function updateUser($userinfo, $overwrite){
         // Initialise some variables
-        $db = & JFactory::getDBO();
-        $params = JFusionFactory::getParams($this->getJname());
-        $update_block = $params->get('update_block');
-        $update_activation = $params->get('update_activation');
-        $update_email = $params->get('update_email');
-
-        $status = array();
-        $status['debug'] = array();
-        $status['error'] = array();
-
-		//check to see if a valid $userinfo object was passed on
-		if(!is_object($userinfo)){
-			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
-			return $status;
-		}
-
-        //find out if the user already exists
-        $existinguser = $this->getUser($userinfo->username);
-
-        if (!empty($existinguser)) {
-            //a matching user has been found
-            if ($existinguser->email != $userinfo->email) {
-              if ($update_email || $overwrite) {
-                  $this->updateEmail($userinfo, $existinguser, $status);
-              } else {
-                //return a email conflict
-                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-                $status['userinfo'] = $existinguser;
-                return $status;
-              }
-            }
-
-			if (isset($userinfo->password_clear)){
-				// add password_clear to existinguser for the Joomla helper routines
-				$existinguser->password_clear=$userinfo->password_clear;
-			    //check if the password needs to be updated
-	    	    $model = JFusionFactory::getAuth($this->getJname());
-        		$testcrypt = $model->generateEncryptedPassword($existinguser);
-            	if ($testcrypt != $existinguser->password) {
-                	$this->updatePassword($userinfo, $existinguser, $status);
-            	} else {
-                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
-            	}
-        	} else {
-            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
-        	}
-
-            //check the blocked status
-            if ($existinguser->block != $userinfo->block) {
-              if ($update_block || $overwrite) {
-                  if ($userinfo->block) {
-                      //block the user
-                      $this->blockUser($userinfo, $existinguser, $status);
-                  } else {
-                      //unblock the user
-                      $this->unblockUser($userinfo, $existinguser, $status);
-                  }
-              } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
-              }
-            }
-
-            //check the activation status
-            if ($existinguser->activation != $userinfo->activation) {
-              if ($update_activation || $overwrite) {
-                  if ($userinfo->activation) {
-                      //inactiva the user
-                      $this->inactivateUser($userinfo, $existinguser, $status);
-                  } else {
-                      //activate the user
-                      $this->activateUser($userinfo, $existinguser, $status);
-                  }
-              } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-              }
-            }
-
-            $status['userinfo'] = $existinguser;
-            if (empty($status['error'])) {
-                $status['action'] = 'updated';
-            }
-            return $status;
-
-        } else {
-
-            $this->createUser($userinfo, $overwrite, $status);
-            if (empty($status['error'])) {
-                $status['action'] = 'created';
-            }
-            return $status;
-        }
+        $db = & JFusionFactory::getDatabase($this->getJname());
+        return  JFusionJplugin::updateUser($userinfo, $overwrite,$db,$this->getJname());
     }
 
-
-	function &getUser($username)
-    {
-        // Get a database object
-		$db = JFusionFactory::getDatabase($this->getJname());
-        $db->setQuery('SELECT a.id as userid, a.username, a.name, a.password, a.email, a.block, a.registerDate as registerdate, lastvisitDate as lastvisitdate FROM #__users as a WHERE a.username=' . $db->quote($username));
-        $result = $db->loadObject();
-
-        if ($result) {
-            //split up the password if it contains a salt
-            $parts = explode(':', $result->password );
-        	if($parts[1]) {
-        		$result->password_salt = $parts[1];
-        		$result->password = $parts[0];
-        	}
-
-        	//do an extra check to prevent inactive accounts to login
-        	if ($result->activation) {
-        		$result->block = 1;
-        	}
-
-            return $result;
-        } else {
-            return false;
-        }
-
-
-		return $result;
-    }
-
-    function getJname()
-    {
-		return 'joomla_ext';
-    }
-
-    function deleteUser($username)
-    {
+    function deleteUsername($username){
         //get the database ready
-        $db = JFusionFactory::getDatabase($this->getJname());
+        $db = & JFusionFactory::getDatabase($this->getJname());
 
-        //delete user from the Joomla usertable
-  		$query = 'DELETE FROM #__users WHERE username = ' . $db->quote($username);
-   		$db->setQuery($query);
-       	$db->query();
+        $query = 'SELECT id FROM #__jfusion_users WHERE username='.$db->Quote($username);
+        $db->setQuery($query );
+        $userid = $db->loadResult();
+
+        if ($userid) {
+            //this user was created by JFusion and we need to delete them from the joomla user and jfusion lookup table
+            $user =& JUser::getInstance($userid);
+            $user->delete();
+            $db->Execute('DELETE FROM #__jfusion_users_plugin WHERE id='.$userid);
+            $db->Execute('DELETE FROM #__jfusion_users WHERE id='.$userid);
+            return true;
+        } else {
+            //this user was NOT create by JFusion. Therefore we need to delete it in the Joomla user table only
+            $query = 'SELECT id from #__users WHERE username = ' . $db->quote($username);
+            $db->setQuery($query);
+            $userid = $db->loadResult();
+            if ($userid) {
+                //delete it from the Joomla usertable
+                $user =& JUser::getInstance($userid);
+                $user->delete();
+                return true;
+            } else {
+                //could not find user and return an error
+                JError::raiseWarning(0, JText::_('ERROR_DELETE') . $username);
+                return '';
+            }
+        }
+    }
+
+
+    function &getUser($identifier){
+        //get database object
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::getUser($identifier,$db,$this->getJname());
     }
 
 
 
-    function destroySession($userinfo, $options)
-    {
-            $status['error'] = 'Dual login is not available for this plugin';
-            return $status;
+    function filterUsername($username){
+        return  JFusionJplugin::filterUsername($username,$this->getJname());
     }
 
-    function createSession($userinfo, $options)
-    {
-            $status['error'] = 'Dual login is not available for this plugin';
-            return $status;
+    function createSession($userinfo, $options){
+        $status['error'] = '';
+        $params = JFusionFactory::getParams($this->getJname());
+        $source_url = $params->get('source_url');
+        $cookiedomain = $params->get('cookie_domain');
+        $cookiepath = $params->get('cookie_path');
+        $cookieexpires = $params->get('cookie_expires');
+        $post_url = $source_url.$params->get('login_url');
+        $formid = $params->get('loginform_id');
+        $override = $params->get('override');
+        $hidden = true;
+        $buttons = true;
+        $integrationtype = 0;
+        $relpath=false;
+        $cookies = array();
+        $cookie  = array();
+        global $ch;
+        global $cookiearr;
+        global $cookies_to_set;
+        global $cookies_to_set_index;
+        $cookiearr = array();
+        $cookies_to_set = array();
+        $cookies_to_set_index = 0;
+//echo"$post_url,$formid,$userinfo->username,$userinfo->password_clear,$integrationtype,$relpath,$hidden,$buttons,$override,$cookiedomain,$cookiepath,$cookieexpires";
+//die('108');
+        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->username,$userinfo->password_clear,
+              $integrationtype,$relpath,$hidden,$buttons,$override,$cookiedomain,$cookiepath,$cookieexpires);
+        return $status;
     }
 
-	function filterUsername($username) {
-	    //no username filtering implemented yet
-	    return $username;
+    function destroySession($userinfo, $options){
+
     }
 
- }
+    function updatePassword($userinfo, &$existinguser, &$status){
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::updatePassword($userinfo, $existinguser, $status,$db);
+    }
+
+    function updateUsername($userinfo, &$existinguser, &$status){
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::updateUsername($userinfo, $existinguser, $status,$db);
+    }
+
+    function updateEmail($userinfo, &$existinguser, &$status){
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::updateEmail($userinfo, $existinguser, $status,$db);
+    }
+
+    function blockUser($userinfo, &$existinguser, &$status){
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::blockUser($userinfo, $existinguser, $status,$db);
+    }
+
+    function unblockUser($userinfo, &$existinguser, &$status){
+        //unblock the user
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::unblockUser($userinfo, $existinguser, $status,$db);
+    }
+
+    function activateUser($userinfo, &$existinguser, &$status){
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::activateUser($userinfo, $existinguser, $status,$db);
+    }
+
+    function inactivateUser($userinfo, &$existinguser, &$status){
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::inactivateUser($userinfo, $existinguser, $status,$db);
+    }
+
+    function createUser($userinfo, $overwrite, &$status){
+        $db =& JFusionFactory::getDatabase($this->getJname());
+        return JFusionJplugin::createUser($userinfo, $overwrite, $status,$db,$this->getJname());
+    }
+}
