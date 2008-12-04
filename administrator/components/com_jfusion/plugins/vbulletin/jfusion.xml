@@ -28,9 +28,6 @@
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
 		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
-		<param name="cookie_path" type="text" size="40" default="" description="COOKIE_PATH" />
-		<param name="cookie_prefix" type="text" size="10" default="bb" description="COOKIE_PREFIX" />
-		<param name="cookie_domain" type="text" size="40" default=".yourdomain.com" description="COOKIE_DOMAIN" />
 		<param name="source_license" type="text" size="10" default="XXXXXXXXX" description="SOURCE_LICENSE" />
 		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
