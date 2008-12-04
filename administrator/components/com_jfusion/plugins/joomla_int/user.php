@@ -474,7 +474,7 @@ class JFusionUser_joomla_int extends JFusionUser{
             $instance->set('email'        , $userinfo->email );
             $instance->set('block'        , $userinfo->block );
             $instance->set('activation'   , $userinfo->activation );
-            $instance->set('sendEmail '   , 1 );
+            $instance->set('sendEmail'   , 1 );
 
             //find out what usergroup the new user should have
             $params = JFusionFactory::getParams($this->getJname());
