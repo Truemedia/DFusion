@@ -289,8 +289,8 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$userdm->save();
 
 			//set cookies
-			vbsetcookie('userid', $existinguser->userid,$expires, true, false);
-			vbsetcookie('password',md5($existinguser->password.$vbLicense),$expires, true, false);
+			vbsetcookie('userid', $existinguser->userid,$expires, true, true);
+			vbsetcookie('password',md5($existinguser->password.$vbLicense),$expires, true, true);
 
 			//process login
 			process_new_login('', 1, '');
@@ -455,7 +455,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		    $query = 'DELETE FROM #__userban WHERE userid='. $existinguser->userid;
 	       	$jdb->setQuery($query);
 	        if (!$jdb->Query()) {
-	   	        $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . ': ' . $db->stderr();
+	   	        $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . ': ' . $jdb->stderr();
 	       	}
 		}
 		else
