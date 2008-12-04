@@ -94,7 +94,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             if ($existinguser->activation != $userinfo->activation) {
               if ($update_activation || $overwrite) {
                   if ($userinfo->activation) {
-                      //inactiva the user
+                      //inactivate the user
                       $this->inactivateUser($userinfo, $existinguser, $status);
                   } else {
                       //activate the user
@@ -170,6 +170,8 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function deleteUser($username)
     {
+	   	$params = JFusionFactory::getParams($this->getJname());
+
     	//load the vbulletin framework
 		define('VB_AREA', 'External');
 		define('SKIP_SESSIONCREATE', 1);
@@ -191,7 +193,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
 
 		//setup the existing user
-		$userinfo = $this->convertUserData($existinguser);
+		$userinfo = $this->convertUserData($this->getUser($username));
 		$userdm->set_existing($userinfo);
 
 		//delete the user
@@ -213,54 +215,91 @@ class JFusionUser_vbulletin extends JFusionUser{
         // Get the parameters
         $params = JFusionFactory::getParams($this->getJname());
 
-        //Clear the vBulletin Cookie
-        $vbCookiePrefix = $params->get('cookie_prefix','bb');
-        $vbCookieDomain = $params->get('cookie_domain');
-        $vbCookiePath = $params->get('cookie_path');
+		//load the vbulletin framework
+		define('VB_AREA', 'External');
+		define('SKIP_SESSIONCREATE', 1);
+		define('SKIP_USERINFO', 1);
+		define('CWD', $params->get('source_path'));
 
-   		JFusionFunction::addCookie($vbCookiePrefix.'userid', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
-        JFusionFunction::addCookie($vbCookiePrefix.'password', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
-        JFusionFunction::addCookie($vbCookiePrefix.'styleid', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
-        JFusionFunction::addCookie($vbCookiePrefix.'sessionhash', ' ', time() - 1800, $vbCookiePath, $vbCookieDomain, true );
+		require_once(CWD . './includes/init.php');
+		require_once(CWD . './includes/functions_login.php');
 
-        //also destroy the session in the database
-        $db = JFusionFactory::getDatabase($this->getJname());
-   	    $query = 'DELETE FROM #__session WHERE userid =' . $userinfo->userid;
-  		$db->setQuery($query);
-		$db->query();
+		//work around to make global vbulletin stick
+		$registry = $vbulletin;
+		unset($vbulletin);
+		$vbDb = $registry->db;
+		//declare as global vbulletin's registry and db objects
+		global $vbulletin,$db;
+		$vbulletin = $registry;
+		//vbulletin db object which is needed for vbulletin's project tools addon
+		$db = $vbDb;
+
+		//set the user so that vb deletes the session from its db
+		$vbulletin->userinfo['userid'] = $userinfo->userid;
+
+		//destroy vb cookies and sessions
+		process_logout();
     }
 
     function createSession($userinfo, $options)
     {
-        // Get a database object, and prepare some basic data
         $status = array();
         $status['debug'] = '';
+
         $userid = $userinfo->userid;
 
         if ($userid && !empty($userid) && ($userid > 0)) {
-            $params = JFusionFactory::getParams($this->getJname());
-            $vbCookiePrefix = $params->get('cookie_prefix');
-            $vbCookieDomain = $params->get('cookie_domain');
-            $vbCookiePath = $params->get('cookie_path');
-            $vbLicense = $params->get('source_license','');
 
-            $bypost = 1;
+			$params = JFusionFactory::getParams($this->getJname());
+			$existinguser = $this->getUser($userinfo->username);
+        	$vbLicense = $params->get('source_license','');
 
-            if (isset($options['remember'])) {
-                $expires = 365*24*60*60;
-            } else {
-            	$expires = 60*30;
-            }
+			if (isset($options['remember'])) {
+				$expires = false;
+			} else {
+				$expires = true;
+			}
 
-   				JFusionFunction::addCookie('usercookie[username]' , $userinfo->username, $expires, $vbCookiePath, $vbCookieDomain, true);
-   				JFusionFunction::addCookie('usercookie[password]' , $userinfo->password, $expires, $vbCookiePath, $vbCookieDomain, true);
-   				JFusionFunction::addCookie($vbCookiePrefix.'userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
-   				JFusionFunction::addCookie($vbCookiePrefix.'password' , md5($userinfo->password . $vbLicense ), $expires, $vbCookiePath, $vbCookieDomain, true);
-   				JFusionFunction::addCookie('userid' , $userinfo->userid, $expires, $vbCookiePath, $vbCookieDomain, true);
+	   		//load the vbulletin framework
+			define('VB_AREA', 'External');
+			define('SKIP_SESSIONCREATE', 1);
+			define('SKIP_USERINFO', 1);
+			define('CWD', $params->get('source_path'));
 
-            $status['error'] = false;
-       	    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain . ' password:'.substr($userinfo->password,0,6) . '********' ;
-            return $status;
+			require_once(CWD . './includes/init.php');
+			require_once(CWD . './includes/functions_login.php');
+
+			//work around to make global vbulletin stick
+			$registry = $vbulletin;
+			unset($vbulletin);
+			$vbDb = $registry->db;
+			//declare as global vbulletin's registry and db objects
+			global $vbulletin,$db;
+			$vbulletin = $registry;
+			//vbulletin db object which is needed for vbulletin's project tools addon
+			$db = $vbDb;
+
+			//setup the existing user
+			$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
+			$userinfo = $this->convertUserData($existinguser);
+			$userdm->set_existing($userinfo);
+
+			//update password expiration time if password expiration is enabled via vbulletin
+			$userdm->set('passworddate', 'FROM_UNIXTIME('.TIMENOW.')', false);
+			$userdm->save();
+
+			//set cookies
+			vbsetcookie('userid', $existinguser->userid,$expires, true, false);
+			vbsetcookie('password',md5($existinguser->password.$vbLicense),$expires, true, false);
+
+			//process login
+			process_new_login('', 1, '');
+
+
+			$status['error'] = false;
+			$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain . ' password:'.substr($userinfo->password,0,6) . '********' ;
+	        return $status;
+
         } else {
             //could not find a valid userid
             $status['error'] = JText::_('INVALID_USERID');
@@ -425,6 +464,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$userdm->set('displaygroupid', 0);
 		}
 
+		//performs some final VB checks before saving
 		$userdm->pre_save();
 	    if(empty($userdm->errors)){
 
@@ -509,7 +549,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		}
     }
 
-    function createUser ($userinfo, &$status)
+    function createUser ($userinfo, $overwrite, &$status)
     {
 		//get the params object
         $params = JFusionFactory::getParams($this->getJname());
@@ -522,14 +562,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 		require_once(CWD.'./includes/init.php');
 
-		if(empty($userinfo->activation)){
-            $usergroup = $params->get('usergroup');
-            $setAsNeedsActivation = false;
-		} else {
-            $usergroup = $params->get('activationgroup');
-            $setAsNeedsActivation = true;
-		}
-
 		//work around to make global vbulletin stick
 		$registry = $vbulletin;
 		unset($vbulletin);
@@ -539,6 +571,15 @@ class JFusionUser_vbulletin extends JFusionUser{
 		$vbulletin = $registry;
 		//vbulletin db object which is needed for vbulletin's project tools addon
 		$db = $vbDb;
+
+    	//get the default user group and determine if the user needs to be set as needing activation
+		if(empty($userinfo->activation)){
+            $usergroup = $params->get('usergroup');
+            $setAsNeedsActivation = false;
+		} else {
+            $usergroup = $params->get('activationgroup');
+            $setAsNeedsActivation = true;
+		}
 
 		//setup the new user
 		$newuser =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
@@ -560,6 +601,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		//use VB default via datamanager instead of manually setting
 		//$newuser->set_bitfield('options', 'coppauser', 0);
 
+		//performs some final VB checks before saving
 		$newuser->pre_save();
 	    if(empty($newuser->errors)){
 			$newuserid = $newuser->save();
