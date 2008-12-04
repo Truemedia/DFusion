@@ -15,7 +15,7 @@ defined('_JEXEC' ) or die('Restricted access' );
  * load the Abstract Auth Class
  */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractauth.php');
-
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php'); 
 /**
  * @package JFusion_Joomla_Int
 */
@@ -24,9 +24,7 @@ class JFusionAuth_joomla_int extends JFusionAuth{
 
     function generateEncryptedPassword($userinfo)
     {
-        jimport('joomla.user.helper');
-        $crypt = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
-        return $crypt;
+       return  JFusionJplugin::generateEncryptedPassword($userinfo);
     }
 
 }
