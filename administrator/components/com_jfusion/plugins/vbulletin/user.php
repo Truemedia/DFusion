@@ -17,21 +17,39 @@ defined('_JEXEC' ) or die('Restricted access' );
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
 
-
 /**
 * JFusion plugin class for vBulletin 3.6.8
 * @package JFusion_vBulletin
 */
+	
 class JFusionUser_vbulletin extends JFusionUser{
+	
+	var $params;
+	
+	function JFusionUser_vbulletin()
+	{
+		//get the params object
+        $this->params = JFusionFactory::getParams($this->getJname());
 
+		//load the vbulletin framework
+		define('VB_AREA','External');
+		define('SKIP_SESSIONCREATE', 1);
+		define('SKIP_USERINFO', 1);
+		define('CWD', $this->params->get('source_path'));
+		require_once(CWD.'./includes/init.php');
+		
+		//force into global scope
+		$GLOBALS["vbulletin"] = $vbulletin;
+		$GLOBALS["db"] = $vbulletin->db;
+	}
+	
     function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
         $db = & JFactory::getDBO();
-        $params = JFusionFactory::getParams($this->getJname());
-        $update_block = $params->get('update_block');
-        $update_activation = $params->get('update_activation');
-        $update_email = $params->get('update_email');
+        $update_block = $this->params->get('update_block');
+        $update_activation = $this->params->get('update_activation');
+        $update_email = $this->params->get('update_email');
 
         $status = array();
         $status['debug'] = array();
@@ -74,6 +92,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
         	}
 
+        	
             //check the blocked status
             if ($existinguser->block != $userinfo->block) {
               if ($update_block || $overwrite) {
@@ -122,8 +141,6 @@ class JFusionUser_vbulletin extends JFusionUser{
         }
     }
 
-
-
     function &getUser($username)
     {
         // Get user info from database
@@ -143,8 +160,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             }
 
             //check to see if the user is awaiting activation
-            $params = JFusionFactory::getParams($this->getJname());
-            $activationgroup = $params->get('activationgroup');
+            $activationgroup = $this->params->get('activationgroup');
 
             if ($activationgroup == $result->usergroupid) {
                 jimport('joomla.user.helper');
@@ -170,29 +186,8 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function deleteUser($username)
     {
-	   	$params = JFusionFactory::getParams($this->getJname());
-
-    	//load the vbulletin framework
-		define('VB_AREA', 'External');
-		define('SKIP_SESSIONCREATE', 1);
-		define('SKIP_USERINFO', 1);
-		define('CWD', $params->get('source_path'));
-
-		require_once(CWD . './includes/init.php');
-
-    	//work around to make global vbulletin stick
-		$registry = $vbulletin;
-		unset($vbulletin);
-		$vbDb = $registry->db;
-		//declare as global vbulletin's registry and db objects
-		global $vbulletin,$db;
-		$vbulletin = $registry;
-		//vbulletin db object which is needed for vbulletin's project tools addon
-		$db = $vbDb;
-
-		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
-
 		//setup the existing user
+		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
 		$userinfo = $this->convertUserData($this->getUser($username));
 		$userdm->set_existing($userinfo);
 
@@ -206,39 +201,20 @@ class JFusionUser_vbulletin extends JFusionUser{
 		} else {
 			$status['debug'][] = JText::_('USER_DELETION'). ' ' . $existinguser->userid;
 		}
-
 		unset($userdm);
     }
 
     function destroySession($userinfo, $options)
     {
-        // Get the parameters
-        $params = JFusionFactory::getParams($this->getJname());
-
-		//load the vbulletin framework
-		define('VB_AREA', 'External');
-		define('SKIP_SESSIONCREATE', 1);
-		define('SKIP_USERINFO', 1);
-		define('CWD', $params->get('source_path'));
-
-		require_once(CWD . './includes/init.php');
-		require_once(CWD . './includes/functions_login.php');
-
-		//work around to make global vbulletin stick
-		$registry = $vbulletin;
-		unset($vbulletin);
-		$vbDb = $registry->db;
-		//declare as global vbulletin's registry and db objects
-		global $vbulletin,$db;
-		$vbulletin = $registry;
-		//vbulletin db object which is needed for vbulletin's project tools addon
-		$db = $vbDb;
-
 		//set the user so that vb deletes the session from its db
-		$vbulletin->userinfo['userid'] = $userinfo->userid;
+		$GLOBALS["vbulletin"]->userinfo['userid'] = $userinfo->userid;
 
 		//destroy vb cookies and sessions
+		require_once(CWD . "/includes/functions_login.php");
 		process_logout();
+		
+		//destroy vbulletin global variable
+		unset($GLOBALS["vbulletin"]);
     }
 
     function createSession($userinfo, $options)
@@ -250,9 +226,8 @@ class JFusionUser_vbulletin extends JFusionUser{
 
         if ($userid && !empty($userid) && ($userid > 0)) {
 
-			$params = JFusionFactory::getParams($this->getJname());
 			$existinguser = $this->getUser($userinfo->username);
-        	$vbLicense = $params->get('source_license','');
+        	$vbLicense = $this->params->get('source_license','');
 
 			if (isset($options['remember'])) {
 				$expires = false;
@@ -260,27 +235,8 @@ class JFusionUser_vbulletin extends JFusionUser{
 				$expires = true;
 			}
 
-	   		//load the vbulletin framework
-			define('VB_AREA', 'External');
-			define('SKIP_SESSIONCREATE', 1);
-			define('SKIP_USERINFO', 1);
-			define('CWD', $params->get('source_path'));
-
-			require_once(CWD . './includes/init.php');
-			require_once(CWD . './includes/functions_login.php');
-
-			//work around to make global vbulletin stick
-			$registry = $vbulletin;
-			unset($vbulletin);
-			$vbDb = $registry->db;
-			//declare as global vbulletin's registry and db objects
-			global $vbulletin,$db;
-			$vbulletin = $registry;
-			//vbulletin db object which is needed for vbulletin's project tools addon
-			$db = $vbDb;
-
 			//setup the existing user
-			$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
+			$userdm =& datamanager_init('User', $GLOBALS["vbulletin"], ERRTYPE_SILENT);
 			$userinfo = $this->convertUserData($existinguser);
 			$userdm->set_existing($userinfo);
 
@@ -305,6 +261,8 @@ class JFusionUser_vbulletin extends JFusionUser{
             $status['error'] = JText::_('INVALID_USERID');
             return $status;
         }
+        
+        unset($userdm);
     }
 
     function filterUsername($username)
@@ -352,8 +310,7 @@ class JFusionUser_vbulletin extends JFusionUser{
         $db = JFusionFactory::getDatabase($this->getJname());
 
         //get the id of the banned group
-        $params = JFusionFactory::getParams($this->getJname());
-		$bannedgroup = $params->get('bannedgroup');
+		$bannedgroup = $this->params->get('bannedgroup');
 
         //update the usergroup to banned
 		$query = 'UPDATE #__user SET usergroupid = ' . $bannedgroup . ' WHERE userid  = ' . $existinguser->userid;
@@ -386,31 +343,12 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function unblockUser ($userinfo, &$existinguser, &$status)
     {
-    	$params = JFusionFactory::getParams($this->getJname());
 		//found out what usergroup should be used
-		$usergroup = $params->get('usergroup');
-		$bannedgroup = $params->get('bannedgroup');
-
-    	//load the vbulletin framework
-		define('VB_AREA', 'External');
-		define('SKIP_SESSIONCREATE', 1);
-		define('SKIP_USERINFO', 1);
-		define('CWD', $params->get('source_path'));
-
-		require_once(CWD . './includes/init.php');
-
-		//work around to make global vbulletin stick
-		$registry = $vbulletin;
-		unset($vbulletin);
-		$vbDb = $registry->db;
-		//declare as global vbulletin's registry and db objects
-		global $vbulletin,$db;
-		$vbulletin = $registry;
-		//vbulletin db object which is needed for vbulletin's project tools addon
-		$db = $vbDb;
+		$usergroup = $this->params->get('usergroup');
+		$bannedgroup = $this->params->get('bannedgroup');
 
 		//setup the existing user
-		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
+		$userdm =& datamanager_init('User', $GLOBALS["vbulletin"], ERRTYPE_SILENT);
 		$userinfo = $this->convertUserData($existinguser);
 
 		$userdm->set_existing($userinfo);
@@ -477,15 +415,14 @@ class JFusionUser_vbulletin extends JFusionUser{
         		$status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . ' ' . $error;
     		}
 	    }
-
-		unset($userdm);
+	    
+	    unset($userdm);
     }
 
     function activateUser ($userinfo, &$existinguser, &$status)
     {
 		//found out what usergroup should be used
-		$params = JFusionFactory::getParams($this->getJname());
-		$usergroup = $params->get('usergroup');
+		$usergroup = $this->params->get('usergroup');
 
 		//update the usergroup to default group
 		$db = JFusionFactory::getDatabase($this->getJname());
@@ -510,8 +447,7 @@ class JFusionUser_vbulletin extends JFusionUser{
     function inactivateUser ($userinfo, &$existinguser, &$status)
     {
 		//found out what usergroup should be used
-		$params = JFusionFactory::getParams($this->getJname());
-		$usergroup = $params->get('activationgroup');
+		$usergroup = $this->params->get('activationgroup');
 
 		//update the usergroup to awaiting activation
 		$db = JFusionFactory::getDatabase($this->getJname());
@@ -521,7 +457,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		if ($db->Query()) {
 			//update the activation status
 			//check to see if the user is already inactivated
-			$query = 'SELECT COUNT(*) FROM #__useractivation WHERE userid = ' . $existing->userid;
+			$query = 'SELECT COUNT(*) FROM #__useractivation WHERE userid = ' . $existinguser->userid;
 			$db->setQuery($query);
 	        if($db->loadObject() == 0)
 	        {
@@ -530,7 +466,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 				$useractivation->userid = $existinguser->userid;
 				$useractivation->dateline = time();
 				$useractivation->activationid = mt_rand();
-				$useractivation->usergroupid = $params->get('usergroup');
+				$useractivation->usergroupid = $this->params->get('usergroup');
 
 				if($db->insertObject('#__useractivation', $useractivation, 'useractivationid' )){
 					$status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
@@ -551,84 +487,65 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function createUser ($userinfo, $overwrite, &$status)
     {
-		//get the params object
-        $params = JFusionFactory::getParams($this->getJname());
-
-		//load the vbulletin framework
-		define('VB_AREA','External');
-		define('SKIP_SESSIONCREATE', 1);
-		define('SKIP_USERINFO', 1);
-		define('CWD', $params->get('source_path'));
-
-		require_once(CWD.'./includes/init.php');
-
-		//work around to make global vbulletin stick
-		$registry = $vbulletin;
-		unset($vbulletin);
-		$vbDb = $registry->db;
-		//declare as global vbulletin's registry and db objects
-		global $vbulletin,$db;
-		$vbulletin = $registry;
-		//vbulletin db object which is needed for vbulletin's project tools addon
-		$db = $vbDb;
-
+		
     	//get the default user group and determine if the user needs to be set as needing activation
 		if(empty($userinfo->activation)){
-            $usergroup = $params->get('usergroup');
+            $usergroup = $this->params->get('usergroup');
             $setAsNeedsActivation = false;
 		} else {
-            $usergroup = $params->get('activationgroup');
+            $usergroup = $this->params->get('activationgroup');
             $setAsNeedsActivation = true;
 		}
 
-		//setup the new user
-		$newuser =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
-		$newuser->set('username', $userinfo->username);
-		$newuser->set('email', $userinfo->email);
-		$newuser->set('usergroupid', $usergroup);
+		//create the new user
+		$userdm =& datamanager_init('User', $GLOBALS["vbulletin"], ERRTYPE_SILENT);
+		$userdm->set('username', $userinfo->username);
+		$userdm->set('email', $userinfo->email);
+		$userdm->set('usergroupid', $usergroup);
 		$usertitle = $this->getDefaultUserTitle();
-		$newuser->set('usertitle',$usertitle);
+		$userdm->set('usertitle',$usertitle);
 
         if(isset($userinfo->password_clear)){
-			$newuser->set('password', $userinfo->password_clear);
+			$userdm->set('password', $userinfo->password_clear);
 		} else {
 			//clear password is not available, set a random password for now
 			jimport('joomla.user.helper');
 			$random_password = JUtility::getHash(JUserHelper::genRandomPassword(10));
-			$newuser->set('password', $random_password);
+			$userdm->set('password', $random_password);
 		}
 
 		//use VB default via datamanager instead of manually setting
-		//$newuser->set_bitfield('options', 'coppauser', 0);
+		//$userdm->set_bitfield('options', 'coppauser', 0);
 
 		//performs some final VB checks before saving
-		$newuser->pre_save();
-	    if(empty($newuser->errors)){
-			$newuserid = $newuser->save();
+		$userdm->pre_save();
+	    if(empty($userdm->errors)){
+			$userdmid = $userdm->save();
 
 			//does the user still need to be activated?
 			if($setAsNeedsActivation)
 			{
 				$db = JFusionFactory::getDatabase($this->getJname());
 				$useractivation = new stdClass;
-				$useractivation->userid = $newuserid;
+				$useractivation->userid = $userdmid;
 				$useractivation->dateline = time();
 				$useractivation->activationid = mt_rand();
-				$useractivation->usergroupid = $params->get('usergroup');
+				$useractivation->usergroupid = $this->params->get('usergroup');
 
 	  			$db->insertObject('#__useractivation', $useractivation, 'useractivationid' );
 			}
 
             //return the good news
-            $status['debug'][] = JText::_('USER_CREATION') .'. '. JText::_('USERID') . $newuserid;
+            $status['userinfo'] = $this->getUser($userinfo->username);
+            $status['debug'][] = JText::_('USER_CREATION') .'. '. JText::_('USERID') . $userdmid;
 	    } else {
-    		foreach ($newuser->errors AS $index => $error)
+    		foreach ($userdm->errors AS $index => $error)
     		{
         		$status['error'][] = JText::_('USER_CREATION_ERROR') . ' ' . $error;
     		}
 	    }
-
-	    unset($newuser);
+	    
+	    unset($userdm);
     }
 
     function deleteUsername($username)
