@@ -21,11 +21,11 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 * JFusion plugin class for vBulletin 3.6.8
 * @package JFusion_vBulletin
 */
-	
+
 class JFusionUser_vbulletin extends JFusionUser{
-	
+
 	var $params;
-	
+
 	function JFusionUser_vbulletin()
 	{
 		//get the params object
@@ -37,12 +37,12 @@ class JFusionUser_vbulletin extends JFusionUser{
 		define('SKIP_USERINFO', 1);
 		define('CWD', $this->params->get('source_path'));
 		require_once(CWD.'./includes/init.php');
-		
+
 		//force into global scope
 		$GLOBALS["vbulletin"] = $vbulletin;
 		$GLOBALS["db"] = $vbulletin->db;
 	}
-	
+
     function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
@@ -92,7 +92,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
         	}
 
-        	
+
             //check the blocked status
             if ($existinguser->block != $userinfo->block) {
               if ($update_block || $overwrite) {
@@ -212,7 +212,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		//destroy vb cookies and sessions
 		require_once(CWD . "/includes/functions_login.php");
 		process_logout();
-		
+
 		//destroy vbulletin global variable
 		unset($GLOBALS["vbulletin"]);
     }
@@ -244,6 +244,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$userdm->set('passworddate', 'FROM_UNIXTIME('.TIMENOW.')', false);
 			$userdm->save();
 
+			//include vb login functions
+			require_once(CWD . './includes/functions_login.php');
+
 			//set cookies
 			vbsetcookie('userid', $existinguser->userid,$expires, true, true);
 			vbsetcookie('password',md5($existinguser->password.$vbLicense),$expires, true, true);
@@ -261,7 +264,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             $status['error'] = JText::_('INVALID_USERID');
             return $status;
         }
-        
+
         unset($userdm);
     }
 
@@ -415,7 +418,7 @@ class JFusionUser_vbulletin extends JFusionUser{
         		$status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . ' ' . $error;
     		}
 	    }
-	    
+
 	    unset($userdm);
     }
 
@@ -487,7 +490,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function createUser ($userinfo, $overwrite, &$status)
     {
-		
+
     	//get the default user group and determine if the user needs to be set as needing activation
 		if(empty($userinfo->activation)){
             $usergroup = $this->params->get('usergroup');
@@ -544,7 +547,7 @@ class JFusionUser_vbulletin extends JFusionUser{
         		$status['error'][] = JText::_('USER_CREATION_ERROR') . ' ' . $error;
     		}
 	    }
-	    
+
 	    unset($userdm);
     }
 
