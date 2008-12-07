@@ -462,6 +462,15 @@ class JFusionCurl{
 
     function RemoteLogin($post_url,$formid,$username,$password,$integrationtype,$relpath=false,$hidden=false,$buttons=false,
               $override=NULL,$cookiedomain='',$cookiepath='',$expires=1800,$input_username_id='',$input_password_id=''){
+
+        // find out if we have a SSL enabled website
+        if (strpos($post_url,'https://') === false){
+            $ssl_enabled = false;
+            $ssl_string = 'http://';
+        } else {
+            $ssl_enabled = false;
+            $ssl_string = 'https://';
+        }
         $status=array();
         $status['debug']='';
         global $ch;
@@ -486,7 +495,6 @@ class JFusionCurl{
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, array('JFusionCurl','read_header'));
         $remotedata = curl_exec($ch);
-
         if ($integrationtype ==1){
             curl_close($ch);
         }
@@ -556,21 +564,18 @@ class JFusionCurl{
         }
 
         // now construct the action parameter
-        // first make it not use ssl (TO DO, cURL ssl support)
-
-        $form_action = str_replace ('https://','http://',$form_action);
 
         // websites provide a full url (easy), or a relative url to the post directory. We have to add in the
         // domain if not present. We can extract the domain from the post_url passed to this function
-
-        if ((strpos($form_action,'http://') === false) && !$relpath) {
-           $tmpurl = JFusionCurlparseUrl($post_url);
-           $form_action = 'http://'.$tmpurl[4].$form_action;
+        if ((strpos($form_action,$ssl_string) === false) && !$relpath) {
+           $tmpurl = JFusionCurl::parseUrl($post_url);
+           $form_action = $ssl_string.$tmpurl[4].$form_action;
           //$form_action = $post_url.$form_action;
         }
         if ($relpath){$form_action = $post_url.$form_action;}
         // now try to find the fieldnames for the username and password entries
         // as far as I have seen, matching user or name will do together with pass:
+
         $input_username_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
           if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
@@ -635,6 +640,7 @@ class JFusionCurl{
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_params.$strParameters);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $remotedata = curl_exec($ch);
         curl_close($ch);
 
