@@ -3,7 +3,7 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.0.8.010
+ * @version 1.1.001
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion -- Henk Wevers. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
