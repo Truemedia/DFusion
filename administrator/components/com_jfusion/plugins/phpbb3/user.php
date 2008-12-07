@@ -24,7 +24,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
-        $db = & JFactory::getDBO();
+        $db = & JFusionFactory::getDatabase($this->getJname());
         $params = JFusionFactory::getParams($this->getJname());
         $update_block = $params->get('update_block');
         $update_activation = $params->get('update_activation');

@@ -46,7 +46,7 @@ class JFusionUser_vbulletin extends JFusionUser{
     function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
-        $db = & JFactory::getDBO();
+        $db = & JFusionFactory::getDatabase($this->getJname());
         $update_block = $this->params->get('update_block');
         $update_activation = $this->params->get('update_activation');
         $update_email = $this->params->get('update_email');

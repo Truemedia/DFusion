@@ -243,11 +243,15 @@ class JFusionFunction{
 */
     function &getDatabase($jname)
     {
+		//check to see if joomla DB is requested
+		if ($jname == 'joomla_int'){
+        	$db = & JFactory::getDBO();
+        	return $db;
+		}
 
         //get the debug configuration setting
         $conf =& JFactory::getConfig();
         $debug = $conf->getValue('config.debug');
-
 
         //TODO see if we can delete these jimports below
         jimport('joomla.database.database');

@@ -263,19 +263,10 @@
                 }
             }
 
-            //destroy the Joomla session
-            $table = & JTable::getInstance('session');
-            $table->destroy($user['id'], $options['clientid']);
+			//destroy the joomla session itself
+            $JoomlaUser = JFusionFactory::getUser('joomla_int');
+			$JoomlaUser->destroySession($user, $options);
 
-            $my =& JFactory::getUser();
-            if ($my->get('id') == $user['id']) {
-                // Hit the user last visit field
-                $my->setLastVisit();
-
-                // Destroy the php session for this user
-                $session =& JFactory::getSession();
-                $session->destroy();
-            }
 			ob_end_clean();
             return true;
         }

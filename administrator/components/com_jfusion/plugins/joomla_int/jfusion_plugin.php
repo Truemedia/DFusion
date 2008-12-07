@@ -22,64 +22,53 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 */
 class JFusionPlugin_joomla_int extends JFusionPlugin
 {
-    function getJname(){
+    function getJname()
+    {
         return 'joomla_int';
     }
 
-    function getTablename(){
+    function getTablename()
+    {
         return JFusionJplugin::getTablename();
     }
 
-    function getRegistrationURL(){
+    function getRegistrationURL()
+    {
         return JFusionJplugin::getRegistrationURL();
     }
 
-    function getLostPasswordURL(){
+    function getLostPasswordURL()
+    {
         return JFusionJplugin::getLostPasswordURL();
     }
 
-    function getLostUsernameURL(){
-             return JFusionJplugin::getLostUsernameURL();
+    function getLostUsernameURL()
+    {
+        return JFusionJplugin::getLostUsernameURL();
     }
 
-
-    function getUserList(){
-        $db = & JFactory::getDBO();
-        return JFusionJplugin::getUserList($db);
+    function getUserList()
+    {
+        return JFusionJplugin::getUserList($this->getJname());
     }
 
-    function getUserCount(){
-        $db = & JFactory::getDBO();
-        return JFusionJplugin::getUserCount($db);
+    function getUserCount()
+    {
+        return JFusionJplugin::getUserCount($this->getJname());
     }
 
-    function getUsergroupList(){
-        $db = & JFactory::getDBO();
-        return JFusionJplugin::getUsergroupList($db);
+    function getUsergroupList()
+    {
+        return JFusionJplugin::getUsergroupList($this->getJname());
     }
 
-    function getDefaultUsergroup(){
-        //we want to output the usergroup name
-        $db = & JFactory::getDBO();
-        return JFusionJplugin::getDefaultUsergroup($db,$this->getJname());
+    function getDefaultUsergroup()
+    {
+        return JFusionJplugin::getDefaultUsergroup($this->getJname());
     }
-
 
     function allowRegistration()
     {
-
-        $row =& JTable::getInstance('component' );
-        $row->loadByOption('com_users' );
-        $parameters = JArrayHelper::fromObject($row );
-        $params = $parameters['params'];
-        $file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_user'.DS.'com_user.xml';
-        $parametersInstance = new JParameter($params, $file );
-
-        if ($parametersInstance->get('allowUserRegistration')) {
-            return true;
-        } else {
-            return false;
-        }
+        return JFusionJplugin::allowRegistration($this->getJname());
     }
-
-}
+ }

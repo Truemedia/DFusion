@@ -21,21 +21,20 @@ jimport('joomla.user.helper');
 * @package JFusion_Joomla_Int
 */
 
-
 class JFusionUser_joomla_int extends JFusionUser{
 
-
-    function getJname(){
+    function getJname()
+    {
         return 'joomla_int';
     }
 
-    function updateUser($userinfo, $overwrite){
-        // Initialise some variables
-        $db = & JFactory::getDBO();
-        return  JFusionJplugin::updateUser($userinfo, $overwrite,$db,$this->getJname());
+    function updateUser($userinfo, $overwrite)
+    {
+        return  JFusionJplugin::updateUser($userinfo, $overwrite,$this->getJname());
     }
 
-    function deleteUsername($username){
+    function deleteUsername($username)
+    {
         //get the database ready
         $db = & JFactory::getDBO();
 
@@ -69,15 +68,13 @@ class JFusionUser_joomla_int extends JFusionUser{
     }
 
 
-    function &getUser($identifier){
-        //get database object
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::getUser($identifier,$db,$this->getJname());
+    function &getUser($identifier)
+    {
+        return JFusionJplugin::getUser($identifier,$this->getJname());
     }
 
-
-
-    function filterUsername($username){
+    function filterUsername($username)
+    {
         return  JFusionJplugin::filterUsername($username,$this->getJname());
     }
 
@@ -141,49 +138,61 @@ class JFusionUser_joomla_int extends JFusionUser{
         }
     }
 
-    function destroySession($userinfo, $options)
+    function destroySession($user, $options)
     {
+        //destroy the Joomla session
+        $table = & JTable::getInstance('session');
+        $table->destroy($user['id'], $options['clientid']);
+
+        $my =& JFactory::getUser();
+        if ($my->get('id') == $user['id']) {
+            // Hit the user last visit field
+            $my->setLastVisit();
+
+            // Destroy the php session for this user
+            $session =& JFactory::getSession();
+            $session->destroy();
+        }
 
     }
 
-    function updatePassword($userinfo, &$existinguser, &$status){
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::updatePassword($userinfo, $existinguser, $status,$db);
+    function updatePassword($userinfo, &$existinguser, &$status)
+    {
+        return JFusionJplugin::updatePassword($userinfo, $existinguser, $status, $this->getJname());
     }
 
-    function updateUsername($userinfo, &$existinguser, &$status){
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::updateUsername($userinfo, $existinguser, $status,$db);
+    function updateUsername($userinfo, &$existinguser, &$status)
+    {
+        return JFusionJplugin::updateUsername($userinfo, $existinguser, $status,$this->getJname());
     }
 
-    function updateEmail($userinfo, &$existinguser, &$status){
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::updateEmail($userinfo, $existinguser, $status,$db);
+    function updateEmail($userinfo, &$existinguser, &$status)
+    {
+        return JFusionJplugin::updateEmail($userinfo, $existinguser, $status,$this->getJname());
     }
 
-    function blockUser($userinfo, &$existinguser, &$status){
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::blockUser($userinfo, $existinguser, $status,$db);
+    function blockUser($userinfo, &$existinguser, &$status)
+    {
+        return JFusionJplugin::blockUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
-    function unblockUser($userinfo, &$existinguser, &$status){
-        //unblock the user
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::unblockUser($userinfo, $existinguser, $status,$db);
+    function unblockUser($userinfo, &$existinguser, &$status)
+    {
+        return JFusionJplugin::unblockUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
-    function activateUser($userinfo, &$existinguser, &$status){
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::activateUser($userinfo, $existinguser, $status,$db);
+    function activateUser($userinfo, &$existinguser, &$status)
+    {
+        return JFusionJplugin::activateUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
-    function inactivateUser($userinfo, &$existinguser, &$status){
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::inactivateUser($userinfo, $existinguser, $status,$db);
+    function inactivateUser($userinfo, &$existinguser, &$status)
+    {
+        return JFusionJplugin::inactivateUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
-    function createUser($userinfo, $overwrite, &$status){
-        $db =& JFactory::getDBO();
-        return JFusionJplugin::createUser($userinfo, $overwrite, $status,$db,$this->getJname());
+    function createUser($userinfo, $overwrite, &$status)
+    {
+        return JFusionJplugin::createUser($userinfo, $overwrite, $status,$this->getJname());
     }
 }

@@ -50,22 +50,25 @@ class JFusionJplugin{
 		return 'index.php?option=com_user&view=remind';
 	}
 
-	function getUserList($db){
+	function getUserList($jname){
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'SELECT username, email from #__users';
 		$db->setQuery($query );
 		$userlist = $db->loadObjectList();
 		return $userlist;
 	}
 
-	function getUserCount($db){
+	function getUserCount($jname){
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'SELECT count(*) from #__users';
 		$db->setQuery($query );
-		
+
 		//getting the results
 		return $db->loadResult();
 	}
 
-	function getUsergroupList($db){
+	function getUsergroupList($jname){
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'SELECT id, name FROM #__core_acl_aro_groups';
 		$db->setQuery($query );
 
@@ -73,8 +76,9 @@ class JFusionJplugin{
 		return $db->loadObjectList();
 	}
 
-	function getDefaultUsergroup($db,$Jname){
-		$params = JFusionFactory::getParams($Jname);
+	function getDefaultUsergroup($jname){
+		$params = JFusionFactory::getParams($jname);
+        $db = & JFusionFactory::getDatabase($jname);
 		$usergroup_id = $params->get('usergroup', 18);
 
 		//we want to output the usergroup name
@@ -83,12 +87,71 @@ class JFusionJplugin{
 		return $db->loadResult();
 	}
 
+    function allowRegistration($jname)
+    {
+        $db = & JFusionFactory::getDatabase($jname);
+		$query = 'SELECT params FROM #__components WHERE option = \'com_users\'';
+		$db->setQuery($query );
+        $registry = new JRegistry();
+        $registry->loadINI($db->loadResult());
+	    $params = $registry->toObject();
+
+        if ($params->allowUserRegistration) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+  function setupFromPath($path)
+    {
+      //check for trailing slash and generate file path
+        if (substr($path, -1) == DS) {
+            $configfile = $path . 'configuration.php';
+        } else {
+            $configfile = $path . DS. 'configuration.php';
+        }
+
+        if (($file_handle = @fopen($configfile, 'r')) === FALSE) {
+            JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). ": $myfile " . JText::_('WIZARD_MANUAL'));
+      		return false;
+        } else {
+            //parse the file line by line to get only the config variables
+            //we can not directly include the config file as JConfig is already defined
+            $file_handle = fopen($configfile, 'r');
+            while (!feof($file_handle)) {
+                $line = fgets($file_handle);
+                if (strpos($line, '$')) {
+                    //extract the name and value, it was coded to avoid the use of eval() function
+                    $vars = split ("'", $line);
+                    $names = split ('var', $vars[0] );
+                    $name = trim($names[1], ' $=');
+                    $value = trim($vars[1], ' $=');
+                    $config[$name] = $value;
+                }
+            }
+            fclose($file_handle);
+            //Save the parameters into the standard JFusion params format
+            $params = array();
+            $params['database_host'] = $config['host'];
+            $params['database_name'] = $config['db'];
+            $params['database_user'] = $config['user'];
+            $params['database_password'] = $config['password'];
+            $params['database_prefix'] = $config['dbprefix'];
+            $params['database_type'] = $config['dbtype'];
+            $params['source_path'] = $path;
+            return $params;
+        }
+  }
+
+
 /**
  * Common code for user.php
  */
 
-    function getUser($identifier,$db,$Jname){
-		$params = JFusionFactory::getParams($Jname);
+    function getUser($identifier,$jname){
+		$params = JFusionFactory::getParams($jname);
+        $db = & JFusionFactory::getDatabase($jname);
 
 		//decide what can be used as a login credential
 		$login_identifier = $params->get('login_identifier');
@@ -106,7 +169,7 @@ class JFusionJplugin{
 			$identifier_type = 'b.email';
 		}
 
-		if ($Jname == 'joomla_int') {
+		if ($jname == 'joomla_int') {
 			//first check the JFusion user table
 			$db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier_type . '=' . $db->quote($identifier));
 			$result = $db->loadObject();
@@ -158,7 +221,8 @@ class JFusionJplugin{
 		return $result;
 	}
 
-	function updateEmail($userinfo, &$existinguser, &$status,$db){
+	function updateEmail($userinfo, &$existinguser, &$status,$jname){
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		if (!$db->query()) {
@@ -168,7 +232,8 @@ class JFusionJplugin{
 		}
 	}
 
-	function updatePassword($userinfo, &$existinguser, &$status,$db){
+	function updatePassword($userinfo, &$existinguser, &$status,$jname){
+        $db = & JFusionFactory::getDatabase($jname);
 		$userinfo->password_salt  = JUserHelper::genRandomPassword(32);
 		$userinfo->password = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
 		$new_password = $userinfo->password . ':' . $userinfo->password_salt;
@@ -181,9 +246,9 @@ class JFusionJplugin{
 		}
 	}
 
-	function blockUser($userinfo, &$existinguser, &$status,$db){
+	function blockUser($userinfo, &$existinguser, &$status,$jname){
 		//block the user
-		$db =& JFactory::getDBO();
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'UPDATE #__users SET block = 1 WHERE id =' . $existinguser->userid;
 		if (!$db->query()) {
 			$status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
@@ -192,8 +257,9 @@ class JFusionJplugin{
 		}
 	}
 
-	function unblockUser($userinfo, &$existinguser, &$status,$db){
+	function unblockUser($userinfo, &$existinguser, &$status,$jname){
 		//unblock the user
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'UPDATE #__users SET block = 0 WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		$db->query();
@@ -204,8 +270,9 @@ class JFusionJplugin{
 		}
 	}
 
-	function activateUser($userinfo, &$existinguser, &$status,$db){
+	function activateUser($userinfo, &$existinguser, &$status,$jname){
 		//unblock the user
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'UPDATE #__users SET block = 0, activation = \'\' WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		if (!$db->query()) {
@@ -215,8 +282,9 @@ class JFusionJplugin{
 		}
 	}
 
-	function inactivateUser($userinfo, &$existinguser, &$status,$db){
+	function inactivateUser($userinfo, &$existinguser, &$status,$jname){
 		//unblock the user
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'UPDATE #__users SET block = 1, activation = '.$db->quote($userinfo->activation) .' WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		$db->query();
@@ -227,11 +295,11 @@ class JFusionJplugin{
 		}
 	}
 
-	function filterUsername($username,$Jname){
+	function filterUsername($username,$jname){
 		//check to see if additional username filtering need to be applied
-		$params = JFusionFactory::getParams($Jname);
+		$params = JFusionFactory::getParams($jname);
 		$added_filter = $params->get('username_filter');
-		if ($added_filter && $added_filter != $Jname) {
+		if ($added_filter && $added_filter != $jname) {
 			$JFusionPlugin = JFusionFactory::getUser($added_filter);
 			if(method_exists($JFusionPlugin, 'filterUsername')){
 				$username = $JFusionPlugin->filterUsername($username);
@@ -240,10 +308,11 @@ class JFusionJplugin{
 		return $username;
 	}
 
-	function updateUsername($userinfo, &$existinguser, &$status,$db){
+	function updateUsername($userinfo, &$existinguser, &$status,$jname){
 		//generate the filtered integration username
 		$username_clean = $this->filterUsername($userinfo->username);
 
+        $db = & JFusionFactory::getDatabase($jname);
 		$query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . 'WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		if (!$db->query()) {
@@ -254,8 +323,9 @@ class JFusionJplugin{
 		}
 	}
 
-	function createUser($userinfo, $overwrite, &$status,$db,$Jname){
+	function createUser($userinfo, $overwrite, &$status,$jname){
 		//load the database
+        $db = & JFusionFactory::getDatabase($jname);
 		//joomla does not allow duplicate email addresses, check to see if the email is unique
 		$query = 'SELECT id as userid, username, email from #__users WHERE email ='.$db->quote($userinfo->email);
 		$db->setQuery($query);
@@ -314,7 +384,7 @@ class JFusionJplugin{
 				$instance->set('sendEmail'   , 1 );
 
 				//find out what usergroup the new user should have
-				$params = JFusionFactory::getParams($Jname);
+				$params = JFusionFactory::getParams($jname);
 				$gid = $params->get('usergroup', 18);
 				$query = 'SELECT name FROM #__core_acl_aro_groups WHERE id = ' . $gid;
 				$db->setQuery($query);
@@ -339,7 +409,7 @@ class JFusionJplugin{
 					unset ($user['aid']);
 					unset ($user['guest']);
 					// set the creationtime and lastaccess time
-					// TODO	
+					// TODO
 					$user= (object) $user;
 					$user->id = NULL;
 					if (!$db->insertObject('#__users', $user, 'id' )) {
@@ -370,9 +440,10 @@ class JFusionJplugin{
 		}
 	}
 
-	function updateUser($userinfo, $overwrite,$db,$Jname){
+	function updateUser($userinfo, $overwrite,$jname){
 		// Initialise some variables
-		$params = JFusionFactory::getParams($Jname);
+		$params = JFusionFactory::getParams($jname);
+        $db = & JFusionFactory::getDatabase($jname);
 		$update_block = $params->get('update_block');
 		$update_activation = $params->get('update_activation');
 		$update_email = $params->get('update_email');
@@ -387,12 +458,12 @@ class JFusionJplugin{
 		}
 
 		//find out if the user already exists
-		$existinguser = $this->getUser($userinfo->username,$db,$Jname);
+		$existinguser = $this->getUser($userinfo->username,$jname);
 		if (!empty($existinguser)) {
 			//a matching user has been found
 			if ($existinguser->email != $userinfo->email) {
 				if ($update_email || $overwrite) {
-					$this->updateEmail($userinfo, $existinguser, $status,$db);
+					$this->updateEmail($userinfo, $existinguser, $status,$jname);
 				} else {
 					//return a email conflict
 					$status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
@@ -404,10 +475,10 @@ class JFusionJplugin{
 				// add password_clear to existinguser for the Joomla helper routines
 				$existinguser->password_clear=$userinfo->password_clear;
 				//check if the password needs to be updated
-				$model = JFusionFactory::getAuth($Jname);
+				$model = JFusionFactory::getAuth($jname);
 				$testcrypt = $model->generateEncryptedPassword($existinguser);
 				if ($testcrypt != $existinguser->password) {
-					$this->updatePassword($userinfo, $existinguser, $status,$db);
+					$this->updatePassword($userinfo, $existinguser, $status,$jname);
 				} else {
 					$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
 				}
@@ -419,10 +490,10 @@ class JFusionJplugin{
 				if ($update_block || $overwrite) {
 					if ($userinfo->block) {
 						//block the user
-						$this->blockUser($userinfo, $existinguser, $status,$db);
+						$this->blockUser($userinfo, $existinguser, $status,$jname);
 					} else {
 						//unblock the user
-						$this->unblockUser($userinfo, $existinguser, $status,$db);
+						$this->unblockUser($userinfo, $existinguser, $status,$jname);
 					}
 				} else {
 					//return a debug to inform we skiped this step
@@ -435,10 +506,10 @@ class JFusionJplugin{
 				if ($update_activation || $overwrite) {
 					if ($userinfo->activation) {
 						//inactiva the user
-						$this->inactivateUser($userinfo, $existinguser, $status,$db);
+						$this->inactivateUser($userinfo, $existinguser, $status,$jname);
 					} else {
 						//activate the user
-						$this->activateUser($userinfo, $existinguser, $status,$db);
+						$this->activateUser($userinfo, $existinguser, $status,$jname);
 					}
 				} else {
 					//return a debug to inform we skiped this step
