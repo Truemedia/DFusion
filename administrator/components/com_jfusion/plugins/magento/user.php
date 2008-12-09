@@ -314,11 +314,14 @@ class JFusionUser_magento extends JFusionUser{
     // transactional handling of this update is a neccessity
     if (!$entity_id){ //create an (almost) empty user
       // first get the current increment
-      $db->BeginTrans();
+$db->Execute('BEGIN TRANSACTION'); 
+//    BeginTrans();
+
        $query = 'SELECT increment_last_id FROM #__eav_entity_store WHERE entity_type_id = '.$this->getMagentoEntityTypeID('customer').' AND store_id = 0';
            $db->Execute($query);
        if ($db->_errorNum != 0){
-        $db->RollbackTrans();
+        $db->Execute('ROLLBACK TRANSACTION');
+        //RollbackTrans();
         return $db->stderr();
       }
           $increment_last_id_int = (int) $db->loadresult();
@@ -327,7 +330,8 @@ class JFusionUser_magento extends JFusionUser{
                       ' WHERE entity_type_id = '.$this->getMagentoEntityTypeID('customer').' AND store_id = 0';
            $db->Execute($query);
       if ($db->_errorNum != 0){
-        $db->RollbackTrans();
+        $db->Execute('ROLLBACK TRANSACTION');
+        //RollbackTrans();
         return $db->stderr();
       }
 
@@ -337,7 +341,8 @@ class JFusionUser_magento extends JFusionUser{
                             $db->quote($increment_last_id).',1,'.$db->quote($sqlDateTime).', '.$db->quote($sqlDateTime).')';
            $db->Execute($query);
       if ($db->_errorNum != 0){
-        $db->RollbackTrans();
+        $db->Execute('ROLLBACK TRANSACTION');
+        //RollbackTrans();
         return $db->stderr();
       }
           $entity_id = $db->insertid();
@@ -347,7 +352,8 @@ class JFusionUser_magento extends JFusionUser{
           ' WHERE entity_id = '.$entity_id;
            $db->Execute($query);
       if ($db->_errorNum != 0){
-        $db->RollbackTrans();
+        $db->Execute('ROLLBACK TRANSACTION');
+        //RollbackTrans();
         return $db->stderr();
       }
     }
@@ -360,7 +366,8 @@ class JFusionUser_magento extends JFusionUser{
               ' WHERE entity_id = '.$entity_id;
               $db->Execute($query);
           if ($db->_errorNum != 0){
-            $db->RollbackTrans();
+            $db->Execute('ROLLBACK TRANSACTION');
+            //RollbackTrans();
             return $db->stderr();
           }
         }
@@ -391,13 +398,15 @@ class JFusionUser_magento extends JFusionUser{
           }
               $db->Execute($query);
           if ($db->_errorNum != 0){
-            $db->RollbackTrans();
+            $db->Execute('ROLLBACK TRANSACTION');
+            //RollbackTrans();
             return $db->stderr();
           }
         }
       }
     }
-    $db->CommitTrans();
+    $db->Execute('COMMIT TRANSACTION');
+    //CommitTrans();
     return false; //NOTE FALSE is NO ERRORS!
   }
 
