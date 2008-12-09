@@ -16,7 +16,7 @@ defined('_JEXEC' ) or die('Restricted access' );
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.curl.php');
+
 jimport('joomla.user.helper');
 /**
 * @package JFusion_Joomla_Ext
@@ -81,40 +81,12 @@ class JFusionUser_joomla_ext extends JFusionUser{
         return  JFusionJplugin::filterUsername($username,$this->getJname());
     }
 
-    function createSession($userinfo, $options)
-    {
-        $status['error'] = '';
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_url = $params->get('source_url');
-        $cookiedomain = $params->get('cookie_domain');
-        $cookiepath = $params->get('cookie_path');
-        $cookieexpires = $params->get('cookie_expires');
-        $post_url = $source_url.$params->get('login_url');
-        $formid = $params->get('loginform_id');
-        $override = $params->get('override');
-        $hidden = true;
-        $buttons = true;
-        $integrationtype = 0;
-        $relpath=false;
-        $cookies = array();
-        $cookie  = array();
-        global $ch;
-        global $cookiearr;
-        global $cookies_to_set;
-        global $cookies_to_set_index;
-        $cookiearr = array();
-        $cookies_to_set = array();
-        $cookies_to_set_index = 0;
-//echo"$post_url,$formid,$userinfo->username,$userinfo->password_clear,$integrationtype,$relpath,$hidden,$buttons,$override,$cookiedomain,$cookiepath,$cookieexpires";
-//die('108');
-        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->username,$userinfo->password_clear,
-              $integrationtype,$relpath,$hidden,$buttons,$override,$cookiedomain,$cookiepath,$cookieexpires);
-        return $status;
-    }
+    function destroySession($userinfo, $options){
+		return JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
+     }
 
-    function destroySession($userinfo, $options)
-    {
-
+    function createSession($userinfo, $options){
+		return JFusionJplugin::createSession($userinfo, $options,$this->getJname());
     }
 
     function updatePassword($userinfo, &$existinguser, &$status)

@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_magento
-* @version 1.0.8-008
+* @version 1.1.0-001
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion.--Henk Wevers All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -33,7 +33,7 @@ defined('_JEXEC' ) or die('Restricted access' );
 * load the Abstract User Class
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.curl.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
 
 /**
 * @package JFusion_myplugin
@@ -284,14 +284,11 @@ class JFusionUser_magento extends JFusionUser{
     }
 
     function destroySession($userinfo, $options){
-        $status['error'] = '';
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_url = $params->get('source_url');
-        $cookiedomain = $params->get('cookie_domain');  // MB: added
-        $cookiepath = $params->get('cookie_path');  // MB: added
-        $post_url = $source_url.$params->get('logout_url');
-        $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain,$cookiepath);
-        return $status;
+		return JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
+     }
+
+    function createSession($userinfo, $options){
+		return JFusionJplugin::createSession($userinfo, $options,$this->getJname());
     }
 
         function getRandomString($len, $chars=null){
@@ -303,35 +300,6 @@ class JFusionUser_magento extends JFusionUser{
             $str .= $chars[mt_rand(0, $lc)];
         }
         return $str;
-    }
-
-    function createSession($userinfo, $options){
-        $status['error'] = '';
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_url = $params->get('source_url');
-        $cookiedomain = $params->get('cookie_domain');
-        $cookiepath = $params->get('cookie_path');
-        $cookieexpires = $params->get('cookie_expires');
-        $post_url = $source_url.$params->get('login_url');
-        $formid = $params->get('loginform_id');
-        $override = $params->get('override');
-    $hidden = true;
-    $buttons = true;
-    $integrationtype = 1;
-    $relpath=false;
-        $cookies = array();
-        $cookie  = array();
-        $status['error'] = '';
-        global $ch;
-        global $cookiearr;
-        global $cookies_to_set;
-        global $cookies_to_set_index;
-        $cookiearr = array();
-        $cookies_to_set = array();
-        $cookies_to_set_index = 0;
-        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->email,$userinfo->password_clear,
-              $integrationtype,$relpath,$hidden,$buttons,$override,$cookiedomain,$cookiepath,$cookieexpires);
-       return $status;
     }
 
     function filterUsername($username){

@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8-009
+* @version 1.1.0-001
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -26,7 +26,8 @@ defined('_JEXEC' ) or die('Restricted access' );
 * load the Abstract User Class
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.curl.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
+
 /**
 * @package JFusion_Moodle
 */
@@ -173,44 +174,13 @@ class JFusionUser_moodle extends JFusionUser{
     }
 
     function destroySession($userinfo, $options){
-        $status['error'] = '';
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_url = $params->get('source_url');
-        $post_url = $source_url.$params->get('logout_url');
-        $cookiedomain = $params->get('cookie_domain');
-        $cookiepath = $params->get('cookie_path');
-        $leavealone = $params->get('leavealone');
-        $status = JFusionCurl::RemoteLogout($post_url,$cookiedomain,$cookiepath,$leavealone);
-        return $status;
+		return JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
      }
+
     function createSession($userinfo, $options){
-        $status['error'] = '';
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_url = $params->get('source_url');
-        $cookiedomain = $params->get('cookie_domain');
-        $cookiepath = $params->get('cookie_path');
-        $cookieexpires = $params->get('cookie_expires');
-        $post_url = $source_url.$params->get('login_url');
-        $formid = $params->get('loginform_id');
-        $override = $params->get('override');
-      	$hidden = false;
-      	$buttons = true;
-      	$integrationtype = 1;
-      	$relpath=true;
-        $cookies = array();
-        $cookie  = array();
-        $status['error'] = '';
-        global $ch;
-        global $cookiearr;
-        global $cookies_to_set;
-        global $cookies_to_set_index;
-        $cookiearr = array();
-        $cookies_to_set = array();
-        $cookies_to_set_index = 0;
-        $status=JFusionCurl::RemoteLogin($post_url,$formid,$userinfo->username,$userinfo->password_clear,
-              $integrationtype,$relpath,$hidden,$buttons,$override,$cookiedomain,$cookiepath,$cookieexpires);
-        return $status;
+		return JFusionJplugin::createSession($userinfo, $options,$this->getJname());
     }
+    
     function filterUsername($username){
       	//no username filtering implemented yet
      	return $username;

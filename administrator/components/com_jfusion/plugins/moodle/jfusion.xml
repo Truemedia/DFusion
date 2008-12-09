@@ -3,13 +3,13 @@
 <install type="jfusion" version="1.5.0">
   <name>moodle</name>
   <author>Henk Wevers</author>
-  <creationDate>28 November 2008</creationDate>
-  <copyright>Copyright GPL (C) 2005 Open Source Matters. All rights reserved.</copyright>
+  <creationDate>8 December 2008</creationDate>
+  <copyright>Copyright GPL (C) 2008 Open Source Matters. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <authorEmail>admin@mijnbreincoach.nl</authorEmail>
   <authorUrl>www.mijnbreincoach.nl</authorUrl>
-  <version>1.08-009</version>
-  <description>JFusion (1.08+) plugin for Moodle Elearning 1.8+</description>
+  <version>1.1.0-001</version>
+  <description>JFusion (1.1.0+) plugin for Moodle Elearning 1.8+</description>
   <slave>0</slave>
   <dual_login>0</dual_login>
   <activity>0</activity>
@@ -35,21 +35,35 @@
       description="DATABASE_PREFIX" />
     <param name="@spacer" type="spacer" default="" label=""
       description="" />
-    <param name="source_url" type="text" size="100"
-      default="http://www.yourdomain.com/moodle/" label="" description="SOURCE_URL" />
+    <param name="source_url" type="text" size="100" label="" 
+      default="http://www.yourdomain.com/moodle/" description="SOURCE_URL" />
     <param name="source_path" type="text" size="100" label="" 
       default="" description="SOURCE_PATH" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
-    <param name="cookie_domain" type="text" size="40" label="" default=""
-    description="COOKIE_DOMAIN" />
-    <param name="cookie_path" type="text" size="40" label="" default=""
-    description="COOKIE_PATH" />
+    <param name="cookie_domain" type="text" size="100" label="" default=""
+    description="CURL_COOKIE_DOMAIN" />
+    <param name="cookie_path" type="text" size="100" label="" default=""
+    description="CURL_COOKIE_PATH" />
   	<param name="cookie_expires" type="text" size="5" label="" default="1800"
-    description="COOKIE_EXPIRES" />
+    description="CURL_COOKIE_EXPIRES" />
     <param name="override" type="text" size="100" label="" 
-      default="login[indirect]=no" description="COOKIE_OVERRIDE" />
+      default="login[indirect]=no" description="CURL_COOKIE_OVERRIDE" />
     <param name="leavealone" type="text" size="100" label="" 
-      default="MOODLEID_=>" description="COOKIE_LEAVEALONE" />
+      default="MOODLEID_=>" description="CURL_COOKIE_LEAVEALONE" />
+    <param name="integrationtype" type="text" size="3" label="" 
+      default="1" description="CURL_INTEGRATIONTYPE" />
+    <param name="relpath" type="list" default="1" label="" description="CURL_RELPATH">
+      <option value="1">YES</option>
+      <option value="">NO</option>
+    </param>
+    <param name="hidden" type="list" default="" label="" description="CURL_HIDDEN">
+      <option value="1">YES</option>
+      <option value="">NO</option>
+    </param>
+    <param name="buttons" type="list" default="1" label="" description="CURL_BUTTONS">
+      <option value="1">YES</option>
+      <option value="">NO</option>
+    </param>
     <param name="@spacer" type="spacer" default="" label="" description="" />
 	<param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
 	<param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
@@ -61,10 +75,15 @@
       default="login/" description="LOGIN_URL" />
     <param name="loginform_id" type="text" size="100" label="" 
       default="login" description="LOGINFORM_ID" />
+    <param name="input_username_id" type="text" size="100" label="" 
+      default="" description="INPUT_USERNAME_ID" />
+    <param name="input_password_id" type="text" size="100" label="" 
+      default="" description="INPUT_USERNAME_ID" />
     <param name="logout_url" type="text" size="100" label="" 
       default="" description="LOGOUT_URL" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
     <param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+	<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
     <param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
       <option value="1">YES</option>
       <option value="">NO</option>

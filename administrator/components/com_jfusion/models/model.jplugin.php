@@ -17,6 +17,8 @@ defined('_JEXEC' ) or die('Restricted access' );
  */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractplugin.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.curl.php');
+
 
 class JFusionJplugin{
 
@@ -148,6 +150,67 @@ class JFusionJplugin{
 /**
  * Common code for user.php
  */
+ 
+ 
+    function createSession($userinfo, $options,$jname){
+        global $ch;
+        global $cookiearr;
+        global $cookies_to_set;
+        global $cookies_to_set_index;
+        $cookiearr = array();
+        $cookies_to_set = array();
+        $cookies = array();
+        $cookie  = array();
+		$curl_options = array();
+		$status = array();
+        $status['error'] = '';
+       	$status['debug'] = '';
+        $cookies_to_set_index = 0;
+ 
+        $params = JFusionFactory::getParams($jname);
+		$curl_options['post_url']			= $params->get('source_url').$params->get('login_url');
+		$curl_options['formid']				= $params->get('loginform_id');
+		$curl_options['username']			= $userinfo->username;
+		$curl_options['password']			= $userinfo->password_clear;
+ 		$curl_options['integrationtype']	= $params->get('integrationtype');
+	 	$curl_options['relpath']			= $params->get('relpath');
+	 	$curl_options['hidden']				= $params->get('hidden');
+		$curl_options['buttons']			= $params->get('buttons');
+		$curl_options['override']			= $params->get('override');
+	 	$curl_options['cookiedomain']		= $params->get('cookie_domain');
+	 	$curl_options['cookiepath']			= $params->get('cookie_path');
+	 	$curl_options['expires']			= $params->get('cookie_expires');
+ 	 	$curl_options['input_username_id']	= $params->get('input_username_id');
+		$curl_options['input_password_id']	= $params->get('input_password_id');
+
+        $status=JFusionCurl::RemoteLogin($curl_options);
+        return $status;
+    }
+
+    function destroySession($userinfo, $options,$jname){
+        global $ch;
+        global $cookiearr;
+        global $cookies_to_set;
+        global $cookies_to_set_index;
+        $cookiearr = array();
+        $cookies_to_set = array();
+        $cookies = array();
+        $cookie  = array();
+		$curl_options = array();
+		$status = array();
+        $status['error'] = '';
+       	$status['debug'] = '';
+        $cookies_to_set_index = 0;
+ 
+        $params = JFusionFactory::getParams($jname);
+		$curl_options['post_url']			= $params->get('source_url').$params->get('login_url');
+	 	$curl_options['cookiedomain']		= $params->get('cookie_domain');
+	 	$curl_options['cookiepath']			= $params->get('cookie_path');
+	 	$curl_options['leavealone']			= $params->get('leavealone');
+        $status = JFusionCurl::RemoteLogout($curl_options);
+        return $status;
+     }
+
 
     function getUser($identifier,$jname){
 		$params = JFusionFactory::getParams($jname);
