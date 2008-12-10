@@ -415,26 +415,20 @@ ORDER BY left_id';
 	        $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
-            //fix for search action
-            $Itemid = JRequest::getVar('Itemid');
-	        $regex_body[]	= '#action="\./(.*?)">#mS';
-            $replace_body[]	= 'action="'.$baseURL.'"><input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="Itemid" value="'.$Itemid . '"><input type="hidden" name="jfile" value="$1">';
+			//fix for form actions
+	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
+			$uri		= JURI::getInstance();
+			$indexURL	= JURI::base() .'index.php';
+            $replace_body[]	= '$this->fixAction("$1","$2","' . $indexURL .'")';
 
-			//fix for post delete action
-	        $regex_body[]	= '#action="(.*?)\?(.*?)">#mS';
-            $replace_body[]	= 'action="'.$baseURL.'"><input type="hidden" name="option" value="com_jfusion"><input type="hidden" name="Itemid" value="'.$Itemid . '"><input type="hidden" name="jfile" value="$1">';
-
-	        $regex_body[]	= '#(/&amp\;|/\?|&amp;)(.*?)\=#mS';
-            $replace_body[]	= '/$2,';
-
-            //see if sh404sef parsing is needed
+			//phpBB3 URL parsing is not perfect, if sh404SEF is enabled some extra cleanup is needed
             $params = JFusionFactory::getParams('joomla_int');
 			$sh404sef_parse = $params->get('sh404sef_parse');
-			if ($sh404sef_parse){
-	            $currentURL = 'http://www.jfusion.org';
+			if ($sh404sef_parse == 1){
+	            $currentURL = JURI::base();
 	            //fix up and ampersands that slipped past the parse url function.
 		        $regex_body[]	= '#'.$currentURL.'(.*?)(/&amp\;|/\?)(.*?)"#me';
-				$replace_body[]	= '$this->fixURL("'.$currentURL.'$1$2$3\"")';
+				$replace_body[]	= '$this->fixURL("'.$currentURL.'$1$2$3")';
 			}
         }
 
@@ -443,12 +437,46 @@ ORDER BY left_id';
 
       function fixURL($url){
       	$url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
-      	return $url;
+      	return $url . '"';
       }
 
-      function fixAction($url){
-      	$url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
-      	return $url;
+      function fixAction($url, $extra, $baseURL){
+      	$url = htmlspecialchars_decode($url);
+      	$url_details = parse_url($url);
+      	$url_variables = array();
+      	parse_str($url_details['query'], $url_variables);
+
+      	//set the correct action and close the form tag
+		$replacement = 'action="'.$baseURL . '"' . $extra . '>';
+
+		//add which file is being referred to
+		if ($url_variables['jfile']){
+        	//use the action file that was in jfile variable
+        	$jfile = $url_variables['jfile'];
+        	unset($url_variables['jfile']);
+		} else {
+			//use the action file from the action URL itself
+         	$jfile = basename($url_details['path']);
+		}
+      	$replacement .= '<input type="hidden" name="jfile" value="'. $jfile . '">';
+
+		//add a reference to JFusion
+      	$replacement .= '<input type="hidden" name="option" value="com_jfusion">';
+        unset($url_variables['option']);
+
+		//add a reference to the itemid if set
+        $Itemid = JRequest::getVar('Itemid');
+	    if ($Itemid){
+      		$replacement .=  '<input type="hidden" name="Itemid" value="'.$Itemid . '">';
+	    }
+        unset($url_variables['Itemid']);
+
+		//add any other variables
+      	foreach ($url_variables as $key => $value){
+      		$replacement .=  '<input type="hidden" name="'. $key .'" value="'.$value . '">';
+      	}
+
+      	return $replacement;
       }
 
     function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)

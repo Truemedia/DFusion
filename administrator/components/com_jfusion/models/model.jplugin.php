@@ -92,7 +92,7 @@ class JFusionJplugin{
     function allowRegistration($jname)
     {
         $db = & JFusionFactory::getDatabase($jname);
-		$query = 'SELECT params FROM #__components WHERE option = \'com_users\'';
+		$query = 'SELECT params FROM #__components WHERE `option` = \'com_users\'';
 		$db->setQuery($query );
         $registry = new JRegistry();
         $registry->loadINI($db->loadResult());
