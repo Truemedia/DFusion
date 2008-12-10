@@ -82,7 +82,6 @@ class JFusionPlugin_vbulletin extends JFusionPlugin{
             $params['database_user'] = $config['MasterServer']['username'];
             $params['database_password'] = $config['MasterServer']['password'];
             $params['database_prefix'] = $config['Database']['tableprefix'];
-            $params['cookie_prefix'] = $config['Misc']['cookieprefix'];
          	$params['source_path'] = $forumPath;
 
             //find the path to vbulletin, for this we need a database connection
@@ -94,21 +93,13 @@ class JFusionPlugin_vbulletin extends JFusionPlugin{
             $driver = 'mysql';
             $options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix );
             $vdb =& JDatabase::getInstance($options );
+
             //Find the path to vbulletin
             $query = "SELECT value FROM #__setting WHERE varname = 'bburl'";
             $vdb->setQuery($query);
             $vb_url = $vdb-> loadResult();
             $params['source_url'] = $vb_url;
 
-            $query = "SELECT value FROM #__setting WHERE varname = 'cookiedomain'";
-            $vdb->setQuery($query);
-            $cookie_domain = $vdb-> loadResult();
-            $params['cookie_domain'] = $cookie_domain;
-
-            $query = "SELECT value FROM #__setting WHERE varname = 'cookiepath'";
-            $vdb->setQuery($query);
-            $cookie_path = $vdb-> loadResult();
-            $params['cookie_path'] = $cookie_path;
             $params['source_license'] = trim($vb_lic);
 
             return $params;
