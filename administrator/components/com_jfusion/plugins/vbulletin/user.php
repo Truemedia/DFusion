@@ -256,7 +256,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 
 			$status['error'] = false;
-			$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  ' . JText::_('COOKIE_PATH') . '=' . $vbCookiePath . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $vbCookieDomain . ' password:'.substr($userinfo->password,0,6) . '********' ;
+			$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  password: '.substr($userinfo->password,0,6) . '********' ;
 	        return $status;
 
         } else {
