@@ -33,7 +33,8 @@ class JFusionUser_joomla_ext extends JFusionUser{
 
     function updateUser($userinfo, $overwrite)
     {
-        return  JFusionJplugin::updateUser($userinfo, $overwrite,$this->getJname());
+        $status = JFusionJplugin::updateUser($userinfo, $overwrite,$this->getJname());
+        return $status;
     }
 
     function deleteUsername($username)
@@ -73,59 +74,62 @@ class JFusionUser_joomla_ext extends JFusionUser{
 
     function &getUser($identifier)
     {
-        return JFusionJplugin::getUser($identifier,$this->getJname());
+        $userinfo = JFusionJplugin::getUser($identifier,$this->getJname());
+        return $userinfo;
     }
 
     function filterUsername($username)
     {
-        return  JFusionJplugin::filterUsername($username,$this->getJname());
+        $username = JFusionJplugin::filterUsername($username,$this->getJname());
     }
 
     function destroySession($userinfo, $options){
-		return JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
+		$status = JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
+		return $status;
      }
 
     function createSession($userinfo, $options){
-		return JFusionJplugin::createSession($userinfo, $options,$this->getJname());
+		$status = JFusionJplugin::createSession($userinfo, $options,$this->getJname());
+		return $status;
     }
 
     function updatePassword($userinfo, &$existinguser, &$status)
     {
-        return JFusionJplugin::updatePassword($userinfo, $existinguser, $status,$this->getJname());
+        JFusionJplugin::updatePassword($userinfo, $existinguser, $status,$this->getJname());
     }
 
     function updateUsername($userinfo, &$existinguser, &$status)
     {
-        return JFusionJplugin::updateUsername($userinfo, $existinguser, $status,$this->getJname());
+        JFusionJplugin::updateUsername($userinfo, $existinguser, $status,$this->getJname());
     }
 
     function updateEmail($userinfo, &$existinguser, &$status)
     {
-        return JFusionJplugin::updateEmail($userinfo, $existinguser, $status,$this->getJname());
+        JFusionJplugin::updateEmail($userinfo, $existinguser, $status,$this->getJname());
     }
 
     function blockUser($userinfo, &$existinguser, &$status)
     {
-        return JFusionJplugin::blockUser($userinfo, $existinguser, $status,$this->getJname());
+        JFusionJplugin::blockUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
     function unblockUser($userinfo, &$existinguser, &$status)
     {
-        return JFusionJplugin::unblockUser($userinfo, $existinguser, $status,$this->getJname());
+        JFusionJplugin::unblockUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
     function activateUser($userinfo, &$existinguser, &$status)
     {
-        return JFusionJplugin::activateUser($userinfo, $existinguser, $status,$this->getJname());
+        JFusionJplugin::activateUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
     function inactivateUser($userinfo, &$existinguser, &$status)
     {
-        return JFusionJplugin::inactivateUser($userinfo, $existinguser, $status,$this->getJname());
+        JFusionJplugin::inactivateUser($userinfo, $existinguser, $status,$this->getJname());
     }
 
     function createUser($userinfo, $overwrite, &$status)
     {
-        return JFusionJplugin::createUser($userinfo, $overwrite, $status,$this->getJname());
+        JFusionJplugin::createUser($userinfo, $overwrite, $status,$this->getJname());
     }
 }
