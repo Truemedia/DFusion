@@ -36,7 +36,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		define('SKIP_SESSIONCREATE', 1);
 		define('SKIP_USERINFO', 1);
 		define('CWD', $this->params->get('source_path'));
-		require_once(CWD.'./includes/init.php');
+		require_once(CWD.'/includes/init.php');
 
 		//force into global scope
 		$GLOBALS["vbulletin"] = $vbulletin;
@@ -215,6 +215,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 		//destroy vbulletin global variable
 		unset($GLOBALS["vbulletin"]);
+		unset($GLOBALS["db"]);
     }
 
     function createSession($userinfo, $options)
@@ -237,15 +238,15 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 			//setup the existing user
 			$userdm =& datamanager_init('User', $GLOBALS["vbulletin"], ERRTYPE_SILENT);
-			$userinfo = $this->convertUserData($existinguser);
-			$userdm->set_existing($userinfo);
+			$vbuser = $this->convertUserData($existinguser);
+			$userdm->set_existing($vbuser);
 
 			//update password expiration time if password expiration is enabled via vbulletin
 			$userdm->set('passworddate', 'FROM_UNIXTIME('.TIMENOW.')', false);
 			$userdm->save();
 
 			//include vb login functions
-			require_once(CWD . './includes/functions_login.php');
+			require_once(CWD . '/includes/functions_login.php');
 
 			//set cookies
 			vbsetcookie('userid', $existinguser->userid,$expires, true, true);
