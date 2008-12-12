@@ -33,7 +33,7 @@ JFusionFunction::displayDonate();
 </td><td width="100px">
 <img src="components/com_jfusion/images/login_checker2.png" height="75px" width="75px">
 <td><h2><? echo JText::_('LOGIN_CHECKER_RESULT');?></h2></td>
-</tr></table><br/>
+</tr></table>
 
 <?php
 

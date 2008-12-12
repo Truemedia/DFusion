@@ -493,11 +493,34 @@ ORDER BY left_id';
            $replace_header[]	= '$1'.$integratedURL.'$2"';
 
            //fix for URL redirects
-           $regex_header[]	= '#jfile,(t|e)#mS';
-           $replace_header[]	= '$1';
+           $regex_header[]	= '#<meta http-equiv="refresh" content="(.*?)"(.*?)>#me';
+		   $replace_header[]	= '$this->fixRedirect("$1")';
 
         }
         $buffer = preg_replace($regex_header, $replace_header, $buffer);
     }
+
+      function fixRedirect($url){
+      	//split up the timeout from url
+		$parts = explode(';url=', $url);
+
+		//parse the URL
+		$uri = new JURI($parts[1]);
+
+		//get the correct URL to joomla
+        $params = JFusionFactory::getParams('joomla_int');
+		$source_url = $params->get('source_url');
+
+		//set the URL with the jFusion params to correct any domain mistakes
+		$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
+
+		//additional SH404SEF corrections
+        //$regex_header[]	= '#jfile,(t|e)#mS';
+        //$replace_header[]	= '$1';
+
+
+      	//reconstruct the redirect meta tag
+        return '<meta http-equiv="refresh" content="'.$parts[0] . ';url=' . $redirect_url .'">';
+      }
 }
 

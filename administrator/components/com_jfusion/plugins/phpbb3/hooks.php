@@ -126,6 +126,15 @@ class JFusionHook
 			$uri->setVar('jfile', $view);
         }
 
+        //set the jfusion references for Joomla
+        $Itemid = JRequest::getVar('Itemid');
+        if ($Itemid){
+			$uri->setVar('Itemid', $Itemid);
+        }
+		$uri->setVar('option', 'com_jfusion');
+
+		//die($url . print_r($uri));
+
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));
 
 		return JRoute::_($url, $is_amp);
