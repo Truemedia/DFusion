@@ -463,7 +463,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 			//check to see if the user is already inactivated
 			$query = 'SELECT COUNT(*) FROM #__useractivation WHERE userid = ' . $existinguser->userid;
 			$db->setQuery($query);
-	        if($db->loadObject() == 0)
+	        if($db->loadResult() == 0)
 	        {
 	        	//if not, then add an activation catch to vbulletin's database
 				$useractivation = new stdClass;
