@@ -31,114 +31,122 @@ class JFusionUser_vbulletin extends JFusionUser{
 		//get the params object
         $this->params = JFusionFactory::getParams($this->getJname());
 
-		//load the vbulletin framework
-		define('VB_AREA','External');
-		define('SKIP_SESSIONCREATE', 1);
-		define('SKIP_USERINFO', 1);
-		define('CWD', $this->params->get('source_path'));
-		require_once(CWD.'/includes/init.php');
+        //do not load the vb framework when logging in using jfusion vbulletin authentication plugin
+        if(!defined('_VBULLETIN_JFUSION_HOOK'))
+        {
+			//load the vbulletin framework
+			define('VB_AREA','External');
+			define('SKIP_SESSIONCREATE', 1);
+			define('SKIP_USERINFO', 1);
+			define('CWD', $this->params->get('source_path'));
+			require_once(CWD.'/includes/init.php');
 
-		//force into global scope
-		$GLOBALS["vbulletin"] = $vbulletin;
-		$GLOBALS["db"] = $vbulletin->db;
+			//force into global scope
+			$GLOBALS["vbulletin"] = $vbulletin;
+			$GLOBALS["db"] = $vbulletin->db;
+        }
 	}
 
     function updateUser($userinfo, $overwrite)
     {
-        // Initialise some variables
-        $db = & JFusionFactory::getDatabase($this->getJname());
-        $update_block = $this->params->get('update_block');
-        $update_activation = $this->params->get('update_activation');
-        $update_email = $this->params->get('update_email');
+    	//do not update the user when logging in using jfusion vbulletin authentication plugin
+    	if(!defined("_VBULLETIN_JFUSION_HOOK"))
+    	{
+	        // Initialise some variables
+	        $db = & JFusionFactory::getDatabase($this->getJname());
+	        $update_block = $this->params->get('update_block');
+	        $update_activation = $this->params->get('update_activation');
+	        $update_email = $this->params->get('update_email');
 
-        $status = array();
-        $status['debug'] = array();
-        $status['error'] = array();
+	        $status = array();
+	        $status['debug'] = array();
+	        $status['error'] = array();
 
-		//check to see if a valid $userinfo object was passed on
-		if(!is_object($userinfo)){
-			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
-			return $status;
-		}
+			//check to see if a valid $userinfo object was passed on
+			if(!is_object($userinfo)){
+				$status['error'][] = JText::_('NO_USER_DATA_FOUND');
+				return $status;
+			}
 
-        //find out if the user already exists
-        $existinguser = $this->getUser($userinfo->username);
+	        //find out if the user already exists
+	        $existinguser = $this->getUser($userinfo->username);
 
-        if (!empty($existinguser)) {
-            //a matching user has been found
-            if ($existinguser->email != $userinfo->email) {
-              if ($update_email || $overwrite) {
-                  $this->updateEmail($userinfo, $existinguser, $status);
-              } else {
-                //return a email conflict
-                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-                $status['userinfo'] = $existinguser;
-                return $status;
-              }
-            }
+	        if (!empty($existinguser)) {
+	            //a matching user has been found
+	            if ($existinguser->email != $userinfo->email) {
+	              if ($update_email || $overwrite) {
+	                  $this->updateEmail($userinfo, $existinguser, $status);
+	              } else {
+	                //return a email conflict
+	                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+	                $status['userinfo'] = $existinguser;
+	                return $status;
+	              }
+	            }
 
-			if (isset($userinfo->password_clear)){
-				// add password_clear to existinguser for the Joomla helper routines
-				$existinguser->password_clear=$userinfo->password_clear;
-			    //check if the password needs to be updated
-	    	    $model = JFusionFactory::getAuth($this->getJname());
-        		$testcrypt = $model->generateEncryptedPassword($existinguser);
-            	if ($testcrypt != $existinguser->password) {
-                	$this->updatePassword($userinfo, $existinguser, $status);
-            	} else {
-                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
-            	}
-        	} else {
-            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
-        	}
+				if (isset($userinfo->password_clear)){
+					// add password_clear to existinguser for the Joomla helper routines
+					$existinguser->password_clear=$userinfo->password_clear;
+				    //check if the password needs to be updated
+		    	    $model = JFusionFactory::getAuth($this->getJname());
+	        		$testcrypt = $model->generateEncryptedPassword($existinguser);
+	            	if ($testcrypt != $existinguser->password) {
+	                	$this->updatePassword($userinfo, $existinguser, $status);
+	            	} else {
+	                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+	            	}
+	        	} else {
+	            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
+	        	}
 
 
-            //check the blocked status
-            if ($existinguser->block != $userinfo->block) {
-              if ($update_block || $overwrite) {
-                  if ($userinfo->block) {
-                      //block the user
-                      $this->blockUser($userinfo, $existinguser, $status);
-                  } else {
-                      //unblock the user
-                      $this->unblockUser($userinfo, $existinguser, $status);
-                  }
-              } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
-              }
-            }
+	            //check the blocked status
+	            if ($existinguser->block != $userinfo->block) {
+	              if ($update_block || $overwrite) {
+	                  if ($userinfo->block) {
+	                      //block the user
+	                      $this->blockUser($userinfo, $existinguser, $status);
+	                  } else {
+	                      //unblock the user
+	                      $this->unblockUser($userinfo, $existinguser, $status);
+	                  }
+	              } else {
+	                //return a debug to inform we skiped this step
+	                $status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
+	              }
+	            }
 
-            //check the activation status
-            if ($existinguser->activation != $userinfo->activation) {
-              if ($update_activation || $overwrite) {
-                  if ($userinfo->activation) {
-                      //inactivate the user
-                      $this->inactivateUser($userinfo, $existinguser, $status);
-                  } else {
-                      //activate the user
-                      $this->activateUser($userinfo, $existinguser, $status);
-                  }
-              } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-              }
-            }
+	            //check the activation status
+	            if ($existinguser->activation != $userinfo->activation) {
+	              if ($update_activation || $overwrite) {
+	                  if ($userinfo->activation) {
+	                      //inactivate the user
+	                      $this->inactivateUser($userinfo, $existinguser, $status);
+	                  } else {
+	                      //activate the user
+	                      $this->activateUser($userinfo, $existinguser, $status);
+	                  }
+	              } else {
+	                //return a debug to inform we skiped this step
+	                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+	              }
+	            }
 
-            $status['userinfo'] = $existinguser;
-            if (empty($status['error'])) {
-                $status['action'] = 'updated';
-            }
-            return $status;
+	            $status['userinfo'] = $existinguser;
+	            if (empty($status['error'])) {
+	                $status['action'] = 'updated';
+	            }
+	            return $status;
 
-        } else {
+	        } else {
 
-            $this->createUser($userinfo, $overwrite, $status);
-            if (empty($status['error'])) {
-                $status['action'] = 'created';
-            }
-            return $status;
-        }
+	            $this->createUser($userinfo, $overwrite, $status);
+	            if (empty($status['error'])) {
+	                $status['action'] = 'created';
+	            }
+	            return $status;
+	        }
+    	}
     }
 
     function &getUser($username)
@@ -206,67 +214,75 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function destroySession($userinfo, $options)
     {
-		//set the user so that vb deletes the session from its db
-		$GLOBALS["vbulletin"]->userinfo['userid'] = $userinfo->userid;
+    	//vbulletin will take care of this when logging out via jfusion vbulletin authentication plugin
+   	  	if(!defined("_VBULLETIN_JFUSION_HOOK"))
+    	{
+			//set the user so that vb deletes the session from its db
+			$GLOBALS["vbulletin"]->userinfo['userid'] = $userinfo->userid;
 
-		//destroy vb cookies and sessions
-		require_once(CWD . "/includes/functions_login.php");
-		process_logout();
+			//destroy vb cookies and sessions
+			require_once(CWD . "/includes/functions_login.php");
+			process_logout();
 
-		//destroy vbulletin global variable
-		unset($GLOBALS["vbulletin"]);
-		unset($GLOBALS["db"]);
+			//destroy vbulletin global variable
+			unset($GLOBALS["vbulletin"]);
+			unset($GLOBALS["db"]);
+    	}
     }
 
     function createSession($userinfo, $options)
     {
-        $status = array();
-        $status['debug'] = '';
+    	//vbulletin will take care of this when logging in via jfusion vbulletin authentication plugin
+    	if(!defined("_VBULLETIN_JFUSION_HOOK"))
+    	{
+	        $status = array();
+	        $status['debug'] = '';
 
-        $userid = $userinfo->userid;
+	        $userid = $userinfo->userid;
 
-        if ($userid && !empty($userid) && ($userid > 0)) {
+	        if ($userid && !empty($userid) && ($userid > 0)) {
 
-			$existinguser = $this->getUser($userinfo->username);
-        	$vbLicense = $this->params->get('source_license','');
+				$existinguser = $this->getUser($userinfo->username);
+	        	$vbLicense = $this->params->get('source_license','');
 
-			if (isset($options['remember'])) {
-				$expires = false;
-			} else {
-				$expires = true;
-			}
+				if (isset($options['remember'])) {
+					$expires = false;
+				} else {
+					$expires = true;
+				}
 
-			//setup the existing user
-			$userdm =& datamanager_init('User', $GLOBALS["vbulletin"], ERRTYPE_SILENT);
-			$vbuser = $this->convertUserData($existinguser);
-			$userdm->set_existing($vbuser);
+				//setup the existing user
+				$userdm =& datamanager_init('User', $GLOBALS["vbulletin"], ERRTYPE_SILENT);
+				$vbuser = $this->convertUserData($existinguser);
+				$userdm->set_existing($vbuser);
 
-			//update password expiration time if password expiration is enabled via vbulletin
-			$userdm->set('passworddate', 'FROM_UNIXTIME('.TIMENOW.')', false);
-			$userdm->save();
+				//update password expiration time if password expiration is enabled via vbulletin
+				$userdm->set('passworddate', 'FROM_UNIXTIME('.TIMENOW.')', false);
+				$userdm->save();
 
-			//include vb login functions
-			require_once(CWD . '/includes/functions_login.php');
+				//include vb login functions
+				require_once(CWD . '/includes/functions_login.php');
 
-			//set cookies
-			vbsetcookie('userid', $existinguser->userid,$expires, true, true);
-			vbsetcookie('password',md5($existinguser->password.$vbLicense),$expires, true, true);
+				//set cookies
+				vbsetcookie('userid', $existinguser->userid,$expires, true, true);
+				vbsetcookie('password',md5($existinguser->password.$vbLicense),$expires, true, true);
 
-			//process login
-			process_new_login('', 1, '');
+				//process login
+				process_new_login('', 1, '');
 
 
-			$status['error'] = false;
-			$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ',  password: '.substr($userinfo->password,0,6) . '********' ;
-	        return $status;
+				$status['error'] = false;
+				$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
+		        return $status;
 
-        } else {
-            //could not find a valid userid
-            $status['error'] = JText::_('INVALID_USERID');
-            return $status;
-        }
+	        } else {
+	            //could not find a valid userid
+	            $status['error'] = JText::_('INVALID_USERID');
+	            return $status;
+	        }
 
-        unset($userdm);
+	        unset($userdm);
+    	}
     }
 
     function filterUsername($username)
