@@ -2,7 +2,7 @@
 /**
 * @package JFusion
 * @subpackage Views
-* @version 1.0.7
+* @version 1.1.0
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -51,7 +51,6 @@ JFusionFunction::displayDonate();
 <li><?php echo JText::_('HELP_INSTALL_4'); ?>
 <li><?php echo JText::_('HELP_INSTALL_5'); ?>
 <li><?php echo JText::_('HELP_INSTALL_6'); ?>
-<li><?php echo JText::_('HELP_INSTALL_7'); ?>
 </ul></font><br/><br/><h3>
 <?php echo JText::_('HELP_VISUAL'); ?>
 </h3><font size="2">
@@ -59,6 +58,7 @@ JFusionFunction::displayDonate();
 <br/><ul>
 <li><?php echo JText::_('HELP_VISUAL_1'); ?>
 <li><?php echo JText::_('HELP_VISUAL_2'); ?>
+<li><?php echo JText::_('HELP_VISUAL_3'); ?>
 </ul></font><br/><br/><h3>
 <?php echo JText::_('HELP_SUPPORT'); ?>
 </h3><font size="2">
