@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_vBulletin
-* @version 1.0.7
+* @version 1.1.0-001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -49,104 +49,100 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function updateUser($userinfo, $overwrite)
     {
-    	//do not update the user when logging in using jfusion vbulletin authentication plugin
-    	if(!defined("_VBULLETIN_JFUSION_HOOK"))
-    	{
-	        // Initialise some variables
-	        $db = & JFusionFactory::getDatabase($this->getJname());
-	        $update_block = $this->params->get('update_block');
-	        $update_activation = $this->params->get('update_activation');
-	        $update_email = $this->params->get('update_email');
+        // Initialise some variables
+        $db = & JFusionFactory::getDatabase($this->getJname());
+        $update_block = $this->params->get('update_block');
+        $update_activation = $this->params->get('update_activation');
+        $update_email = $this->params->get('update_email');
 
-	        $status = array();
-	        $status['debug'] = array();
-	        $status['error'] = array();
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
 
-			//check to see if a valid $userinfo object was passed on
-			if(!is_object($userinfo)){
-				$status['error'][] = JText::_('NO_USER_DATA_FOUND');
-				return $status;
-			}
+		//check to see if a valid $userinfo object was passed on
+		if(!is_object($userinfo)){
+			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
+			return $status;
+		}
 
-	        //find out if the user already exists
-	        $existinguser = $this->getUser($userinfo->username);
+        //find out if the user already exists
+        $existinguser = $this->getUser($userinfo->username);
 
-	        if (!empty($existinguser)) {
-	            //a matching user has been found
-	            if ($existinguser->email != $userinfo->email) {
-	              if ($update_email || $overwrite) {
-	                  $this->updateEmail($userinfo, $existinguser, $status);
-	              } else {
-	                //return a email conflict
-	                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-	                $status['userinfo'] = $existinguser;
-	                return $status;
-	              }
-	            }
+        if (!empty($existinguser)) {
+            //a matching user has been found
+            if ($existinguser->email != $userinfo->email) {
+              if ($update_email || $overwrite) {
+                  $this->updateEmail($userinfo, $existinguser, $status);
+              } else {
+                //return a email conflict
+                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+                $status['userinfo'] = $existinguser;
+                return $status;
+              }
+            }
 
-				if (isset($userinfo->password_clear)){
-					// add password_clear to existinguser for the Joomla helper routines
-					$existinguser->password_clear=$userinfo->password_clear;
-				    //check if the password needs to be updated
-		    	    $model = JFusionFactory::getAuth($this->getJname());
-	        		$testcrypt = $model->generateEncryptedPassword($existinguser);
-	            	if ($testcrypt != $existinguser->password) {
-	                	$this->updatePassword($userinfo, $existinguser, $status);
-	            	} else {
-	                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
-	            	}
-	        	} else {
-	            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
-	        	}
+			if (isset($userinfo->password_clear)){
+				// add password_clear to existinguser for the Joomla helper routines
+				$existinguser->password_clear=$userinfo->password_clear;
+			    //check if the password needs to be updated
+	    	    $model = JFusionFactory::getAuth($this->getJname());
+        		$testcrypt = $model->generateEncryptedPassword($existinguser);
+            	if ($testcrypt != $existinguser->password) {
+                	$this->updatePassword($userinfo, $existinguser, $status);
+            	} else {
+                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+            	}
+        	} else {
+            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
+        	}
 
 
-	            //check the blocked status
-	            if ($existinguser->block != $userinfo->block) {
-	              if ($update_block || $overwrite) {
-	                  if ($userinfo->block) {
-	                      //block the user
-	                      $this->blockUser($userinfo, $existinguser, $status);
-	                  } else {
-	                      //unblock the user
-	                      $this->unblockUser($userinfo, $existinguser, $status);
-	                  }
-	              } else {
-	                //return a debug to inform we skiped this step
-	                $status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
-	              }
-	            }
+            //check the blocked status
+            if ($existinguser->block != $userinfo->block) {
+              if ($update_block || $overwrite) {
+                  if ($userinfo->block) {
+                      //block the user
+                      $this->blockUser($userinfo, $existinguser, $status);
+                  } else {
+                      //unblock the user
+                      $this->unblockUser($userinfo, $existinguser, $status);
+                  }
+              } else {
+                //return a debug to inform we skiped this step
+                $status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
+              }
+            }
 
-	            //check the activation status
-	            if ($existinguser->activation != $userinfo->activation) {
-	              if ($update_activation || $overwrite) {
-	                  if ($userinfo->activation) {
-	                      //inactivate the user
-	                      $this->inactivateUser($userinfo, $existinguser, $status);
-	                  } else {
-	                      //activate the user
-	                      $this->activateUser($userinfo, $existinguser, $status);
-	                  }
-	              } else {
-	                //return a debug to inform we skiped this step
-	                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-	              }
-	            }
+            //check the activation status
+            if ($existinguser->activation != $userinfo->activation) {
+              if ($update_activation || $overwrite) {
+                  if ($userinfo->activation) {
+                      //inactivate the user
+                      $this->inactivateUser($userinfo, $existinguser, $status);
+                  } else {
+                      //activate the user
+                      $this->activateUser($userinfo, $existinguser, $status);
+                  }
+              } else {
+                //return a debug to inform we skiped this step
+                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+              }
+            }
 
-	            $status['userinfo'] = $existinguser;
-	            if (empty($status['error'])) {
-	                $status['action'] = 'updated';
-	            }
-	            return $status;
+            $status['userinfo'] = $existinguser;
+            if (empty($status['error'])) {
+                $status['action'] = 'updated';
+            }
+            return $status;
 
-	        } else {
+        } else {
 
-	            $this->createUser($userinfo, $overwrite, $status);
-	            if (empty($status['error'])) {
-	                $status['action'] = 'created';
-	            }
-	            return $status;
-	        }
-    	}
+            $this->createUser($userinfo, $overwrite, $status);
+            if (empty($status['error'])) {
+                $status['action'] = 'created';
+            }
+            return $status;
+        }
     }
 
     function &getUser($username)

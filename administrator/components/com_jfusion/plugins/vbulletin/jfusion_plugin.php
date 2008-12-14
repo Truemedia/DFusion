@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_vBulletin
-* @version 1.0.7
+* @version 1.1.0-001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -310,7 +310,7 @@ class JFusionPlugin_vbulletin extends JFusionPlugin{
 			return null;
 		}
 
-		//set the current directory to phpBB3
+		//set the current directory to vBulletin
 		chdir($source_path);
 
 		/* set scope for variables required later */

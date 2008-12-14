@@ -2,7 +2,7 @@
 
 /**
  * @package JFusion_vBulletin
- * @version 1.0.7
+ * @version 1.1.0-001
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -23,7 +23,14 @@ class JFusionAuth_vbulletin extends JFusionAuth{
 
     function generateEncryptedPassword($userinfo)
     {
+		if($userinfo->password == $userinfo->password_clear)
+		{
+			return $userinfo->password_clear;
+		}
+		else
+		{
             $testcrypt = md5(md5($userinfo->password_clear).$userinfo->password_salt);
             return $testcrypt;
+		}
     }
 }
