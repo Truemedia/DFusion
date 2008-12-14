@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="search">
+	<name>Search - Jfusion</name>
+	<author>JFusion Development Team</author>
+	<creationDate>December 2008</creationDate>
+	<author>JFusion Development Team</author>
+	<authorEmail>webmaster@jfusion.org</authorEmail>
+	<authorUrl>http://www.jfusion.org</authorUrl>
+	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<version>1.1.0</version>
+	<description>Search content of jFusion plugins.</description>
+	<files folder="plugins/search">
+		<filename plugin="jfusion">jfusion.php</filename>
+	</files>
+
+	<params>
+		<param name="link_mode" type="list" default="direct" label="Display linked URLs In:"
+			description="Links should be displayed in a wrapper or as a direct link">
+			<option value="wrapper">Display in wrapper</option>
+			<option value="direct">Display as direct link</option>
+			<option value="frameless">Display directly inside Joomla</option>
+		</param>
+	</params>
+</install>
