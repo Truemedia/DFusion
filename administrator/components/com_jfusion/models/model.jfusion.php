@@ -482,5 +482,41 @@ class JFusionFunction{
 
     }
 
-}
+    function updateForumLookup($contentid, $threadid, $postid, $jname)
+    {
+        $db =& JFactory::getDBO();
+		$modified = time();
 
+		//check to see if content item has already been created in forum software
+        $query = 'SELECT COUNT(*) FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentid . ' AND jname = ' . $db->Quote($jname);
+        $db->setQuery($query);
+	    if($db->loadResult() == 0)
+	    {
+	    	//content item has not been created
+	        //prepare the variables
+	        $lookup = new stdClass;
+	        $lookup->contentid = $contentid;
+	        $lookup->threadid = $threadid;
+	        $lookup->postid = $postid;
+	        $lookup->modified = $modified;
+	        $lookup->jname = $jname;
+
+	        //insert the entry into the lookup table
+	        $db->insertObject('#__jfusion_forum_plugin', $lookup);
+	    }
+	    else
+	    {
+	    	//content itmem has been created so updated variables to prevent duplicate threads
+	    	$query = "UPDATE #__jfusion_forum_plugin SET threadid = {$threadid}, postid = {$postid}, modified = {$modified} WHERE contentid = {$contentid} AND jname = {$db->Quote($jname)}";
+	    	$db->setQuery($query);
+	    	$db->query();
+	    }
+    }
+
+    function createJoomlaArticleURL($contentid,$text)
+    {
+		$link = JRoute::_('index.php?option=com_content&view=article&id=' . $contentid);
+		$link = "<a href='$link'>$text</a>";
+		return $link;
+    }
+}

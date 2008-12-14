@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="content" method="upgrade">
+	<name>Content - Jfusion</name>
+	<author>JFusion Development Team</author>
+	<creationDate>December 2008</creationDate>
+	<author>JFusion Development Team</author>
+	<authorEmail>webmaster@jfusion.org</authorEmail>
+	<authorUrl>http://www.jfusion.org</authorUrl>
+	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<version>1.1.0</version>
+	<description></description>
+	<files folder="plugins/content">
+		<filename plugin="jfusion">jfusion.php</filename>
+	</files>
+</install>

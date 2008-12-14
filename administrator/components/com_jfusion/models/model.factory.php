@@ -111,6 +111,34 @@ class JFusionFactory{
     }
 
     /**
+    * Gets a Forum Class for the JFusion Plugin
+    * @param string $jname name of the JFusion plugin used
+    * @return object JFusionForum JFusion Thread class for the JFusion plugin
+    */
+    function &getForum($jname)
+    {
+        static $thread_instances;
+        if (!isset($thread_instances )) {
+            $thread_instances = array();
+        }
+
+        //only create a new thread instance if it has not been created before
+        if (!isset($thread_instances[$jname] )) {
+            $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'forum.php';
+      if (file_exists($filename)){
+              require_once($filename);
+              $class = "JFusionForum_" . $jname;
+              $thread_instances[$jname]= new $class;
+              return $thread_instances[$jname];
+      } else {
+        return false;
+      }
+        } else {
+            return $thread_instances[$jname];
+        }
+    }
+
+    /**
     * Gets an Database Connection for the JFusion Plugin
     * @param string $jname name of the JFusion plugin used
     * @return object JDatabase Database connection for the JFusion plugin

@@ -390,7 +390,7 @@ class JFusionPluginInstaller extends JObject {
 		$replace	= array();
 
 		//change the classname
-		$regex[]	= '#JFusion(Plugin|Auth|User)_' . $jname .'#ms';
+		$regex[]	= '#JFusion(Plugin|Auth|User|Forum)_' . $jname .'#ms';
 		$replace[]	= 'JFusion$1_' . $new_jname;
 
 		//change the jname function
@@ -403,7 +403,7 @@ class JFusionPluginInstaller extends JObject {
 
 
 		//define which files need parsing
-		$parse_files = array($new_dir . DS . 'auth.php', $new_dir . DS . 'jfusion_plugin.php', $new_dir . DS . 'user.php', $new_dir . DS . 'jfusion.xml');
+		$parse_files = array($new_dir . DS . 'auth.php', $new_dir . DS . 'jfusion_plugin.php', $new_dir . DS . 'user.php', $new_dir . DS . 'jfusion.xml', $new_dir . DS . 'forum.php');
 
 		foreach ($parse_files as $parse_file) {
 			$file_data = JFile::read($parse_file);
