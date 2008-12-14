@@ -58,6 +58,36 @@ class JFusionFront{
     {
     }
 
+     /**
+     * Returns the registration URL for the integrated software
+     * @return string registration URL
+     */
+    function getRegistrationURL()
+    {
+        return '';
+    }
+
+     /**
+     * Returns the lost password URL for the integrated software
+     * @return string lost password URL
+     */
+    function getLostPasswordURL()
+    {
+        return '';
+    }
+
+     /**
+     * Returns the lost username URL for the integrated software
+     * @return string lost username URL
+     */
+    function getLostUsernameURL()
+    {
+        return '';
+    }
+
+
+
+
 }
 
 
