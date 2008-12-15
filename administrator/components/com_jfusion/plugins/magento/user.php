@@ -215,7 +215,7 @@ class JFusionUser_magento extends JFusionUser{
         $status = array();
         $status['debug'] = array();
         $status['error'] = array();
-        
+
 		//check to see if a valid $userinfo object was passed on
 		if(!is_object($userinfo)){
 			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
@@ -314,7 +314,7 @@ class JFusionUser_magento extends JFusionUser{
     // transactional handling of this update is a neccessity
     if (!$entity_id){ //create an (almost) empty user
       // first get the current increment
-$db->Execute('BEGIN TRANSACTION'); 
+$db->Execute('BEGIN TRANSACTION');
 //    BeginTrans();
 
        $query = 'SELECT increment_last_id FROM #__eav_entity_store WHERE entity_type_id = '.$this->getMagentoEntityTypeID('customer').' AND store_id = 0';
@@ -450,7 +450,7 @@ $db->Execute('BEGIN TRANSACTION');
        }
        if ($middlename) {$this->fillMagentouser($magento_user,'middlename',$middlename);}
 
-       if (isset($userinfo->password_clear)) {
+       if (isset($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
               $password_salt = $this->getRandomString(2);
               $this->fillMagentouser($magento_user,'password_hash',md5($password_salt.$userinfo->password_clear).':'.$password_salt);
           } else {

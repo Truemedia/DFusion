@@ -150,8 +150,8 @@ class JFusionJplugin{
 /**
  * Common code for user.php
  */
- 
- 
+
+
     function createSession($userinfo, $options,$jname){
         global $ch;
         global $cookiearr;
@@ -166,7 +166,7 @@ class JFusionJplugin{
         $status['error'] = '';
        	$status['debug'] = '';
         $cookies_to_set_index = 0;
- 
+
         $params = JFusionFactory::getParams($jname);
 		$curl_options['post_url']			= $params->get('source_url').$params->get('login_url');
 		$curl_options['formid']				= $params->get('loginform_id');
@@ -201,7 +201,7 @@ class JFusionJplugin{
         $status['error'] = '';
        	$status['debug'] = '';
         $cookies_to_set_index = 0;
- 
+
         $params = JFusionFactory::getParams($jname);
 		$curl_options['post_url']			= $params->get('source_url').$params->get('login_url');
 	 	$curl_options['cookiedomain']		= $params->get('cookie_domain');
@@ -534,7 +534,7 @@ class JFusionJplugin{
 					return $status;
 				}
 			}
-			if (isset($userinfo->password_clear)){
+			if (isset($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
 				// add password_clear to existinguser for the Joomla helper routines
 				$existinguser->password_clear=$userinfo->password_clear;
 				//check if the password needs to be updated

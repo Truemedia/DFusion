@@ -59,7 +59,7 @@
               }
             }
 
-			if (isset($userinfo->password_clear)){
+			if (isset($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
 				// add password_clear to existinguser for the Joomla helper routines
 				$existinguser->password_clear=$userinfo->password_clear;
 			    //check if the password needs to be updated

@@ -180,7 +180,7 @@ class JFusionUser_moodle extends JFusionUser{
     function createSession($userinfo, $options){
 		return JFusionJplugin::createSession($userinfo, $options,$this->getJname());
     }
-    
+
     function filterUsername($username){
       	//no username filtering implemented yet
      	return $username;
@@ -294,7 +294,7 @@ class JFusionUser_moodle extends JFusionUser{
     	}
     	$user->lastname = $lastname;
     	$user->email = strtolower($userinfo->email);
-    	if (isset($userinfo->password_clear)) {
+    	if (isset($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
        		$params = JFusionFactory::getParams('moodle');
       		if ($params->get('passwordsaltmain')){
         		$user->password = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
