@@ -26,31 +26,60 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 class JFusionFactory{
 
     /**
-    * Gets an Fusion plugin object
+    * Gets an Fusion front object
     * @param string $jname name of the JFusion plugin used
     * @return object JFusionPlugin JFusionPlugin object for the JFusion plugin
     */
-    function &getPlugin($jname)
+    function &getPublic($jname)
     {
-        static $plugin_instances;
-        if (!isset($plugin_instances )) {
-            $plugin_instances = array();
+        static $public_instances;
+        if (!isset($public_instances )) {
+            $public_instances = array();
         }
 
         //only create a new plugin instance if it has not been created before
-        if (!isset($plugin_instances[$jname] )) {
-            $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'jfusion_plugin.php';
-      if (file_exists($filename)){
-              require_once($filename);
-              $class = "JFusionPlugin_" . $jname;
-              $plugin_instances[$jname]= new $class;
-              return $plugin_instances[$jname];
-      } else {
-        $false=false;            // prevent php warning
-        return $false;
-      }
+        if (!isset($public_instances[$jname] )) {
+            $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'public.php';
+		    if (file_exists($filename)){
+                require_once($filename);
+                $class = "JFusionPublic_" . $jname;
+                $public_instances[$jname]= new $class;
+                return $public_instances[$jname];
+      		} else {
+        		$result = false;            // prevent php warning
+       			return $result;
+      		}
         } else {
-            return $plugin_instances[$jname];
+            return $public_instances[$jname];
+        }
+    }
+
+    /**
+    * Gets an Fusion front object
+    * @param string $jname name of the JFusion plugin used
+    * @return object JFusionPlugin JFusionPlugin object for the JFusion plugin
+    */
+    function &getAdmin($jname)
+    {
+        static $admin_instances;
+        if (!isset($admin_instances )) {
+            $admin_instances = array();
+        }
+
+        //only create a new plugin instance if it has not been created before
+        if (!isset($admin_instances[$jname] )) {
+            $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'admin.php';
+		    if (file_exists($filename)){
+                require_once($filename);
+                $class = "JFusionAdmin_" . $jname;
+                $admin_instances[$jname]= new $class;
+                return $admin_instances[$jname];
+      		} else {
+        		$result = false;            // prevent php warning
+       			return $result;
+      		}
+        } else {
+            return $admin_instances[$jname];
         }
     }
 
@@ -69,14 +98,15 @@ class JFusionFactory{
         //only create a new authentication instance if it has not been created before
         if (!isset($auth_instances[$jname] )) {
             $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'auth.php';
-      if (file_exists($filename)){
-              require_once($filename);
-              $class = "JFusionAuth_" . $jname;
-              $auth_instances[$jname]= new $class;
-              return $auth_instances[$jname];
-      } else {
-        return false;
-      }
+		    if (file_exists($filename)){
+            	require_once($filename);
+                $class = "JFusionAuth_" . $jname;
+                $auth_instances[$jname]= new $class;
+                return $auth_instances[$jname];
+      		} else {
+        		$result = false;            // prevent php warning
+       			return $result;
+       		}
         } else {
             return $auth_instances[$jname];
         }
@@ -94,17 +124,18 @@ class JFusionFactory{
             $user_instances = array();
         }
 
-        //only create a new authentication instance if it has not been created before
+        //only create a new user instance if it has not been created before
         if (!isset($user_instances[$jname] )) {
             $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'user.php';
-      if (file_exists($filename)){
-              require_once($filename);
-              $class = "JFusionUser_" . $jname;
-              $user_instances[$jname]= new $class;
-              return $user_instances[$jname];
-      } else {
-        return false;
-      }
+      		if (file_exists($filename)){
+                require_once($filename);
+                $class = "JFusionUser_" . $jname;
+                $user_instances[$jname]= new $class;
+                return $user_instances[$jname];
+      		} else {
+        		$result = false;            // prevent php warning
+       			return $result;
+      		}
         } else {
             return $user_instances[$jname];
         }
@@ -117,24 +148,25 @@ class JFusionFactory{
     */
     function &getForum($jname)
     {
-        static $thread_instances;
-        if (!isset($thread_instances )) {
-            $thread_instances = array();
+        static $forum_instances;
+        if (!isset($forum_instances )) {
+            $forum_instances = array();
         }
 
         //only create a new thread instance if it has not been created before
-        if (!isset($thread_instances[$jname] )) {
+        if (!isset($forum_instances[$jname] )) {
             $filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname .DS.'forum.php';
-      if (file_exists($filename)){
-              require_once($filename);
-              $class = "JFusionForum_" . $jname;
-              $thread_instances[$jname]= new $class;
-              return $thread_instances[$jname];
-      } else {
-        return false;
-      }
+      		if (file_exists($filename)){
+                require_once($filename);
+                $class = "JFusionForum_" . $jname;
+                $forum_instances[$jname]= new $class;
+                return $forum_instances[$jname];
+      		} else {
+        		$result = false;            // prevent php warning
+       			return $result;
+      		}
         } else {
-            return $thread_instances[$jname];
+            return $forum_instances[$jname];
         }
     }
 
