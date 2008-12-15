@@ -43,7 +43,7 @@ class jfusionViewframeless extends JView {
         $integratedURL =$JFusionParam->get('source_url');
 
         // Get the output from the JFusion plugin
-        $JFusionPlugin = JFusionfactory::getPlugin($this->jname);
+        $JFusionPlugin = JFusionfactory::getPublic($this->jname);
 
         //Get the output buffer
         $buffer =& $JFusionPlugin->getBuffer();

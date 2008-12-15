@@ -37,7 +37,7 @@ if (file_exists($model_file) && file_exists($model_file)) {
     $jname = JFusionFunction::getMaster();
 
     if ($jname->status == 3 ) {
-        $MasterPlugin = JFusionFactory::getPlugin($jname->name);
+        $MasterPlugin = JFusionFactory::getPublic($jname->name);
         $allow_registration = JFusionFunction::createURL($MasterPlugin->allowRegistration(), $jname->name, $view);
         $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view);
         $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view);
@@ -46,7 +46,7 @@ if (file_exists($model_file) && file_exists($model_file)) {
 		//now find out from which plugin the avatars need to be displayed
 		$PluginName = $params->get('JFusionPlugin');
 		if ($PluginName != 'joomla_int'){
-			$JFusionPlugin = JFusionFactory::getPlugin($PluginName);
+			$JFusionPlugin = JFusionFactory::getForum($PluginName);
         	$userlookup = JFusionFunction::lookupUser($PluginName, $user->get('id'));
 
 			//check to see if we found a user

@@ -151,7 +151,7 @@ echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' . $status[
 //output the total number of users for the plugin
 $JFusionPlugin = NULL;
 $total_users = NULL;
-$JFusionPlugin = JFusionFactory::getPlugin($record->name);
+$JFusionPlugin = JFusionFactory::getAdmin($record->name);
 $total_users = $JFusionPlugin->getUserCount();
 
 echo '<td>' .$total_users . '</td>';

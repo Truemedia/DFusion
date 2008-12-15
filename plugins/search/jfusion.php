@@ -77,7 +77,7 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 	{
 		$db = & JFusionFactory::getDatabase($jname);
 		$searchMe = JFusionFactory::getForum($jname);
-		$forum = JFusionFactory::getPlugin($jname);
+		$forum = JFusionFactory::getForum($jname);
 
 		$query = $searchMe->getSearchQuery();
 		$columns = $searchMe->getSearchQueryColumns();

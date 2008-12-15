@@ -66,7 +66,7 @@
 
 				    if ($jdb->loadResult() == 3)
 				    {
-        				$forum = JFusionFactory::getPlugin($jname);
+        				$forum = JFusionFactory::getForum($jname);
 
         				//create the thread if set to auto generate but only if the content is published
 	    	        	if($auto && $contentitem->state)

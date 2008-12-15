@@ -118,7 +118,7 @@ class JFusionController extends JController
         if ($jname && $post) {
 
             //Initialize the forum
-            $JFusionPlugin = JFusionFactory::getPlugin($jname);
+            $JFusionPlugin = JFusionFactory::getAdmin($jname);
             $params = $JFusionPlugin->setupFromPath($post['source_path']);
 
             if ($params) {
@@ -405,7 +405,7 @@ class JFusionController extends JController
         $slaves = JRequest::getVar('slave');
         $master_plugin = JFusionFunction::getMaster();
         $master = $master_plugin->name;
-        $JFusionMaster = JFusionFactory::getPlugin($master);
+        $JFusionMaster = JFusionFactory::getAdmin($master);
 
         //initialise the slave data array
         $slave_data = array();
@@ -415,7 +415,7 @@ class JFusionController extends JController
             if ($slave['perform_sync']) {
                 $temp_data = array();
                 $temp_data['jname'] = $jname;
-                $JFusionPlugin = JFusionFactory::getPlugin($jname);
+                $JFusionPlugin = JFusionFactory::getAdmin($jname);
                 if ($action == 'master') {
                 	$temp_data['total'] = $JFusionPlugin->getUserCount();
                 } else {

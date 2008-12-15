@@ -303,7 +303,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		$userlink = intval($this->params->get('user_link'));
 		$linkMode = $this->params->get("link_mode");
 		$jname = $this->getJname();
-		$forum = JFusionFactory::getPlugin($jname);
+		$forum = JFusionFactory::getForum($jname);
 		$header = $this->params->get("post_header");
 		if($showdate && $showuser) $colspan = 2;
 		else $colspan = 1;

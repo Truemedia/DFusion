@@ -32,7 +32,7 @@ class JElementForumUserList extends JElement
         global $jname;
 		if ($jname){
         	if (JFusionFunction::validPlugin($jname)) {
-            	$JFusionPlugin = JFusionFactory::getPlugin($jname);
+            	$JFusionPlugin = JFusionFactory::getForum($jname);
             	$users = $JFusionPlugin->getUserList();
 
             	if (!empty($users)) {

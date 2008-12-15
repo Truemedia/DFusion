@@ -44,13 +44,13 @@ class jfusionViewsyncoptions extends JView {
         	$syncid = JUserHelper::genRandomPassword(10);
 
             //get the master data
-            $JFusionPlugin = JFusionFactory::getPlugin($master->name);
+            $JFusionPlugin = JFusionFactory::getAdmin($master->name);
             $master_data['total'] = $JFusionPlugin->getUserCount();
             $master_data['jname'] = $master->name;
 
             //get the slave data
             foreach($slaves as $slave) {
-                $JFusionSlave = JFusionFactory::getPlugin($slave->name);
+                $JFusionSlave = JFusionFactory::getAdmin($slave->name);
                 $slave_data[$slave->name]['total'] = $JFusionSlave->getUserCount();
                 $slave_data[$slave->name]['jname'] = $slave->name;
                 unset($JFusionSlave);

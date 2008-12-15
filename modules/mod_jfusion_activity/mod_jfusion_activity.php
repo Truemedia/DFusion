@@ -62,7 +62,7 @@ if ($jname) {
     $jdb->setQuery($query );
     if ($jdb->loadResult() == 3) {
 
-        $forum = JFusionFactory::getPlugin($jname);
+        $forum = JFusionFactory::getForum($jname);
         $db = JFusionFactory::getDatabase($jname);
 
         if (JError::isError($db)) {

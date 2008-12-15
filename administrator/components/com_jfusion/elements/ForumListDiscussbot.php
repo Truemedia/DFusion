@@ -32,7 +32,7 @@ class JElementForumListDiscussbot extends JElement
         global $jname;
 		if ($jname){
         	if (JFusionFunction::validPlugin($jname)) {
-            	$JFusionPlugin = JFusionFactory::getPlugin($jname);
+            	$JFusionPlugin = JFusionFactory::getForum($jname);
             	$forums = $JFusionPlugin->getForumList();
 
             	if (!empty($forums)) {

@@ -185,7 +185,7 @@ class JFusionFunction{
             return 1;
         } else {
             //get the user table name
-            $JFusionPlugin = JFusionFactory::getPlugin($jname);
+            $JFusionPlugin = JFusionFactory::getAdmin($jname);
             $tablename = $JFusionPlugin->getTablename();
 
             //lets see if we can get some data

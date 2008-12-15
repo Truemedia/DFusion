@@ -128,7 +128,7 @@ class JFusionUsersync{
     function SyncExecute($syncdata, $action, $plugin_offset, $user_offset)
     {
         //setup some variables
-        $MasterPlugin = JFusionFactory::getPlugin($syncdata['master']);
+        $MasterPlugin = JFusionFactory::getAdmin($syncdata['master']);
         $MasterUser = JFusionFactory::getUser($syncdata['master']);
         $sync_errors = array();
 
@@ -144,7 +144,7 @@ class JFusionUsersync{
 					//output which plugin is worked on
 					echo '<h2>'. $jname . '</h2><br/>';
 
-                    $SlavePlugin = & JFusionFactory::getPlugin($jname);
+                    $SlavePlugin = & JFusionFactory::getAdmin($jname);
                     $SlaveUser = & JFusionFactory::getUser($jname);
 					if($action =='master'){
                     	$userlist = $SlavePlugin->getUserList();
