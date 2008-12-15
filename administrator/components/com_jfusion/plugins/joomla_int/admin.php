@@ -20,7 +20,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 * JFusion plugin class for the internal Joomla database
 * @package JFusion_Joomla_Int
 */
-class JFusionAdmin_joomla_int extends JFusionPlugin
+class JFusionAdmin_joomla_int extends JFusionAdmin
 {
     function getJname()
     {
@@ -30,21 +30,6 @@ class JFusionAdmin_joomla_int extends JFusionPlugin
     function getTablename()
     {
         return JFusionJplugin::getTablename();
-    }
-
-    function getRegistrationURL()
-    {
-        return JFusionJplugin::getRegistrationURL();
-    }
-
-    function getLostPasswordURL()
-    {
-        return JFusionJplugin::getLostPasswordURL();
-    }
-
-    function getLostUsernameURL()
-    {
-        return JFusionJplugin::getLostUsernameURL();
     }
 
     function getUserList()

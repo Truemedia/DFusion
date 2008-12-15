@@ -22,7 +22,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 * JFusion plugin class for vBulletin 3.6.8
 * @package JFusion_vBulletin
 */
-class JFusionAdmin_vbulletin extends JFusionPlugin{
+class JFusionAdmin_vbulletin extends JFusionAdmin{
 
     function getJname()
     {
@@ -106,50 +106,6 @@ class JFusionAdmin_vbulletin extends JFusionPlugin{
         }
     }
 
-    function getPrivateMessageCounts($forumuserid)
-    {
-        // initialise some objects
-        $params = JFusionFactory::getParams($this->getJname());
-        $db = JFusionFactory::getDatabase($this->getJname());
-
-        $query = 'SELECT pmtotal,pmunread FROM #__user WHERE userid = '.$db->Quote($forumuserid);
-        $db->setQuery($query);
-        $vbPMData = $db->loadObject();
-
-        $pmcount['total'] = $vbPMData->pmtotal;
-        $pmcount['unread'] = $vbPMData->pmunread;
-
-        return $pmcount;
-    }
-
-    function getPrivateMessageURL()
-    {
-        return 'private.php';
-    }
-
-    function getViewNewMessagesURL()
-    {
-        return 'search.php?do=getnew';
-    }
-
-
-
-    function getAvatar($userid)
-    {
-        if ($userid) {
-            // initialise some objects
-            $params = JFusionFactory::getParams($this->getJname());
-            $url = $params->get('source_url').'image.php?u='.$userid .'&amp;dateline='. time() ;
-            return $url;
-
-        } else {
-
-            return 0;
-        }
-    }
-
-
-
     function getRegistrationURL()
     {
         return 'register.php';
@@ -165,46 +121,6 @@ class JFusionAdmin_vbulletin extends JFusionPlugin{
         return 'login.php?do=lostpw';
     }
 
-    function getThreadURL($threadid)
-    {
-        return  'showthread.php?t=' . $threadid;
-
-    }
-
-    function getPostURL($threadid, $postid)
-    {
-        return  'showthread.php?p='.$postid.'#post' . $postid;
-    }
-
-    function getProfileURL($uid)
-    {
-        return  'member.php?u='.$uid;
-    }
-
-    function getQuery($usedforums, $result_order, $result_limit)
-    {
-        if ($usedforums) {
-            $where = ' WHERE forumid IN (' . $usedforums .')';
-        } else {
-            $where = '';
-        }
-
-        $query = array(0 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $result_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $result_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";"),
-        1 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $result_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $result_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";"),
-        2 => array(0 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";")
-        );
-
-
-        return $query;
-
-    }
-
-
-
-
     function getUserList()
     {
         // initialise some objects
@@ -216,20 +132,6 @@ class JFusionAdmin_vbulletin extends JFusionPlugin{
         $userlist = $db->loadObjectList();
 
         return $userlist;
-
-    }
-
-
-    function getForumList()
-    {
-        //get the connection to the db
-
-        $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT forumid as id, title_clean as name FROM #__forum ORDER BY forumid';
-        $db->setQuery($query );
-
-        //getting the results
-        return $db->loadObjectList();
     }
 
     function getUserCount()
@@ -284,115 +186,6 @@ class JFusionAdmin_vbulletin extends JFusionPlugin{
             return false;
         }
     }
-
-	function & getBuffer()
-	{
-		// Get the path
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_path = $params->get('source_path');
-
-		//get the filename
-		$jfile = JRequest::getVar('jfile', '', 'GET', 'STRING');
-		if(!$jfile) {
-			//use the default index.php
-			$jfile = 'index.php';
-		}
-
-		//combine the path and filename
-        if (substr($source_path, -1) == DS) {
-            $index_file = $source_path . $jfile;
-        } else {
-            $index_file = $source_path . DS . $jfile;
-        }
-
-		if ( ! is_file($index_file) ) {
-            JError::raiseWarning(500, 'The path to the requested does not exist');
-			return null;
-		}
-
-		//set the current directory to vBulletin
-		chdir($source_path);
-
-		/* set scope for variables required later */
-		define('IN_PHPBB', true);
-		global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template;
-
-		// Get the output
-		ob_start();
-		include_once($index_file);
-        $buffer = ob_get_contents() ;
-        ob_end_clean();
-
-		//change the current directory back to Joomla.
-		chdir(JPATH_SITE);
-
-		return $buffer;
-	}
-
-
-
-	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
-	{
-		static $regex_body, $replace_body;
-
-		if ( ! $regex_body || ! $replace_body )
-		{
-			// Define our preg arrayshttp://www.jfusion.org/administrator/index.php?option=com_extplorer#
-			$regex_body		= array();
-			$replace_body	= array();
-
-			//convert relative links with query into absolute links
-			$regex_body[]	= '#href="./(.*)\?(.*)"#mS';
-			$replace_body[]	= 'href="'.$baseURL.'&jfile=$1&$2"';
-
-			//convert relative links without query into absolute links
-			$regex_body[]	= '#href="./(.*)"#mS';
-			$replace_body[]	= 'href="'.$baseURL.'&jfile=$1"';
-
-			//convert relative links from images into absolute links
-			$regex_body[]	= '#(src="|url\()./(.*)("|\))#mS';
-			$replace_body[]	= '$1'.$integratedURL.'$2$3"';
-
-			//convert links to the same page with anchors
-			$regex_body[]	= '#href="\#(.*?)"#';
-			$replace_body[]	= 'href="'.$fullURL.'&#$1"';
-
-			//update site URLs to the new Joomla URLS
-			$regex_body[]	= "#$integratedURL(.*)\?(.*)\"#mS";
-			$replace_body[]	= $baseURL . '&jfile=$1&$2"';
-
-			//convert action URLs inside forms to absolute URLs
-			//$regex_body[]	= '#action="(.*)"#mS';
-			//$replace_body[]	= 'action="'.$integratedURL.'/"';
-
-		}
-
-		$buffer = preg_replace($regex_body, $replace_body, $buffer);
-	}
-
-	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
-	{
-		static $regex_header, $replace_header;
-
-		if ( ! $regex_header || ! $replace_header )
-		{
-			// Define our preg arrays
-			$regex_header		= array();
-			$replace_header	= array();
-
-			//convert relative links into absolute links
-			$regex_header[]	= '#(href|src)=("./|"/)(.*?)"#mS';
-			$replace_header[]	= 'href="'.$integratedURL.'$3"';
-
-			//$regex_header[]	= '#(href|src)="(.*)"#mS';
-			//$replace_header[]	= 'href="'.$integratedURL.'$2"';
-
-		}
-
-		$buffer = preg_replace($regex_header, $replace_header, $buffer);
-}
-
-
 
 }
 

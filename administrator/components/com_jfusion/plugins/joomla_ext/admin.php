@@ -33,21 +33,6 @@ class JFusionAdmin_joomla_ext extends JFusionAdmin
         return JFusionJplugin::getTablename();
     }
 
-    function getRegistrationURL()
-    {
-        return JFusionJplugin::getRegistrationURL();
-    }
-
-    function getLostPasswordURL()
-    {
-        return JFusionJplugin::getLostPasswordURL();
-    }
-
-    function getLostUsernameURL()
-    {
-        return JFusionJplugin::getLostUsernameURL();
-    }
-
     function getUserList(){
         return JFusionJplugin::getUserList($this->getJname());
     }
@@ -73,6 +58,5 @@ class JFusionAdmin_joomla_ext extends JFusionAdmin
     {
         return JFusionJplugin::allowRegistration($this->getJname());
     }
-
 
  }

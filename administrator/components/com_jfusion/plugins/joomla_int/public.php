@@ -14,22 +14,17 @@ defined('_JEXEC' ) or die('Restricted access' );
 * load the JFusion framework
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractplugin.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractpublic.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
 /**
 * JFusion plugin class for the internal Joomla database
 * @package JFusion_Joomla_Int
 */
-class JFusionPlugin_joomla_int extends JFusionPlugin
+class JFusionPublic_joomla_int extends JFusionPublic
 {
     function getJname()
     {
         return 'joomla_int';
-    }
-
-    function getTablename()
-    {
-        return JFusionJplugin::getTablename();
     }
 
     function getRegistrationURL()
@@ -47,28 +42,4 @@ class JFusionPlugin_joomla_int extends JFusionPlugin
         return JFusionJplugin::getLostUsernameURL();
     }
 
-    function getUserList()
-    {
-        return JFusionJplugin::getUserList($this->getJname());
-    }
-
-    function getUserCount()
-    {
-        return JFusionJplugin::getUserCount($this->getJname());
-    }
-
-    function getUsergroupList()
-    {
-        return JFusionJplugin::getUsergroupList($this->getJname());
-    }
-
-    function getDefaultUsergroup()
-    {
-        return JFusionJplugin::getDefaultUsergroup($this->getJname());
-    }
-
-    function allowRegistration()
-    {
-        return JFusionJplugin::allowRegistration($this->getJname());
-    }
  }

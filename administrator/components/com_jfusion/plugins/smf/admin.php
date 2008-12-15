@@ -21,7 +21,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 * JFusion plugin class for SMF 1.1.4
 * @package JFusion_SMF
 */
-class JFusionAdmin_smf extends JFusionPlugin{
+class JFusionAdmin_smf extends JFusionAdmin{
 
     function getJname()
     {
@@ -80,59 +80,6 @@ class JFusionAdmin_smf extends JFusionPlugin{
         }
     }
 
-    function getRegistrationURL()
-    {
-        return 'index.php?action=register';
-    }
-
-    function getLostPasswordURL()
-    {
-        return 'index.php?action=reminder';
-    }
-
-    function getLostUsernameURL()
-    {
-        return 'index.php?action=reminder';
-    }
-
-    function getThreadURL($threadid)
-    {
-        return  'index.php?topic=' . $threadid;
-
-    }
-
-    function getPostURL($threadid, $postid)
-    {
-        return  'index.php?topic=' . $threadid . '.msg'.$postid.'#msg' . $postid;
-    }
-
-    function getProfileURL($uid)
-    {
-        return  'member.php?u='.$uid;
-    }
-
-
-
-    function getQuery($usedforums, $result_order, $result_limit)
-    {
-        if ($usedforums) {
-            $where = ' WHERE a.ID_BOARD IN (' . $usedforums .')';
-        } else {
-            $where = '';
-        }
-
-        $query = array(0 => array(0 => "SELECT a.ID_TOPIC , c.posterName, c.ID_MEMBER, c.subject, c.posterTime, left(c.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_LAST_MSG = b.ID_MSG INNER JOIN `#__messages` as c ON a.ID_FIRST_MSG = c.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";" ,
-		1 => "SELECT b.ID_MSG, b.posterName, b.ID_MEMBER, b.subject, b.posterTime, a.ID_TOPIC, left(b.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_LAST_MSG = b.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";"  ),
-        1 => array(0 => "SELECT a.ID_TOPIC , b.posterName, b.ID_MEMBER, b.subject, b.posterTime, left(b.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT a.ID_TOPIC , c.posterName, c.ID_MEMBER, c.subject, c.posterTime, left(c.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG INNER JOIN `#__messages` as c ON a.ID_LAST_MSG = c.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";"),
-        2 => array(0 => "SELECT a.ID_MSG , a.posterName, a.ID_MEMBER, a.subject, a.posterTime, left(a.body, $result_limit), a.ID_TOPIC  FROM `#__messages` as a " . $where . " ORDER BY a.posterTime ".$result_order." LIMIT 0,".$result_limit.";" ,
-        1 => "SELECT a.ID_MSG , a.posterName, a.ID_MEMBER, a.subject, a.posterTime, left(a.body, $result_limit), a.ID_TOPIC  FROM `#__messages` as a " . $where . " ORDER BY a.posterTime ".$result_order." LIMIT 0,".$result_limit.";")
-        );
-
-        return $query;
-
-    }
-
     function getUserList()
     {
         // initialise some objects
@@ -142,18 +89,6 @@ class JFusionAdmin_smf extends JFusionPlugin{
         $userlist = $db->loadObjectList();
 
         return $userlist;
-    }
-
-
-    function getForumList()
-    {
-        // initialise some objects
-        $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT ID_BOARD as id, name FROM #__boards';
-        $db->setQuery($query );
-
-        //getting the results
-        return $db->loadObjectList();
     }
 
     function getUserCount()
@@ -204,138 +139,5 @@ class JFusionAdmin_smf extends JFusionPlugin{
             return true;
         }
     }
-
-
-    function getPrivateMessageCounts($userid)
-    {
-
-        if ($userid) {
-
-            // initialise some objects
-            $db = JFusionFactory::getDatabase($this->getJname());
-
-            // read unread count
-            $db->setQuery('SELECT unreadMessages FROM #__members WHERE ID_MEMBER = '.$userid);
-            $unreadCount = $db->loadResult();
-
-            // read total pm count
-            $db->setQuery('SELECT instantMessages FROM #__members WHERE ID_MEMBER = '.$userid);
-            $totalCount = $db->loadResult();
-
-            return array('unread' => $unreadCount, 'total' => $totalCount);
-        }
-        return array('unread' => 0, 'total' => 0);
-    }
-
-    function getAvatar($puser_id)
-    {
-        return 0;
-    }
-
-
-	function & getBuffer()
-	{
-		// We're going to want a few globals... these are all set later.
-		global $time_start, $maintenance, $msubject, $mmessage, $mbname, $language;
-		global $boardurl, $boarddir, $sourcedir, $webmaster_email, $cookiename;
-		global $db_server, $db_name, $db_user, $db_prefix, $db_persist, $db_error_send, $db_last_error;
-		global $db_connection, $modSettings, $context, $sc, $user_info, $topic, $board, $txt;
-		global $scripturl;
-
-		// Required to avoid a warning about a license violation even though this is not the case
-		global $forum_version;
-
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
-
-
-		// Get the path
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_path = $params->get('source_path');
-        if (substr($source_path, -1) == DS) {
-            $index_file = $source_path .'index.php';
-        } else {
-            $index_file = $source_path .DS.'index.php';
-        }
-
-		if ( ! is_file($index_file) ) {
-            JError::raiseWarning(500, 'The path to the SMF index file set in the component preferences does not exist');
-			return null;
-		}
-
-		//set the current directory to SMF
-		chdir($source_path);
-
-		// Get the output
-		ob_start();
-		$rs = include_once($index_file);
-		$buffer = ob_get_contents();
-		ob_end_clean();
-
-		//change the current directory back to Joomla.
-		chdir(JPATH_SITE);
-
-
-		// Log an error if we could not include the file
-		if (!$rs) {
-            JError::raiseWarning(500, 'Could not find SMF in the specified directory');
-		}
-
-		return $buffer;
-	}
-
-
-
-	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
-	{
-		static $regex_body, $replace_body;
-
-		if ( ! $regex_body || ! $replace_body )
-		{
-			// Define our preg arrayshttp://www.jfusion.org/administrator/index.php?option=com_extplorer#
-			$regex_body		= array();
-			$replace_body	= array();
-
-			//convert relative links with query into absolute links
-			$regex_body[]	= '#' . $integratedURL . 'index.php\?(.*?)"#mS';
-			$replace_body[]	=  $baseURL . '&$1"';
-
-			//convert relative links without query into absolute links
-			$regex_body[]	= '#' . $integratedURL . 'index.php"#mS';
-			$replace_body[]	= $baseURL . '"';
-
-			//convert relative links from images into absolute links
-			$regex_body[]	= '#\./(.*?)("|\))#mS';
-			$replace_body[]	= $integratedURL.'$1$2"';
-
-			//convert links to the same page with anchors
-			$regex_body[]	= '#href="\#(.*?)"#';
-			$replace_body[]	= 'href="'.$fullURL.'&#$1"';
-		}
-
-		$buffer = preg_replace($regex_body, $replace_body, $buffer);
-	}
-
-	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
-	{
-		static $regex_header, $replace_header;
-
-		if ( ! $regex_header || ! $replace_header )
-		{
-			// Define our preg arrays
-			$regex_header		= array();
-			$replace_header	= array();
-
-			//convert relative links into absolute links
-			$regex_header[]	= '#(href|src)=("./|"/)(.*?)"#mS';
-			$replace_header[]	= 'href="'.$integratedURL.'$3"';
-
-			//$regex_header[]	= '#(href|src)="(.*)"#mS';
-			//$replace_header[]	= 'href="'.$integratedURL.'$2"';
-
-		}
-
-		$buffer = preg_replace($regex_header, $replace_header, $buffer);
-}
-
 }
 
