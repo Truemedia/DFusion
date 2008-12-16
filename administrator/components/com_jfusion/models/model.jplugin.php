@@ -459,7 +459,7 @@ class JFusionJplugin{
 				$instance->set('usertype'     , $usergroup );
 				$instance->set('gid'          , $gid );
 
-				if ($Jname == joomla_int){
+				if ($jname == joomla_int){
 					// save the user
 					if (!$instance->save(false)) {
 						//report the error
