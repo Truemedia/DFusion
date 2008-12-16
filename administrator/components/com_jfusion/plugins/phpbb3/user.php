@@ -167,8 +167,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
     {
         $userid = 0;
         $sessionid = 0;
-        $status = array();
-        $status['debug'] = '';
+        $status['error'] = array();
+        $status['debug'] = array();
 
         //get the cookie parameters
         $params = JFusionFactory::getParams($this->getJname());
@@ -186,7 +186,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $sessionid = $_COOKIE[$phpbb_cookie_name.'_sid'];
             $status['debug'] .= 'Found session cookie:' . $sessionid .' for userid:' . $userid .'<br/>';
         } else {
-            $status['error'] = 'No userid and session cookie found';
+            $status['error'] .= 'No userid and session cookie found';
             return $status;
         }
 
@@ -197,35 +197,35 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $query = 'UPDATE #__users SET user_lastvisit =' . time() . ' WHERE user_id =' . $userid;
             $db->setQuery($query);
             if (!$db->query()) {
-                $status['debug'] .= 'Error could not update the last visit field</br>';
+                $status['debug'] .= 'Error could not update the last visit field ' . $db->stderr();
             }
 
             // delete session data in db and cookies
-            $query = 'DELETE FROM #__sessions WHERE session_user_id =' . $userid . " AND session_id=" . $db->Quote($sessionid);
+            $query = 'DELETE FROM #__sessions WHERE session_user_id =' . $userid . " OR session_id=" . $db->Quote($sessionid);
             $db->setQuery($query);
             if ($db->query()) {
                 setcookie($phpbb_cookie_name . '_u', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
                 setcookie($phpbb_cookie_name . '_sid', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
             } else {
-                $status['error'] = 'Error: Could not delete session in database';
+                $status['error'] .= 'Error: Could not delete session in database ' . $db->stderr();
                 return $status;
             }
 
             // delete remember me cookie and session keys
             if (isset($_COOKIE[$phpbb_cookie_name . '_k'])) {
-                $query = 'DELETE FROM #__sessions_keys WHERE user_id =' . $userid . ' AND session_id=' . $db->Quote($sessionid);
+                $query = 'DELETE FROM #__sessions_keys WHERE user_id =' . $userid;
                 $db->setQuery($query);
                 if ($db->query()) {
                     setcookie($phpbb_cookie_name . '_k', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
-                    $status['debug'] .= 'Deleted the session key</br>';
+                    $status['debug'] .= 'Deleted the session key';
                 } else {
-                    $status['debug'] .= 'Error could not delete the session key</br>';
+                    $status['debug'] .= 'Error could not delete the session key:' . $db->stderr();
                 }
             }
-            $status['debug'] .= 'Session destroyed succesfully</br>';
+            $status['debug'] .= 'Session destroyed succesfully';
             return $status;
         } else {
-            $status['error'] = 'Userid and sessionid were not valid';
+            $status['error'] .= 'Userid and sessionid were not valid';
             return $status;
         }
     }

@@ -249,11 +249,18 @@ foreach ($plugins as $plugin) {
 	?>
 	<td>JFusion <?echo $plugin->name;?> Plugin</td>
 	<td><?php echo $xml->version;?></td>
-	<td><?php if ($this->JFusionVersion->{$plugin->name}){
-		echo $this->JFusionVersion->{$plugin->name};
+	<td><?php
+	if (is_object($this->JFusionVersion)){
+		if ($this->JFusionVersion->{$plugin->name}){
+			echo $this->JFusionVersion->{$plugin->name};
+		} else {
+			echo JText::_('UNKNOWN');
+		}
 	} else {
-		echo 'unknown';
-	}?></td></tr><?php
+    	echo JText::_('UNKNOWN');
+	}
+
+	?></td></tr><?php
 	unset($xml);
 	if ($row_count == 1){
 		$row_count = 0;
