@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8-007
+* @version 1.1.0-001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -130,8 +130,7 @@ class JFusionAdmin_moodle extends JFusionAdmin{
         return $db->loadResult();
     }
 
-    function allowRegistration()
-    {
+    function allowRegistration(){
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = "SELECT value FROM #__config WHERE name = 'auth'";
         $db->setQuery($query );

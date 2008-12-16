@@ -2,7 +2,7 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.0.8-007
+* @version 1.1.0-b001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
