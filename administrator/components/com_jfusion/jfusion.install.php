@@ -38,6 +38,7 @@ $db =& JFactory::getDBO();
 $table_list = $db->getTableList();
 $table_prefix = $db->getPrefix();
 
+//create the jfusion table if it does not exist already
 if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 $batch_query = "CREATE TABLE #__jfusion (
   id int(11) NOT NULL auto_increment,
@@ -79,6 +80,9 @@ VALUES ('moodle', 'moodle','1.01','07th September 2008',  'JFusion development t
 		echo $db->stderr() . '<br/>';
 	}
 }
+
+
+//create the jfusion_users table if it does not exist already
 if (array_search($table_prefix . 'jfusion_users',$table_list) == false) {
 	$query = 'CREATE TABLE #__jfusion_users (
 	id int(11) NOT NULL,
@@ -90,6 +94,8 @@ if (array_search($table_prefix . 'jfusion_users',$table_list) == false) {
 		echo $db->stderr() . '<br/>';
 	}
 }
+
+//create the jfusion_user_plugin table if it does not exist already
 if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 	$query = 'CREATE TABLE #__jfusion_users_plugin (
 	autoid int(11) NOT NULL auto_increment,
@@ -105,6 +111,23 @@ if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 	}
 }
 
+//create the jfusion_forum_plugin table if it does not exist already
+if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
+	$query = 'CREATE TABLE IF NOT EXISTS #__jfusion_forum_plugin (
+  contentid int(11) NOT NULL,
+  threadid int(11) NOT NULL,
+  postid int(11) NOT NULL,
+  jname varchar(255) NOT NULL,
+  modified int(11) NOT NULL default 0
+) CHARSET=utf8;';
+	$db->setQuery($query);
+	if (!$db->query()){
+		echo $db->stderr() . '<br/>';
+	}
+}
+
+
+//create the jfusion_sync table if it does not exist already
 if (array_search($table_prefix . 'jfusion_sync',$table_list) == false) {
 	$query = 'CREATE TABLE #__jfusion_sync (
   syncid varchar(10),
