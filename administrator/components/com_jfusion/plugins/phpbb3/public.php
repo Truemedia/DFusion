@@ -177,10 +177,10 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       function fixAction($url, $extra, $baseURL){
       	$url = htmlspecialchars_decode($url);
 
-      	//check to see if SH404SEF is enabled
-        $params = JFusionFactory::getParams('joomla_int');
-    	$sh404sef_parse = $params->get('sh404sef_parse');
-		if ($sh404sef_parse == 1){
+      	//check to see if the URL is in SEF
+		if (strpos($url,'index.php/')){
+      	    //fix inaccuracies in the phpBB3 SEF url generation code
+      	    $url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
 			$parts = explode('/', $url);
 			foreach ($parts as $part){
 				$vars = explode(',', $part);
@@ -262,34 +262,19 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
     	$params = JFusionFactory::getParams('joomla_int');
 		$source_url = $params->get('source_url');
 
-      	//check to see if SH404SEF is enabled
-        $params = JFusionFactory::getParams('joomla_int');
-    	$sh404sef_parse = $params->get('sh404sef_parse');
-		if ($sh404sef_parse == 1){
-			//get the query
-		    $query = explode('index.php/', $url);
-		    if(isset($query[1])){
-				$redirect_url = $source_url . 'index.php/' . $query[1];
-		    } else {
-		    	$Itemid = JRequest::getVar('Itemid');
-		    	$explode = explode('/', $url);
-		    	$jfile = end($explode);
-				$redirect_url = $source_url . 'index.php/component/option,com_jfusion/Itemid,' . $Itemid . '/jfile,' . $jfile;
-		    }
-
+      	//check to see if the URL is in SEF
+		if (strpos($parts[1],'index.php/')){
+      	    //fix inaccuracies in the phpBB3 SEF url generation code
+      	    $parts[1] = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $parts[1]);
+		    $query = explode('index.php/', $parts[1]);
+    		$redirect_url = $source_url . 'index.php/' . $query[1];
 	    } else {
-			//parse the URL
+			//parse the non-SEF URL
 			$uri = new JURI($parts[1]);
 
 			//set the URL with the jFusion params to correct any domain mistakes
 			$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
-
 	    }
-
-
-
-
-
 
       	//reconstruct the redirect meta tag
         return '<meta http-equiv="refresh" content="'.$parts[0] . ';url=' . $redirect_url .'">';

@@ -113,7 +113,7 @@ class JFusionFunction{
 
     function saveParameters($jname, $post)
     {
-        $mergedpost = array_merge((array) JFusionFunction::getparameters($jname)->_registry[_default][data],$post);  //HJW 15-11-08
+        $mergedpost = array_merge((array) JFusionFunction::getparameters($jname)->_registry['_default']['data'],$post);
         //serialize the $post to allow storage in a SQL field
         $serialized = base64_encode(serialize($mergedpost));
 

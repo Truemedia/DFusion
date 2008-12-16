@@ -35,12 +35,6 @@
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name=" " type="helptext" default="SH404SEF_PARSE"/>
-		<param name="sh404sef_parse" type="list" default="0" label="" description="SH404SEF">
-			<option value="1">YES</option>
-			<option value="0">NO</option>
-		</param>
-		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
 		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
 			<option value="1">YES</option>
