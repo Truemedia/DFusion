@@ -355,42 +355,6 @@ class JFusionForum_vbulletin extends JFusionForum
 		return $table;
 	}
 
-	function getSearchQueryColumns()
-	{
-		$columns = new stdClass();
-		$columns->title = "p.title";
-		$columns->text = "p.pagetext";
-		return $columns;
-	}
-
-	function getSearchQuery()
-	{
-		//need to return threadid, postid, title, text, created
-		$query = 'SELECT p.threadid, p.postid, p.title, p.pagetext AS text,
-					FROM_UNIXTIME(p.dateline, "%Y-%m-%d %h:%i:%s") AS created,
-					CONCAT_WS( "/", f.title, t.title ) AS section
-					FROM #__post AS p
-					INNER JOIN #__thread AS t ON p.threadid = t.threadid
-					INNER JOIN #__forum AS f on f.forumid = t.forumid';
-		return $query;
-	}
-
-	function cleanUpSearchText($text)
-	{
-		$pagetext = str_replace("[QUOTE]","", $text);
-		$pagetext = str_replace("[/QUOTE]","", $pagetext);
-		$pagetext = str_replace("[URL=","<a href=", $pagetext);
-		$pagetext = str_replace("[/URL]","</a>", $pagetext);
-		$pagetext = str_replace("]",">", $pagetext);
-		$pagetext = str_replace("[B>","<br /><br /><b>", $pagetext);
-		$pagetext = str_replace("[/B>","</b>", $pagetext);
-		$pagetext = str_replace("[IMG>","<img src=", $pagetext);
-		$pagetext = str_replace("[/IMG>","></img>", $pagetext);
-		$pagetext = str_replace("[br />","<br />", $pagetext);
-
-		return $pagetext;
-	}
-
     function getThreadURL($threadid)
     {
         return  'showthread.php?t=' . $threadid;

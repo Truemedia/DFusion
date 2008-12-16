@@ -18,6 +18,12 @@ defined('_JEXEC' ) or die('Restricted access' );
 */
 class JFusionForum
 {
+	 /**
+     * Checks to see if a thread already exists for the content item and calls the appropriate function
+     *
+     * @param object $contentitem object containing content information
+     * @return array Returns status of actions with errors if any
+     */
 	function checkThreadExists($contentitem)
 	{
 	    $status = array();
@@ -27,16 +33,32 @@ class JFusionForum
         return $status;
 	}
 
+    /**
+     * Retrieves the default forum based on section/category stipulations or default set in the plugins config
+     *
+     * @param object $contentitem object containing content information
+     * @return int Returns id number of the forum
+     */
 	function getDefaultForum($contentitem)
 	{
 		return 0;
 	}
 
+    /**
+     * Retrieves thread information
+     *
+     * @param int Id of specific thread
+     * @return object Returns object with thread information
+     */
     function &getThread($contentid)
     {
 		return new stdObject();
     }
 
+     /**
+     * returns the name of this JFusion plugin
+     * @return string name of current JFusion plugin
+     */
     function getJname()
     {
         return '';
@@ -120,45 +142,57 @@ class JFusionForum
     }
 
 
-
+     /**
+     * Creates new thread and posts first post
+     * @param object $contentitem object containing content information
+     * @param int Id of forum to create thread
+     * @param array $status contains errors and status of actions
+     */
 	function createThread($contentitem, $forumid, &$status)
 	{
 
 	}
 
+	 /**
+     * Updates information in a specific thread/post
+     * @param int Id of thread
+     * @param int Id of the first post
+     * @param object $contentitem object containing content information
+     * @param array $status contains errors and status of actions
+     */
 	function updateThread($threadid,$postid,$contentitem,&$status)
 	{
 
 	}
 
+	/**
+     * Prepares text before saving to db
+     * @param string Text to be modified
+     * @return string Modified text
+     */
 	function prepareText($text)
 	{
 		return '';
 	}
 
-	function getPosts($threadid,$postid)
-	{
-		return array();
-	}
-
+	/**
+     * Creates a table of posts to be displayed in content item
+     * @param obj of thread information
+     * @return string HTML of table to displayed
+     */
 	function createPostTable($existingthread)
 	{
 		return '';
 	}
 
-	function getSearchQueryColumns()
+	/**
+     * Retrieves the posts to be displayed in the content item if enabled
+     * @param int Id of thread
+     * @param int Id of first post which is useful if you do not want the first post to be included in results
+     * @return array or object Returns retrieved posts
+     */
+	function getPosts($threadid,$postid)
 	{
-		$columns = new stdClass();
-		return $columns;
-	}
-
-	function getSearchQuery()
-	{
-		return '';
-	}
-
-	function cleanUpSearchText($text)
-	{
-		return $text;
+		return array();
 	}
 }

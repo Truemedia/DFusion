@@ -60,28 +60,26 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 		}
 	}
 
-	//plugins to search
+	//jfusion plugins to search
 	$searchPlugins = array_intersect( $areas, array_keys( $jFusionPlugins ));
 
-	//contains the rows returned from plugins
-	$rows = array();
-
-	//will contain combined results from all the rows
-	$results = array();
-
+	//get the search plugin parameters
 	$plugin =& JPluginHelper::getPlugin('search','jfusion');
 	$params = new JParameter( $plugin->params);
 	$linkMode = $params->get('link_mode','direct');
 
 	foreach($searchPlugins AS $key => $jname)
 	{
+		//initialize plugin database
 		$db = & JFusionFactory::getDatabase($jname);
-		$searchMe = JFusionFactory::getForum($jname);
-		$forum = JFusionFactory::getForum($jname);
-
+		//load jfusion plugin search functions
+		$searchMe = JFusionFactory::getPublic($jname);
+		//get the query used to search
 		$query = $searchMe->getSearchQuery();
+		//assign specific table colums to title and text
 		$columns = $searchMe->getSearchQueryColumns();
 
+		//build the query
 		if($phrase == 'exact')
 		{
 			$where = "(LOWER({$columns->title}) LIKE '%$text%') OR (LOWER({$columns->text}) like '%$text%')";
@@ -100,45 +98,60 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 
 			$where = '(' . implode ( ") $separator (", $wheres) . ')';
 		}
-
 		$query .= " WHERE $where";
+
 		$db->setQuery($query);
-		if($posts = $db->loadObjectList())
+
+		//contains the rows returned from plugins
+		$rows = array();
+
+		//load the results
+		if($results = $db->loadObjectList())
 		{
-			foreach($posts as $post)
+			foreach($results as $result)
 			{
-				$href = JFusionFunction::createURL($forum->getPostURL($post->threadid,$post->postid), $jname, $linkMode);
-				$post->href = $href;
-				$post->browsernav = 2;
-				$post->text = $searchMe->cleanUpSearchText($post->text);
+				//add a link
+				$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode);
+				$result->href = $href;
+				//open link in same window
+				$result->browsernav = 2;
+				//clean up the text such as removing bbcode, etc
+				$result->text = $searchMe->cleanUpSearchText($result->text);
 			}
-			$rows[] = $posts;
+			$rows[] = $results;
 		}
-		else die($db->stderr());
+		else
+		{
+			JError::raiseWarning(500, $db->stderr());
+			return null;
+		}
 
 	}
+
+	//To hold all the search results
+	$searchResults = array();
 
 	//merge all the rows into one array
 	foreach($rows AS $r)
 	{
-		$results = array_merge($results,$r);
+		$searchResults = array_merge($searchResults,$r);
 	}
 
-	//sort the posts
+	//sort the results
 	jimport('joomla.utilities.array');
 
 	switch ($ordering){
 		case 'oldest':
-			JArrayHelper::sortObjects($results, 'created');
+			JArrayHelper::sortObjects($searchResults, 'created');
 			break;
 		case 'alpha':
-			JArrayHelper::sortObjects($results, 'title');
+			JArrayHelper::sortObjects($searchResults, 'title');
 			break;
 		case 'newest':
 		default:
-			JArrayHelper::sortObjects($results, 'created', -1);
+			JArrayHelper::sortObjects($searchResults, 'created', -1);
 			break;
 	}
 
-	return $results;
+	return $searchResults;
 }

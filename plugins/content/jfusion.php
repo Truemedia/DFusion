@@ -2,7 +2,7 @@
     /**
 * @package JFusion
 * @subpackage Plugin_Discussbot
-* @version 1.0.9
+* @version 1.1.0
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -38,9 +38,6 @@
 
 	    function onPrepareContent(& $contentitem, $options)
 	    {
-			global $JFusionActive;
-			$JFusionActive = true;
-
 			//prevent any output by the plugins (this could prevent cookies from being passed to the header)
 			ob_start();
 

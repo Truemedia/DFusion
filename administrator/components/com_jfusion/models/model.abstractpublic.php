@@ -85,6 +85,36 @@ class JFusionPublic{
         return '';
     }
 
+     /**
+     * Assigns specific db columns to title and text of content retrieved
+     * @return object Db columns assigned to title and text of content retrieved
+     */
+	function getSearchQueryColumns()
+	{
+		$columns = new stdClass();
+		$columns->title = '';
+		$columns->text = '';
+		return $columns;
+	}
+
+	/**
+	 * Generates SQL query for the search plugin that does not include where, limit, or order by
+	 * @return string Returns query string
+	 */
+	function getSearchQuery()
+	{
+		return '';
+	}
+
+	/**
+	 * Cleans up the text before presented to user; useful for removing BB code, etc
+	 * @param $text Text to be cleaned up
+	 * @return Cleaned up text
+	 */
+	function cleanUpSearchText($text)
+	{
+		return $text;
+	}
 
 
 
