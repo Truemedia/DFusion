@@ -44,6 +44,7 @@ class jfusionViewcpanel extends JView {
 		    }
     	}
 
+
 		$JFusionNews = new SimpleXMLElement($JFusionNewsRaw);
 		$this->assignRef('JFusionNews', $JFusionNews);
 

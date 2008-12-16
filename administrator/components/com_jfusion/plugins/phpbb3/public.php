@@ -77,6 +77,12 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $_POST['p'] = $subscribe;
         }
 
+        //add check for search function
+        $submit = JRequest::getVar('submit');
+        if($submit == 'Search'){
+            $jfile = 'search.php';
+        }
+
         if (!$jfile) {
             //use the default index.php
             $jfile = 'index.php';
@@ -170,9 +176,23 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
       function fixAction($url, $extra, $baseURL){
       	$url = htmlspecialchars_decode($url);
-      	$url_details = parse_url($url);
-      	$url_variables = array();
-      	parse_str($url_details['query'], $url_variables);
+
+      	//check to see if SH404SEF is enabled
+        $params = JFusionFactory::getParams('joomla_int');
+    	$sh404sef_parse = $params->get('sh404sef_parse');
+		if ($sh404sef_parse == 1){
+			$parts = explode('/', $url);
+			foreach ($parts as $part){
+				$vars = explode(',', $part);
+				if(isset($vars[1])){
+					$url_variables[$vars[0]] = $vars[1];
+				}
+			}
+	    } else {
+	      	$url_details = parse_url($url);
+    	  	$url_variables = array();
+      		parse_str($url_details['query'], $url_variables);
+		}
 
       	//set the correct action and close the form tag
 		$replacement = 'action="'.$baseURL . '"' . $extra . '>';
@@ -183,8 +203,12 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         	$jfile = $url_variables['jfile'];
         	unset($url_variables['jfile']);
 		} else {
-			//use the action file from the action URL itself
-         	$jfile = basename($url_details['path']);
+			//get the filename
+        	$jfile = JRequest::getVar('jfile');
+        	if(!$jfile){
+				//use the action file from the action URL itself
+    	     	$jfile = basename($url_details['path']);
+        	}
 		}
       	$replacement .= '<input type="hidden" name="jfile" value="'. $jfile . '">';
 
@@ -200,9 +224,11 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         unset($url_variables['Itemid']);
 
 		//add any other variables
-      	foreach ($url_variables as $key => $value){
-      		$replacement .=  '<input type="hidden" name="'. $key .'" value="'.$value . '">';
-      	}
+		if(is_array($url_variables)){
+			 foreach ($url_variables as $key => $value){
+      			$replacement .=  '<input type="hidden" name="'. $key .'" value="'.$value . '">';
+      		}
+		}
 
       	return $replacement;
       }
@@ -232,23 +258,28 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	//split up the timeout from url
 		$parts = explode(';url=', $url);
 
+    	//get the correct URL to joomla
+    	$params = JFusionFactory::getParams('joomla_int');
+		$source_url = $params->get('source_url');
 
       	//check to see if SH404SEF is enabled
         $params = JFusionFactory::getParams('joomla_int');
     	$sh404sef_parse = $params->get('sh404sef_parse');
 		if ($sh404sef_parse == 1){
-			$return_url = $parts[1];
-			//additional SH404SEF corrections
-	        //$regex_header[]	= '#jfile,(t|e)#mS';
-    	    //$replace_header[]	= '$1';
+			//get the query
+		    $query = explode('index.php/', $url);
+		    if(isset($query[1])){
+				$redirect_url = $source_url . 'index.php/' . $query[1];
+		    } else {
+		    	$Itemid = JRequest::getVar('Itemid');
+		    	$explode = explode('/', $url);
+		    	$jfile = end($explode);
+				$redirect_url = $source_url . 'index.php/component/option,com_jfusion/Itemid,' . $Itemid . '/jfile,' . $jfile;
+		    }
 
 	    } else {
 			//parse the URL
 			$uri = new JURI($parts[1]);
-
-			//get the correct URL to joomla
-    	    $params = JFusionFactory::getParams('joomla_int');
-			$source_url = $params->get('source_url');
 
 			//set the URL with the jFusion params to correct any domain mistakes
 			$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
