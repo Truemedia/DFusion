@@ -47,6 +47,8 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
+		
+		<!-- Discussion bot parameters to be released at a later date		
 		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name=" " type="helptext" default="DISCUSSBOT_DESC"/>
 		<param name="enable_discussbot" type="list" default="0" label="ENABLE_DISCUSSBOT" description="ENABLE_DISCUSSBOT_DESC">
@@ -101,5 +103,7 @@
 			<option value="articleText">FIRST_POST_TEXT</option>
 		</param>
 		<param name="first_post_link_text" type="text" size="100" default="" description="FIRST_POST_LINK_TEXT_DESC" label="FIRST_POST_LINK_TEXT" />
+		 -->
   	</params>
+
 </install>

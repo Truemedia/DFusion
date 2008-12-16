@@ -35,11 +35,20 @@ class JFusionForum_vbulletin extends JFusionForum
 		define('SKIP_SESSIONCREATE', 1);
 		define('SKIP_USERINFO', 1);
 		define('CWD', $this->params->get('source_path'));
-		require_once(CWD.'/includes/init.php');
+		
+		if(is_dir(CWD))
+		{
+			require_once(CWD.'/includes/init.php');
 
-		//force into global scope
-		$GLOBALS["vbulletin"] = $vbulletin;
-		$GLOBALS["db"] = $vbulletin->db;
+			//force into global scope
+			$GLOBALS["vbulletin"] = $vbulletin;
+			$GLOBALS["db"] = $vbulletin->db;
+		}
+		else
+		{
+			JError::raiseWarning(500, JText::_('SOURCE_PATH_NOT_FOUND'));
+			return null;
+		}
 	}
 
 	function checkThreadExists($contentitem)
