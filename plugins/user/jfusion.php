@@ -56,14 +56,16 @@
         function onAfterDeleteUser($user, $succes, $msg)
         {
             if (!$succes) {
-                return false;
+	            $result = false;
+    	        return $result;
             }
 
             $db =& JFactory::getDBO();
             $db->setQuery('DELETE FROM #__session WHERE userid = '.$db->Quote($user['id']));
             $db->Query();
 
-            return true;
+            $result = true;
+            return $result;
         }
 
         /**
@@ -200,7 +202,8 @@
                 }
             }
 			ob_end_clean();
-            return true;
+            $result = true;
+            return $result;
         }
 
 
@@ -268,7 +271,8 @@
 			$JoomlaUser->destroySession($user, $options);
 
 			ob_end_clean();
-            return true;
+            $result = true;
+            return $result;
         }
 
         function onAfterStoreUser($user, $isnew, $succes, $msg)

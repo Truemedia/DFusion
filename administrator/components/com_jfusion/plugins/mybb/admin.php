@@ -139,9 +139,11 @@ class JFusionAdmin_mybb extends JFusionAdmin{
     	$disableregs = $db->loadResult();
 
 		if ($disableregs == '0') {
-			return true;
+            $result = true;
+            return $result;
 		} else {
-			return false;
+            $result = false;
+            return $result;
 		}
     }
 }

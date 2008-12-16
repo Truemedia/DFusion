@@ -58,7 +58,8 @@ class plgAuthenticationjfusion extends JPlugin
         if (empty($credentials['password'])) {
             $response->status = JAUTHENTICATE_STATUS_FAILURE;
             $response->error_message = 'Empty password not allowed';
-            return false;
+            $result = false;
+            return $result;
         }
 
         // Initialize variables
@@ -91,7 +92,8 @@ class plgAuthenticationjfusion extends JPlugin
                     $response->email = $userinfo->email;
                     $response->fullname = $userinfo->name;
                     $response->error_message = '';
-                    return true;
+	    	        $result = true;
+    	    	    return $result;
                 }
             }
             //no matching password found

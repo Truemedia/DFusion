@@ -46,7 +46,8 @@ class JFusionPlugin_punbb extends JFusionPlugin{
         //try to open the file
         if (($file_handle = @fopen($myfile, 'r')) === FALSE) {
             JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). ": $myfile " . JText::_('WIZARD_MANUAL'));
-            return false;
+            $result = false;
+            return $result;
 
 
          } else {
@@ -238,9 +239,11 @@ return $query;
         $new_registration = $db->loadResult();
 
         if ($new_registration == 3) {
-            return false;
+            $result = false;
+            return $result;
         } else {
-            return true;
+            $result = true;
+            return $result;
         }
     }
 

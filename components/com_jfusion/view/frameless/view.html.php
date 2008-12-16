@@ -50,7 +50,8 @@ class jfusionViewframeless extends JView {
 
         if (! $buffer ) {
             JError::raiseWarning(500, JText::_('NO_BUFFER'));
-            return false;
+            $result = false;
+            return $result;
         }
 
         if (class_exists('tidy') ) {
@@ -63,7 +64,8 @@ class jfusionViewframeless extends JView {
             // Make sure that we have something
             if (! $root || ! $root->hasChildren()) {
                 JError::raiseWarning(500, JText::_('NO_HTML'));
-                return false;
+	            $result = false;
+    	        return $result;
             }
 
             // Get the important nodes

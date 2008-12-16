@@ -191,7 +191,8 @@
 			}
 
 			ob_end_clean();
-			return true;
+            $result = true;
+            return $result;
 	    }
     }
 ?>

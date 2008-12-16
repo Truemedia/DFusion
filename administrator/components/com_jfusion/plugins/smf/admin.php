@@ -134,9 +134,11 @@ class JFusionAdmin_smf extends JFusionAdmin{
         $new_registration = $db->loadResult();
 
         if ($new_registration == 3) {
-            return false;
+            $result = false;
+            return $result;
         } else {
-            return true;
+            $result = true;
+            return $result;
         }
     }
 }

@@ -298,11 +298,18 @@ class debug {
 	*	@return boolean if it is one-dimensional
 	*/
 	private function isOneDimensional($arr) {
-		if (! is_array($arr) && ! is_object($arr)) return false;
-		foreach ($arr as $val) {
-			if (is_array($val) || is_object($val)) return false;
+		if (! is_array($arr) && ! is_object($arr)){
+            $result = false;
+            return $result;
 		}
-		return true;
+		foreach ($arr as $val) {
+			if (is_array($val) || is_object($val)){
+	            $result = false;
+    	        return $result;
+			}
+		}
+        $result = true;
+        return $result;
 	}
 
 	/**
@@ -1144,13 +1151,20 @@ class arrayfunc {
 	*	@return boolean if it is associative
 	*/
 	function is_assoc_array($var) {
-		if (! is_array($var)) return false;
+		if (! is_array($var)) {
+            $result = false;
+            return $result;
+		}
 		$n = 0;
 		foreach ($var as $key => $value) {
-			if ($key != $n || !is_int($key)) return true;
+			if ($key != $n || !is_int($key)) {
+	            $result = true;
+    	        return $result;
+			}
 			$n++;
 		}
-		return false;
+        $result = false;
+        return $result;
 	}
 
 	/**
@@ -1162,13 +1176,20 @@ class arrayfunc {
 	*	@return boolean if it is numeric
 	*/
 	function is_numeric_array($var) {
-		if (! is_array($var)) return false;
+		if (! is_array($var)) {
+            $result = false;
+            return $result;
+		}
 		$n = 0;
 		foreach ($var as $key => $value) {
-			if (! ($key === $n)) return false;
+			if (! ($key === $n)) {
+	            $result = false;
+    	        return $result;
+			}
 			$n++;
 		}
-		return true;
+        $result = true;
+        return $result;
 	}
 
 	/**
@@ -1179,11 +1200,18 @@ class arrayfunc {
 	*	@return boolean if it is one-dimensional
 	*/
 	function isOneDimensional($arr) {
-		if (! is_array($arr) && ! is_object($arr)) return false;
-		foreach ($arr as $val) {
-			if (is_array($val) || is_object($val)) return false;
+		if (! is_array($arr) && ! is_object($arr)) {
+            $result = false;
+            return $result;
 		}
-		return true;
+		foreach ($arr as $val) {
+			if (is_array($val) || is_object($val)) {
+	            $result = false;
+    	        return $result;
+			}
+		}
+        $result = true;
+        return $result;
 	}
 
 	/**
@@ -1255,7 +1283,8 @@ class arrayfunc {
 		if ($operator == '<') return ($LHS < $RHS);
 		if ($operator == '>') return ($LHS > $RHS);
 		if ($operator == 'LIKE') return arrayfunc::likeCompare($LHS, $RHS);
-		return false;
+        $result = false;
+        return $result;
 	}
 
 	/**

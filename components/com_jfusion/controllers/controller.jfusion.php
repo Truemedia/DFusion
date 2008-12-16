@@ -57,7 +57,8 @@ class JFusionControllerFrontEnd extends JController
             if ($db->loadResult() != 3) {
                 //die gracefully as the plugin is not configured properly
                 echo JText::_('ERROR_PLUGIN_CONFIG');
-                return false;
+	            $result = false;
+    	        return $result;
             } else {
 
                 $view = &$this->getView($jview, 'html');
@@ -69,7 +70,8 @@ class JFusionControllerFrontEnd extends JController
 
         } else {
             echo JText::_('NO_VIEW_SELECTED');
-            return false;
+            $result = false;
+            return $result;
         }
     }
 }

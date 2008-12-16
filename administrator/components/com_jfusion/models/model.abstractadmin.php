@@ -68,7 +68,8 @@ class JFusionAdmin{
      * @return boolean True if new user registration is allowed, otherwise returns false
      */
     function allowRegistration(){
-	    return true;
+       $result = true;
+       return $result;
     }
 
     /**

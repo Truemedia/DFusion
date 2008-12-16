@@ -92,7 +92,8 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
         if (! is_file($index_file) ) {
             JError::raiseWarning(500, 'The path to the requested does not exist');
-            return null;
+            $result = false;
+            return $result;
         }
 
         //set the current directory to phpBB3
@@ -231,19 +232,32 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	//split up the timeout from url
 		$parts = explode(';url=', $url);
 
-		//parse the URL
-		$uri = new JURI($parts[1]);
 
-		//get the correct URL to joomla
+      	//check to see if SH404SEF is enabled
         $params = JFusionFactory::getParams('joomla_int');
-		$source_url = $params->get('source_url');
+    	$sh404sef_parse = $params->get('sh404sef_parse');
+		if ($sh404sef_parse == 1){
+			$return_url = $parts[1];
+			//additional SH404SEF corrections
+	        //$regex_header[]	= '#jfile,(t|e)#mS';
+    	    //$replace_header[]	= '$1';
 
-		//set the URL with the jFusion params to correct any domain mistakes
-		$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
+	    } else {
+			//parse the URL
+			$uri = new JURI($parts[1]);
 
-		//additional SH404SEF corrections
-        //$regex_header[]	= '#jfile,(t|e)#mS';
-        //$replace_header[]	= '$1';
+			//get the correct URL to joomla
+    	    $params = JFusionFactory::getParams('joomla_int');
+			$source_url = $params->get('source_url');
+
+			//set the URL with the jFusion params to correct any domain mistakes
+			$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
+
+	    }
+
+
+
+
 
 
       	//reconstruct the redirect meta tag

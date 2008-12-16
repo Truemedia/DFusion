@@ -16,7 +16,7 @@ defined('_JEXEC' ) or die('Restricted access' );
 * Abstract interface for all JFusion functions that are accessed through the Joomla front-end
 * @package JFusion
 */
-class JFusionFront{
+class JFusionPublic{
 
     /**
      * returns the name of this JFusion plugin

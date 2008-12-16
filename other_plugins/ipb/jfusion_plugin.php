@@ -46,7 +46,8 @@ class JFusionPlugin_ipb extends JFusionPlugin
         // Try to open the file
         if (($file_handle = @fopen($myfile, 'r')) === FALSE) {
             JError::raiseWarning(500, JText::_('WIZARD_FAILURE') . ": $myfile " . JText::_('WIZARD_MANUAL'));
-            return false;
+            $result = false;
+            return $result;
         } else {
             // Parse the file line by line to get only the config variables
             $file_handle = fopen($myfile, 'r');
@@ -283,9 +284,11 @@ class JFusionPlugin_ipb extends JFusionPlugin
 
 
         if ($no_reg) {
-            return false;
+            $result = false;
+            return $result;
         } else {
-            return true;
+            $result = true;
+            return $result;
         }
     }
 

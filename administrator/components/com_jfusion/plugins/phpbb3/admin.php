@@ -44,7 +44,8 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
 
         if (($file_handle = @fopen($myfile, 'r')) === FALSE) {
             JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). ": $myfile " . JText::_('WIZARD_MANUAL'));
-            return false;
+            $result = false;
+            return $result;
         } else {
             //parse the file line by line to get only the config variables
             $file_handle = fopen($myfile, 'r');
@@ -77,7 +78,8 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
             $query = "SELECT config_name, config_value FROM #__config WHERE config_name IN ('script_path', 'cookie_path', 'server_name', 'cookie_domain', 'cookie_name', 'allow_autologin');";
             if (JError::isError($vdb) || !$vdb ) {
                 JError::raiseWarning(0, JText::_('NO_DATABASE'));
-                return false;
+	            $result = false;
+    	        return $result;
             } else {
                 $vdb->setQuery($query);
                 $rows = $vdb->loadObjectList();
@@ -170,9 +172,11 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
         $new_registration = $db->loadResult();
 
         if ($new_registration == 3) {
-            return false;
+            $result = false;
+            return $result;
         } else {
-            return true;
+            $result = true;
+            return $result;
         }
     }
 }

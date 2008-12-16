@@ -42,7 +42,8 @@ class JFusionAdmin_magento extends JFusionAdmin{
             if (!$xml = simplexml_load_file($xmlfile)) {
                 unset($xml);
                 JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). " $xmlfile " . JText::_('WIZARD_MANUAL'));
-                return false;
+	            $result = false;
+    	        return $result;
             }
             //save the parameters into array
             $params = array();
@@ -56,7 +57,8 @@ class JFusionAdmin_magento extends JFusionAdmin{
             return $params;
         } else {
             JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). " $xmlfile " . JText::_('WIZARD_MANUAL'));
-            return false;
+            $result = false;
+            return $result;
         }
     }
 

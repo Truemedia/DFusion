@@ -71,7 +71,8 @@ class JFusionUser_magento extends JFusionUser{
             $db = JFusionFactory::getDatabase($this->getJname());
             $db->setQuery("SELECT entity_type_id,entity_type_code FROM #__eav_entity_type");
         if ($db->_errorNum != 0){
-            return false;
+            $result = false;
+            return $result;
         }
         $result =  $db->loadObjectList();
           for ($i=0;$i< count($result); $i++) {
@@ -97,7 +98,8 @@ class JFusionUser_magento extends JFusionUser{
          // Get a database object
          $db->setQuery('SELECT attribute_id, attribute_code, backend_type FROM #__eav_attribute WHERE entity_type_id ='.$entity_type_id);
       if ($db->_errorNum != 0){
-           return false;
+            $result = false;
+            return $result;
       }
          //getting the results
          $result =  $db->loadObjectList();
@@ -107,7 +109,8 @@ class JFusionUser_magento extends JFusionUser{
              $eav_attributes[$entity_type_code][$i]['attribute_id']=$result[$i]->attribute_id;
              $eav_attributes[$entity_type_code][$i]['backend_type']=$result[$i]->backend_type;
           if ($db->_errorNum != 0){
-              return false;
+              $result = false;
+              return $result;
           }
         }
     }
@@ -128,7 +131,8 @@ class JFusionUser_magento extends JFusionUser{
     $result = array();
     $result = $this->getMagentoDataObjectRaw($entity_type_code);
     if (!$result){
-        return false;
+        $result = false;
+        return $result;
     }
 
     // walk through the array and fill the object requested
@@ -143,7 +147,8 @@ class JFusionUser_magento extends JFusionUser{
             ' AND entity_id ='. $entity_id;
           $db->setQuery($query);
           if ($db->_errorNum != 0){
-              return false;
+              $result = false;
+              return $result;
           }
       } else {
           $query = 'SELECT value FROM #__'.$entity_type_code.'_entity_'.$result[$i]['backend_type'].
@@ -152,7 +157,8 @@ class JFusionUser_magento extends JFusionUser{
             ' AND entity_id ='. $entity_id;
           $db->setQuery($query);
           if ($db->_errorNum != 0){
-              return false;
+              $result = false;
+              return $result;
         }
         }
         $filled_object[$result[$i]['attribute_code']]['value']=$db->loadResult();
@@ -175,12 +181,14 @@ class JFusionUser_magento extends JFusionUser{
 
         // check if we have found the user, if not return failure
         if (!$entity) {
-            return false;
+            $result = false;
+            return $result;
         }
       // Return a Magento customer array
       $magento_user = $this->fillMagentoDataObject("customer",$entity,1);
       If (!$magento_user){
-          return false;
+            $result = false;
+            return $result;
       }
         $instance = array();
         $instance['userid'] = $entity;
@@ -407,7 +415,8 @@ $db->Execute('BEGIN TRANSACTION');
     }
     $db->Execute('COMMIT TRANSACTION');
     //CommitTrans();
-    return false; //NOTE FALSE is NO ERRORS!
+    $result = false;
+    return $result; //NOTE FALSE is NO ERRORS!
   }
 
    function fillMagentouser(&$Magento_user, $attribute_code,$value){

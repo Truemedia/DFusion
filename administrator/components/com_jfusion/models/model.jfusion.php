@@ -125,10 +125,12 @@ class JFusionFunction{
         if (!$db->query()) {
             //there was an error saving the parameters
             JError::raiseWarning(0,$db->stderr());
-            return false;
+            $result = false;
+            return $result;
         }
 
-        return true;
+        $result = true;
+        return $result;
     }
 
     /**
@@ -229,10 +231,12 @@ class JFusionFunction{
             if ($testPublished) {
                 return($result->published == 1);
             } else {
-                return true;
+	            $result = true;
+    	        return $result;
             }
         } else {
-            return false;
+            $result = false;
+            return $result;
         }
     }
 
@@ -274,7 +278,8 @@ class JFusionFunction{
 		if ($driver != 'mysql' && $driver != 'mysqli') {
 			//invalid driver
             JError::raiseWarning(0, JText::_('INVALID_DRIVER'));
-            return false;
+            $result = false;
+            return $result;
 		}
 
         //create an options variable that contains all database connection variables
@@ -376,9 +381,11 @@ class JFusionFunction{
         $db->setQuery($query);
         $result = $db->loadResult();
 		if ($result == '3') {
-			return true;
+            $result = true;
+            return $result;
 		} else {
-			return false;
+            $result = false;
+            return $result;
 		}
     }
 

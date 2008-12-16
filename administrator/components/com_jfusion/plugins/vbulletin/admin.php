@@ -181,9 +181,11 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
         $new_registration = $db->loadResult();
 
         if ($new_registration == 1) {
-            return true;
+            $result = true;
+            return $result;
         } else {
-            return false;
+            $result = false;
+            return $result;
         }
     }
 

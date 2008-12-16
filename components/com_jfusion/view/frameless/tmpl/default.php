@@ -40,7 +40,8 @@ $buffer =& $JFusionPlugin->getBuffer();
 
 if (! $buffer ) {
     JError::raiseWarning(500, JText::_('NO_BUFFER'));
-    return false;
+    $result = false;
+    return $result;
 }
 
 if (class_exists('tidy') ) {
@@ -53,7 +54,8 @@ if (class_exists('tidy') ) {
     // Make sure that we have something
     if (! $root || ! $root->hasChildren()) {
         JError::raiseWarning(500, JText::_('NO_HTML'));
-        return false;
+        $result = false;
+        return $result;
     }
 
     // Get the important nodes

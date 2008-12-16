@@ -149,7 +149,8 @@ class JFusionUser_ipb extends JFusionUser
 
     	    if (!$ip)
     	    {
-    	        return false;
+	            $result = false;
+    	        return $result;
     	    }
 
     		$ip_octets  = explode('.', $ip);

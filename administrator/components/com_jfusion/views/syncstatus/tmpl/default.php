@@ -13,7 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 //check to see if there is anything to output
 if (!$this->syncdata['slave_data']){
 	echo JText::_('SYNC_NODATA');
-	return true;
+    $result = true;
+    return $result;
 } elseif ($this->syncdata['completed']) {
 	//check to see if there were any errors
 	if ($this->syncdata['errors']) {

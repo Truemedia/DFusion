@@ -99,9 +99,11 @@ class JFusionJplugin{
 	    $params = $registry->toObject();
 
         if ($params->allowUserRegistration) {
-            return true;
+            $result = true;
+            return $result;
         } else {
-            return false;
+            $result = false;
+            return $result;
         }
     }
 
@@ -116,7 +118,8 @@ class JFusionJplugin{
 
         if (($file_handle = @fopen($configfile, 'r')) === FALSE) {
             JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). ": $myfile " . JText::_('WIZARD_MANUAL'));
-      		return false;
+            $result = false;
+            return $result;
         } else {
             //parse the file line by line to get only the config variables
             //we can not directly include the config file as JConfig is already defined

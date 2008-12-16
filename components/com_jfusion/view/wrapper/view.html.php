@@ -45,7 +45,8 @@ class jfusionViewWrapper extends JView {
             if (!$jname){
             	//die gracefully as no plugin name was defined
 				echo JText::_('ERROR_NO_PLUGIN');
-                return false;
+	            $result = false;
+    	        return $result;
             }
         } else {
             	//fetch the general wrapper settings from joomla_int
@@ -60,7 +61,8 @@ class jfusionViewWrapper extends JView {
     	if ($db->loadResult() != 3) {
             	//die gracefully as the plugin is not configured properly
 				echo JText::_('ERROR_PLUGIN_CONFIG');
-                return false;
+	            $result = false;
+    	        return $result;
     	}
 
 		/**

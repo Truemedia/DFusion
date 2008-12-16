@@ -62,14 +62,16 @@ class JFusionModelInstaller extends InstallerModelInstall {
 
 			default:
 				$this->setState('message', JText::_('NO_INSTALL_TYPE'));
-				return false;
+				$result = false;
+                return $result;
 				break;
 		}
 
 		// Was the package unpacked?
 		if (!$package) {
 			$this->setState('message', JText::_('NO_PACKAGE_FOUND') );
-			return false;
+            $result = false;
+            return $result;
 		}
 
 		// custom installer
@@ -184,7 +186,8 @@ class JFusionPluginInstaller extends JObject {
 
 		} else {
 			$this->parent->abort(JText::_('INSTALL_INVALID_PATH'));
-			return false;
+            $result = false;
+            return $result;
 		}
 
 		// Get the extension manifest object
@@ -238,7 +241,8 @@ class JFusionPluginInstaller extends JObject {
 		if (!file_exists($this->parent->getPath('extension_root'))) {
 			if (!$created = JFolder::create($this->parent->getPath('extension_root'))) {
 				$this->parent->abort(JText::_('PLUGIN').' '.JText::_('INSTALL').': '.JText::_('INSTALL_FAILED_DIRECTORY').': "'.$this->parent->getPath('extension_root').'"');
-				return false;
+            	$result = false;
+            	return $result;
 			}
 		}
 
@@ -255,7 +259,8 @@ class JFusionPluginInstaller extends JObject {
 		if ($this->parent->parseFiles($element, -1) === false) {
 			// Install failed, roll back changes
 			$this->parent->abort();
-			return false;
+            $result = false;
+            return $result;
 		}
 
 		/**
@@ -267,7 +272,8 @@ class JFusionPluginInstaller extends JObject {
 		if (!$db->Query()) {
 			// Install failed, roll back changes
 			$this->parent->abort(JText::_('PLUGIN').' '.JText::_('INSTALL').' '.JText::_('ERROR').': '.$db->stderr(true));
-			return false;
+            $result = false;
+            return $result;
 		}
 		$id = $db->loadResult();
 
@@ -278,7 +284,8 @@ class JFusionPluginInstaller extends JObject {
 			{
 				// Install failed, roll back changes
 				$this->parent->abort(JText::_('PLUGIN').' '.JText::_('Install').': '.JText::_('PLUGIN').' "'.$pname.'" '.JText::_('ALREADY_EXISTS'));
-				return false;
+	            $result = false;
+    	        return $result;
 			}
 
 		} else {
@@ -321,9 +328,11 @@ class JFusionPluginInstaller extends JObject {
 		if (!$this->parent->copyManifest(-1)) {
 			// Install failed, rollback changes
 			$this->parent->abort(JText::_('PLUGIN').' '.JText::_('INSTALL').': '.JText::_('INSTALL_ERROR_FILE'));
-			return false;
+            $result = false;
+            return $result;
 		}
-		return true;
+        $result = true;
+        return $result;
 	}
 
 	/**
@@ -336,12 +345,14 @@ class JFusionPluginInstaller extends JObject {
 
 		if (!$jname || !JFolder::exists($dir)) {
 			$this->parent->abort(JText::_('UNINSTALL_ERROR_PATH'));
-			return false;
+            $result = false;
+            return $result;
 		}
 		// remove files
 		if (!JFolder::delete($dir)) {
 			$this->parent->abort(JText::_('UNINSTALL_ERROR_DELETE'));
-			return false;
+            $result = false;
+            return $result;
 		}
 
 		$db =& JFactory::getDBO();
@@ -365,12 +376,14 @@ class JFusionPluginInstaller extends JObject {
 
 		if (!$jname || !JFolder::exists($dir)) {
 			$this->parent->abort(JText::_('COPY_ERROR_PATH'));
-			return false;
+            $result = false;
+            return $result;
 		}
 		//copy the files
 		if (!JFolder::copy($dir, $new_dir)) {
 			$this->parent->abort(JText::_('COPY_ERROR'));
-			return false;
+            $result = false;
+            return $result;
 		}
 
 
@@ -411,7 +424,8 @@ class JFusionPluginInstaller extends JObject {
         	JFile::write($parse_file, $file_data);
 		}
 
-        return true;
+        $result = true;
+        return $result;
 
 	}
 

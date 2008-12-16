@@ -51,14 +51,16 @@ $skip_password = JRequest::getVar('skip_password', '', 'POST', 'STRING' );
 if (empty($credentials['password']) && empty($skip_password)) {
     echo JText::_('NO_PASSWORD');
     ob_end_flush();
-    return false;
+    $result = false;
+    return $result;
 }
 
 //check to see if a username was submitted
 if (empty($credentials['username'])) {
     echo JText::_('NO_USERNAME');
     ob_end_flush();
-    return false;
+    $result = false;
+    return $result;
 }
 
 echo '<h2>' . JText::_('SERVER') . ' ' . JText::_('CONFIGURATION') . '</h2>';
@@ -192,13 +194,15 @@ if (!empty($userinfo)) {
     	    echo JText::_('INVALID_PASSWORD');
         	//no password found: abort the login checker
 	        ob_end_flush();
-    	    return false;
+            $result = false;
+            return $result;
     	}
 	}
 } else {
     echo JText::_('USER_NOT_FOUND');
     ob_end_flush();
-    return false;
+    $result = false;
+    return $result;
 }
 
 /**
