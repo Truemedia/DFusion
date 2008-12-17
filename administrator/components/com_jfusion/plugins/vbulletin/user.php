@@ -29,31 +29,39 @@ class JFusionUser_vbulletin extends JFusionUser{
 	function JFusionUser_vbulletin()
 	{
 		//get the params object
-        $this->params = JFusionFactory::getParams($this->getJname());
-
-        //do not load the vb framework when logging in using jfusion vbulletin authentication plugin
-        if(!defined('_VBULLETIN_JFUSION_HOOK'))
-        {
+	    $this->params = JFusionFactory::getParams($this->getJname());
+	}
+	
+	function vBulletinInit()
+	{
+		//only initialize the vb framework if it has not already been done and if we are outside of vbulletin
+		if(!defined('VB_AREA') && !defined('_VBULLETIN_JFUSION_HOOK'))
+		{
 			//load the vbulletin framework
 			define('VB_AREA','External');
 			define('SKIP_SESSIONCREATE', 1);
 			define('SKIP_USERINFO', 1);
 			define('CWD', $this->params->get('source_path'));
-        	
-			if(is_dir(CWD))
+
+			if(file_exists(CWD))
 			{
 				require_once(CWD.'/includes/init.php');
 
 				//force into global scope
-				$GLOBALS["vbulletin"] = $vbulletin;
-				$GLOBALS["db"] = $vbulletin->db;
+				$GLOBALS["vbulletin"] =& $vbulletin;
+				$GLOBALS["db"] =& $vbulletin->db;			
+				return true;
 			}
 			else
 			{
 				JError::raiseWarning(500, JText::_('SOURCE_PATH_NOT_FOUND'));
-				return null;
+				return false;
 			}
-        }
+		}
+		else
+		{
+			return true;
+		}
 	}
 
     function updateUser($userinfo, $overwrite)
@@ -199,6 +207,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function deleteUser($username)
     {
+    	//initialize vb framework
+		if(!$this->vBulletinInit()) return null;
+
 		//setup the existing user
 		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
 		$userinfo = $this->convertUserData($this->getUser($username));
@@ -222,7 +233,10 @@ class JFusionUser_vbulletin extends JFusionUser{
     	//vbulletin will take care of this when logging out via jfusion vbulletin authentication plugin
    	  	if(!defined("_VBULLETIN_JFUSION_HOOK"))
     	{
-			//set the user so that vb deletes the session from its db
+	    	//initialize vb framework
+			if(!$this->vBulletinInit()) return null;
+
+    		//set the user so that vb deletes the session from its db
 			$GLOBALS["vbulletin"]->userinfo['userid'] = $userinfo->userid;
 
 			//destroy vb cookies and sessions
@@ -240,6 +254,9 @@ class JFusionUser_vbulletin extends JFusionUser{
     	//vbulletin will take care of this when logging in via jfusion vbulletin authentication plugin
     	if(!defined("_VBULLETIN_JFUSION_HOOK"))
     	{
+  			//initialize vb framework
+			if(!$this->vBulletinInit()) return null;
+
 	        $status = array();
 	        $status['debug'] = '';
 
@@ -332,7 +349,10 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function blockUser ($userinfo, &$existinguser, &$status)
     {
-        $db = JFusionFactory::getDatabase($this->getJname());
+    	//initialize vb framework
+		if(!$this->vBulletinInit()) return null;
+
+		$db = JFusionFactory::getDatabase($this->getJname());
 
         //get the id of the banned group
 		$bannedgroup = $this->params->get('bannedgroup');
@@ -368,6 +388,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function unblockUser ($userinfo, &$existinguser, &$status)
     {
+    	//initialize vb framework
+		if(!$this->vBulletinInit()) return null;
+
 		//found out what usergroup should be used
 		$usergroup = $this->params->get('usergroup');
 		$bannedgroup = $this->params->get('bannedgroup');
@@ -486,6 +509,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$db->setQuery($query);
 	        if($db->loadResult() == 0)
 	        {
+		    	//initialize vb framework
+				if(!$this->vBulletinInit()) return null;
+
 	        	//if not, then add an activation catch to vbulletin's database
 				$useractivation = new stdClass;
 				$useractivation->userid = $existinguser->userid;
@@ -512,6 +538,8 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function createUser ($userinfo, $overwrite, &$status)
     {
+    	//initialize vb framework
+		if(!$this->vBulletinInit()) return null;
 
     	//get the default user group and determine if the user needs to be set as needing activation
 		if(empty($userinfo->activation)){
@@ -600,3 +628,4 @@ class JFusionUser_vbulletin extends JFusionUser{
 		return $result->title;
     }
 }
+?>

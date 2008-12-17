@@ -9,7 +9,13 @@
 	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<version>1.1.0</version>
-	<description></description>
+	<description>
+		This is a discussion bot plugin for jFusion. Compatible plugins will have discussion bot settings available in their
+		configuration page.  To use for a single article place {jfusion_discuss id#} where id# is the id
+		of the thread.  Enable auto mode in the plugin's configuration to have jFusion take care of everything 
+		automatically including creating the thread, posting the first post with either the article itself or a link 
+		back to the article, and adding appropriate links to the thread from the article.
+	</description>
 	<files folder="plugins/content">
 		<filename plugin="jfusion">jfusion.php</filename>
 	</files>

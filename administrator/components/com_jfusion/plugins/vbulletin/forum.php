@@ -1,8 +1,7 @@
 <?php
-
 /**
 * @package JFusion_vBulletin
-* @version 1.0.9
+* @version 1.1.0
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -28,26 +27,42 @@ class JFusionForum_vbulletin extends JFusionForum
 	function JFusionForum_vbulletin()
 	{
 		//get the params object
-        $this->params = JFusionFactory::getParams($this->getJname());
-
-		//load the vbulletin framework
-		define('VB_AREA','External');
-		define('SKIP_SESSIONCREATE', 1);
-		define('SKIP_USERINFO', 1);
-		define('CWD', $this->params->get('source_path'));
-		
-		if(is_dir(CWD))
+	    $this->params = JFusionFactory::getParams($this->getJname());
+	}
+	
+	function vBulletinInit()
+	{
+		//only initialize the vb framework if it has not already been done
+		if(!defined('VB_AREA'))
 		{
-			require_once(CWD.'/includes/init.php');
+			//get the params object
+	        $this->params = JFusionFactory::getParams($this->getJname());
 
-			//force into global scope
-			$GLOBALS["vbulletin"] = $vbulletin;
-			$GLOBALS["db"] = $vbulletin->db;
+			//load the vbulletin framework
+			define('VB_AREA','External');
+			define('SKIP_SESSIONCREATE', 1);
+			define('SKIP_USERINFO', 1);
+			define('CWD', $this->params->get('source_path'));
+
+			if(file_exists(CWD))
+			{
+				require_once(CWD.'/includes/init.php');
+
+				//force into global scope
+				$GLOBALS["vbulletin"] =& $vbulletin;
+				$GLOBALS["db"] =& $vbulletin->db;
+				
+				return true;
+			}
+			else
+			{
+				JError::raiseWarning(500, JText::_('SOURCE_PATH_NOT_FOUND'));
+				return false;
+			}
 		}
 		else
 		{
-			JError::raiseWarning(500, JText::_('SOURCE_PATH_NOT_FOUND'));
-			return null;
+			return true;
 		}
 	}
 
@@ -168,6 +183,9 @@ class JFusionForum_vbulletin extends JFusionForum
 
 	function createThread($contentitem, $forumid, &$status)
 	{
+		//initialize vb framework
+		if(!$this->vBulletinInit()) return null;
+
 		//TODO create error notices if required params are empty
 
 		$userid = $this->params->get("default_userid");
@@ -216,6 +234,9 @@ class JFusionForum_vbulletin extends JFusionForum
 
 	function updateThread($threadid,$postid,$contentitem,&$status)
 	{
+		//initialize the vb framework
+		if(!$this->vBulletinInit()) return null;
+
 		$firstPost = $this->params->get("first_post");
 
 		//strip title of all html characters
@@ -412,7 +433,5 @@ class JFusionForum_vbulletin extends JFusionForum
         //getting the results
         return $db->loadObjectList();
     }
-
-
 }
 ?>

@@ -49,7 +49,7 @@
 				$jname = $slave->name;
 	            //get the params
     	        $params = JFusionFactory::getParams($jname);
-	        	$discussBot = $params->get("enable_discussbot");
+	        	$discussBot = $params->get("enable_discussbot",false);
 				$linkMode = $params->get("link_mode");
 	        	$linkText = $params->get("link_text");
    	        	$auto = $params->get("auto_create");
