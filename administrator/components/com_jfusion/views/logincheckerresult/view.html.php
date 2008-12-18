@@ -7,6 +7,7 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
+// no direct access
 defined('_JEXEC' ) or die('Restricted access' );
 
 jimport('joomla.application.component.view');
@@ -20,14 +21,10 @@ class jfusionViewLoginCheckerResult extends JView {
 
     function display($tpl = null)
     {
-
-
             parent::display($tpl);
-
     }
-
 }
-?>
+
 
 
 
