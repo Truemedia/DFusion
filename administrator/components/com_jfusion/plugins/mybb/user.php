@@ -334,7 +334,7 @@ class JFusionUser_mybb extends JFusionUser{
             }
 
 			if (!empty($userinfo->activation)) {
-            	$user->usergroup = 3;
+            	$user->usergroup = 2;
 			} elseif (!empty($userinfo->block)) {
             	$user->usergroup = 7;
 			} else {
