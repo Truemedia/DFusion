@@ -2,7 +2,6 @@
 
 /**
  * @package JFusion_phpBB3
- * @version 1.0.7
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,14 +11,8 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
- * load the JFusion framework
- */
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractforum.php');
-
-
-/**
- * JFusion forum class for phpbb3
+ * JFusion Forum Class for phpBB3
+ * For detailed descriptions on these functions please check the model.abstractforum.php
  * @package JFusion_phpBB3
  */
 class JFusionForum_phpbb3 extends JFusionForum{

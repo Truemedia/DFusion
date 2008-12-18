@@ -3,7 +3,6 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.1.002
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion -- Henk Wevers. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -477,11 +476,11 @@ class JFusionCurl{
         $cookies_to_set_index=0;
 
 		// check parameters and set defaults
-		if (!isset($curl_options['post_url']) || !isset($curl_options['formid']) || 
+		if (!isset($curl_options['post_url']) || !isset($curl_options['formid']) ||
 			!isset($curl_options['username']) || !isset($curl_options['password'])){
 			$status['error']= 'Fatal programming error in calling model.curl::Remotelogin!';
             return $status;
-        }    
+        }
  		if (!isset($curl_options['integrationtype'])) {$curl_options['integrationtype'] = 1;}
 	 	if (!isset($curl_options['relpath'])) {$curl_options['relpath'] = false;}
 	 	if (!isset($curl_options['hidden'])) {$curl_options['hidden'] = false;}
@@ -492,7 +491,7 @@ class JFusionCurl{
 	 	if (!isset($curl_options['expires'])) {$curl_options['expires'] = 1800;}
  	 	if (!isset($curl_options['input_username_id'])) {$curl_options['input_username_id'] = '';}
  	 	if (!isset($curl_options['input_password_id'])) {$curl_options['input_password_id'] = '';}
- 
+
         // find out if we have a SSL enabled website
         if (strpos( $curl_options['post_url'],'https://') === false){
             $ssl_string = 'http://';
@@ -684,14 +683,14 @@ class JFusionCurl{
 		if (!isset($curl_options['post_url'])){
 			$status['error']= 'Fatal programming error in calling model.curl::Remotelogout!';
             return $status;
-        }    
+        }
  	 	if (!isset($curl_options['cookiedomain'])) {$curl_options['cookiedomain'] = '';}
 	 	if (!isset($curl_options['cookiepath'])) {$curl_options['cookiepath'] = '';}
 	 	if (!isset($curl_options['leavealone'])) {$curl_options['leavealone'] = NULL;}
- 
 
 
- 
+
+
         # prevent usererror by not supplying trailing backslash
         if (!(substr($curl_options['post_url'],-1) == "/")) {
             $curl_options['post_url'] = $curl_options['post_url']."/";

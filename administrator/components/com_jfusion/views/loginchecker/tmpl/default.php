@@ -2,22 +2,18 @@
 /**
 * @package JFusion
 * @subpackage Views
-* @version 1.0.7
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
+// no direct access
 defined('_JEXEC') or die('Restricted access');
 
-/**
-* Load the JFusion framework
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+//display the paypal donation button
 JFusionFunction::displayDonate();
 
 ?>
-
 <script language="javascript" type="text/javascript">
 <!--
 function submitbutton(pressbutton) {
@@ -70,7 +66,7 @@ radioObj[i].checked = true;
 </td></tr><tr><td width="100px">
 <?php echo JText::_('PASSWORD'); ?>
 </td><td>
-<input type="password" name="check_password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?> 
+<input type="password" name="check_password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?>
 <input type="checkbox" name="skip_password" value="yes" checked alt="Remember Me" />
 </td></tr><tr><td width="100px">
 <?php echo JText::_('DEBUG') . ' ' . JText::_('REMEMBER_ME'); ?>

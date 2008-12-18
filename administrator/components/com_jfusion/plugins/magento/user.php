@@ -8,36 +8,14 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-
-  /* reminder for jFusion abstract user definition
-     * gets the userinfo from the JFusion integrated software. Definition of object:
-     * $userinfo->userid
-     * $userinfo->name
-     * $userinfo->username
-     * $userinfo->email
-     * $userinfo->password (encrypted password)
-     * $userinfo->password_salt (salt used to encrypt password)
-     * $userinfo->block (0 if allowed to access site, 1 if user access is blocked)
-     * $userinfo->registerdate
-     * $userinfo->lastvisitdate
-     * @param string $username username
-     * @return object userinfo Object containing the user information
-     */
-
-
-
 // no direct access
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the Abstract User Class
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
-
-/**
-* @package JFusion_myplugin
-*/
+ * JFusion User Class for Magento 1.1
+ * For detailed descriptions on these functions please check the model.abstractuser.php
+ * @package JFusion_Magento
+ */
 class JFusionUser_magento extends JFusionUser{
     /* Magento does not have usernames. The user is identified by an 'identity_id' that is found through
      *  the users e-mail address.

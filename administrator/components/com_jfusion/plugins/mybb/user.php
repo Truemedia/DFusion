@@ -1,28 +1,21 @@
-    <?php
+<?php
 
-    /**
+/**
 * @package JFusion_MyBB
-* @version 1.0.7
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-    // no direct access
-    defined('_JEXEC' ) or die('Restricted access' );
+// no direct access
+defined('_JEXEC' ) or die('Restricted access' );
 
-    /**
-* load the JFusion framework
-*/
-    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-    require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-
-
-    /**
-* JFusion plugin class for myBB
-* @package JFusion_MyBB
-*/
-    class JFusionUser_mybb extends JFusionUser{
+/**
+ * JFusion User Class for MyBB
+ * For detailed descriptions on these functions please check the model.abstractuser.php
+ * @package JFusion_MyBB
+ */
+class JFusionUser_mybb extends JFusionUser{
 
     function updateUser($userinfo, $overwrite)
     {

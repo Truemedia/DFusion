@@ -2,7 +2,6 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.1.0-001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,17 +11,11 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the JFusion framework
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractadmin.php');
-
-/**
- * JFusion plugin class for Moodle 1.8+
+ * JFusion Admin Class for Moodle 1.8+
+ * For detailed descriptions on these functions please check the model.abstractadmin.php
  * @package JFusion_Moodle
  */
-
-class JFusionAdmin_moodle extends JFusionAdmin{
+ class JFusionAdmin_moodle extends JFusionAdmin{
 
     function getJname(){
         return 'moodle';

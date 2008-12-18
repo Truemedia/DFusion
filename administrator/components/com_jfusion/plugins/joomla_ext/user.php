@@ -2,7 +2,6 @@
 
 /**
 * @package JFusion_Joomla_Ext
-* @version 1.1.0-b001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,19 +11,19 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the Abstract User Class
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
+ * load the common Joomla JFusion plugin functions
+ */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
 
+//require the standard joomla user functions
 jimport('joomla.user.helper');
+
 /**
+* JFusion User Class for an external Joomla database
+* For detailed descriptions on these functions please check the model.abstractadmin.php
 * @package JFusion_Joomla_Ext
 */
-
-
 class JFusionUser_joomla_ext extends JFusionUser{
-
 
     function getJname()
     {

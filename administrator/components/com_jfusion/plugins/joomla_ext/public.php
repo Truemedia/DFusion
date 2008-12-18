@@ -1,24 +1,22 @@
 <?php
 /**
  * @package JFusion_Joomla_Ext
- * @version 1.1.0-b001
  * @author JFusion development team -- Henk Wevers
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
  */
 
-
+// no direct access
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
- * load the JFusion framework
+ * load the common Joomla JFusion plugin functions
  */
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractpublic.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
 
 /**
- * JFusion plugin class for an external Joomla database
+ * JFusion Public Class for an external Joomla database
+ * For detailed descriptions on these functions please check the model.abstractpublic.php
  * @package JFusion_Joomla_Ext
  */
 class JFusionPublic_joomla_ext extends JFusionPublic

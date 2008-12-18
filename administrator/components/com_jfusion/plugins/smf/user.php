@@ -2,7 +2,6 @@
 
 /**
 * @package JFusion_SMF
-* @version 1.0.7
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,17 +11,10 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the JFusion framework
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-
-
-
-/**
-* JFusion plugin class for SMF 1.1.4
-* @package JFusion_SMF
-*/
+ * JFusion User Class for SMF 1.1.x
+ * For detailed descriptions on these functions please check the model.abstractuser.php
+ * @package JFusion_SMF
+ */
 class JFusionUser_smf extends JFusionUser{
 
     function updateUser($userinfo, $overwrite)

@@ -2,7 +2,6 @@
 
 /**
 * @package JFusion_vBulletin
-* @version 1.1.0-001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,17 +11,10 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the JFusion framework
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractpublic.php');
-
-
-/**
-* JFusion plugin class for vBulletin 3.6.8
-* @package JFusion_vBulletin
-*/
+ * JFusion Public Class for vBulletin
+ * For detailed descriptions on these functions please check the model.abstractpublic.php
+ * @package JFusion_vBulletin
+ */
 class JFusionPublic_vbulletin extends JFusionPublic{
 
     function getJname()

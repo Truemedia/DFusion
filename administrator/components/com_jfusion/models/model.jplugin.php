@@ -3,7 +3,6 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.1.0-001
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -20,6 +19,10 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.curl.php');
 
 
+/**
+* Common Class for Joomla JFusion plugins
+* @package JFusion
+*/
 class JFusionJplugin{
 
 /**

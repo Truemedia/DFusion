@@ -33,6 +33,15 @@ $lang->load('com_jfusion', JPATH_BASE);
 <td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('COMPONENT');?> </b></font></td></tr></table>
 <?php
 
+/**
+* @package JFusion
+* @subpackage Install
+* @author JFusion development team
+* @copyright Copyright (C) 2008 JFusion. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+*/
+
+
 //see if we need to create SQL tables
 $db =& JFactory::getDBO();
 $table_list = $db->getTableList();

@@ -1,6 +1,18 @@
 <?php
 
-//add the phpBB3 exit hook
+/**
+ * @package JFusion_phpBB3
+ * @author JFusion development team
+ * @copyright Copyright (C) 2008 JFusion. All rights reserved.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
+
+// no direct access
+defined('_JEXEC' ) or die('Restricted access' );
+
+/**
+* Function that registers the JFusion phpBB3 hooks
+*/
 function phpbb_hook_register(&$hook)
 {
 	global $phpbb_root_path, $phpEx, $db, $mainframe, $config, $user;
@@ -17,14 +29,24 @@ function phpbb_hook_register(&$hook)
 	}
 }
 
+/**
+ * JFusion Hooks for phpBB3
+ * @package JFusion_phpBB3
+ */
 class JFusionHook
 {
+	/**
+	* Throws an exeption at the end of the phpBB3 execution to return to JFusion
+	*/
 	function exit_handler($hook)
 	{
                //throw an exception to allow Joomla to continue
                throw new Exception('phpBB exited.');
 	}
 
+	/**
+	* Function that parses the phpBB3 URLs
+	*/
 	function append_sid($hook, $url, $params = false, $is_amp = true, $session_id = false)
 	{
 		global $_SID, $_EXTRA_URL;
@@ -140,18 +162,25 @@ class JFusionHook
 		return JRoute::_($url, $is_amp);
 	}
 
+	/**
+	* Function not implemented
+	*/
 	function phpbb_user_session_handler($hook)
 	{
 	}
 
+	/**
+	* Function not implemented
+	*/
 	function template_display($hook, $handle, $include_once = true)
 	{
 	}
 
+	/**
+	* Function not implemented
+	*/
 	function msg_handler($errno, $msg_text, $errfile, $errline) {
 		msg_handler($errno, $msg_text, $errfile, $errline);
 	}
-
-
 }
 

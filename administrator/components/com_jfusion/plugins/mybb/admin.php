@@ -2,7 +2,6 @@
 
 /**
  * @package JFusion_MyBB
- * @version 1.0.7
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -12,14 +11,8 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
- * load the JFusion framework
- */
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractadmin.php');
-
-
-/**
- * JFusion plugin class for myBB
+ * JFusion Admin Class for MyBB
+ * For detailed descriptions on these functions please check the model.abstractadmin.php
  * @package JFusion_MyBB
  */
 class JFusionAdmin_mybb extends JFusionAdmin{

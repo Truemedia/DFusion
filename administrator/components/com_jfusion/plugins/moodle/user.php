@@ -2,7 +2,6 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.1.0-b001
 * @author Henk Wevers
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -23,14 +22,10 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the Abstract User Class
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
-
-/**
-* @package JFusion_Moodle
-*/
+ * JFusion User Class for Moodle 1.8+
+ * For detailed descriptions on these functions please check the model.abstractuser.php
+ * @package JFusion_Moodle
+ */
 class JFusionUser_moodle extends JFusionUser{
 
     function &getUser($identifier){

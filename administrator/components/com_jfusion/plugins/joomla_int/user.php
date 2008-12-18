@@ -12,15 +12,18 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the Abstract User Class
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
+ * load the common Joomla JFusion plugin functions
+ */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
+
+//require the standard joomla user functions
 jimport('joomla.user.helper');
+
 /**
+* JFusion User Class for the internal Joomla database
+* For detailed descriptions on these functions please check the model.abstractuser.php
 * @package JFusion_Joomla_Int
 */
-
 class JFusionUser_joomla_int extends JFusionUser{
 
     function getJname()

@@ -3,7 +3,6 @@
 /**
  * @package JFusion
  * @subpackage Models
- * @version 1.0.7
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -45,8 +44,6 @@ class JFusionUser{
     {
         return '';
     }
-
-    /**
 
      /**
      * Function that automatically logs out the user from the integrated software
@@ -95,49 +92,97 @@ class JFusionUser{
     {
     }
 
+     /**
+     * Function that updates the user password
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param object $exisitinguser Object containg the old userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function updatePassword($userinfo, &$existinguser, &$status)
     {
-        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'PasswordHash.php');
-        $t_hasher = new PasswordHash(8, TRUE);
-        $existinguser->password = $t_hasher->HashPassword($userinfo->password_clear);
-        unset($t_hasher);
-
-        $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__users SET user_password =' . $db->quote($existinguser->password) . ' WHERE user_id =' . $existinguser->userid;
-        $db->setQuery($query);
-        if (!$db->query()) {
-            //return the error
-            $status['error'] .= 'Error while updating the password: ' . $db->stderr();
-            return $status;
-        }
-        $status['debug'] .= 'the password was updated to:' . $existinguser->password;
-
     }
 
+     /**
+     * Function that updates the username
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param object $exisitinguser Object containg the old userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function updateUsername($userinfo, &$existinguser, &$status)
     {
     }
 
+     /**
+     * Function that updates the user email address
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param object $exisitinguser Object containg the old userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function updateEmail($userinfo, &$existinguser, &$status)
     {
     }
 
+     /**
+     * Function that updates the blocks the user account
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param object $exisitinguser Object containg the old userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function blockUser($userinfo, &$existinguser, &$status)
     {
     }
 
+     /**
+     * Function that unblocks the user account
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param object $exisitinguser Object containg the old userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function unblockUser($userinfo, &$existinguser, &$status)
     {
     }
 
+     /**
+     * Function that activates the users account
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param object $exisitinguser Object containg the old userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function activateUser($userinfo, &$existinguser, &$status)
     {
     }
 
+     /**
+     * Function that inactivates the users account
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param object $exisitinguser Object containg the old userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function inactivateUser($userinfo, &$existinguser, &$status)
     {
     }
 
+     /**
+     * Function that creates a new user account
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the new userinfo
+     * @param array status Array containing the errors and result of the function
+     */
     function createUser($userinfo, &$status)
     {
     }

@@ -2,7 +2,6 @@
 
 /**
 * @package JFusion_Moodle
-* @version 1.1.0-b001
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -25,8 +24,8 @@
  * no salt used, then main salt used and thenm for one of the alt salts used
  * when a user logs in the password hash will be updated to either no salt (if configured ths way)
  * or the main salt
- * 
- * NOTE 2: In earlier versions of Moodle different charactersets were used. The passwordhash 
+ *
+ * NOTE 2: In earlier versions of Moodle different charactersets were used. The passwordhash
  * has not been updated, so Moodles authentication routine updates the password-hash before authorizing it.
  * This behaviour is NOT copied in this routine. If you ever run across a problem here you can use the following
  * routine before authenticating the password:
@@ -51,14 +50,16 @@ defined('_JEXEC' ) or die('Restricted access' );
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractauth.php');
 
 /**
- * @package JFusion_myplugin
+ * JFusion Authentication Class for Moodle 1.8+
+ * For detailed descriptions on these functions please check the model.abstractauth.php
+ * @package JFusion_Moodle
  */
 class JFusionAuth_moodle extends JFusionAuth{
 
    function generateEncryptedPassword($userinfo) {
 		$params = JFusionFactory::getParams('moodle');
         $validated = false;
-        if ($userinfo->password == md5($userinfo->password_clear.$params->get('passwordsaltmain')) or 
+        if ($userinfo->password == md5($userinfo->password_clear.$params->get('passwordsaltmain')) or
         	$userinfo->password == md5($userinfo->password_clear)){
         		$validated = true;
     	} else {
@@ -76,7 +77,7 @@ class JFusionAuth_moodle extends JFusionAuth{
 			return $userinfo->password;
 		} else {
 			return md5($userinfo->password_clear.$params->get('passwordsaltmain')); //return default
-		}			
-    }		
+		}
+    }
 }
-?>    
+?>

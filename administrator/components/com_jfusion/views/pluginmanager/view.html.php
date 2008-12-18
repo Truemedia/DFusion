@@ -2,13 +2,16 @@
 /**
 * @package JFusion
 * @subpackage Views
-* @version 1.0.7
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-defined('_JEXEC' ) or die('Restricted access' );
+// no direct access
+defined('_JEXEC') or die('Restricted access');
+
+//display the paypal donation button
+JFusionFunction::displayDonate();
 
 jimport('joomla.application.component.view');
 

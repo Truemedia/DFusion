@@ -1,13 +1,11 @@
 <?php
+
 /**
-*
-* @package utf
-* @version $Id: utf_normalizer.php 8479 2008-03-29 00:22:48Z naderman $
+* @package JFusion_phpBB3
+* @author JFusion development team
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
-*
 */
-
 
 /**
 * Some Unicode characters encoded in UTF-8

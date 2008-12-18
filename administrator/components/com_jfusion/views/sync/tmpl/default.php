@@ -2,22 +2,18 @@
 /**
 * @package JFusion
 * @subpackage Views
-* @version 1.0.7
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
+// no direct access
 defined('_JEXEC') or die('Restricted access');
 
-/**
-* Load the JFusion framework
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+//display the paypal donation button
 JFusionFunction::displayDonate();
 
 ?>
-
 <table><tr><td width="100px">
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">

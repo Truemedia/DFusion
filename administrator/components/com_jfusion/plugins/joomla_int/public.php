@@ -7,17 +7,17 @@
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-
+// no direct access
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
-* load the JFusion framework
-*/
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractpublic.php');
+ * load the common Joomla JFusion plugin functions
+ */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
+
 /**
-* JFusion plugin class for the internal Joomla database
+* JFusion Public Class for the internal Joomla database
+* For detailed descriptions on these functions please check the model.abstractapublic.php
 * @package JFusion_Joomla_Int
 */
 class JFusionPublic_joomla_int extends JFusionPublic
