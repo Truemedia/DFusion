@@ -2,7 +2,6 @@
 /**
 * @package JFusion
 * @subpackage Modules
-* @version 1.0.7
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
@@ -38,7 +37,6 @@ if (file_exists($model_file) && file_exists($model_file)) {
 
     if ($jname->status == 3 ) {
         $MasterPlugin = JFusionFactory::getPublic($jname->name);
-        $allow_registration = JFusionFunction::createURL($MasterPlugin->allowRegistration(), $jname->name, $view);
         $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view);
         $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view);
         $url_register = JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view);

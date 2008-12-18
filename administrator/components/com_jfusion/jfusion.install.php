@@ -3,7 +3,6 @@
 /**
 * @package JFusion
 * @subpackage Install
-* @version 1.0.8
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL

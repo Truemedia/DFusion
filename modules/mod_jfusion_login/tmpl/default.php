@@ -1,8 +1,7 @@
 <?php
 /**
 * @package JFusion
-* @subpackage Views
-* @version 1.0.7
+* @subpackage Modules
 * @author JFusion development team
 * @copyright Copyright (C) 2008 JFusion. All rights reserved.
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
