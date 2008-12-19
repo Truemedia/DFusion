@@ -15,7 +15,13 @@ defined('_JEXEC' ) or die('Restricted access' );
  * For detailed descriptions on these functions please check the model.abstractforum.php
  * @package JFusion_phpBB3
  */
-class JFusionForum_phpbb3 extends JFusionForum{
+class JFusionForum_phpbb3 extends JFusionForum
+{
+
+    function getJname()
+    {
+        return 'phpbb3';
+    }
 
     function getThreadURL($threadid)
     {

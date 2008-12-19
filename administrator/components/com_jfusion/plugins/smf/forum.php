@@ -15,7 +15,13 @@ defined('_JEXEC' ) or die('Restricted access' );
  * For detailed descriptions on these functions please check the model.abstractforum.php
  * @package JFusion_SMF
  */
-class JFusionForum_smf extends JFusionForum{
+class JFusionForum_smf extends JFusionForum
+{
+
+    function getJname()
+    {
+        return 'smf';
+    }
 
     function getThreadURL($threadid)
     {
@@ -31,8 +37,6 @@ class JFusionForum_smf extends JFusionForum{
     {
         return  'member.php?u='.$uid;
     }
-
-
 
     function getQuery($usedforums, $result_order, $result_limit)
     {
