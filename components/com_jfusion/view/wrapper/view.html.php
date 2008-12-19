@@ -11,6 +11,7 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 jimport('joomla.application.component.view');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
 
 /**
 * Renders the main admin screen that shows the configuration overview of all integrations
@@ -21,7 +22,6 @@ class jfusionViewWrapper extends JView {
 
     function display($tpl = null)
     {
-
         $db =& JFactory::getDBO();
 
         //get the forum url
@@ -86,8 +86,3 @@ class jfusionViewWrapper extends JView {
     }
 
 }
-
-
-
-
-
