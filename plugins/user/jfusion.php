@@ -174,10 +174,17 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             	$JoomlaUser = array( 'userinfo' => $userinfo, 'error' => '');
             }
 
-            if ($master->name != 'joomla_int') {
+			//delete old entries in the jos_jfusion_users_plugin table
+			$db = & JFactory::getDBO();
+			$query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $JoomlaUser['userinfo']->userid;
+			$db->setQuery($query);
+			if (!$db->query()) {
+			    JError::raiseWarning(0,$db->stderr());
+			}
+
+		    if ($master->name != 'joomla_int') {
                 JFusionFunction::updateLookup($userinfo, $master->name, $JoomlaUser['userinfo']->userid);
             }
-
 
             //setup the other slave JFusion plugins
             $slaves = JFusionFunction::getPlugins();
