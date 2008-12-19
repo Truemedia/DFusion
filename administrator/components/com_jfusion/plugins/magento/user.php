@@ -9,6 +9,7 @@
 
 // no direct access
 defined('_JEXEC' ) or die('Restricted access' );
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
 
 /**
  * JFusion User Class for Magento 1.1
