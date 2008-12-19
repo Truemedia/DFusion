@@ -31,7 +31,7 @@ class jfusionViewframeless extends JView {
         //Get the base URL and make sure we have a ? delimiter
         $Itemid = JRequest::getVar('Itemid');
         if ($Itemid) {
-            $baseURL	= JURI::base() .'index.php?option=com_jfusion&Itemid=' . $Itemid;
+            $baseURL	= JRoute::_(JURI::base() .'index.php?option=com_jfusion&Itemid=' . $Itemid);
         } else {
             $baseURL	= JRoute::_('index.php?option=com_jfusion&view=frameless&jname='.$this->jname);
         }
@@ -122,8 +122,6 @@ class jfusionViewframeless extends JView {
 					preg_match($pattern, $data[1][0], $page_title);
 					global $mainframe;
 					$mainframe->setPageTitle($page_title[1]);
-
-
                 }
 
                 // Output the body

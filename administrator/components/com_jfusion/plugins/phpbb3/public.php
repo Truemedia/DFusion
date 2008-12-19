@@ -71,10 +71,22 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $_POST['p'] = $subscribe;
         }
 
+        //add a mode for quicktools
+
+
         //add check for search function
         $submit = JRequest::getVar('submit');
         if($submit == 'Search'){
             $jfile = 'search.php';
+        }
+
+        //add check for quick mod tools function
+        $quickmod = JRequest::getVar('quickmod');
+        if($quickmod == 1){
+            $jfile = 'mcp.php';
+			$_GET['mode'] = 'quickmod';
+            $_REQUEST['mode'] = 'quickmod';
+            $_POST['mode'] = 'quickmod';
         }
 
         if (!$jfile) {
@@ -100,7 +112,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         chdir($source_path);
 
         /* set scope for variables required later */
-        global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template, $phpbb_hook, $module;
+        global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template, $phpbb_hook, $module, $mode;
 
         //define the phpBB3 hooks
         require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $this->getJname().DS.'hooks.php');
@@ -148,16 +160,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 			$uri		= JURI::getInstance();
 			$indexURL	= JURI::base() .'index.php';
             $replace_body[]	= '$this->fixAction("$1","$2","' . $indexURL .'")';
-
-			//phpBB3 URL parsing is not perfect, if sh404SEF is enabled some extra cleanup is needed
-            $params = JFusionFactory::getParams('joomla_int');
-			$sh404sef_parse = $params->get('sh404sef_parse');
-			if ($sh404sef_parse == 1){
-	            $currentURL = JURI::base();
-	            //fix up and ampersands that slipped past the parse url function.
-		        $regex_body[]	= '#'.$currentURL.'(.*?)(/&amp\;|/\?)(.*?)"#me';
-				$replace_body[]	= '$this->fixURL("'.$currentURL.'$1$2$3")';
-			}
         }
 
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
@@ -173,11 +175,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
       	//check to see if the URL is in SEF
 		if (strpos($url,'index.php/')){
-      	    //fix inaccuracies in the phpBB3 SEF url generation code
-      	    $url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
-			$parts = explode('/', $url);
+			$parts = preg_split('/\/\&|\//', $url);
 			foreach ($parts as $part){
-				$vars = explode(',', $part);
+				$vars =preg_split('/,|=/', $part);
 				if(isset($vars[1])){
 					$url_variables[$vars[0]] = $vars[1];
 				}
@@ -249,8 +249,16 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
     }
 
       function fixRedirect($url){
+
+		//detect the redirect value
+		$redirect = JRequest::getVar('redirect');
       	//split up the timeout from url
 		$parts = explode(';url=', $url);
+
+		//allow for redirects on login
+		if($redirect){
+			$parts[1] = $redirect;
+		}
 
     	//get the correct URL to joomla
     	$params = JFusionFactory::getParams('joomla_int');
@@ -258,8 +266,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
       	//check to see if the URL is in SEF
 		if (strpos($parts[1],'index.php/')){
-      	    //fix inaccuracies in the phpBB3 SEF url generation code
-      	    $parts[1] = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $parts[1]);
 		    $query = explode('index.php/', $parts[1]);
     		$redirect_url = $source_url . 'index.php/' . $query[1];
 	    } else {
@@ -271,7 +277,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	    }
 
       	//reconstruct the redirect meta tag
-        return '<meta http-equiv="refresh" content="'.$parts[0] . ';url=' . $redirect_url .'">';
+        return '<meta http-equiv="refresh" content="'.$parts[1].';url=' . $redirect_url .'">';
       }
 }
 
