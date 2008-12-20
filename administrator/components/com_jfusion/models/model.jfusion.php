@@ -286,14 +286,16 @@ class JFusionFunction{
 
         //create the actual connection
         $jfusion_database =& JDatabase::getInstance($options );
-        if (JError::isError($jfusion_database) ) {
+        if (!method_exists($jfusion_database,'Execute')){
             JError::raiseWarning(0, JText::_('NO_DATABASE'));
+            $result = false;
+            return $result;
+        } else {
+	        //add support for UTF8
+    	    $jfusion_database->Execute('SET names \'utf8\'');
+	        return $jfusion_database;
         }
 
-        //add support for UTF8
-        $jfusion_database->Execute('SET names \'utf8\'');
-
-        return $jfusion_database;
     }
 
     /**

@@ -157,9 +157,7 @@ class JFusionHook
 
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));
 
-		$url = urldecode($url);
-
-		return JRoute::_($url, $is_amp);
+		return urldecode(JRoute::_($url, $is_amp));
 	}
 
 	/**
