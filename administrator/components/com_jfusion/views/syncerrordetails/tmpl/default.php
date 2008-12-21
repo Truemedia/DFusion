@@ -10,6 +10,17 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+	/**
+	* 	Load usersync library
+	*/
+	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
+	/**
+	* 	Load debug library
+	*/
+	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
+
+
 ?>
 <style type="text/css">
 #ajax_bar {

@@ -18,6 +18,12 @@ ob_start();
 JFusionFunction::displayDonate();
 
 /**
+* 	Load debug library
+*/
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
+
+
+/**
 * Output information about the server for future support queries
 */
 ?>
@@ -56,22 +62,25 @@ if (empty($credentials['username'])) {
     return $result;
 }
 
-echo '<h2>' . JText::_('SERVER') . ' ' . JText::_('CONFIGURATION') . '</h2>';
-
+//get server specs
 $version =& new JVersion;
-$short_version = $version->getShortVersion();
-
-echo '<br/>Joomla version:' . $short_version . '<br/>';
-echo 'PHP version: ' . phpversion() .  '<br/>';
-
 $phpinfo = JFusionFunction::phpinfo_array();
 
-echo "System: {$phpinfo['phpinfo']['System']}<br />\n";
-echo "MySQL: {$phpinfo['mysql']['Client API version']}<br />\n";
-echo "Browser:" . $_SERVER['HTTP_USER_AGENT'] . '<br/>';
+//put the relevant specs into an array
+$server_info = array();
+$server_info['Joomla Version'] = $version->getShortVersion();
+$server_info['PHP Version'] = phpversion();
+$server_info['MySQL Version'] = $phpinfo['mysql']['Client API version'];
+$server_info['System Information'] = $phpinfo['phpinfo']['System'];
+$server_info['Browser Information'] = $_SERVER['HTTP_USER_AGENT'];
 
+//output the information to the user
+debug::show($server_info, JText::_('SERVER') . ' ' . JText::_('CONFIGURATION'),1);
 
-//check if the JFusion component is installed
+echo '<br/>';
+
+//get the JFusion version number
+$jfusion_version = array();
 $component_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'com_jfusion.xml';
 $auth_xml = JPATH_SITE .DS.'plugins'.DS.'authentication'.DS.'jfusion.xml';
 $user_xml = JPATH_SITE .DS.'plugins'.DS.'user'.DS.'jfusion.xml';
@@ -81,35 +90,42 @@ $login_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_login'.DS.'mod_jfusion_log
 if (file_exists($component_xml)) {
     //get the version number
     $xml = simplexml_load_file($component_xml);
-    echo 'JFusion Component Version:' . $xml->version . '<br/>';
+    $version_number = ' ' . $xml->version . ' ';
+    $jfusion_version['JFusion Component Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($auth_xml)) {
     //get the version number
     $xml = simplexml_load_file($auth_xml);
-    echo 'JFusion Auth Plugin Version:' . $xml->version . '<br/>';
+    $version_number = ' ' . $xml->version . ' ';
+    $jfusion_version['JFusion Auth Plugin Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($user_xml)) {
     //get the version number
     $xml = simplexml_load_file($user_xml);
-    echo 'JFusion User Plugin Version:' . $xml->version . '<br/>';
+    $version_number = ' ' . $xml->version . ' ';
+    $jfusion_version['JFusion User Plugin Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($activity_xml)) {
     //get the version number
     $xml = simplexml_load_file($activity_xml);
-    echo 'JFusion Activity Module Version:' . $xml->version . '<br/>';
+    $version_number = ' ' . $xml->version . ' ';
+    $jfusion_version['JFusion Activity Module Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($login_xml)) {
     //get the version number
     $xml = simplexml_load_file($login_xml);
-    echo 'JFusion Login Module Version:' . $xml->version . '<br/>';
+    $version_number = ' ' . $xml->version . ' ';
+    $jfusion_version['JFusion Login Module Version'] = $version_number;
     unset($xml);
 }
+//output the information to the user
+debug::show($jfusion_version, JText::_('JFUSION') . ' ' . JText::_('VERSIONS'),1);
 
-
+echo '<br/>';
 
 //output the current configuration
 $db =& JFactory::getDBO();
@@ -117,21 +133,21 @@ $query = 'SELECT * from #__jfusion WHERE master = 1 OR slave = 1 or check_encryp
 $db->setQuery($query);
 $plugin_list = $db->loadObjectList();
 
-echo '<h2>' . JText::_('JFUSION') . ' ' . JText::_('CONFIGURATION') . '</h2>';
 foreach($plugin_list as $plugin_details)
 {
-    if ($plugin_details->master == 1) {
-        echo JText::_('MASTER') . ':'. $plugin_details->name . ' ' .JText::_('VERSION') . ':'. $plugin_details->version . ' ' . JText::_('CHECK_ENCRYPTION') . ':'. $plugin_details->check_encryption . ' ' . JText::_('DUAL_LOGIN') . ':'. $plugin_details->dual_login . '<br/>';
-    } else if ($plugin_details->slave == 1) {
-        echo JText::_('SLAVE') . ':'. $plugin_details->name . ' ' .JText::_('VERSION') . ':'. $plugin_details->version . ' ' . JText::_('CHECK_ENCRYPTION') . ':'. $plugin_details->check_encryption . ' ' . JText::_('DUAL_LOGIN') . ':'. $plugin_details->dual_login . '<br/>';
-    } else {
-        echo $plugin_details->name . ' ' .JText::_('VERSION') . ':'. $plugin_details->version . ' ' . JText::_('CHECK_ENCRYPTION') . ':'. $plugin_details->check_encryption . ' ' . JText::_('DUAL_LOGIN') . ':'. $plugin_details->dual_login . '<br/>';
-    }
+	 $plugin = new stdClass;
+	 $plugin->configuration = new stdClass;
+	 $plugin->configuration->master = $plugin_details->master;
+	 $plugin->configuration->slave = $plugin_details->slave;
+	 $plugin->configuration->dual_login = $plugin_details->dual_login;
+	 $plugin->configuration->check_encryption = $plugin_details->check_encryption;
+	 debug::show($plugin, JText::_('JFUSION') . ' ' . $plugin_details->name . ' ' . JText::_('PLUGIN'),1);
 }
 
 /**
 * Output the results of the JFusion authentication plugin
 */
+
 // Initialize variables
 $conditions = '';
 $db =& JFactory::getDBO();
@@ -144,47 +160,58 @@ $userinfo = $JFusionMaster->getUser($credentials['username']);
 
 //check if a user was found
 if (!empty($userinfo)) {
-    //apply the cleartext password to the user object
-    $userinfo->password_clear = $credentials['password'];
-
     //output the userdetails
-    echo '<h2>' . JText::_('MASTER_USER_INFORMATION') . '</h2>';
-    echo JText::_('LOGIN') .' ' .JText::_('USERNAME') .': ' . $credentials['username'] .'<br/>';
-    echo $master->name . ' ' . JText::_('USERNAME') .': ' . $userinfo->username .'<br/>';
-    echo $master->name . ' ' . JText::_('USERID') . ': ' . $userinfo->userid .'<br/>';
-    echo $master->name . ' ' . JText::_('NAME') .': ' . $userinfo->name .'<br/>';
-    echo $master->name . ' ' . JText::_('PASSWORD') .': ' . substr($userinfo->password,0,6) .'********<br/>';
-    echo $master->name . ' ' . JText::_('SALT') .': ' . $userinfo->password_salt,0,4  .'<br/>';
-    echo $master->name . ' ' . JText::_('EMAIL') .': ' . $userinfo->email .'<br/>';
-    echo $master->name . ' ' . JText::_('BLOCK') .': ' . $userinfo->block .'<br/>';
-    echo $master->name . ' ' . JText::_('ACTIVATION') .': ' . $userinfo->activation .'<br/>';
+    echo '<br/><h2>' . JText::_('MASTER'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') .'</h2>';
+    debug::show($credentials['username'], JText::_('LOGIN') . ' ' . JText::_('USERNAME'),1);
+
+	//hide some sensitive details for output
+	$userinfo_password = $userinfo->password;
+	$userinfo_password_salt = $userinfo->password_salt;
+	$userinfo->password = substr($userinfo->password,0,6) .'********';
+	$userinfo->password_salt = substr($userinfo->password_salt,0,6) .'********';
+    debug::show($userinfo, $master->name . ' ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
+
+    //restore the sensitive information
+	$userinfo->password = $userinfo_password;
+	$userinfo->password_salt = $userinfo_password_salt;
 
     //get a list of authentication models
     $query = 'SELECT name FROM #__jfusion WHERE master = 1 OR check_encryption = 1 ORDER BY master DESC';
     $db->setQuery($query);
     $auth_models = $db->loadObjectList();
 
+    //apply the cleartext password to the user object
+    $userinfo->password_clear = $credentials['password'];
+
 	//see if we need to check password
 	if (!$skip_password){
 	    //loop through the different models
-    	echo '<h3>' . JText::_('PASSWORD') . ' ' . JText::_('CHECK'). '</h3>';
     	$match = null;
+    	$auth_result = array();
     	foreach($auth_models as $auth_model) {
 	        //Generate an encrypted password for comparison
     	    $model = JFusionFactory::getAuth($auth_model->name);
         	$testcrypt = $model->generateEncryptedPassword($userinfo);
-	        echo $auth_model->name . ' -> ' . substr($testcrypt,0,6) . '********<br/>';
     	    if ($testcrypt == $userinfo->password) {
         	    //found a match
             	$match = $auth_model->name;
 	        }
+	        $auth_result[$auth_model->name] =  substr($testcrypt,0,6) . '********';
     	}
 
+    	debug::show($auth_result, JText::_('PASSWORD') . ' ' . JText::_('CHECK'),1);
+
+
 	    //check to see if the passwords matched
-    	if ($match) {
-        	echo JText::_('VALID_PASSWORD') . ': ' . $match;
-	    } else {
-    	    echo JText::_('INVALID_PASSWORD');
+    	if ($match) { ?>
+			<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
+			<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
+			<td><font size="2"><b><?php echo JText::_('VALID_PASSWORD') . ': ' . JText::_('JFUSION') . ' ' . $match; ?></b></font></td></tr></table>
+  <?php  } else { ?>
+			<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px"><td width="50px">
+			<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px"></td>
+			<td><font size="2"><b><?php echo JText::_('INVALID_PASSWORD'); ?></b></font></td></tr></table>
+  <?php
         	//no password found: abort the login checker
 	        ob_end_flush();
             $result = false;
@@ -202,7 +229,7 @@ if (!empty($userinfo)) {
 * Output the results of the JFusion user plugin
 */
 
-echo '<h2>' . JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('LOGIN'). '</h2>';
+
 
 jimport('joomla.user.helper');
 global $JFusionActive;
@@ -218,9 +245,9 @@ $userinfo->password_clear = $user['password'];
 
 $MasterUser = $JFusionMaster->updateUser($userinfo,0);
 if ($MasterUser['error']) {
-    JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' . JText::_('UPDATE'), $MasterUser['error'],0);
+	debug::show($MasterUser['error'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE'),1);
 } else {
-    JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' . JText::_('UPDATE'), $MasterUser['debug'],0);
+	debug::show($MasterUser['debug'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE'),1);
 }
 
 // See if the user has been blocked or is not activated
@@ -232,9 +259,9 @@ if (!empty($userinfo->block) || !empty($userinfo->activation)) {
         $JFusionSlave = JFusionFactory::getUser($slave->name);
         $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
         if ($SlaveUser['error']) {
-            JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],0);
+            debug::show($SlaveUser['error'], $slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'),1);
         } else {
-            JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['debug'],0);
+            debug::show($SlaveUser['debug'], $slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), 1);
         }
     }
 
@@ -256,11 +283,16 @@ if ($master->name != 'joomla_int') {
     $MasterSession = $JFusionMaster->createSession($userinfo, $options);
     if ($MasterSession['error']) {
         //report the error back
-        JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), $MasterSession['error'],0);
+        debug::show($MasterSession['error'], $master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
     } else {
-        JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), $MasterSession['debug'],0);
+        debug::show($MasterSession['debug'],$master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
     }
+} else {
+        debug::show(JText::_('SKIPPED_SESSION_CREATE'),'joomla_int' .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
+
 }
+
+    echo '<br/><h2>' . JText::_('SLAVE'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') .'</h2>';
 
 //check to see if we need to setup a Joomla session
 if ($master->name != 'joomla_int') {
@@ -270,20 +302,25 @@ if ($master->name != 'joomla_int') {
     $JoomlaUser = $JFusionJoomla->updateUser($userinfo,0);
     if ($JoomlaUser['error']) {
         //no Joomla user could be created, fatal error
-        JFusionFunction::raiseWarning('joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), $JoomlaUser['error'],0);
+        debug::show($JoomlaUser['error'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
         ob_end_flush();
         $success = false;
         return $success;
     } else {
 
-        //output the userdetails
-        echo 'joomla_int' . ' ' . JText::_('USERNAME') .': ' . $JoomlaUser['userinfo']->username .'<br/>';
-        echo 'joomla_int' . ' ' . JText::_('USERID') . ': ' . $JoomlaUser['userinfo']->userid .'<br/>';
-        echo 'joomla_int' . ' ' . JText::_('NAME') .': ' . $JoomlaUser['userinfo']->name .'<br/>';
-        echo 'joomla_int' . ' ' . JText::_('BLOCK') .': ' . $JoomlaUser['userinfo']->block .'<br/>';
-        echo 'joomla_int' . ' ' . JText::_('ACTIVATION') .': ' . $JoomlaUser['userinfo']->activation .'<br/>';
-        JFusionFunction::raiseWarning('joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), $JoomlaUser['debug'],0);
-        echo JText::_('SKIPPED_SESSION_CREATE').'<br/>';
+	//hide some sensitive details for output
+	$userinfo_password = $JoomlaUser['userinfo']->password;
+	$userinfo_password_salt = $JoomlaUser['userinfo']->password_salt;
+	$JoomlaUser['userinfo']->password = substr($JoomlaUser['userinfo']->password,0,6) .'********';
+	$JoomlaUser['userinfo']->password_salt = substr($JoomlaUser['userinfo']->password_salt,0,6) .'********';
+    debug::show($JoomlaUser['userinfo'], 'joomla_int ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
+
+    //restore the sensitive information
+	$JoomlaUser['userinfo']->password = $userinfo_password;
+	$JoomlaUser['userinfo']->password_salt = $userinfo_password_salt;
+
+        debug::show($JoomlaUser['debug'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
+        debug::show(JText::_('SKIPPED_SESSION_CREATE'),'joomla_int' .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
 
     }
 } else {

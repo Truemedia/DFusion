@@ -28,6 +28,11 @@ class jfusionViewsyncerrordetails extends JView {
 	*/
 	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
 
+	/**
+	* 	Load debug library
+	*/
+	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
+
 	//check to see if the sync has already started
     $syncid = JRequest::getVar('syncid', '', 'GET');
     $syncdata = JFusionUsersync::getSyncdata($syncid);
