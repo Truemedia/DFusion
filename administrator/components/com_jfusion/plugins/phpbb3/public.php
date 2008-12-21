@@ -111,6 +111,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         //set the current directory to phpBB3
         chdir($source_path);
 
+        //get the Itemid
+        $Itemid_joomla = JRequest::getVar('Itemid');
+
         /* set scope for variables required later */
         global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template, $phpbb_hook, $module, $mode;
 
@@ -136,6 +139,10 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
         //change the current directory back to Joomla.
         chdir(JPATH_SITE);
+
+        //reset the global itemid
+        global $Itemid;
+        $Itemid = $Itemid_joomla;
 
         return $buffer;
     }
