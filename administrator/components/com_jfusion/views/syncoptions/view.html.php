@@ -10,9 +10,6 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-//display the paypal donation button
-JFusionFunction::displayDonate();
-
 jimport('joomla.application.component.view');
 
 /**

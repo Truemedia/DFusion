@@ -212,10 +212,12 @@ class JFusionUsersync{
        		$db->setQuery($query );
        		$db->query();
 
-       		echo JText::_('USERSYNC') . ' ' . JText::_('COMPLETED') . '<br/><br/>';
-			echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2>';
+       		echo '<h2>' . JText::_('USERSYNC') . ' ' . JText::_('COMPLETED') . '</h2><br/>';
 
-
+			//show error resolve options if there are any errors
+			if (!empty($syncdata['errors'])){
+				echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2>';
+			}
         }
     }
 }

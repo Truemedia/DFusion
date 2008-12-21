@@ -417,6 +417,12 @@ class JFusionController extends JController
         //initialise the slave data array
         $slave_data = array();
 
+        if(empty($slaves)){
+        	//nothing was selected in the usersync
+        	echo '<br/><br/>' . JText::_('SYNC_NODATA');
+        	return;
+        }
+
         //lets find out which slaves need to be imported into the Master
         foreach($slaves as $jname => $slave) {
             if ($slave['perform_sync']) {
