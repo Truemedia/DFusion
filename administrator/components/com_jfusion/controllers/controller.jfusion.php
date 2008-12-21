@@ -291,9 +291,7 @@ class JFusionController extends JController
     {
     	$syncid = JRequest::getVar('syncid', '', 'GET');
 		if ($syncid) {
-			/**
-			* 	Load usersync library
-			*/
+			//Load usersync library
 			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
 			$syncdata = JFusionUsersync::getSyncdata($syncid);
 		    //start the usersync
@@ -306,6 +304,9 @@ class JFusionController extends JController
 */
     function syncerror()
     {
+		//Load usersync library
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
     	$syncerror = JRequest::getVar('syncerror', array(), 'POST', 'array' );
     	$syncid = JRequest::getVar('syncid', '', 'POST');
     	if ($syncerror) {
@@ -330,6 +331,9 @@ class JFusionController extends JController
 */
     function syncerrordetails()
     {
+		//Load usersync library
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
         $view = &$this->getView('syncerrordetails', 'html');
         $view->setLayout('default');
         $result = $view->loadTemplate();
@@ -343,6 +347,9 @@ class JFusionController extends JController
 */
     function synchistory()
     {
+		//Load usersync library
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
         JRequest::setVar('view', 'synchistory');
         parent::display();
     }
@@ -353,6 +360,9 @@ class JFusionController extends JController
 */
     function syncoptions()
     {
+		//Load usersync library
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+
         JRequest::setVar('view', 'syncoptions');
         parent::display();
     }
@@ -372,9 +382,7 @@ class JFusionController extends JController
     function syncstatus()
     {
 
-	/**
-	* 	Load usersync library
-	*/
+	//Load usersync library
 	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
 
 	//check to see if the sync has already started
