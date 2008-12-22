@@ -129,8 +129,6 @@ class JFusionUser_phpbb3 extends JFusionUser{
         }
     }
 
-
-
     function &getUser($username)
     {
         // Get a database object
@@ -597,7 +595,307 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $status['debug'][] = JText::_('USER_CREATION');
         }
     }
-    function deleteUsername($username)
+   
+    function deleteUser($userinfo)
     {
+    	//setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+        //retreive the database object
+        $db = & JFusionFactory::getDatabase($this->getJname());
+
+        //set the userid
+        $user_id = $userinfo->userid;
+
+		// Before we begin, we will remove the reports the user issued.
+		$query = 'SELECT r.post_id, p.topic_id
+			FROM #__reports r, #__posts p
+			WHERE r.user_id = ' . $user_id . '
+				AND p.post_id = r.post_id';
+		$db->setQuery($query);
+
+		$report_posts = $report_topics = array();
+
+		if($db->query()) {
+			if($results = $db->loadObjectList()){
+				foreach($results as $row)
+				{
+					$report_posts[] = $row->post_id;
+					$report_topics[] = $row->topic_id;
+				}
+				$status["debug"][] = "Retrieved all reported posts/topics by user $user_id.";
+			}
+		} elseif($db->stderr()) {
+			$status["error"][] = "Error Could not retrieve reported posts/topics by user $user_id: {$db->stderr()}";
+		}
+
+		if (sizeof($report_posts))
+		{
+			$report_posts = array_unique($report_posts);
+			$report_topics = array_unique($report_topics);
+
+			// Get a list of topics that still contain reported posts
+			$query = 'SELECT DISTINCT topic_id
+				FROM #__posts
+				WHERE topic_id IN (' . implode(', ', $report_topics) . ')
+					AND post_reported = 1
+					AND post_id IN (' . implode(', ', $report_posts) . ')';
+			$db->setQuery($query);
+
+			$keep_report_topics = array();
+			if($db->query()) {
+				if($results = $db->loadObjectList()) {
+					foreach($results as $row)
+					{
+						$keep_report_topics[] = $row->topic_id;
+					}
+					$status["debug"][] = "Sorted through reported topics by user $user_id to keep.";
+				}
+			} else {
+				$status["error"][] = "Error Could not retrieve a list of topics that still contain reported posts by user $user_id: {$db->stderr()}";
+			}
+
+			if (sizeof($keep_report_topics))
+			{
+				$report_topics = array_diff($report_topics, $keep_report_topics);
+			}
+			unset($keep_report_topics);
+
+			// Now set the flags back
+			$query = 'UPDATE #__posts
+				SET post_reported = 0
+				WHERE post_id IN (' . implode(', ', $report_posts) . ')';
+			$db->setQuery($query);
+			if(!$db->query()){
+				$status["error"][] = "Error Could not update post reported flag: {$db->stderr()}";
+			} else {
+				$status["debug"][] = "Updated reported posts flag.";
+			}
+
+			if (sizeof($report_topics))
+			{
+				$query = 'UPDATE #__topics
+					SET topic_reported = 0
+					WHERE topic_id IN (' . implode(', ', $report_topics) . ')';
+				$db->setQuery($query);
+				if(!$db->query()){
+					$status["error"][] = "Error Could not update topics reported flag: {$db->stderr()}";
+				} else {
+					$status["debug"][] = "Updated reported topics flag.";
+				}
+			}
+		}
+
+		// Remove reports
+		$query = 'DELETE FROM #__reports WHERE user_id = ' . $user_id;
+		$db->setQuery($query);
+		if(!$db->query()){
+    		$status["error"][] = "Error Could not delete reports by user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Deleted reported posts/topics by user $user_id.";
+		}
+
+		//update all topics started by and posts by the user to anonymous
+		$post_username = "Guest";
+
+		$query = 'UPDATE #__forums
+			SET forum_last_poster_id = 1, forum_last_poster_name = ' . $db->quote($post_username) . ", forum_last_poster_colour = ''
+			WHERE forum_last_poster_id = $user_id";
+    	$db->setQuery($query);
+		if(!$db->query()){
+    		$status["error"][] = "Error Could not update forum last poster for user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Updated last poster to anonymous if last post was by user $user_id.";
+		}
+
+		$query = "UPDATE #__posts
+			SET poster_id = 1, post_username = " . $db->quote($post_username) . "
+			WHERE poster_id = $user_id";
+    	$db->setQuery($query);
+		if(!$db->query()){
+    		$status["error"][] = "Error Could not update posts by user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Updated posts to be from anonymous if posted by user $user_id.";
+		}
+		$query = "UPDATE #__posts
+			SET post_edit_user = 1
+			WHERE post_edit_user = $user_id";
+    	$db->setQuery($query);
+		if(!$db->query()){
+    		$status["error"][] = "Error Could not update edited posts by user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Updated edited posts to be from anonymous if edited by user $user_id.";
+		}		
+
+		$query = "UPDATE #__topics
+			SET topic_poster = 1, topic_first_poster_name = " . $db->quote($post_username) . ", topic_first_poster_colour = ''
+			WHERE topic_poster = $user_id";
+    	$db->setQuery($query);
+		if(!$db->query()){
+    		$status["error"][] = "Error Could not update topics by user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Updated topics to be from anonymous if started by user $user_id.";
+		}	
+		
+
+		$query = "UPDATE #__topics
+			SET topic_last_poster_id = 1, topic_last_poster_name = " . $db->quote($post_username) . ", topic_last_poster_colour = ''
+			WHERE topic_last_poster_id = $user_id";
+    	$db->setQuery($query);
+		if(!$db->query()){
+    		$status["error"][] = "Error Could not update last topic poster for user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Updated topic last poster to be anonymous if set as user $user_id.";
+		}			
+
+		// Since we change every post by this author, we need to count this amount towards the anonymous user
+		$query = "SELECT user_posts FROM #__users WHERE user_id = $user_id";
+		$db->setQuery($query);
+		$user_posts = $db->loadResult();
+
+		// Update the post count for the anonymous user
+		if($user_posts > 0)
+		{
+			$query = "UPDATE #__users
+				SET user_posts = user_posts + $user_posts
+				WHERE user_id = 1";
+		    $db->setQuery($query);
+			if(!$db->query()){
+    			$status["error"][] = "Error Could not update the number of posts for anonymous user: {$db->stderr()}";
+			} else {
+				$status["debug"][] = "Updated post count for anonymous user.";
+			}				
+		}
+
+		$table_ary = array("users", "user_group", "topics_watch", "forums_watch", "acl_users", "topics_track", "topics_posted", "forums_track", "profile_fields_data", "moderator_cache", "drafts", "bookmarks");
+
+		foreach ($table_ary as $table)
+		{
+			$query = "DELETE FROM #__$table
+				WHERE user_id = $user_id";
+		    $db->setQuery($query);
+			if(!$db->query()){
+    			$status["error"][] = "Error Could not delete records from $table for user $user_id: {$db->stderr()}";
+			} else {
+				$status["debug"][] = "Deleted records from $table for user $user_id.";
+			}				
+		}
+
+		//TODO clear moderator cache table
+		//$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+
+		// Remove any undelivered mails...
+		$query = 'SELECT msg_id, user_id
+			FROM #__privmsgs_to
+			WHERE author_id = ' . $user_id . '
+				AND folder_id = -3';
+        $db->setQuery($query);
+
+		$undelivered_msg = $undelivered_user = array();
+		if($db->query())
+		{
+			if($results = $db->loadObjectList()) {
+				foreach($results as $row)
+				{
+					$undelivered_msg[] = $row->msg_id;
+					$undelivered_user[$row->user_id][] = true;
+				}		
+				$status["debug"][] = "Retrieved undelvered private messages from user $user_id.";
+			}
+		} else {
+    		$status["error"][] = "Error Could not retrieve undeliverd messages to user $user_id: {$db->stderr()}";
+		}
+
+		if (sizeof($undelivered_msg))
+		{
+			$query = 'DELETE FROM #__privmsgs
+				WHERE msg_id (' . implode(', ', $undelivered_msg) . ')';
+			$db->setQuery($query);
+			if(!$db->query()){
+    			$status["error"][] = "Error Could not delete private messages for user $user_id: {$db->stderr()}";
+			} else {
+				$status["debug"][] = "Deleted undelivered private messages from user $user_id.";
+			}				
+		}
+
+		$query = 'DELETE FROM #__privmsgs_to
+			WHERE author_id = ' . $user_id . '
+				AND folder_id = -3';
+		$db->setQuery($query);
+    	if(!$db->query()){
+    		$status["error"][] = "Error Could not delete private messages that are in no folder from user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Deleted private messages that are in no folder from user $user_id.";
+		}			
+		
+
+		// Delete all to-information
+		$query = 'DELETE FROM #__privmsgs_to
+			WHERE user_id = ' . $user_id;
+		$db->setQuery($query);
+    	if(!$db->query()){
+    		$status["error"][] = "Error Could not delete private messages to user $user_id: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Deleted private messages sent to user $user_id.";
+		}			
+
+
+		// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
+		$query = 'UPDATE #__privmsgs_to
+			SET author_id = 1
+			WHERE author_id = ' . $user_id;
+		$db->setQuery($query);
+    	if(!$db->query()){
+    		$status["error"][] = "Error Could not update rest of private messages for user $user_id to anonymous: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Updated the author to anonymous for the rest of the PMs in the 'to' table if originally sent by user $user_id.";
+		}			
+
+		$query = 'UPDATE #__privmsgs
+			SET author_id = 1
+			WHERE author_id = ' . $user_id;
+		$db->setQuery($query);
+    	if(!$db->query()){
+    		$status["error"][] = "Error Could not update rest of private messages for user $user_id to anonymous: {$db->stderr()}";
+		} else {
+			$status["debug"][] = "Updated the author to anonymous for the rest of the PMs in the main PM table if originally sent by user $user_id.";
+		}	
+		
+		foreach ($undelivered_user as $_user_id => $ary)
+		{
+			if ($_user_id == $user_id)
+			{
+				continue;
+			}
+
+			$query = 'UPDATE #__users
+				SET user_new_privmsg = user_new_privmsg - ' . sizeof($ary) . ',
+					user_unread_privmsg = user_unread_privmsg - ' . sizeof($ary) . '
+				WHERE user_id = ' . $_user_id;
+			$db->setQuery($query);
+    		if(!$db->query()){
+    			$status["error"][] = "Error Could not update the number of PMs for user $_user_id for user $user_id was deleted: {$db->stderr()}";
+			} else {
+				$status["debug"][] = "Updated the the number of PMs for user $_user_id since user $user_id was deleted.";
+			}				
+		}
+
+		//TODO update newest user id
+		// Reset newest user info if appropriate
+		//if ($config['newest_user_id'] == $user_id)
+		//{
+		//	update_last_username();
+		//}
+
+		// TODO Decrement number of users if this user is active
+		/*if ($user_type != 1 && $user_type != 2)
+		{
+			set_config('num_users', $config['num_users'] - 1, true);
+		}
+		*/
+		
+		return $status;
     }
 }
