@@ -41,7 +41,9 @@ class JFusionUser_smf extends JFusionUser{
 
         if (!empty($existinguser)) {
             //a matching user has been found
+			$status['debug'][] = JText::_('USER_DATA_FOUND');
             if ($existinguser->email != $userinfo->email) {
+			  $status['debug'][] = JText::_('EMAILS_DO_NOT_MATCH');
               if ($update_email || $overwrite) {
                   $this->updateEmail($userinfo, $existinguser, $status);
               } else {
@@ -106,7 +108,7 @@ class JFusionUser_smf extends JFusionUser{
             return $status;
 
         } else {
-
+			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
             $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';

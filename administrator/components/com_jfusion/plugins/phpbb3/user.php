@@ -41,7 +41,9 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
         if (!empty($existinguser)) {
             //a matching user has been found
+			$status['debug'][] = JText::_('USER_DATA_FOUND');
             if ($existinguser->email != $userinfo->email) {
+			  $status['debug'][] = JText::_('EMAILS_DO_NOT_MATCH');
               if ($update_email || $overwrite) {
                   $this->updateEmail($userinfo, $existinguser, $status);
               } else {
@@ -71,7 +73,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 		        if (!$db->query()) {
         		    $status['error'][] = JText::_('LASTVISIT_UPDATE') . ' ' . JText::_('ERROR') . $db->stderr();
 		        } else {
-	    		    $status['debug'][] = JText::_('LASTVISIT_UPDATE'). ' ' . JText::_('SUCCES');
+	    		    $status['debug'][] = JText::_('LASTVISIT_UPDATE'). ' ' . JText::_('SUCCESS');
         		}
 
         	} else {
@@ -117,6 +119,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             return $status;
 
         } else {
+			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
 
             $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
@@ -180,9 +183,9 @@ class JFusionUser_phpbb3 extends JFusionUser{
         if (isset($_COOKIE[$phpbb_cookie_name . '_u']) && isset($_COOKIE[$phpbb_cookie_name . '_sid'])) {
             $userid = intval($_COOKIE[$phpbb_cookie_name.'_u']);
             $sessionid = $_COOKIE[$phpbb_cookie_name.'_sid'];
-            $status['debug'] .= 'Found session cookie:' . $sessionid .' for userid:' . $userid .'<br/>';
+            $status['debug'][] = 'Found session cookie:' . $sessionid .' for userid:' . $userid ;
         } else {
-            $status['error'] .= 'No userid and session cookie found';
+            $status['error'][] = 'No userid and session cookie found';
             return $status;
         }
 
@@ -193,7 +196,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $query = 'UPDATE #__users SET user_lastvisit =' . time() . ' WHERE user_id =' . $userid;
             $db->setQuery($query);
             if (!$db->query()) {
-                $status['debug'] .= 'Error could not update the last visit field ' . $db->stderr();
+                $status['debug'][] = 'Error could not update the last visit field ' . $db->stderr();
             }
 
             // delete session data in db and cookies
@@ -203,7 +206,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 setcookie($phpbb_cookie_name . '_u', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
                 setcookie($phpbb_cookie_name . '_sid', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
             } else {
-                $status['error'] .= 'Error: Could not delete session in database ' . $db->stderr();
+                $status['error'][] = 'Error: Could not delete session in database ' . $db->stderr();
                 return $status;
             }
 
@@ -213,15 +216,15 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 $db->setQuery($query);
                 if ($db->query()) {
                     setcookie($phpbb_cookie_name . '_k', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
-                    $status['debug'] .= 'Deleted the session key';
+                    $status['debug'][] = 'Deleted the session key';
                 } else {
-                    $status['debug'] .= 'Error could not delete the session key:' . $db->stderr();
+                    $status['debug'][] = 'Error could not delete the session key:' . $db->stderr();
                 }
             }
-            $status['debug'] .= 'Session destroyed succesfully';
+            $status['debug'][] = 'Session destroyed succesfully';
             return $status;
         } else {
-            $status['error'] .= 'Userid and sessionid were not valid';
+            $status['error'][] = 'Userid and sessionid were not valid';
             return $status;
         }
     }
@@ -229,7 +232,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
     function createSession($userinfo, $options)
     {
         $status = array();
-        $status['debug'] = '';
+        $status['error'] = array();
+        $status['debug'] = array();
         $db = JFusionFactory::getDatabase($this->getJname());
 
         $userid = $userinfo->userid;
@@ -298,14 +302,14 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 $session_obj->session_admin = $admin_access;
                 if (!$db->insertObject('#__sessions', $session_obj )) {
                     //could not save the user
-                    $status['error'] = JText::_('ERROR_CREATE_SESSION') . $db->stderr();
+                    $status['error'][] = JText::_('ERROR_CREATE_SESSION') . $db->stderr();
                     return $status;
                 } else {
                     //Set cookies
                     JFusionFunction::addCookie($phpbb_cookie_name . '_u', $userid, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
-                    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_u' . ', ' . JText::_('VALUE') . '=' . $userid .', ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
+                    $status['debug'][] = JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_u' . ', ' . JText::_('VALUE') . '=' . $userid .', ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
                     JFusionFunction::addCookie($phpbb_cookie_name . '_sid', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
-                    $status['debug'] .= JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_sid' . ', ' . JText::_('VALUE') . '=' . substr($session_key,0,6) .'********, ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
+                    $status['debug'][] = JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_sid' . ', ' . JText::_('VALUE') . '=' . substr($session_key,0,6) .'********, ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
 
                     // Remember me option?
                     if ($jautologin>0) {
@@ -317,11 +321,11 @@ class JFusionUser_phpbb3 extends JFusionUser{
                         $session_key_ins->last_login = $session_start;
                         if (!$db->insertObject('#__sessions_keys', $session_key_ins )) {
                             //could not save the session_key
-                            $status['error'] = JText::_('ERROR_CREATE_USER') . $database->stderr();
+                            $status['error'][] = JText::_('ERROR_CREATE_USER') . $database->stderr();
                             return $status;
                         } else {
                             JFusionFunction::addCookie($phpbb_cookie_name . '_k', $session_key, $expires, $phpbb_cookie_path, $phpbb_cookie_domain, true);
-                    		$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_k' . ', ' . JText::_('VALUE') . '=' . substr($session_key,0,6) .'********, ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
+                    		$status['debug'][] = JText::_('CREATED') . ' ' . JText::_('COOKIE') . ': ' . JText::_('NAME') . '=' . $phpbb_cookie_name . '_k' . ', ' . JText::_('VALUE') . '=' . substr($session_key,0,6) .'********, ' .JText::_('EXPIRES') . '=' .$expires .', ' . JText::_('COOKIE_PATH') . '=' . $phpbb_cookie_path . ', ' . JText::_('COOKIE_DOMAIN') . '=' . $phpbb_cookie_domain;
                         }
 
                     }
@@ -330,12 +334,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 }
             } else {
                 //could not find a valid userid
-                $status['error'] = JText::_('INVALID_COOKIENAME') ;
+                $status['error'][] = JText::_('INVALID_COOKIENAME') ;
                 return $status;
             }
         } else {
             //could not find a valid userid
-            $status['error'] = JText::_('INVALID_USERID');
+            $status['error'][] = JText::_('INVALID_USERID');
             return $status;
         }
     }

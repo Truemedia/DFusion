@@ -350,7 +350,7 @@ foreach($slaves as $slave) {
 		$userinfo_password_salt = $SlaveUser['userinfo']->password_salt;
 		$SlaveUser['userinfo']->password = substr($SlaveUser['userinfo']->password,0,6) .'********';
 		$SlaveUser['userinfo']->password_salt = substr($SlaveUser['userinfo']->password_salt,0,6) .'********';
-    	debug::show($SlaveUser['userinfo'], 'joomla_int ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
+    	debug::show($SlaveUser['userinfo'], $slave->name . ' ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
 
 	    //restore the sensitive information
 		$SlaveUser['userinfo']->password = $userinfo_password;

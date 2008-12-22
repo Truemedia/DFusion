@@ -16,6 +16,7 @@ if (!$this->syncdata['slave_data']){
     $result = true;
     return $result;
 } elseif ($this->syncdata['completed']) {
+	echo '<br/><br/><br/>';
 	//check to see if there were any errors
 	if ($this->syncdata['errors']) {
 		//redirect to resolve errors
@@ -25,6 +26,8 @@ if (!$this->syncdata['slave_data']){
 		echo '<h2>' . JText::_('SYNC_SUCCESS') . '</h2>';
 	}
 
+} else {
+	echo '<br/><br/><br/>';
 }
 
 ?>

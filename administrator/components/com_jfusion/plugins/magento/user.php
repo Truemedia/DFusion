@@ -213,7 +213,7 @@ class JFusionUser_magento extends JFusionUser{
 
         if (!empty($existinguser)) {
             //a matching user has been found
-
+			$status['debug'][] = JText::_('USER_DATA_FOUND');
             if (!empty($userinfo->password_clear)) {
             	//we can update the password but first find out if we need to
               	if($existinguser->password_salt) {
@@ -256,6 +256,7 @@ class JFusionUser_magento extends JFusionUser{
             return $status;
 
         } else {
+			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
             //we need to create a new user
             $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
