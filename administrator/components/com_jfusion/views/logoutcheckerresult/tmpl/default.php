@@ -38,26 +38,29 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
 //get the submitted joomla id
 $JoomlaId = JRequest::getVar('JoomlaId');
+$options['group'] = 'USERS';
 
-//get the JFusion master
-$master = JFusionFunction::getMaster();
-if ($master->name && $master->name != 'joomla_int') {
-        echo '<br/><h2>' . JText::_('SLAVE'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') . ' ' . JText::_('LOGOUT') .': '. $master->name . '</h2>';
-        $JFusionMaster = JFusionFactory::getUser($master->name);
+	//get the JFusion master
+	$master = JFusionFunction::getMaster();
+	if ($master->name && $master->name != 'joomla_int') {
+        echo '<h2>' . $master->name . ' ' . JText::_('USER') . ' ' . JText::_('LOGOUT'). '</h2>';        $JFusionMaster = JFusionFactory::getUser($master->name);
         $userlookup = JFusionFunction::lookupUser($master->name, $JoomlaId);
+		unset($userlookup->autoid);
+		debug::show($userlookup, JText::_('USER') . ' ' . JText::_('DETAILS'),1);
+
         $MasterUser = $JFusionMaster->getUser($userlookup->username);
         //check if a user was found
         if ($MasterUser) {
             $MasterSession = $JFusionMaster->destroySession($MasterUser, $options);
             if (!empty($MasterSession['error'])) {
-                JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['error'],0);
+					debug::show($MasterSession['error'], JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);
+					debug::show($MasterSession['debug'], JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);
             } else {
-                JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['debug'],0);
-            }
+					debug::show($MasterSession['debug'], JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);            }
         } else {
-            JFusionFunction::raiseWarning($master->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'),0);
+				debug::show(JText::_('COULD_NOT_FIND_USER'), JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);                }
         }
-    }
+
     $slaves = JFusionFunction::getPlugins();
     foreach($slaves as $slave) {
         //check if sessions are enabled
@@ -65,20 +68,23 @@ if ($master->name && $master->name != 'joomla_int') {
             echo '<h2>' . $slave->name . ' ' . JText::_('USER') . ' ' . JText::_('LOGOUT'). '</h2>';
             $JFusionSlave = JFusionFactory::getUser($slave->name);
             $userlookup = JFusionFunction::lookupUser($slave->name, $JoomlaId);
+			unset($userlookup->autoid);
+			debug::show($userlookup, JText::_('USER') . ' ' . JText::_('DETAILS'),1);
+
             $SlaveUser = $JFusionSlave->getUser($userlookup->username);
             //check if a user was found
             if ($SlaveUser) {
                 $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
                 if ($SlaveSession['error']) {
-                    JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['error'],0);
+					debug::show($SlaveSession['error'], JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);
+					debug::show($SlaveSession['debug'], JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);
                 } else {
-                    JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['debug'],0);
-                }
+					debug::show($SlaveSession['debug'], JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);                }
             } else {
-                JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
+				debug::show(JText::_('COULD_NOT_FIND_USER'), JText::_('SESSION') . ' ' . JText::_('DESTROY'),1);                }
             }
         }
-    }
+
 
 ob_end_flush();
 return;
