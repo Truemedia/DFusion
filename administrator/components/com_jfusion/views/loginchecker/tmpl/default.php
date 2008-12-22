@@ -72,10 +72,6 @@ radioObj[i].checked = true;
 <?php echo JText::_('DEBUG') . ' ' . JText::_('REMEMBER_ME'); ?>
 </td><td>
 <input type="checkbox" name="remember" value="yes" checked alt="Remember Me" />
-</td></tr><tr><td width="100px">
-<?php echo JText::_('DEBUG') . ' ' . JText::_('LOGOUT'); ?>
-</td><td>
-<input type="checkbox" name="debug_logout" value="yes" checked alt="Debug Logout" />
-</td></tr></table>
+</td></tr></tr></table>
 </form>
 

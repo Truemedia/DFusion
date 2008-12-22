@@ -76,12 +76,21 @@ JFusionFunction::displayDonate();
 	</div>
 	<div style="float:left;">
 			<div class="icon">
-				<a href="index.php?option=com_jfusion&task=sync" >
-				<img src="components/com_jfusion/images/usersync.png" height="50px" width="50px">
-				<span>Usersync</span>
+				<a href="index.php?option=com_jfusion&task=syncoptions" >
+				<img src="components/com_jfusion/images/syncmaster.png" height="50px" width="50px">
+				<span>New User Sync</span>
 				</a>
 			</div>
 	</div>
+	<div style="float:left;">
+			<div class="icon">
+				<a href="index.php?option=com_jfusion&task=synchistory" >
+				<img src="components/com_jfusion/images/synchistory.png" height="50px" width="50px">
+				<span>User Sync History</span>
+				</a>
+			</div>
+	</div>
+
 	<div style="float:left;">
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=loginchecker" >

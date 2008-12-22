@@ -161,7 +161,7 @@ $userinfo = $JFusionMaster->getUser($credentials['username']);
 //check if a user was found
 if (!empty($userinfo)) {
     //output the userdetails
-    echo '<br/><h2>' . JText::_('MASTER'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') .'</h2>';
+    echo '<br/><h2>' . JText::_('MASTER'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') . ' ' . JText::_('LOGIN') .': ' . $master->name . '</h2>';
     debug::show($credentials['username'], JText::_('LOGIN') . ' ' . JText::_('USERNAME'),1);
 
 	//hide some sensitive details for output
@@ -284,6 +284,7 @@ if ($master->name != 'joomla_int') {
     if ($MasterSession['error']) {
         //report the error back
         debug::show($MasterSession['error'], $master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
+        debug::show($MasterSession['debug'],$master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
     } else {
         debug::show($MasterSession['debug'],$master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
     }
@@ -292,12 +293,10 @@ if ($master->name != 'joomla_int') {
 
 }
 
-    echo '<br/><h2>' . JText::_('SLAVE'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') .'</h2>';
-
 //check to see if we need to setup a Joomla session
 if ($master->name != 'joomla_int') {
     //setup the Joomla user
-    echo '<h2>' . JText::_('JOOMLA') . ' ' . JText::_('USER') . ' ' . JText::_('LOGIN'). '</h2>';
+    echo '<br/><h2>' . JText::_('SLAVE'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') . ' ' . JText::_('LOGIN') .': joomla_int</h2>';
     $JFusionJoomla = JFusionFactory::getUser('joomla_int');
     $JoomlaUser = $JFusionJoomla->updateUser($userinfo,0);
     if ($JoomlaUser['error']) {
@@ -338,80 +337,43 @@ if ($master->name != 'joomla_int') {
 //setup the other slave JFusion plugins
 $slaves = JFusionFunction::getPlugins();
 foreach($slaves as $slave) {
-    echo '<h2>' . $slave->name . ' ' . JText::_('USER') . ' ' . JText::_('LOGIN'). '</h2>';
+    echo '<br/><h2>' . JText::_('SLAVE'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') . ' ' . JText::_('LOGIN') .': '. $slave->name . '</h2>';
     $JFusionSlave = JFusionFactory::getUser($slave->name);
     $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
     if ($SlaveUser['error']) {
-        JFusionFunction::raiseWarning($slave->name . ' ' . JText::_('USER') .' ' .JText::_('UPDATE') , $SlaveUser['error'],0);
+        debug::show($SlaveUser['error'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
+        debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
     } else {
-        echo JText::_('USERNAME') .': ' . $SlaveUser['userinfo']->username .'<br/>';
-        echo JText::_('USERID') . ': ' . $SlaveUser['userinfo']->userid .'<br/>';
-        echo JText::_('NAME') .': ' . $SlaveUser['userinfo']->name .'<br/>';
-        echo JText::_('BLOCK') .': ' . $SlaveUser['userinfo']->block .'<br/>';
-        echo JText::_('ACTIVATION') .': ' . $SlaveUser['userinfo']->activation .'<br/>';
-        JFusionFunction::raiseWarning($slave->name . ' ' . JText::_('USER') .' ' .JText::_('UPDATE') , $SlaveUser['debug'],0);
+
+		//hide some sensitive details for output
+		$userinfo_password = $SlaveUser['userinfo']->password;
+		$userinfo_password_salt = $SlaveUser['userinfo']->password_salt;
+		$SlaveUser['userinfo']->password = substr($SlaveUser['userinfo']->password,0,6) .'********';
+		$SlaveUser['userinfo']->password_salt = substr($SlaveUser['userinfo']->password_salt,0,6) .'********';
+    	debug::show($SlaveUser['userinfo'], 'joomla_int ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
+
+	    //restore the sensitive information
+		$SlaveUser['userinfo']->password = $userinfo_password;
+		$SlaveUser['userinfo']->password_salt = $userinfo_password_salt;
+        debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
 
         //apply the cleartext password to the user object
         $SlaveUser['userinfo']->password_clear = $user['password'];
 
         JFusionFunction::updateLookup($SlaveUser['userinfo'], $slave->name, $JoomlaUser['userinfo']->userid);
 
-        if (!isset($options['group']) && $slave->dual_login == 1) {
+        if ($slave->dual_login == 1) {
             $SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);
             if ($SlaveSession['error']) {
-                JFusionFunction::raiseWarning($slave->name . ' ' . JText::_('SESSION') .' ' .JText::_('CREATE'), $SlaveSession['error'],0);
+    		    debug::show($SlaveSession['error'], $slave->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
+	        	debug::show($SlaveSession['debug'],$slave->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
             } else {
-                JFusionFunction::raiseWarning($slave->name . ' ' . JText::_('SESSION') .' ' .JText::_('CREATE'), $SlaveSession['debug'],0);
+	        	debug::show($SlaveSession['debug'],$slave->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
             }
         }
     }
 }
 
-
-//check to see if we need to debug the logout process
-$debug_logout = JRequest::getVar('debug_logout', '', 'POST', 'STRING' );
-if ($debug_logout) {
-    //get the JFusion master
-    $master = JFusionFunction::getMaster();
-    if ($master->name && $master->name != 'joomla_int') {
-        echo '<h2>' . $master->name . ' ' . JText::_('USER') . ' ' . JText::_('LOGOUT'). ' ' . JText::_('LOGOUT_REFRESH_MESSAGE') . '</h2>';
-        $JFusionMaster = JFusionFactory::getUser($master->name);
-        $userlookup = JFusionFunction::lookupUser($master->name, $JoomlaUser['userinfo']->userid);
-        $MasterUser = $JFusionMaster->getUser($userlookup->username);
-        //check if a user was found
-        if ($MasterUser) {
-            $MasterSession = $JFusionMaster->destroySession($MasterUser, $options);
-            if (!empty($MasterSession['error'])) {
-                JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['error'],0);
-            } else {
-                JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['debug'],0);
-            }
-        } else {
-            JFusionFunction::raiseWarning($master->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'),0);
-        }
-    }
-    $slaves = JFusionFunction::getPlugins();
-    foreach($slaves as $slave) {
-        //check if sessions are enabled
-        if ($slave->dual_login == 1) {
-            echo '<h2>' . $slave->name . ' ' . JText::_('USER') . ' ' . JText::_('LOGOUT'). '</h2>';
-            $JFusionSlave = JFusionFactory::getUser($slave->name);
-            $userlookup = JFusionFunction::lookupUser($slave->name, $JoomlaUser['userinfo']->userid);
-            $SlaveUser = $JFusionSlave->getUser($userlookup->username);
-            //check if a user was found
-            if ($SlaveUser) {
-                $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
-                if ($SlaveSession['error']) {
-                    JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['error'],0);
-                } else {
-                    JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['debug'],0);
-                }
-            } else {
-                JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('LOGOUT'), JText::_('COULD_NOT_FIND_USER'));
-            }
-        }
-    }
-}
 ob_end_flush();
 return;
 

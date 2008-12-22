@@ -144,7 +144,7 @@ class debug {
 	*		- gc = ValueColor, the color of the structuring-grid, i.e. the background of the table
 	*/
 	private function initColorScheme() {
-		debug::$colorScheme[] = array('vc'=>"#ecf8fd", 'akc'=>"#dbfede", 'okc'=>"#acfeff", 'tc'=>'#d6f2ff', 'gc'=>'#fbfed6');
+		debug::$colorScheme[] = array('vc'=>"#ecf8fd", 'akc'=>"#dbfede", 'okc'=>"#dbfede", 'tc'=>'#d6f2ff', 'gc'=>'#fbfed6');
 		debug::$colorScheme[] = array('vc'=>"#f2bb94", 'akc'=>"#cc9e7c", 'okc'=>"#a68065", 'tc'=>'#CCCCCC', 'gc'=>'#AAAAFF');
 		debug::$colorScheme[] = array('vc'=>"#faea37", 'akc'=>"#d4c62f", 'okc'=>"#ada226", 'tc'=>'#CCCCCC', 'gc'=>'#AAAAFF');
 		debug::$colorScheme[] = array('vc'=>"#4bf8d0", 'akc'=>"#3fd1af", 'okc'=>"#33ab8f", 'tc'=>'#CCCCCC', 'gc'=>'#AAAAFF');

@@ -31,28 +31,31 @@
 		</menu>
 		<submenu>
 			<menu img="components/com_jfusion/images/control.png" link="option=com_jfusion&amp;task=cpanel">
-				Control Panel
+				Cpanel
 			</menu>
 			<menu img="components/com_jfusion/images/joomla_small.png" link="option=com_jfusion&amp;task=plugineditor&amp;jname=joomla_int">
 				Joomla Options
 			</menu>
 			<menu img="components/com_jfusion/images/process.png" link="option=com_jfusion&amp;task=plugindisplay">
-				Plugin Configuration
+				Configuration
 			</menu>
 			<menu img="components/com_jfusion/images/add.png" link="option=com_jfusion&amp;task=pluginmanager">
 				Plugin Manager
 			</menu>
-			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=sync">
-				User Sync
+			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=syncoptions">
+				New Usersync
+			</menu>
+			<menu img="components/com_jfusion/images/user.png" link="option=com_jfusion&amp;task=synchistory">
+				Usersync History
 			</menu>
 			<menu img="components/com_jfusion/images/disconnect.png" link="option=com_jfusion&amp;task=loginchecker">
 				Login Checker
 			</menu>
 			<menu img="components/com_jfusion/images/version.png" link="option=com_jfusion&amp;task=versioncheck">
-				Version Checker
+				Versionsr
 			</menu>
 			<menu img="components/com_jfusion/images/info.png" link="option=com_jfusion&amp;task=help">
-				JFusion Help
+				Help
 			</menu>
 		</submenu>
 
