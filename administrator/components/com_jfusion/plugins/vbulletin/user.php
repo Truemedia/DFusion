@@ -198,15 +198,20 @@ class JFusionUser_vbulletin extends JFusionUser{
     }
 
 
-    function deleteUser($username)
+    function deleteUser($userinfo)
     {
+    	//setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
     	//initialize vb framework
 		if(!$this->vBulletinInit()) return null;
 
 		//setup the existing user
 		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
-		$userinfo = $this->convertUserData($this->getUser($username));
-		$userdm->set_existing($userinfo);
+		$existinguser = $this->convertUserData($userinfo);
+		$userdm->set_existing($existinguser);
 
 		//delete the user
 		$userdm->delete();
@@ -216,9 +221,12 @@ class JFusionUser_vbulletin extends JFusionUser{
         		$status['error'][] = JText::_('USER_DELETION_ERROR') . ' ' . $error;
     		}
 		} else {
+			$status['error'] = false;
 			$status['debug'][] = JText::_('USER_DELETION'). ' ' . $existinguser->userid;
 		}
+
 		unset($userdm);
+		return $status;
     }
 
     function destroySession($userinfo, $options)
@@ -250,8 +258,10 @@ class JFusionUser_vbulletin extends JFusionUser{
   			//initialize vb framework
 			if(!$this->vBulletinInit()) return null;
 
+			//setup the status array to hold debug info and errors
 	        $status = array();
 	        $status['debug'] = '';
+			$status["error"] = '';
 
 	        $userid = $userinfo->userid;
 
@@ -288,14 +298,12 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 				$status['error'] = false;
 				$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
-		        return $status;
-
 	        } else {
 	            //could not find a valid userid
 	            $status['error'] = JText::_('INVALID_USERID');
-	            return $status;
 	        }
 
+	        return $status;
 	        unset($userdm);
     	}
     }
@@ -592,10 +600,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 	    }
 
 	    unset($userdm);
-    }
-
-    function deleteUsername($username)
-    {
     }
 
     //convert the existinguser variable into something vbulletin understands
