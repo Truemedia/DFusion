@@ -374,6 +374,19 @@ foreach($slaves as $slave) {
     }
 }
 
+//create a link to test out the logout function
+?>
+<br/><br/>
+<form method="post" action="index2.php" name="adminForm">
+<input type="hidden" name="option" value="com_jfusion" />
+<input type="hidden" name="task" value="logoutcheckerresult" />
+
+<input type="hidden" name="JoomlaId" value="<?php echo $JoomlaUser['userinfo']->userid;?>">
+<input type="submit" value="Debug the Logout Function">
+</form>
+
+
+<?php
 ob_end_flush();
 return;
 

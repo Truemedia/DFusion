@@ -548,6 +548,15 @@ class JFusionController extends JController
     }
 
     /**
+* Displays the result of the logout checker screen to the user
+*/
+    function logoutcheckerresult()
+    {
+        JRequest::setVar('view', 'logoutcheckerresult');
+        parent::display();
+    }
+
+    /**
 * Displays the JFusion Help Window
 */
     function help()
