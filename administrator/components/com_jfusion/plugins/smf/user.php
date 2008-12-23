@@ -158,9 +158,14 @@ class JFusionUser_smf extends JFusionUser{
         return 'smf';
     }
 
-    function deleteUser($username)
+    function deleteUser($userinfo)
     {
-        //TODO: create a function that deletes a user
+     	//setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+        return $status;
     }
 
     function destroySession($userinfo, $options)
@@ -384,8 +389,5 @@ class JFusionUser_smf extends JFusionUser{
             $status['userinfo'] = $this->getUser($userinfo->username);
             return $status;
         }
-    }
-    function deleteUsername($username)
-    {
     }
 }

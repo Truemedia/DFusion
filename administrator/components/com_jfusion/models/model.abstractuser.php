@@ -187,6 +187,22 @@ class JFusionUser{
     {
     }
 
+     /**
+     * Function that deletes a user account
+     * $status['error'] (contains any error messages)
+     * $status['debug'] (contains information on what was done)
+     * @param object $userinfo Object containing the existing userinfo
+     * @return array status Array containing the errors and result of the function
+     */
+    function deleteUser($userinfo)
+    {
+    	//setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+        return $status;
+    }
 
 }
 

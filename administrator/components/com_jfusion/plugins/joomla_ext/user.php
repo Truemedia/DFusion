@@ -36,10 +36,17 @@ class JFusionUser_joomla_ext extends JFusionUser{
         return $status;
     }
 
-    function deleteUsername($username)
+    function deleteUser($userinfo)
     {
         //get the database ready
         $db = & JFusionFactory::getDatabase($this->getJname());
+
+        //setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+        $username = $userinfo->username;
 
         $query = 'SELECT id FROM #__jfusion_users WHERE username='.$db->Quote($username);
         $db->setQuery($query );
@@ -51,8 +58,8 @@ class JFusionUser_joomla_ext extends JFusionUser{
             $user->delete();
             $db->Execute('DELETE FROM #__jfusion_users_plugin WHERE id='.$userid);
             $db->Execute('DELETE FROM #__jfusion_users WHERE id='.$userid);
-            $result = true;
-            return $result;
+            $status['error'] = false;
+            $status['debug'][] = JText::_('USER_DELETION'). ' ' . $username;
         } else {
             //this user was NOT create by JFusion. Therefore we need to delete it in the Joomla user table only
             $query = 'SELECT id from #__users WHERE username = ' . $db->quote($username);
@@ -62,14 +69,16 @@ class JFusionUser_joomla_ext extends JFusionUser{
                 //delete it from the Joomla usertable
                 $user =& JUser::getInstance($userid);
                 $user->delete();
-	            $result = true;
-    	        return $result;
+	            $status['error'] = false;
+	            $status['debug'][] = JText::_('USER_DELETION'). ' ' . $username;
             } else {
                 //could not find user and return an error
-                JError::raiseWarning(0, JText::_('ERROR_DELETE') . $username);
-                return '';
+                //JError::raiseWarning(0, JText::_('ERROR_DELETE') . $username);
+                $status["error"][] = JText::_('ERROR_DELETE') . $username;
             }
         }
+
+        return $status;
     }
 
 

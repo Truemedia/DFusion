@@ -360,7 +360,12 @@ class JFusionUser_moodle extends JFusionUser{
 		$status['debug'][] = JText::_('USER_CREATION');
     }
 
-    function deleteUsername($username)
-    {
+     function deleteUser($userinfo){
+     	//setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+        return $status;
     }
 }
