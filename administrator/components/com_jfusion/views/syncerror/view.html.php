@@ -28,6 +28,7 @@ class jfusionViewsyncerror extends JView {
 	    $syncid = JRequest::getVar('syncid');
     	$syncdata = JFusionUsersync::getSyncdata($syncid);
 
+    	$this->assignRef('syncid', $syncid);
 	    $this->assignRef('syncdata', $syncdata);
 	    parent::display($tpl);
     }

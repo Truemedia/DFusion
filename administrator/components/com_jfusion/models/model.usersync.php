@@ -72,35 +72,44 @@ class JFusionUsersync{
 
     function SyncError($syncid, $syncerror)
     {
-		$syncdata = JFusionUsersync::getSyncdata($syncid);
-		foreach ($syncerror as $error) {
+		//Load debug library
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
 
+		$syncdata = JFusionUsersync::getSyncdata($syncid);
+		foreach ($syncerror as $id => $error) {
 			if ($error['action'] == '1') {
-				//update the master user
-		        $JFusionPlugin = JFusionFactory::getUser($error['master_jname']);
-		        $JFusionPlugin2 = JFusionFactory::getUser($error['slave_jname']);
-				$userinfo = $JFusionPlugin2->getUser(html_entity_decode($error['master_username']));
-				$status = $JFusionPlugin->updateUser($userinfo,1);
+				//update the slave user
+				echo '<h2>' . $syncdata['errors'][$id]['user']['jname'] . ' ' . JText::_('USER')  .' ' .JText::_('UPDATE').'</h2>';
+		        $JFusionPlugin = JFusionFactory::getUser($syncdata['errors'][$id]['user']['jname']);
+			    debug::show($syncdata['errors'][$id]['conflict']['userinfo'], $syncdata['errors'][$id]['conflict']['jname']. ' ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
+
+				$status = $JFusionPlugin->updateUser($syncdata['errors'][$id]['conflict']['userinfo'],1);
 				if ($status['error']) {
-					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('UPDATE'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . ' ' . JText::_('ERROR') . ': ' . $status['error']. '<br/>';
+			        debug::show($status['error'], $syncdata['errors'][$id]['user']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('ERROR'), 0);
+			        debug::show($status['debug'], $syncdata['errors'][$id]['user']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 				} else {
-					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('UPDATE'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . ' ' . JText::_('SUCCESS') . ': ' . $status['debug']. '<br/>';
+			        debug::show($status['debug'], $syncdata['errors'][$id]['user']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 				}
 
 			} elseif ($error['action'] == '2') {
 				//update the slave user
-		        $JFusionPlugin = JFusionFactory::getUser($error['slave_jname']);
-		        $JFusionPlugin2 = JFusionFactory::getUser($error['master_jname']);
-				$userinfo = $JFusionPlugin2->getUser(html_entity_decode($error['master_username']));
-				$status = $JFusionPlugin->updateUser($userinfo,1);
+				echo '<h2>' . $syncdata['errors'][$id]['conflict']['jname'] . ' ' . JText::_('USER')  .' ' .JText::_('UPDATE').'</h2>';
+		        $JFusionPlugin = JFusionFactory::getUser($syncdata['errors'][$id]['conflict']['jname']);
+			    debug::show($syncdata['errors'][$id]['user']['userinfo'], $syncdata['errors'][$id]['user']['jname']. ' ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
+
+				$status = $JFusionPlugin->updateUser($syncdata['errors'][$id]['user']['userinfo'],1);
 				if ($status['error']) {
-					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('UPDATE'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . ' ' . JText::_('ERROR') . ': '  . $status['error']. '<br/>';
+			        debug::show($status['error'], $syncdata['errors'][$id]['conflict']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('ERROR'), 0);
+			        debug::show($status['debug'], $syncdata['errors'][$id]['conflict']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 				} else {
-					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('UPDATE'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . ' ' . JText::_('SUCCESS') . ': '  . $status['debug']. '<br/>';
+			        debug::show($status['debug'], $syncdata['errors'][$id]['conflict']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 				}
 
 			} elseif ($error['action'] == '3') {
 				//delete the master user
+
+				//NOT IMPLEMENTED YET
+
 		        $JFusionPlugin = JFusionFactory::getUser($error['master_jname']);
 		        $userinfo = $JFusionPlugin->getUser(html_entity_decode($error['master_username']));
 		        $status = $JFusionPlugin->deleteUser($userinfo);
@@ -114,6 +123,9 @@ class JFusionUsersync{
 
 			} elseif ($error['action'] == '4') {
 				//delete the slave user
+
+				//NOT IMPLEMENTED YET
+
 		        $JFusionPlugin = JFusionFactory::getUser($error['slave_jname']);
 		      	$userinfo = $JFusionPlugin->getUser(html_entity_decode($error['slave_username']));
 		        $status = $JFusionPlugin->deleteUser($userinfo);

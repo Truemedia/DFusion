@@ -47,6 +47,7 @@ JFusionFunction::displayDonate();
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="syncerror" />
+<input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
 <div id="ajax_bar"><? echo JText::_('APPLY_ACTION_ALL_CONFLICTS'); ?>
 <select name="default_value" default="0">
@@ -135,8 +136,8 @@ if ($error_type != 'Error'){
 if ($error_type != 'Error'){ ?>
 <select name="syncerror[<?php echo $i; ?>][action]" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
-<option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
-<option value="2"><?php echo JText::_('UPDATE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
+<option value="1"><?php echo JText::_('UPDATE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')?></option>
+<option value="2"><?php echo JText::_('UPDATE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')?></option>
 <?php
 //<option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')</option>
 //<option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')</option>
