@@ -119,8 +119,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             return $status;
 
         } else {
-			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
-
+			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
             $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
@@ -595,7 +594,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $status['debug'][] = JText::_('USER_CREATION');
         }
     }
-   
+
     function deleteUser($userinfo)
     {
     	//setup status array to hold debug info and errors
@@ -727,7 +726,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     		$status["error"][] = "Error Could not update edited posts by user $user_id: {$db->stderr()}";
 		} else {
 			$status["debug"][] = "Updated edited posts to be from anonymous if edited by user $user_id.";
-		}		
+		}
 
 		$query = "UPDATE #__topics
 			SET topic_poster = 1, topic_first_poster_name = " . $db->quote($post_username) . ", topic_first_poster_colour = ''
@@ -737,8 +736,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
     		$status["error"][] = "Error Could not update topics by user $user_id: {$db->stderr()}";
 		} else {
 			$status["debug"][] = "Updated topics to be from anonymous if started by user $user_id.";
-		}	
-		
+		}
+
 
 		$query = "UPDATE #__topics
 			SET topic_last_poster_id = 1, topic_last_poster_name = " . $db->quote($post_username) . ", topic_last_poster_colour = ''
@@ -748,7 +747,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     		$status["error"][] = "Error Could not update last topic poster for user $user_id: {$db->stderr()}";
 		} else {
 			$status["debug"][] = "Updated topic last poster to be anonymous if set as user $user_id.";
-		}			
+		}
 
 		// Since we change every post by this author, we need to count this amount towards the anonymous user
 		$query = "SELECT user_posts FROM #__users WHERE user_id = $user_id";
@@ -766,7 +765,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     			$status["error"][] = "Error Could not update the number of posts for anonymous user: {$db->stderr()}";
 			} else {
 				$status["debug"][] = "Updated post count for anonymous user.";
-			}				
+			}
 		}
 
 		$table_ary = array("users", "user_group", "topics_watch", "forums_watch", "acl_users", "topics_track", "topics_posted", "forums_track", "profile_fields_data", "moderator_cache", "drafts", "bookmarks");
@@ -780,7 +779,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     			$status["error"][] = "Error Could not delete records from $table for user $user_id: {$db->stderr()}";
 			} else {
 				$status["debug"][] = "Deleted records from $table for user $user_id.";
-			}				
+			}
 		}
 
 		//TODO clear moderator cache table
@@ -801,7 +800,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 				{
 					$undelivered_msg[] = $row->msg_id;
 					$undelivered_user[$row->user_id][] = true;
-				}		
+				}
 				$status["debug"][] = "Retrieved undelvered private messages from user $user_id.";
 			}
 		} else {
@@ -817,7 +816,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     			$status["error"][] = "Error Could not delete private messages for user $user_id: {$db->stderr()}";
 			} else {
 				$status["debug"][] = "Deleted undelivered private messages from user $user_id.";
-			}				
+			}
 		}
 
 		$query = 'DELETE FROM #__privmsgs_to
@@ -828,8 +827,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
     		$status["error"][] = "Error Could not delete private messages that are in no folder from user $user_id: {$db->stderr()}";
 		} else {
 			$status["debug"][] = "Deleted private messages that are in no folder from user $user_id.";
-		}			
-		
+		}
+
 
 		// Delete all to-information
 		$query = 'DELETE FROM #__privmsgs_to
@@ -839,7 +838,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     		$status["error"][] = "Error Could not delete private messages to user $user_id: {$db->stderr()}";
 		} else {
 			$status["debug"][] = "Deleted private messages sent to user $user_id.";
-		}			
+		}
 
 
 		// Set the remaining author id to anonymous - this way users are still able to read messages from users being removed
@@ -851,7 +850,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     		$status["error"][] = "Error Could not update rest of private messages for user $user_id to anonymous: {$db->stderr()}";
 		} else {
 			$status["debug"][] = "Updated the author to anonymous for the rest of the PMs in the 'to' table if originally sent by user $user_id.";
-		}			
+		}
 
 		$query = 'UPDATE #__privmsgs
 			SET author_id = 1
@@ -861,8 +860,8 @@ class JFusionUser_phpbb3 extends JFusionUser{
     		$status["error"][] = "Error Could not update rest of private messages for user $user_id to anonymous: {$db->stderr()}";
 		} else {
 			$status["debug"][] = "Updated the author to anonymous for the rest of the PMs in the main PM table if originally sent by user $user_id.";
-		}	
-		
+		}
+
 		foreach ($undelivered_user as $_user_id => $ary)
 		{
 			if ($_user_id == $user_id)
@@ -879,7 +878,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     			$status["error"][] = "Error Could not update the number of PMs for user $_user_id for user $user_id was deleted: {$db->stderr()}";
 			} else {
 				$status["debug"][] = "Updated the the number of PMs for user $_user_id since user $user_id was deleted.";
-			}				
+			}
 		}
 
 		//TODO update newest user id
@@ -895,7 +894,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 			set_config('num_users', $config['num_users'] - 1, true);
 		}
 		*/
-		
+
 		return $status;
     }
 }

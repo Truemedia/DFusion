@@ -283,7 +283,7 @@ class debug {
 		else {		// the "leave"-run
 			$str = debug::decorateValue($arr);
 			if ($name != "") $str = "<div class='debug_0'><table class='grid' width='100%'><thead onclick='tns(event)'><tr><th class='title'>$name </th></tr></thead><tbody><tr><td class='a_key' onclick='tns(event)'> $str </td></tr></tbody></table></div>\n";
-			flush();
+			//flush();
 		}
 		return $str;
 	}
@@ -321,7 +321,7 @@ class debug {
 	*/
 	function show($arr, $title=false) {
 		print(debug::get($arr, $title));
-		flush();
+		//flush();
 	}
 
 	static $messungen;

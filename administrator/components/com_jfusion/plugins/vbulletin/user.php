@@ -148,7 +148,7 @@ class JFusionUser_vbulletin extends JFusionUser{
             return $status;
 
         } else {
-			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
+			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
             $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';

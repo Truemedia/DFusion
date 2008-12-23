@@ -74,6 +74,15 @@ $server_info['MySQL Version'] = $phpinfo['mysql']['Client API version'];
 $server_info['System Information'] = $phpinfo['phpinfo']['System'];
 $server_info['Browser Information'] = $_SERVER['HTTP_USER_AGENT'];
 
+//check to see if JFusion is enabled
+$plugin_user = JFusionFunction::isPluginInstalled('jfusion', 'user', 1);
+$plugin_auth = JFusionFunction::isPluginInstalled('jfusion', 'authentication', 1);
+
+if ($plugin_user && $plugin_auth){
+	$server_info['JFusion User and Auth Plugins'] = JText::_('ENABLED');
+} else {
+	$server_info['JFusion User and Auth Plugins'] = JText::_('DISABLED');
+}
 //output the information to the user
 debug::show($server_info, JText::_('SERVER') . ' ' . JText::_('CONFIGURATION'),1);
 
@@ -245,9 +254,10 @@ $userinfo->password_clear = $user['password'];
 
 $MasterUser = $JFusionMaster->updateUser($userinfo,0);
 if ($MasterUser['error']) {
-	debug::show($MasterUser['error'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE'),1);
+	debug::show($MasterUser['error'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE'). ' ' . JText::_('ERROR'),1);
+	debug::show($MasterUser['debug'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' .JText::_('DEBUG'),1);
 } else {
-	debug::show($MasterUser['debug'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE'),1);
+	debug::show($MasterUser['debug'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' .JText::_('DEBUG'),1);
 }
 
 // See if the user has been blocked or is not activated
@@ -283,10 +293,10 @@ if ($master->name != 'joomla_int') {
     $MasterSession = $JFusionMaster->createSession($userinfo, $options);
     if ($MasterSession['error']) {
         //report the error back
-        debug::show($MasterSession['error'], $master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
-        debug::show($MasterSession['debug'],$master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
+        debug::show($MasterSession['error'], $master->name .' ' .JText::_('SESSION').' ' .JText::_('ERROR'), 1);
+        debug::show($MasterSession['debug'],$master->name .' ' .JText::_('SESSION').' ' .JText::_('DEBUG'), 1);
     } else {
-        debug::show($MasterSession['debug'],$master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
+        debug::show($MasterSession['debug'],$master->name .' ' .JText::_('SESSION').' ' .JText::_('DEBUG'), 1);
     }
 } else {
         debug::show(JText::_('SKIPPED_SESSION_CREATE'),'joomla_int' .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
@@ -301,7 +311,8 @@ if ($master->name != 'joomla_int') {
     $JoomlaUser = $JFusionJoomla->updateUser($userinfo,0);
     if ($JoomlaUser['error']) {
         //no Joomla user could be created, fatal error
-        debug::show($JoomlaUser['error'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
+        debug::show($JoomlaUser['error'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('ERROR'), 0);
+        debug::show($JoomlaUser['debug'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
         ob_end_flush();
         $success = false;
         return $success;
@@ -318,7 +329,7 @@ if ($master->name != 'joomla_int') {
 	$JoomlaUser['userinfo']->password = $userinfo_password;
 	$JoomlaUser['userinfo']->password_salt = $userinfo_password_salt;
 
-        debug::show($JoomlaUser['debug'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
+        debug::show($JoomlaUser['debug'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE') .' ' .JText::_('DEBUG'), 0);
         debug::show(JText::_('SKIPPED_SESSION_CREATE'),'joomla_int' .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
 
     }
@@ -341,11 +352,24 @@ foreach($slaves as $slave) {
     $JFusionSlave = JFusionFactory::getUser($slave->name);
     $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
     if ($SlaveUser['error']) {
-        debug::show($SlaveUser['error'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
-        debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
+        debug::show($SlaveUser['error'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('ERROR'), 0);
+        debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
+       	//output the conflicting user information
+
+			unset($SlaveUser['userinfo']->password_clear);
+			if (isset($SlaveUser['userinfo']->password)){
+				$SlaveUser['userinfo']->password = substr($SlaveUser['userinfo']->password,0,6) .'********';
+			}
+			if (isset($SlaveUser['userinfo']->password_salt)){
+				$SlaveUser['userinfo']->password_salt = substr($SlaveUser['userinfo']->password_salt,0,6) .'********';
+			}
+
+    		debug::show($SlaveUser['userinfo'], $slave->name . ' ' .JText::_('CONFLICT'). ' ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
+
     } else {
 
 		//hide some sensitive details for output
+		unset($SlaveUser['userinfo']->password_clear);
 		$userinfo_password = $SlaveUser['userinfo']->password;
 		$userinfo_password_salt = $SlaveUser['userinfo']->password_salt;
 		$SlaveUser['userinfo']->password = substr($SlaveUser['userinfo']->password,0,6) .'********';
@@ -355,7 +379,7 @@ foreach($slaves as $slave) {
 	    //restore the sensitive information
 		$SlaveUser['userinfo']->password = $userinfo_password;
 		$SlaveUser['userinfo']->password_salt = $userinfo_password_salt;
-        debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), 0);
+        debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 
         //apply the cleartext password to the user object
         $SlaveUser['userinfo']->password_clear = $user['password'];
@@ -365,10 +389,10 @@ foreach($slaves as $slave) {
         if ($slave->dual_login == 1) {
             $SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);
             if ($SlaveSession['error']) {
-    		    debug::show($SlaveSession['error'], $slave->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
-	        	debug::show($SlaveSession['debug'],$slave->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
+    		    debug::show($SlaveSession['error'], $slave->name .' ' .JText::_('SESSION').' ' .JText::_('ERROR'), 1);
+	        	debug::show($SlaveSession['debug'],$slave->name .' ' .JText::_('SESSION').' ' .JText::_('DEBUG'), 1);
             } else {
-	        	debug::show($SlaveSession['debug'],$slave->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), 1);
+	        	debug::show($SlaveSession['debug'],$slave->name .' ' .JText::_('SESSION').' ' .JText::_('DEBUG'), 1);
             }
         }
     }

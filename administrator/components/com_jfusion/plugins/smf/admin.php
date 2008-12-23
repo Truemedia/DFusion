@@ -51,10 +51,11 @@ class JFusionAdmin_smf extends JFusionAdmin{
                 $line = fgets($file_handle);
                 if (strpos($line, '$') === 0) {
                     $vars = split("'", $line);
-                    $name = trim($vars[0], ' $=');
-                    $value = trim($vars[1], ' $=');
-                    $config[$name] = $value;
-
+                     if(isset($vars[1]) && isset($vars[0])){
+	                    $name = trim($vars[0], ' $=');
+    	                $value = trim($vars[1], ' $=');
+        	            $config[$name] = $value;
+                    }
                 }
             }
             fclose($file_handle);

@@ -108,7 +108,7 @@ class JFusionUser_mybb extends JFusionUser{
             return $status;
 
         } else {
-			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
+			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
             $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
@@ -145,15 +145,10 @@ class JFusionUser_mybb extends JFusionUser{
             return 'mybb';
         }
 
-	    function deleteUser($userinfo)
-	    {
-	     	//setup status array to hold debug info and errors
-	        $status = array();
-	        $status['debug'] = array();
-	        $status['error'] = array();
-
-	        return $status;
-	    }
+        function deleteUser($username)
+        {
+            //TODO: create a function that deletes a user
+        }
 
         function destroySession($userinfo, $options)
         {
@@ -373,7 +368,7 @@ class JFusionUser_mybb extends JFusionUser{
 	        $status['debug'][] = JText::_('PASSWORD_UPDATE'). ': ' . $existinguser->email . ' -> ' . $userinfo->email;
         }
     }
-
+ 
     function activateUser ($userinfo, &$existinguser, &$status)
     {
             //found out what usergroup should be used

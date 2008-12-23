@@ -108,7 +108,7 @@ class JFusionUser_smf extends JFusionUser{
             return $status;
 
         } else {
-			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
+			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
             $this->createUser($userinfo, $overwrite, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
@@ -158,14 +158,9 @@ class JFusionUser_smf extends JFusionUser{
         return 'smf';
     }
 
-    function deleteUser($userinfo)
+    function deleteUser($username)
     {
-     	//setup status array to hold debug info and errors
-        $status = array();
-        $status['debug'] = array();
-        $status['error'] = array();
-
-        return $status;
+        //TODO: create a function that deletes a user
     }
 
     function destroySession($userinfo, $options)

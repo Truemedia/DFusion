@@ -256,7 +256,7 @@ class JFusionUser_magento extends JFusionUser{
             return $status;
 
         } else {
-			$status['debug'][] = JText::_('NO_USER_DATA_FOUND');
+			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
             //we need to create a new user
             $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
@@ -503,13 +503,4 @@ $db->Execute('BEGIN TRANSACTION');
         }
      }
 
-    //TODO delete username code
-     function deleteUser($userinfo){
-     	//setup status array to hold debug info and errors
-        $status = array();
-        $status['debug'] = array();
-        $status['error'] = array();
-
-        return $status;
-    }
 }
