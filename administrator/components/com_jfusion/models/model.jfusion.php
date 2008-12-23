@@ -311,7 +311,9 @@ class JFusionFunction{
             $params = JFusionFactory::getParams($jname);
             $url = $params->get('source_url') . $url;
         } elseif ($view == 'wrapper') {
-            $url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname . '&amp;wrap='. base64_encode($url);
+        	//use base64_encode to encode the URL for passing.  But, base64_code uses / which throws off SEF urls.  Thus slashes
+        	//must be translated into something base64_encode will not generate and something that will not get changed by Joomla or Apache.
+            $url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname . '&amp;wrap='. str_replace("/","_slash_",base64_encode($url));
             $url = JRoute::_($url);
         } elseif ($view == 'frameless'){
             $base_url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname;
