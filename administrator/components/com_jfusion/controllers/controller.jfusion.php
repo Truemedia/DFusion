@@ -310,14 +310,8 @@ class JFusionController extends JController
     	$syncerror = JRequest::getVar('syncerror', array(), 'POST', 'array' );
     	$syncid = JRequest::getVar('syncid', '', 'POST');
     	if ($syncerror) {
-			/**
-			* 	Load usersync library
-			*/
-			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
-
     		//apply the submitted sync error instructions
 			JFusionUsersync::SyncError($syncid, $syncerror);
-
     	} else {
     		//output the sync errors to the user
         	JRequest::setVar('view', 'syncerror');
@@ -605,8 +599,28 @@ class JFusionController extends JController
         parent::display();
     }
 
+	function deletehistory()
+	{
+		$db =& JFactory::getDBO();
+    	$syncid = JRequest::getVar('syncid');
+    	foreach($syncid as $key => $value){
+			$db->setQuery('DELETE FROM #__jfusion_sync WHERE syncid = ' . $db->Quote($key));
+			$db->Query();
+    	}
+        JRequest::setVar('view', 'synchistory');
+        parent::display();
+	}
 
+	function resolveerror()
+	{
+		$db =& JFactory::getDBO();
+    	$syncid = JRequest::getVar('syncid');
+    	foreach($syncid as $key => $value){
+	    	$syncid = JRequest::setVar('syncid', $key);
+	        //output the sync errors to the user
+	        JRequest::setVar('view', 'syncerror');
+        	parent::display();
+        	return;
+		}
+	}
 }
-
-
-

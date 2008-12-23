@@ -18,7 +18,7 @@ if (!$this->syncdata['slave_data']){
 } elseif ($this->syncdata['completed']) {
 	echo '<br/><br/><br/>';
 	//check to see if there were any errors
-	if ($this->syncdata['errors']) {
+	if (isset($this->syncdata['errors'])) {
 		//redirect to resolve errors
 		echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2>';
 	} else {

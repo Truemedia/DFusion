@@ -15,6 +15,7 @@ JFusionFunction::displayDonate();
 
 ?>
 <style type="text/css">
+<!--
 
 #log {
     float: left;
@@ -45,14 +46,14 @@ JFusionFunction::displayDonate();
     padding: 3px 5px;
     vertical-align: center;
 }
-
-
-
+// -->
 </style>
 
 
 
 <script type="text/javascript">
+<!--
+
 window.addEvent('domready', function() {
 
 
@@ -182,6 +183,7 @@ window.addEvent('domready', function() {
     );
 }
 );
+// -->
 </script>
 
 <table><tr>

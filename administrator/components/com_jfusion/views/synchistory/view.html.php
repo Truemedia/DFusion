@@ -21,6 +21,13 @@ class jfusionViewsynchistory extends JView {
 
     function display($tpl = null)
     {
+
+        //prepare the toolbar
+        $bar =& new JToolBar('My Toolbar' );
+        $bar->appendButton('Standard', 'delete', 'Delete Record', 'deletehistory', false, false );
+        $bar->appendButton('Standard', 'forward', 'Resolve Error', 'resolveerror', false, false );
+        $toolbar = $bar->render();
+
         //get the all usersync data
         $db = & JFactory::getDBO();
         $query = 'SELECT * from #__jfusion_sync';
@@ -30,6 +37,7 @@ class jfusionViewsynchistory extends JView {
         if ($rows) {
             //print out results to user
             $this->assignRef('rows', $rows);
+        	$this->assignRef('toolbar', $toolbar);
             parent::display($tpl);
         } else {
             JError::raiseWarning(500, JText::_('NO_USERSYNC_DATA'));

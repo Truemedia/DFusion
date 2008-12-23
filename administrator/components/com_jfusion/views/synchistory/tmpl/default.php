@@ -17,19 +17,50 @@ JFusionFunction::displayDonate();
 <script type="text/javascript" src="<?php echo 'components/com_jfusion/js/moodalbox.js'; ?>"></script>
 <link rel="stylesheet" href="<?php echo 'components/com_jfusion/css/moodalbox.css'; ?>" type="text/css" media="screen" />
 
+<script language="javascript" type="text/javascript">
+<!--
+checked=false;
+function applyAll() {
+	 if (checked == false)
+          {
+           checked = true;
+          }
+        else
+          {
+          checked = false;
+          }
+	for(i=0; i<document.adminForm.elements.length; i++){
+		if(document.adminForm.elements[i].type=="checkbox"){
+			document.adminForm.elements[i].checked = checked;
+		}
+		}
+}
+//-->
+</script>
+
+<?php echo $this->toolbar; ?>
+
+<form method="post" action="index2.php" name="adminForm">
+<input type="hidden" name="option" value="com_jfusion" />
+<input type="hidden" name="task" value="syncstatus" />
+<input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
+
 <table><tr><td width="100px">
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/synchistory.png" height="75px" width="75px">
-<td><h2><? echo JText::_('SYNC_HISTORY'); ?></h2></td></tr></table><br/><br/><br/>
-<br/><br/><br/>
+<td><h2><? echo JText::_('SYNC_HISTORY'); ?></h2></td></tr></table><br/>
 
 <table class="adminlist" cellspacing="1"><thead><tr>
+<th class="title" width="20px">
+<input type='checkbox' onclick='applyAll();'>
+</th>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
 <th class="title" ><?php echo JText::_('ACTION'); ?></th>
 <th class="title" align="center"><?php echo JText::_('START_TIME'); ?></th>
 <th class="title" align="center"><?php echo JText::_('END_TIME'); ?></th>
 <th class="title" align="center"><?php echo JText::_('TOTAL_TIME'); ?></th>
+<th class="title" align="center"><?php echo JText::_('ERRORS'); ?></th>
 <th class="title" align="center"><?php echo JText::_('DETAILS'); ?></th>
 </tr></thead><tbody>
 
@@ -108,9 +139,13 @@ if ($row_count == 1){
 }	else {
 	$row_count = 1;
 }
+
+$syncdata = unserialize(base64_decode($record->syncdata));
+
+
 	?>
 
-
+<td><input type="checkbox" name="syncid[<?php echo $record->syncid; ?>]" /></td>
 <td><?php echo $record->syncid; ?></td>
 <td><?php echo $record->action; ?></td>
 <td><?php echo date("d/m/y : H:i:s", $record->time_start) ; ?></td>
@@ -122,6 +157,16 @@ if ($row_count == 1){
 <td><?php echo JText::_('SYNC_NOT_FINISHED'); ?></td>
 <?php } ?>
 
+<?php
+//get the total errors
+$total_error = 0;
+foreach ($syncdata['slave_data'] as $slave) {
+$total_error = $total_error = $slave['error'];
+}
+
+echo '<td>' . $total_error . '</td>';?>
+
+
 <td><a href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"><? echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a></td>
 </tr>
 
@@ -130,4 +175,4 @@ if ($row_count == 1){
 <?php } ?>
 
 
-</tbody></table><br/><br/><br/>
+</tbody></table></form><br/><br/><br/>
