@@ -13,12 +13,11 @@
 	<files>
 		<filename>admin.php</filename>
 		<filename>auth.php</filename>
-		<filename>forum.php</filename>		
+		<filename>forum.php</filename>
 		<filename>index.html</filename>
 		<filename>jfusion.xml</filename>
 		<filename>public.php</filename>
 		<filename>user.php</filename>
-		<filename>
 	</files>
   	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="description" type="text" size="20" default="vbulletin 3.7.x plugin" description="DESCRIPTION"/>
@@ -50,8 +49,8 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
-		
-		<!-- Discussion bot parameters to be released at a later date		
+
+		<!-- Discussion bot parameters to be released at a later date
 		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name=" " type="helptext" default="DISCUSSBOT_DESC"/>
 		<param name="enable_discussbot" type="list" default="0" label="ENABLE_DISCUSSBOT" description="ENABLE_DISCUSSBOT_DESC">
@@ -68,7 +67,7 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
-		<param name="post_header" type="text" size="20" default="" label="POST_HEADER" description="POST_HEADER_DESC" />		
+		<param name="post_header" type="text" size="20" default="" label="POST_HEADER" description="POST_HEADER_DESC" />
 		<param name="limit_posts" type="text" size="20" default="5" label="LIMIT_POSTS" description="LIMIT_POSTS_DESC" />
 		<param name="sort_posts" type="list" default="DESC" label="SORT_POSTS" description="SORT_POSTS_DESC">
 			<option value="DESC">NEWEST_TO_OLDEST</option>
@@ -92,13 +91,13 @@
 		<param name="auto_create" type="list" default="0" label="AUTO_CREATE" description="AUTO_CREATE_DESC">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
-		</param>						
+		</param>
 		<param name="include_sections" type="text" size="20" default="" label="INCLUDE_SECTIONS" description="INCLUDE_SECTIONS_DESC" />
 		<param name="exclude_sections" type="text" size="20" default="" label="EXCLUDE_SECTIONS" description="EXCLUDE_SECTIONS_DESC" />
 		<param name="include_categories" type="text" size="20" default="" label="INCLUDE_CATEGORIES" description="INCLUDE_CATEGORIES_DESC" />
 		<param name="exclude_categories" type="text" size="20" default="" label="EXCLUDE_CATEGORIES" description="EXCLUDE_CATEGORIES_DESC" />
 		<param name="pair_sections" type="text" size="20" default="" label="PAIR_SECTIONS" description="PAIR_SECTIONS_DESC" />
-		<param name="pair_categories" type="text" size="20" default="" label="PAIR_CATEGORIES" description="PAIR_CATEGORIES_DESC" />				
+		<param name="pair_categories" type="text" size="20" default="" label="PAIR_CATEGORIES" description="PAIR_CATEGORIES_DESC" />
 		<param name="default_forum" type="ForumListDiscussbot" description="DEFAULT_FORUM" label="DEFAULT_FORUM" />
 		<param name="default_userid" type="text" default="1" description="DEFAULT_FORUM_USERID_DESC" label="DEFAULT_FORUM_USERID" />
 		<param name="first_post" type="list" default="articleLink" label="" description="FIRST_POST">

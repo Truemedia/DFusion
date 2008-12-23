@@ -53,11 +53,12 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
                 $line = fgets($file_handle);
                 if (strpos($line, '$config') === 0) {
                     $vars = split("'", $line);
-                    $name1 = trim($vars[1], ' $=');
-                    $name2 = trim($vars[3], ' $=');
-                    $value = trim($vars[5], ' $=');
-                    $config[$name1][$name2] = $value;
-
+                    if(isset($vars[5])){
+	                    $name1 = trim($vars[1], ' $=');
+    	                $name2 = trim($vars[3], ' $=');
+        	            $value = trim($vars[5], ' $=');
+            	        $config[$name1][$name2] = $value;
+                    }
                 } else if (strpos($line, 'Licence Number')) {
                     //extract the vbulletin license code while we are at it
                     $vb_lic = substr($line, strpos($line, 'Licence Number') + 14, strlen($line));
@@ -67,8 +68,6 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 
             //save the parameters into the standard JFusion params format
             $params = array();
-            $params['database_host'] = $config['dbhost'];
-
             $params['database_host'] = $config['MasterServer']['servername'];
             $params['database_type'] = $config['Database']['dbtype'];
             $params['database_name'] = $config['Database']['dbname'];

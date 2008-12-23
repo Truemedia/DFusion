@@ -87,6 +87,33 @@ VALUES ('moodle', 'moodle','1.01','07th September 2008',  'JFusion development t
 	if (!$db->queryBatch()){
 		echo $db->stderr() . '<br/>';
 	}
+} else {
+	//make sure the magento plugin is installed
+	$query = 'SELECT name FROM #__jfusion WHERE name = \'magento\'';
+	$db->setQuery($query);
+	if (!$db->loadResult()) {
+		$query = "INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
+VALUES ('magento', 'magento','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0, 0, 0, 0,  0, 3);";
+ 		$db->Execute($query);
+	}
+
+	//make sure the moodle plugin is installed
+	$query = 'SELECT name FROM #__jfusion WHERE name = \'moodle\'';
+	$db->setQuery($query);
+	if (!$db->loadResult()) {
+		$query = "INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
+VALUES ('moodle', 'moodle','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0,  0, 0, 0,  0, 3);";
+ 		$db->Execute($query);
+	}
+
+	//make sure that the slave capabilties of the joomla_ext plugin is enabled
+	$query = 'SELECT slave FROM #__jfusion WHERE name = \'joomla_ext\'';
+	$db->setQuery($query);
+	if ($db->loadResult() == 3) {
+		$query = 'UPDATE #__jfusion SET slave = 0 WHERE name = \'joomla_ext\'';
+ 		$db->Execute($query);
+	}
+
 }
 
 

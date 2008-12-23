@@ -132,9 +132,11 @@ class JFusionJplugin{
                     //extract the name and value, it was coded to avoid the use of eval() function
                     $vars = split ("'", $line);
                     $names = split ('var', $vars[0] );
-                    $name = trim($names[1], ' $=');
-                    $value = trim($vars[1], ' $=');
-                    $config[$name] = $value;
+                    if(isset($vars[1]) && isset($names[1])){
+    	                $name = trim($names[1], ' $=');
+	                    $value = trim($vars[1], ' $=');
+        	            $config[$name] = $value;
+                    }
                 }
             }
             fclose($file_handle);

@@ -54,8 +54,7 @@ $db->Query();
 $db->setQuery('UPDATE #__plugins SET published = 1 WHERE element =\'joomla\' and folder = \'user\'');
 $db->Query();
 ?>
-			<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
-			<img src="templates/khepri/images/toolbar/icon-32-apply.png" height="20px" width="20px">
+			<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px">
 			<td><font size="2"><b>Restored normal Joomla login behaviour</b></font></td></tr></table>
 <?php
 

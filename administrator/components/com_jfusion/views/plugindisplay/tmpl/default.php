@@ -181,8 +181,13 @@ if ($usergroup) {
 }
 
 } else {
-echo '<td><img src="images/publish_x.png" border="0" alt="Wrong Config" />' .$status[$record->status] . '</td>
-<td></td><td></td><td></td></tr>';
+if ($record->status == 3){
+echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' .$status[$record->status] . '</td>';
+} else {
+echo '<td><img src="images/publish_x.png" border="0" alt="Wrong Config" />' .$status[$record->status] . '</td>';
+}
+
+echo '<td></td><td></td><td></td></tr>';
 }
 
 }
