@@ -211,7 +211,7 @@ class JFusionJplugin{
         $cookies_to_set_index = 0;
 
         $params = JFusionFactory::getParams($jname);
-		$curl_options['post_url']			= $params->get('source_url').$params->get('login_url');
+		$curl_options['post_url']			= $params->get('source_url').$params->get('logout_url');
 	 	$curl_options['cookiedomain']		= $params->get('cookie_domain');
 	 	$curl_options['cookiepath']			= $params->get('cookie_path');
 	 	$curl_options['leavealone']			= $params->get('leavealone');
