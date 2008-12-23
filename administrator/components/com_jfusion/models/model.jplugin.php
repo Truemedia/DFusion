@@ -187,7 +187,8 @@ class JFusionJplugin{
 	 	$curl_options['expires']			= $params->get('cookie_expires');
  	 	$curl_options['input_username_id']	= $params->get('input_username_id');
 		$curl_options['input_password_id']	= $params->get('input_password_id');
-
+		$curl_options['secure']				= $params->get('secure');
+		$curl_options['httponly']			= $params->get('httponly');
         $status=JFusionCurl::RemoteLogin($curl_options);
         return $status;
     }
@@ -212,6 +213,8 @@ class JFusionJplugin{
 	 	$curl_options['cookiedomain']		= $params->get('cookie_domain');
 	 	$curl_options['cookiepath']			= $params->get('cookie_path');
 	 	$curl_options['leavealone']			= $params->get('leavealone');
+		$curl_options['secure']				= $params->get('secure');
+		$curl_options['httponly']			= $params->get('httponly');
         $status = JFusionCurl::RemoteLogout($curl_options);
         return $status;
      }

@@ -376,7 +376,7 @@ class JFusionCurl{
     }
 
 
-    function setmycookies($mycookies_to_set,$cookiedomain,$cookiepath,$expires=1800){
+    function setmycookies($mycookies_to_set,$cookiedomain,$cookiepath,$expires=1800,$secure=0,$httponly=1){
         $cookies=array();
         $cookies=JFusionCurl::parsecookies($mycookies_to_set);
         foreach ($cookies as $cookie){
@@ -389,11 +389,11 @@ class JFusionCurl{
             if (isset($cookie['expires']))        {$expires_time=$cookie['expires'];}
             if (!$cookiepath)  {if (isset($cookie['path']))   {$cookiepath=$cookie['path'];}}
             if (!$cookiedomain){if (isset($cookie['domain'])) {$cookiedomain=$cookie['domain'];}}
-            setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,0,1);
+            setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,$secure,$httponly);
         }
     }
 
-    function deletemycookies($mycookies_to_set,$cookiedomain,$cookiepath,$leavealone){
+    function deletemycookies($mycookies_to_set,$cookiedomain,$cookiepath,$leavealone,$secure=0,$httponly=1){
         $cookies=array();
         $cookies=JFusionCurl::parsecookies($mycookies_to_set);
         // leavealone keys/values while deleting
@@ -444,7 +444,7 @@ class JFusionCurl{
             if (isset($cookie['expires']))        {$expires_time=$cookie['expires'];}
             if (!$cookiepath)  {if (isset($cookie['path']))           {$cookiepath=$cookie['path'];}}
             if (!$cookiedomain){if (isset($cookie['domain']))         {$cookiedomain=$cookie['domain'];}}
-            if (!$leaveit){setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,0,1);}
+            if (!$leaveit){setcookie($name, urldecode($value),$expires_time,$cookiepath,$cookiedomain,$secure,$httponly);}
         }
     }
 
@@ -491,6 +491,8 @@ class JFusionCurl{
 	 	if (!isset($curl_options['expires'])) {$curl_options['expires'] = 1800;}
  	 	if (!isset($curl_options['input_username_id'])) {$curl_options['input_username_id'] = '';}
  	 	if (!isset($curl_options['input_password_id'])) {$curl_options['input_password_id'] = '';}
+	 	if (!isset($curl_options['secure'])) 		{$curl_options['secure'] = '0';}
+	 	if (!isset($curl_options['httponly'])) 		{$curl_options['httponly'] = '0';}
 
         // find out if we have a SSL enabled website
         if (strpos( $curl_options['post_url'],'https://') === false){
@@ -518,7 +520,7 @@ class JFusionCurl{
             curl_close($ch);
         }
         $cookies_to_set_index=0;
-        JFusionCurl::setmycookies($cookies_to_set,$curl_options['cookiedomain'],$curl_options['cookiepath'],$curl_options['expires']);
+        JFusionCurl::setmycookies($cookies_to_set,$curl_options['cookiedomain'],$curl_options['cookiepath'],$curl_options['expires'],$curl_options['secure'],$curl_options['httponly']);
 
         #find out if we have the form with the name/id specified
         $parser = new JFusionCurlHtmlFormParser( $remotedata);
@@ -658,7 +660,7 @@ class JFusionCurl{
         curl_close($ch);
 
         #we have to set the cookies now
-        JFusionCurl::setmycookies($cookies_to_set,$curl_options['cookiedomain'],$curl_options['cookiepath'],$curl_options['expires']);
+        JFusionCurl::setmycookies($cookies_to_set,$curl_options['cookiedomain'],$curl_options['cookiepath'],$curl_options['expires'],$curl_options['secure'],$curl_options['httponly']);
         $cookies_to_set_index=0;
         return $status;
      }
@@ -684,9 +686,11 @@ class JFusionCurl{
 			$status['error']= 'Fatal programming error in calling model.curl::Remotelogout!';
             return $status;
         }
- 	 	if (!isset($curl_options['cookiedomain'])) {$curl_options['cookiedomain'] = '';}
-	 	if (!isset($curl_options['cookiepath'])) {$curl_options['cookiepath'] = '';}
-	 	if (!isset($curl_options['leavealone'])) {$curl_options['leavealone'] = NULL;}
+ 	 	if (!isset($curl_options['cookiedomain'])) 	{$curl_options['cookiedomain'] = '';}
+	 	if (!isset($curl_options['cookiepath'])) 	{$curl_options['cookiepath'] = '';}
+	 	if (!isset($curl_options['leavealone'])) 	{$curl_options['leavealone'] = NULL;}
+	 	if (!isset($curl_options['secure'])) 		{$curl_options['secure'] = '0';}
+	 	if (!isset($curl_options['httponly'])) 		{$curl_options['httponly'] = '0';}
 
 
 
@@ -706,7 +710,7 @@ class JFusionCurl{
         curl_close($ch);
 
         #we have to delete the cookies now
-        JFusionCurl::deletemycookies($cookies_to_set,$curl_options['cookiedomain'],$curl_options['cookiepath'],$curl_options['leavealone']);
+        JFusionCurl::deletemycookies($cookies_to_set,$curl_options['cookiedomain'],$curl_options['cookiepath'],$curl_options['leavealone'],$curl_options['secure'],$curl_options['httponly']);
         $cookies_to_set_index=0;
         return $status;
      }
