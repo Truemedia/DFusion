@@ -8,17 +8,18 @@
   <authorUrl>www.mijnbreincoach.nl</authorUrl>
   <copyright>Copyright GPL (C) 2008 Open Source Matters. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-  <version>1.1.0-b001</version>
+	<version>1.1.0-001</version>
   <description>JFusion (1.1.0+) plugin for Magento ecommerce 1.1</description>
   <slave>0</slave>
   <dual_login>0</dual_login>
   <activity>0</activity>
   <files>
-    <filename>auth.php</filename>
-    <filename>jfusion.xml</filename>
-    <filename>jfusion_plugin.php</filename>
-    <filename>user.php</filename>
-    <filename>index.html</filename>
+		<filename>admin.php</filename>
+		<filename>auth.php</filename>
+		<filename>index.html</filename>
+		<filename>jfusion.xml</filename>
+		<filename>public.php</filename>
+		<filename>user.php</filename>
   </files>
   <params addpath="/administrator/components/com_jfusion/elements">
     <param name="database_type" type="text" size="20" label="" default="mysql"
@@ -35,16 +36,16 @@
       description="DATABASE_PREFIX" />
     <param name="@spacer" type="spacer" default="" label=""
       description="" />
-    <param name="source_url" type="text" size="100" label="" 
+    <param name="source_url" type="text" size="100" label=""
       default="http://www.yourdomain.com/magento/" description="SOURCE_URL" />
-    <param name="source_path" type="text" size="100" label="" 
+    <param name="source_path" type="text" size="100" label=""
       default="" description="SOURCE_PATH" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
   	<param name="cookie_domain" type="text" size="100" label="" default=""
     description="COOKIE_DOMAIN" />
-  	<param name="cookie_path" type="text" size="100" label="" default="" 
+  	<param name="cookie_path" type="text" size="100" label="" default=""
     description="COOKIE_PATH" />
-  	<param name="cookie_expires" type="text" size="5" label="" default="1800" 
+  	<param name="cookie_expires" type="text" size="5" label="" default="1800"
     description="COOKIE_TIME" />
      <param name="secure" type="list" default="0" label="" description="COOKIE_SECURE">
       <option value="1">YES</option>
@@ -54,11 +55,11 @@
       <option value="1">YES</option>
       <option value="0">NO</option>
     </param>
-     <param name="override" type="text" size="100" label="" 
+     <param name="override" type="text" size="100" label=""
       default="login[indirect]=no" description="CURL_COOKIE_OVERRIDE" />
-    <param name="leavealone" type="text" size="100" label="" 
+    <param name="leavealone" type="text" size="100" label=""
       default="" description="CURL_COOKIE_LEAVEALONE" />
-    <param name="integrationtype" type="text" size="3" label="" 
+    <param name="integrationtype" type="text" size="3" label=""
       default="1" description="CURL_CURL_INTEGRATIONTYPE" />
     <param name="relpath" type="list" default="" label="" description="CURL_CURL_RELPATH">
       <option value="1">YES</option>
@@ -73,15 +74,15 @@
       <option value="">NO</option>
     </param>
     <param name="@spacer" type="spacer" default="" label="" description="" />
-    <param name="login_url" type="text" size="100" label="" 
+    <param name="login_url" type="text" size="100" label=""
       default="index.php/customer/account/login/" description="CURL_LOGIN_URL" />
-    <param name="loginform_id" type="text" size="100" label="" 
+    <param name="loginform_id" type="text" size="100" label=""
       default="login-form" description="CURL_LOGINFORM_ID" />
-     <param name="input_username_id" type="text" size="100" label="" 
+     <param name="input_username_id" type="text" size="100" label=""
       default="" description="CURL_INPUT_USERNAME_ID" />
-    <param name="input_password_id" type="text" size="100" label="" 
+    <param name="input_password_id" type="text" size="100" label=""
       default="" description="CURL_INPUT_USERNAME_ID" />
-    <param name="logout_url" type="text" size="100" label="" 
+    <param name="logout_url" type="text" size="100" label=""
       default="" description="CURL_LOGOUT_URL" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
     <param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
