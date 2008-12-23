@@ -20,10 +20,10 @@ defined('_JEXEC' ) or die('Restricted access' );
 @ini_set('memory_limit', '256M');
 @ini_set('upload_max_filesize', '128M');
 @ini_set('post_max_size', '256M');
-@ini_set('max_input_time', '-1');
-@ini_set('max_execution_time', '-1');
-@ini_set('expect.timeout', '-1');
-@ini_set('default_socket_timeout', '-1');
+@ini_set('max_input_time', '7200');
+@ini_set('max_execution_time', '0');
+@ini_set('expect.timeout', '7200');
+@ini_set('default_socket_timeout', '7200');
 
 
 /**
@@ -106,7 +106,7 @@ class JFusionUsersync{
 		        $status = $JFusionPlugin->deleteUser($userinfo);
 				if($status['error']) {
 					//delete error
-					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . '<br/>';				
+					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . '<br/>';
 				} else {
 					//delete success
 					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . '<br/>';
@@ -119,7 +119,7 @@ class JFusionUsersync{
 		        $status = $JFusionPlugin->deleteUser($userinfo);
 				if($status['error']) {
 					//delete error
-					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . '<br/>';				
+					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . '<br/>';
 				} else {
 					//delete success
 					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . '<br/>';

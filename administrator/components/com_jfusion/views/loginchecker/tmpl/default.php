@@ -67,11 +67,16 @@ radioObj[i].checked = true;
 <?php echo JText::_('PASSWORD'); ?>
 </td><td>
 <input type="password" name="check_password" size="40"> <?php echo JText::_('SKIP_PASSWORD_CHECK'); ?>
-<input type="checkbox" name="skip_password" value="yes" checked alt="Remember Me" />
+<input type="checkbox" name="skip_password" value="" checked alt="Remember Me" />
 </td></tr><tr><td width="100px">
 <?php echo JText::_('DEBUG') . ' ' . JText::_('REMEMBER_ME'); ?>
 </td><td>
-<input type="checkbox" name="remember" value="yes" checked alt="Remember Me" />
-</td></tr></tr></table>
+<input type="checkbox" name="remember" value="" checked alt="Remember Me" />
+</td></tr><tr><td width="100px">
+<?php echo JText::_('AUTO_OVERWITE_CONFLICTS'); ?>
+</td><td>
+<input type="checkbox" name="auto_overwrite_conflicts" value="" checked alt="Remember Me" />
+</td></tr><
+</tr></table>
 </form>
 

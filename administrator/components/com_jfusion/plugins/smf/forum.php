@@ -89,9 +89,45 @@ class JFusionForum_smf extends JFusionForum
         return array('unread' => 0, 'total' => 0);
     }
 
-    function getAvatar($puser_id)
+	function getAvatar($puser_id)
     {
-        return 0;
-    }
+
+	if ($puser_id) {
+		// Get SMF Params and get an instance of the database
+		$params = JFusionFactory::getParams($this->getJname());
+		$db = JFusionFactory::getDatabase($this->getJname());
+		// Load member params from database "mainly to get the avatar"
+		$db->setQuery('SELECT * FROM #__members WHERE ID_MEMBER='.$puser_id);
+		$db->query();
+		$result = $db->loadObject();
+
+		if (!empty($result)) {
+			// SMF has a wierd way of holding attachments. Get instance of the attachments table
+			$db->setQuery('SELECT * FROM #__attachments WHERE ID_MEMBER='.$puser_id);
+			$db->query();
+			$attachment = $db->loadObject();
+			// See if the user has a specific attachment ment for an avatar
+			if($attachment->ID_THUMB == 0 && $attachment->ID_MESSAGE == 0 && empty($result->avatar))   {
+				$url = JURI::base()."index.php?option=com_jfusion&Itemid=2&action=dlattach;attach=".$attachment->ID_ATTACH.";type=avatar";
+
+			// If user didnt, check to see if the avatar specified in the first query is a url. If so use it.
+			} else if(preg_match("/http(s?):\/\//",$result->avatar)){
+				$url = $result->avatar;
+			} else {
+				// If the avatar specified in the first query is not a url but is a file name. Make it one
+				$db->setQuery('SELECT * FROM #__settings WHERE variable = "avatar_url"');
+				$avatarurl = $db->loadObject();
+				// Check for trailing slash. If there is one DONT ADD ONE!
+				if(substr($avatarurl->value, -1) == DS){
+					$url = $avatarurl->value.$result->avatar;
+				// I like redundancy. Recheck to see if there isnt a trailing slash. If there isnt one, add one.
+				} else if(substr($avatarurl->value, -1) !== DS){
+					$url = $avatarurl->value."/".$result->avatar;
+				}
+			}
+		return $url;
+		}
+	}
+	}
 
 }
