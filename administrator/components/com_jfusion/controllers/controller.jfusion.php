@@ -401,7 +401,6 @@ class JFusionController extends JController
 
     } else {
 
-		echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
     	//sync has not started, lets get going :)
         $slaves = JRequest::getVar('slave');
         $master_plugin = JFusionFunction::getMaster();
@@ -413,9 +412,10 @@ class JFusionController extends JController
 
         if(empty($slaves)){
         	//nothing was selected in the usersync
-        	echo '<br/><br/>' . JText::_('SYNC_NODATA');
-        	return;
+        	die(JText::_('SYNC_NODATA'));
         }
+
+		echo '<a href="index.php?option=com_jfusion&task=syncresume&syncid=' . $syncid . '">' . JText::_('SYNC_RESUME') . '</a>';
 
         //lets find out which slaves need to be imported into the Master
         foreach($slaves as $jname => $slave) {

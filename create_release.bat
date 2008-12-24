@@ -16,7 +16,7 @@ wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_user.zip 
 wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_user.zip plugins/user/jfusion.xml
 
 REM create the new master package
-wzzip -rP jfusion_package.zip administrator components language/en-GB/en-GB.com_jfusion.ini
+wzzip -rP jfusion_package.zip administrator components language/en-GB/en-GB.com_jfusion.ini README.htm
 wzzip -a jfusion_package.zip administrator/components/com_jfusion/com_jfusion.xml
 
 REM create a ZIP containing all files to allow for easy updates
