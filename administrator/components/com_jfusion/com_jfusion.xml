@@ -52,7 +52,7 @@
 				Login Checker
 			</menu>
 			<menu img="components/com_jfusion/images/version.png" link="option=com_jfusion&amp;task=versioncheck">
-				Versionsr
+				Versions
 			</menu>
 			<menu img="components/com_jfusion/images/info.png" link="option=com_jfusion&amp;task=help">
 				Help
