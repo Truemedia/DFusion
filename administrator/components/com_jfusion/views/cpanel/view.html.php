@@ -21,8 +21,8 @@ class jfusionViewcpanel extends JView {
 
     function display($tpl = null)
     {
-		$news = 'http://www.jfusion.org/jfusion_news.xml';
-		$team = 'http://www.jfusion.org/jfusion_team.xml';
+		$news = 'http://jfusion.googlecode.com/svn/branches/jfusion_news.xml';
+		$team = 'http://jfusion.googlecode.com/svn/branches/jfusion_team.xml';
 
     	//get the jfusion news
     	if(function_exists('curl_init')){

@@ -321,7 +321,7 @@ if (action == 'build'){
 	var install_url = 'http://jfusion.googlecode.com/svn/trunk/jfusion_package.zip';
 } else if (action == 'release'){
 	var confirm_text = '<?php echo JText::_( 'UPGRADE_CONFIRM' ); ?>';
-	var install_url = 'http://www.jfusion.org/jfusion_package.zip';
+	var install_url = 'http://jfusion.googlecode.com/svn/branches/jfusion_package.zip';
 } else if (action == 'svn'){
 	var confirm_text = '<?php echo JText::_( 'UPGRADE_CONFIRM' ); ?>';
 	var install_url = 'http://jfusion.googlecode.com/svn-history/r' + document.adminForm2.svn_build.value + '/trunk/jfusion_package.zip';

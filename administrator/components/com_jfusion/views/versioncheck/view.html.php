@@ -22,7 +22,7 @@ class jfusionViewversioncheck extends JView {
     function display($tpl = null)
     {
     	//get the jfusion news
-		$url = 'http://www.jfusion.org/jfusion_version.xml';
+		$url = 'http://jfusion.googlecode.com/svn/branches/jfusion_version.xml';
     	if(function_exists('curl_init')){
     		//curl is the preferred function
 	        $crl = curl_init();
