@@ -151,7 +151,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 
         } else {
 			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
-            $this->createUser($userinfo, $overwrite, $status);
+            $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
@@ -541,7 +541,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		}
     }
 
-    function createUser ($userinfo, $overwrite, &$status)
+    function createUser ($userinfo, &$status)
     {
     	//initialize vb framework
 		if(!$this->vBulletinInit()) return null;

@@ -111,7 +111,7 @@ class JFusionUser_mybb extends JFusionUser{
 
         } else {
 			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
-            $this->createUser($userinfo, $overwrite, $status);
+            $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
