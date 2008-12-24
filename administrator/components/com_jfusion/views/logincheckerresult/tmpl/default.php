@@ -34,6 +34,8 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 <td><h2><? echo JText::_('LOGIN_CHECKER_RESULT');?></h2></td>
 </tr></table>
 
+<div style="border: 0pt none ; margin: 0pt; padding: 0pt 5px; width: 800px; float: left;">
+
 <?php
 
 //get the submitted login details
@@ -48,6 +50,8 @@ if(isset($_REQUEST['remember'])){
 }
 if(isset($_REQUEST['skip_password'])){
 	$skip_password = 1;
+} else {
+	$skip_password = 0;
 }
 if(isset($_REQUEST['overwrite'])){
 	$overwrite = 1;
@@ -58,6 +62,7 @@ if(isset($_REQUEST['overwrite'])){
 //check to see if a password was submitted
 if (empty($credentials['password']) && empty($skip_password)) {
     echo JText::_('NO_PASSWORD');
+    echo '</div>';
     ob_end_flush();
     $result = false;
     return $result;
@@ -66,6 +71,7 @@ if (empty($credentials['password']) && empty($skip_password)) {
 //check to see if a username was submitted
 if (empty($credentials['username'])) {
     echo JText::_('NO_USERNAME');
+    echo '</div>';
     ob_end_flush();
     $result = false;
     return $result;
@@ -183,15 +189,24 @@ if (!empty($userinfo)) {
     debug::show($credentials['username'], JText::_('LOGIN') . ' ' . JText::_('USERNAME'),1);
 
 	//hide some sensitive details for output
-	$userinfo_password = $userinfo->password;
-	$userinfo_password_salt = $userinfo->password_salt;
-	$userinfo->password = substr($userinfo->password,0,6) .'********';
-	$userinfo->password_salt = substr($userinfo->password_salt,0,6) .'********';
+	if(isset($userinfo->password)){
+		$userinfo_password = $userinfo->password;
+		$userinfo->password = substr($userinfo->password,0,6) .'********';
+	}
+	if(isset($userinfo->password_salt)){
+		$userinfo_password_salt = $userinfo->password_salt;
+		$userinfo->password_salt = substr($userinfo->password_salt,0,6) .'********';
+	}
+
     debug::show($userinfo, $master->name . ' ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
 
     //restore the sensitive information
-	$userinfo->password = $userinfo_password;
-	$userinfo->password_salt = $userinfo_password_salt;
+	if(isset($userinfo_password)){
+		$userinfo->password = $userinfo_password;
+	}
+	if(isset($userinfo_password_salt)){
+		$userinfo->password_salt = $userinfo_password_salt;
+	}
 
     //get a list of authentication models
     $query = 'SELECT name FROM #__jfusion WHERE master = 1 OR check_encryption = 1 ORDER BY master DESC';
@@ -231,6 +246,7 @@ if (!empty($userinfo)) {
 			<td><font size="2"><b><?php echo JText::_('INVALID_PASSWORD'); ?></b></font></td></tr></table>
   <?php
         	//no password found: abort the login checker
+        	echo '</div>';
 	        ob_end_flush();
             $result = false;
             return $result;
@@ -238,6 +254,7 @@ if (!empty($userinfo)) {
 	}
 } else {
     echo JText::_('USER_NOT_FOUND');
+    echo '</div>';
     ob_end_flush();
     $result = false;
     return $result;
@@ -286,11 +303,13 @@ if (!empty($userinfo->block) || !empty($userinfo->activation)) {
 
     if (!empty($userinfo->block)) {
         JFusionFunction::raiseWarning('500', JText::_('FUSION_BLOCKED_USER'),0);
+        echo '</div>';
         ob_end_flush();
         $success = false;
         return $success;
     } else {
         JFusionFunction::raiseWarning('500', JText::_('FUSION_INACTIVE_USER'),0);
+        echo '</div>';
         ob_end_flush();
         $success = false;
         return $success;
@@ -322,6 +341,7 @@ if ($master->name != 'joomla_int') {
         //no Joomla user could be created, fatal error
         debug::show($JoomlaUser['error'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('ERROR'), 0);
         debug::show($JoomlaUser['debug'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
+        echo '</div>';
         ob_end_flush();
         $success = false;
         return $success;
@@ -418,7 +438,7 @@ foreach($slaves as $slave) {
 <input type="submit" value="Debug the Logout Function">
 </form>
 
-
+</div>
 <?php
 ob_end_flush();
 return;

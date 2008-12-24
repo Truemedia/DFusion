@@ -378,18 +378,26 @@ class JFusionJplugin{
 				$username = $JFusionPlugin->filterUsername($username);
 			}
 		}
+		//the return statement did not work, used global as a temp measure
+		global $filtered_username;
+		$filtered_username = $username;
 		return $username;
 	}
 
 	function updateUsername($userinfo, &$existinguser, &$status,$jname){
 		//generate the filtered integration username
-		$username_clean = $this->filterUsername($userinfo->username);
+		$username_clean = $this->filterUsername($userinfo->username, $jname);
+		//the return statement did not work, used global as a temp measure
+		global $filtered_username;
+		$username_clean = $filtered_username;
 
 		//define which characters which Joomla forbids in usernames
 		$trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
 
 		//remove forbidden characters for the username
 		$username_clean = strtr($username_clean, $trans);
+
+    	$status['debug'][] = JText::_('USERNAME'). ': ' . $userinfo->username . ' -> ' .  JText::_('FILTERED_USERNAME') . ':' . $username_clean;
 
 		//make sure the username is at least 3 characters long
 		while (strlen($username_clean) < 3) {
@@ -403,6 +411,8 @@ class JFusionJplugin{
 			$username_clean .= '_';
 			$db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
 		}
+
+    	$status['debug'][] = JText::_('USERNAME'). ': ' . $userinfo->username . ' -> ' .  JText::_('FILTERED_USERNAME') . ':' . $username_clean;
 
 		$query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . 'WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
@@ -428,7 +438,7 @@ class JFusionJplugin{
 		}
 
 		//add a new entry in the #__jfusion_users table to allow login with the new username
-		$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $existinguser->userid . ',' . $db->Quote($username_clean) . ')';
+		$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $existinguser->userid . ',' . $db->Quote($userinfo->username) . ')';
 		$db->setQuery($query);
 		if (!$db->query()) {
 			$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
@@ -508,7 +518,7 @@ class JFusionJplugin{
 						$userid = $db->loadResult();
 
 						//add a new entry in the #__jfusion_users table to allow login with the new username
-						$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $userid . ',' . $db->Quote($username_clean) . ')';
+						$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $userid . ',' . $db->Quote($userinfo->username) . ')';
 						$db->setQuery($query);
 						if (!$db->query()) {
 							$status['error'][] = JText::_('USER_CREATION_ERROR'). ': ' . $db->stderr();
@@ -531,7 +541,7 @@ class JFusionJplugin{
 						return;
 					}
 					//add a new entry in the #__jfusion_users table to allow login with the new username
-					$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $user->userid . ',' . $db->Quote($username_clean) . ')';
+					$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $user->userid . ',' . $db->Quote($userinfo->userrname) . ')';
 					$db->setQuery($query);
 					if (!$db->query()) {
 						$status['error'][] = JText::_('USER_CREATION_ERROR'). ': ' . $db->stderr();
@@ -606,15 +616,20 @@ class JFusionJplugin{
 
 
 			if (isset($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
-				// add password_clear to existinguser for the Joomla helper routines
-				$existinguser->password_clear=$userinfo->password_clear;
-				//check if the password needs to be updated
-				$model = JFusionFactory::getAuth($jname);
-				$testcrypt = $model->generateEncryptedPassword($existinguser);
-				if ($testcrypt != $existinguser->password) {
-					$this->updatePassword($userinfo, $existinguser, $status,$jname);
+				//if not salt set, update the password
+				if(empty($userinfo->password_salt)){
+					$this->updatePassword($userinfo, $existinguser, $status,$jname);					
 				} else {
-					$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+					// add password_clear to existinguser for the Joomla helper routines
+					$existinguser->password_clear=$userinfo->password_clear;
+					//check if the password needs to be updated
+					$model = JFusionFactory::getAuth($jname);
+					$testcrypt = $model->generateEncryptedPassword($existinguser);
+					if ($testcrypt != $existinguser->password) {
+						$this->updatePassword($userinfo, $existinguser, $status,$jname);
+					} else {
+						$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+					}
 				}
 			} else {
 				$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');

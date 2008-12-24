@@ -109,13 +109,11 @@ VALUES ('moodle', 'moodle','1.01','07th September 2008',  'JFusion development t
 	//make sure that the slave capabilties of the joomla_ext plugin is enabled
 	$query = 'SELECT slave FROM #__jfusion WHERE name = \'joomla_ext\'';
 	$db->setQuery($query);
-	if ($db->loadResult() == 3) {
-		$query = 'UPDATE #__jfusion SET slave = 0 WHERE name = \'joomla_ext\'';
+	if ($db->loadResult() != 3) {
+		$query = 'UPDATE #__jfusion SET slave = 3 WHERE name = \'joomla_ext\'';
  		$db->Execute($query);
 	}
-
 }
-
 
 //create the jfusion_users table if it does not exist already
 if (array_search($table_prefix . 'jfusion_users',$table_list) == false) {

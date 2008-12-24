@@ -358,7 +358,7 @@ class JFusionUser_smf extends JFusionUser{
         //now append the new user data
         if (!$db->insertObject('#__members', $user, 'ID_MEMBER' )) {
             //return the error
-            $status['error'] = JText::_('USER_CREATION_ERROR'). ' . $db->stderr();
+            $status['error'] = JText::_('USER_CREATION_ERROR'). ': ' . $db->stderr();
             return $status;
         } else {
             //update the stats

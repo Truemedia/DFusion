@@ -84,6 +84,7 @@ class JFusionUser_joomla_int extends JFusionUser{
 
     function &getUser($identifier)
     {
+    	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
         $userinfo = JFusionJplugin::getUser($identifier,$this->getJname());
         return $userinfo;
     }
