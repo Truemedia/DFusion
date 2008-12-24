@@ -57,9 +57,9 @@ class jfusionViewcpanel extends JView {
 		    }
     		//get the file directly if curl is disabled
 		    $JFusionTeamRaw = file_get_contents($team);
-		    if (!strpos($JFusionNewsRaw, '<document>')){
+		    if (!strpos($JFusionTeamRaw, '<document>')){
 		    	//file_get_content is often blocked by hosts, return an error message
-				$JFusionNewsRaw = '<?xml version=\'1.0\' standalone=\'yes\'?>
+				$JFusionTeamRaw = '<?xml version=\'1.0\' standalone=\'yes\'?>
 					<document><item><date></date>
 					<title>' . JText::_('CURL_DISABLED') . '</title>
 					<link>www.jfusion.org</link><body></body></item></document>';
