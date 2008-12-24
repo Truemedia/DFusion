@@ -473,7 +473,7 @@ class JFusionFunction{
 
     function displayDonate(){
     	?>
-<table class="adminform"><tr><td><font size="3"><b>Please help support the JFusion project with a donation. This will ensure the continued development of this revolutionary project.</b></font></td><td>
+<table class="adminform"><tr><td style="width:75%;"><font size="3"><b>Please help support the JFusion project with a donation. This will ensure the continued development of this revolutionary project.</b></font></td><td style="width:25%; text-align:right;">
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_donations"/>
 <input type="hidden" name="business" value="webmaster@jfusion.org"/>
