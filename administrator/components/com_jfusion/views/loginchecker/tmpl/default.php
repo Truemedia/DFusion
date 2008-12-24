@@ -75,8 +75,8 @@ radioObj[i].checked = true;
 </td></tr><tr><td width="100px">
 <?php echo JText::_('AUTO_OVERWITE_CONFLICTS'); ?>
 </td><td>
-<input type="checkbox" name="auto_overwrite_conflicts" value="" checked alt="Remember Me" />
-</td></tr><
+<input type="checkbox" name="overwrite" value="" checked alt="Auto Overwrite" />
+</td>
 </tr></table>
 </form>
 

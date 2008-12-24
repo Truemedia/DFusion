@@ -43,11 +43,13 @@ class JFusionUser_smf extends JFusionUser{
             //a matching user has been found
 			$status['debug'][] = JText::_('USER_DATA_FOUND');
             if ($existinguser->email != $userinfo->email) {
-			  $status['debug'][] = JText::_('EMAILS_DO_NOT_MATCH');
+			  $status['debug'][] = JText::_('EMAIL_CONFLICT');
               if ($update_email || $overwrite) {
+			      $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_ENABLED');
                   $this->updateEmail($userinfo, $existinguser, $status);
               } else {
                 //return a email conflict
+			    $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_DISABLED');
                 $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
                 $status['userinfo'] = $existinguser;
                 return $status;
@@ -173,9 +175,6 @@ class JFusionUser_smf extends JFusionUser{
 
     function createSession($userinfo, $options)
     {
-
-
-
         //check to see if the smf_api.php file exists
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
@@ -245,7 +244,7 @@ class JFusionUser_smf extends JFusionUser{
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();
         } else {
-	        $status['debug'][] = JText::_('PASSWORD_UPDATE'). ': ' . $existinguser->email . ' -> ' . $userinfo->email;
+	        $status['debug'][] = JText::_('EMAIL_UPDATE'). ': ' . $existinguser->email . ' -> ' . $userinfo->email;
         }
     }
 
@@ -359,7 +358,7 @@ class JFusionUser_smf extends JFusionUser{
         //now append the new user data
         if (!$db->insertObject('#__members', $user, 'ID_MEMBER' )) {
             //return the error
-            $status['error'] = 'Error while creating the user: ' . $db->stderr();
+            $status['error'] = JText::_('USER_CREATION_ERROR'). ' . $db->stderr();
             return $status;
         } else {
             //update the stats

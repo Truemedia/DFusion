@@ -42,9 +42,18 @@ $credentials['password'] = JRequest::getVar('check_password', '', 'POST', 'STRIN
 $user['username'] = JRequest::getVar('check_username', '', 'POST', 'STRING' );
 $user['password'] = JRequest::getVar('check_password', '', 'POST', 'STRING' );
 $options['group'] = 'USERS';
-$options['remember'] = JRequest::getVar('remember', '', 'POST', 'STRING' );
-$skip_password = JRequest::getVar('skip_password', '', 'POST', 'STRING' );
 
+if(isset($_REQUEST['remember'])){
+	$options['remember']= 1;
+}
+if(isset($_REQUEST['skip_password'])){
+	$skip_password = 1;
+}
+if(isset($_REQUEST['overwrite'])){
+	$overwrite = 1;
+} else {
+	$overwrite = 0;
+}
 
 //check to see if a password was submitted
 if (empty($credentials['password']) && empty($skip_password)) {
@@ -252,7 +261,7 @@ $userinfo = $JFusionMaster->getUser($user['username']);
 //apply the cleartext password to the user object
 $userinfo->password_clear = $user['password'];
 
-$MasterUser = $JFusionMaster->updateUser($userinfo,0);
+$MasterUser = $JFusionMaster->updateUser($userinfo,$overwrite);
 if ($MasterUser['error']) {
 	debug::show($MasterUser['error'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE'). ' ' . JText::_('ERROR'),1);
 	debug::show($MasterUser['debug'], JText::_('MASTER') . ' ' . JText::_('USER') . ' ' . JText::_('UPDATE') . ' ' .JText::_('DEBUG'),1);
@@ -267,7 +276,7 @@ if (!empty($userinfo->block) || !empty($userinfo->activation)) {
     $slaves = JFusionFunction::getSlaves();
     foreach($slaves as $slave) {
         $JFusionSlave = JFusionFactory::getUser($slave->name);
-        $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
+        $SlaveUser = $JFusionSlave->updateUser($userinfo,$overwrite);
         if ($SlaveUser['error']) {
             debug::show($SlaveUser['error'], $slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'),1);
         } else {
@@ -308,7 +317,7 @@ if ($master->name != 'joomla_int') {
     //setup the Joomla user
     echo '<br/><h2>' . JText::_('SLAVE'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') . ' ' . JText::_('LOGIN') .': joomla_int</h2>';
     $JFusionJoomla = JFusionFactory::getUser('joomla_int');
-    $JoomlaUser = $JFusionJoomla->updateUser($userinfo,0);
+    $JoomlaUser = $JFusionJoomla->updateUser($userinfo,$overwrite);
     if ($JoomlaUser['error']) {
         //no Joomla user could be created, fatal error
         debug::show($JoomlaUser['error'], 'joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('ERROR'), 0);
@@ -350,7 +359,7 @@ $slaves = JFusionFunction::getPlugins();
 foreach($slaves as $slave) {
     echo '<br/><h2>' . JText::_('SLAVE'). ' ' . JText::_('JFUSION') . ' ' . JText::_('PLUGIN') . ' ' . JText::_('LOGIN') .': '. $slave->name . '</h2>';
     $JFusionSlave = JFusionFactory::getUser($slave->name);
-    $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
+    $SlaveUser = $JFusionSlave->updateUser($userinfo,$overwrite);
     if ($SlaveUser['error']) {
         debug::show($SlaveUser['error'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('ERROR'), 0);
         debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);

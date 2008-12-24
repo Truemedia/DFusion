@@ -43,11 +43,13 @@ class JFusionUser_phpbb3 extends JFusionUser{
             //a matching user has been found
 			$status['debug'][] = JText::_('USER_DATA_FOUND');
             if ($existinguser->email != $userinfo->email) {
-			  $status['debug'][] = JText::_('EMAILS_DO_NOT_MATCH');
+			  $status['debug'][] = JText::_('EMAIL_CONFLICT');
               if ($update_email || $overwrite) {
+			      $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_ENABLED');
                   $this->updateEmail($userinfo, $existinguser, $status);
               } else {
                 //return a email conflict
+			    $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_DISABLED');
                 $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
                 $status['userinfo'] = $existinguser;
                 return $status;
