@@ -21,20 +21,42 @@ class jfusionViewcpanel extends JView {
 
     function display($tpl = null)
     {
+		$news = 'http://www.jfusion.org/jfusion_news.xml';
+		$team = 'http://www.jfusion.org/jfusion_team.xml';
+
     	//get the jfusion news
-		$url = 'http://www.jfusion.org/jfusion_news.xml';
     	if(function_exists('curl_init')){
     		//curl is the preferred function
+
 	        $crl = curl_init();
     	    $timeout = 5;
-        	curl_setopt ($crl, CURLOPT_URL,$url);
+        	curl_setopt ($crl, CURLOPT_URL,$news);
 	        curl_setopt ($crl, CURLOPT_RETURNTRANSFER, 1);
     	    curl_setopt ($crl, CURLOPT_CONNECTTIMEOUT, $timeout);
         	$JFusionNewsRaw = curl_exec($crl);
 	        curl_close($crl);
+
+	        $crl = curl_init();
+    	    $timeout = 5;
+        	curl_setopt ($crl, CURLOPT_URL,$team);
+	        curl_setopt ($crl, CURLOPT_RETURNTRANSFER, 1);
+    	    curl_setopt ($crl, CURLOPT_CONNECTTIMEOUT, $timeout);
+        	$JFusionTeamRaw = curl_exec($crl);
+	        curl_close($crl);
+
+
     	} else {
     		//get the file directly if curl is disabled
-		    $JFusionNewsRaw = file_get_contents($url);
+		    $JFusionNewsRaw = file_get_contents($news);
+		    if (!strpos($JFusionNewsRaw, '<document>')){
+		    	//file_get_content is often blocked by hosts, return an error message
+				$JFusionNewsRaw = '<?xml version=\'1.0\' standalone=\'yes\'?>
+					<document><item><date></date>
+					<title>' . JText::_('CURL_DISABLED') . '</title>
+					<link>www.jfusion.org</link><body></body></item></document>';
+		    }
+    		//get the file directly if curl is disabled
+		    $JFusionTeamRaw = file_get_contents($team);
 		    if (!strpos($JFusionNewsRaw, '<document>')){
 		    	//file_get_content is often blocked by hosts, return an error message
 				$JFusionNewsRaw = '<?xml version=\'1.0\' standalone=\'yes\'?>
@@ -44,15 +66,12 @@ class jfusionViewcpanel extends JView {
 		    }
     	}
 
-
 		$JFusionNews = new SimpleXMLElement($JFusionNewsRaw);
 		$this->assignRef('JFusionNews', $JFusionNews);
 
-        parent::display($tpl);
+		$JFusionTeam = new SimpleXMLElement($JFusionTeamRaw);
+		$this->assignRef('JFusionTeam', $JFusionTeam);
 
+        parent::display($tpl);
     }
 }
-
-
-
-

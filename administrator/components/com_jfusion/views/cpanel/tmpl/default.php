@@ -145,7 +145,7 @@ $pane =& JPane::getInstance('tabs');
 echo $pane->startPane( 'pane' );
 echo $pane->startPanel( 'JFusion News', 'panel1' );
 
-/* For each <movie> node, we echo a separate <plot>. */
+//print out the news
 foreach ($this->JFusionNews->item as $item) {
    echo '<h3><i>' . $item->date . '</i> - <a href="' .$item->link . '" target="_blank">' . $item->title . '</a></h3>';
    echo $item->body . '<br/><br/>';
@@ -153,8 +153,13 @@ foreach ($this->JFusionNews->item as $item) {
 
 echo $this->JFusionNews;
 echo $pane->endPanel();
-echo $pane->startPanel( 'Test tab', 'panel2' );
-echo "This is a test tab";
+echo $pane->startPanel( 'JFusion Team Members', 'panel2' );
+
+//print out the team details
+foreach ($this->JFusionTeam->item as $item) {
+   echo $item->body . '<br/><br/>';
+}
+
 echo $pane->endPanel();
 echo $pane->endPane();
 

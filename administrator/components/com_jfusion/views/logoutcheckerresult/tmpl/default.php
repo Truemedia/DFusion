@@ -34,6 +34,8 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 <td><h2><? echo JText::_('LOGOUT_CHECKER_RESULT');?></h2></td>
 </tr></table>
 
+<div style="border: 0pt none ; margin: 0pt; padding: 0pt 5px; width: 800px; float: left;">
+
 <?php
 
 //get the submitted joomla id
@@ -85,7 +87,7 @@ $options['group'] = 'USERS';
             }
         }
 
-
+echo '</div>';
 ob_end_flush();
 return;
 

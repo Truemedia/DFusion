@@ -75,6 +75,8 @@ class JFusionUsersync{
 		//Load debug library
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
 
+?><div style="border: 0pt none ; margin: 0pt; padding: 0pt 5px; width: 800px; float: left;">
+<?php
 		$syncdata = JFusionUsersync::getSyncdata($syncid);
 		foreach ($syncerror as $id => $error) {
 			if ($error['action'] == '1') {
@@ -138,6 +140,7 @@ class JFusionUsersync{
 				}
 			}
 		}
+		echo '</div>';
     }
 
     function SyncExecute($syncdata, $action, $plugin_offset, $user_offset)
