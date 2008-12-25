@@ -139,7 +139,7 @@ class JFusionHook
 		}
 
 		//add an excemption for editing profiles
-		if($arrParams['i'] == 'profile' || $arrParams['i'] == 'prefs') {
+		if($arrParams['i'] == 'profile' || $arrParams['i'] == 'prefs' ||$arrParams['i'] == 'zebra') {
 				$view = 'ucp.php';
 		}
 

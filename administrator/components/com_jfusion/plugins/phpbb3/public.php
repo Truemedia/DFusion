@@ -94,6 +94,11 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $jfile = 'index.php';
         }
 
+		//allow for fix action urls for ucp.php
+		if ($jfile == 'ucp.php'){
+			global $jfusion_file;
+			$jfusion_file = 'ucp.php';
+		}
 
         //combine the path and filename
         if (substr($source_path, -1) == DS) {
@@ -211,6 +216,14 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
     	     	$jfile = basename($url_details['path']);
         	}
 		}
+
+		//actions references from the ucp file always go back to ucp
+		global $jfusion_file;
+		if($jfusion_file == 'ucp.php'){
+			$jfile = $jfusion_file;
+		}
+
+
       	$replacement .= '<input type="hidden" name="jfile" value="'. $jfile . '">';
 
 		//add a reference to JFusion
@@ -284,7 +297,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	    }
 
       	//reconstruct the redirect meta tag
-        return '<meta http-equiv="refresh" content="'.$parts[1].';url=' . $redirect_url .'">';
+        return '<meta http-equiv="refresh" content="'.$parts[0].';url=' . $redirect_url .'">';
       }
 }
 
