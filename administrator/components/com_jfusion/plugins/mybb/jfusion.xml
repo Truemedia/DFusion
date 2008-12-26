@@ -37,6 +37,7 @@
 		<param name="cookie_path" type="text" size="40" default="/" description="COOKIE_PATH" />
 		<param name="cookie_prefix" type="text" size="10" default="" description="COOKIE_PREFIX" />
 		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 		<param name="activationgroup" type="JFusionUsergroups" description="DEFAULT_ACTIVATIONGROUP" label="DEFAULT_ACTIVATIONGROUP" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />

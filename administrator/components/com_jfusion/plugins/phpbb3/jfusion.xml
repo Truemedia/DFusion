@@ -41,7 +41,14 @@
 		<param name="cookie_prefix" type="text" size="10" default="bb" description="COOKIE_PREFIX." />
 		<param name="allow_autologin" type="text" size="10" default="/" description="ALLOW_AUTOLOGIN" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="UTF8_ADVANCED_DESCR"/>
+		<param name="utf8_advanced" type="list" default="disabled" label="" description="UTF8_ADVANCED">
+			<option value="disabled">STANDARD</option>
+			<option value="enabled">ADVANCED</option>
+		</param>
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
 		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">

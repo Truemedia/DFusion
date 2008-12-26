@@ -32,6 +32,7 @@
 		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
 		<param name="source_license" type="text" size="10" default="XXXXXXXXX" description="SOURCE_LICENSE" />
 		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 		<param name="activationgroup" type="JFusionUsergroups" description="DEFAULT_ACTIVATIONGROUP" label="DEFAULT_ACTIVATIONGROUP" />
 		<param name="bannedgroup" type="JFusionUsergroups" description="DEFAULT_BANNEDGROUP" label="DEFAULT_BANNEDGROUP" />

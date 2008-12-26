@@ -64,9 +64,21 @@ class JFusionControllerFrontEnd extends JController
             }
 
         } else {
-            echo JText::_('NO_VIEW_SELECTED');
-            $result = false;
-            return $result;
+        	//make one final attempt to get a default view from the joomla_int plugin
+			$params = JFusionFactory::getParams('joomla_int');
+			$default_plugin = $params->get('default_plugin');
+			$link_mode = $params->get('link_mode');
+			if(!empty($link_mode) && !empty(default_plugin)){
+                $view = &$this->getView($jview, 'html');
+                $view->assignRef('jname', default_plugin);
+                $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($link_mode).DS.'tmpl');
+                $view->setLayout('default');
+                $view->display();
+			} else {
+	            echo JText::_('NO_VIEW_SELECTED');
+    	        $result = false;
+        	    return $result;
+			}
         }
     }
 }

@@ -626,8 +626,13 @@ static $fc_nfkc_closure = array(
 $text = utf8_case_fold_phpbb($text, $option);
 
 // convert to NFKC
-require_once (JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'utf_normalizer.php');
-utf_normalizer_phpbb::nfkc($text);
+$params = JFusionFactory::getParams('phpbb3');
+$utf8_advanced = $params->get('utf8_advanced');
+
+if($utf8_advanced == 'enabled'){
+	require_once (JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'utf_normalizer.php');
+	utf_normalizer_phpbb::nfkc($text);
+}
 
 // FC_NFKC_Closure, http://www.unicode.org/Public/5.0.0/ucd/DerivedNormalizationProps.txt
 $text = strtr($text, $fc_nfkc_closure);

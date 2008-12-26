@@ -85,7 +85,9 @@
     <param name="logout_url" type="text" size="100" label=""
       default="" description="CURL_LOGOUT_URL" />
     <param name="@spacer" type="spacer" default="" label="" description="" />
+	<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
     <param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+    <param name="@spacer" type="spacer" default="" label="" description="" />
 	<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
     <param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">
       <option value="1">YES</option>
