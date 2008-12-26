@@ -415,12 +415,14 @@ class JFusionPluginInstaller extends JObject {
 
 
 		//define which files need parsing
-		$parse_files = array($new_dir . DS . 'auth.php', $new_dir . DS . 'jfusion_plugin.php', $new_dir . DS . 'user.php', $new_dir . DS . 'jfusion.xml', $new_dir . DS . 'forum.php');
+		$parse_files = array($new_dir . DS . 'auth.php', $new_dir . DS . 'admin.php', $new_dir . DS . 'user.php', $new_dir . DS . 'jfusion.xml', $new_dir . DS . 'forum.php', $new_dir . DS . 'public.php');
 
 		foreach ($parse_files as $parse_file) {
-			$file_data = JFile::read($parse_file);
-			$file_data = preg_replace($regex, $replace, $file_data);
-        	JFile::write($parse_file, $file_data);
+			if(file_exists($parse_file)){
+				$file_data = JFile::read($parse_file);
+				$file_data = preg_replace($regex, $replace, $file_data);
+        		JFile::write($parse_file, $file_data);
+			}
 		}
 
         $result = true;
