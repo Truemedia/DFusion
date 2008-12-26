@@ -251,6 +251,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 			//destroy vbulletin global variable
 			unset($GLOBALS["vbulletin"]);
 			unset($GLOBALS["db"]);
+
+			$status['debug'] .= 'Destroyed session: ' .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
+			return $status;
     	}
     }
 
@@ -301,14 +304,15 @@ class JFusionUser_vbulletin extends JFusionUser{
 
 
 				$status['error'] = false;
-				$status['debug'] .= JText::_('CREATED') . ' ' . JText::_('SESSION') . ': ' .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
+				$status['debug'] .= JText::_('CREATED_SESSION') .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
 	        } else {
 	            //could not find a valid userid
 	            $status['error'] = JText::_('INVALID_USERID');
 	        }
 
+			unset($userdm);
+
 	        return $status;
-	        unset($userdm);
     	}
     }
 
