@@ -306,9 +306,6 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		$action_search	= '#action="(.*?)"(.*?)>#mS';
         $buffer = preg_replace_callback($action_search,'fixAction',$buffer);
 
-        $url_search = '#href="(.*?)"(.*?)>#mS';
-        $buffer = preg_replace_callback($url_search,'fixURL',$buffer);
-
         //fix for the rest of the urls
         $url_search = '#href="(.*?)"(.*?)>#mS';
         $buffer = preg_replace_callback($url_search,'fixURL',$buffer);

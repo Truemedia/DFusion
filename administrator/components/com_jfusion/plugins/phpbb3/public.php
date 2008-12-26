@@ -175,6 +175,10 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         }
 
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
+
+        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
+        $url_search = '#href="(.*?)"(.*?)>#mS';
+        $buffer = preg_replace_callback($url_search,'fixParsedUrls',$buffer);
     }
 
       function fixURL($url){
@@ -301,3 +305,39 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       }
 }
 
+function fixParsedUrls($matches)
+{
+	$url = $matches[1];
+	$extra = $matches[2];
+
+	//Clean the url and the params first
+	$url  = str_replace( '&amp;', '&', $url );
+
+	//we need to make some exceptions
+
+	//this only applies to a SEF'd URL
+	if(!strpos($url,"jfile,")){
+		return 'href="'.$url . '"' . $extra . '>';
+	}
+
+	//only parse urls that have a query attached
+	if(!strpos($url,"?") && !strpos($url,"&")){
+		return 'href="'.$url . '"' . $extra . '>';
+	}
+
+	//we need to get the query
+	$query = explode("&",$url);
+
+	$url = "";
+
+	//now rebuild the URL
+	foreach($query as $k => $q)
+	{
+		$url .= str_replace("=",",",$q)."/";
+	}
+
+	//set the correct url and close the a tag
+	$replacement = 'href="'.$url . '"' . $extra . '>';
+
+	return $replacement;
+}
