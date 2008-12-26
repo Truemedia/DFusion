@@ -107,7 +107,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
         	        $JFusionSlave = JFusionFactory::getUser($slave->name);
             	    $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
                 	if ($SlaveUser['error']) {
-                    	JFunctionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],1);
+                    	JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],1);
 	                }
     	        }
 
@@ -131,7 +131,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             $MasterSession = $JFusionMaster->createSession($userinfo, $options);
             if ($MasterSession['error']) {
             	//report the error back
-                JFunctionFunction::raiseWarning($master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), $MasterSession['error'],1);
+                JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), $MasterSession['error'],1);
                 if ($master->name == 'joomla_int'){
                   	//we can not tolerate Joomla session failures
 	                ob_end_clean();

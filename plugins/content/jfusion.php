@@ -131,7 +131,7 @@ class plgContentJfusion extends JPlugin
 	            	    		$SlaveThread = $JFusionSlave->checkThreadExists($contentitem);
 
 	                			if ($SlaveThread['error']) {
-	                    			JFunctionFunction::raiseWarning($slave->name . ' ' .JText::_('FORUM') . ' ' .JText::_('UPDATE'), $SlaveThread['error'],1);
+	                    			JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('FORUM') . ' ' .JText::_('UPDATE'), $SlaveThread['error'],1);
 		                		}
 
 		                		//get the ID of the thread
