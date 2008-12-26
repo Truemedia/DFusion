@@ -393,6 +393,37 @@ class JFusionForum_vbulletin extends JFusionForum
         return  'member.php?u='.$uid;
     }
 
+	function getPrivateMessageCounts($userid)
+    {
+        // initialise some objects
+        $jdb = & JFusionFactory::getDatabase($this->getJname());
+
+        $query = 'SELECT pmtotal,pmunread FROM #__user WHERE userid = '.$userid;
+        $jdb->setQuery($query);
+        $vbPMData = $jdb->loadObject();
+
+        $pmcount['total'] = $vbPMData->pmtotal;
+        $pmcount['unread'] = $vbPMData->pmunread;
+
+        return $pmcount;
+    }
+
+    function getPrivateMessageURL()
+    {
+        return 'private.php';
+    }
+
+   function getAvatar($userid)
+   {
+        if ($userid) {
+            $url = $this->params->get('source_url').'image.php?u='.$userid .'&amp;dateline='. time() ;
+            return $url;
+
+        } else {
+            return 0;
+        }
+    }
+
     function getQuery($usedforums, $result_order, $result_limit)
     {
         if ($usedforums) {
@@ -409,9 +440,7 @@ class JFusionForum_vbulletin extends JFusionForum
         1 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";")
         );
 
-
         return $query;
-
     }
 
     function getForumList()
