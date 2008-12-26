@@ -158,6 +158,10 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
     {
         static $regex_body, $replace_body;
 
+        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
+        $url_search = '#(href|action)="(.*?)"(.*?)>#mS';
+        $buffer = preg_replace_callback($url_search,'fixAppendedQueries',$buffer);
+
         if (! $regex_body || ! $replace_body ) {
             // Define our preg arrays
             $regex_body		= array();
@@ -175,10 +179,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         }
 
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
-
-        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
-        $url_search = '#href="(.*?)"(.*?)>#mS';
-        $buffer = preg_replace_callback($url_search,'fixParsedUrls',$buffer);
     }
 
       function fixURL($url){
@@ -305,7 +305,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       }
 }
 
-function fixParsedUrls($matches)
+function fixAppendedQueries($matches)
 {
 	$url = $matches[1];
 	$extra = $matches[2];
