@@ -307,8 +307,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
 function fixAppendedQueries($matches)
 {
-	$url = $matches[1];
-	$extra = $matches[2];
+	$tag = $matches[1];
+	$url = $matches[2];
+	$extra = $matches[3];
 
 	//Clean the url and the params first
 	$url  = str_replace( '&amp;', '&', $url );
@@ -317,12 +318,12 @@ function fixAppendedQueries($matches)
 
 	//this only applies to a SEF'd URL
 	if(!strpos($url,"jfile,")){
-		return 'href="'.$url . '"' . $extra . '>';
+		return "$tag=\"$url\" $extra >";
 	}
 
 	//only parse urls that have a query attached
 	if(!strpos($url,"?") && !strpos($url,"&")){
-		return 'href="'.$url . '"' . $extra . '>';
+		return "$tag=\"$url\" $extra >";
 	}
 
 	//we need to get the query
@@ -337,7 +338,7 @@ function fixAppendedQueries($matches)
 	}
 
 	//set the correct url and close the a tag
-	$replacement = 'href="'.$url . '"' . $extra . '>';
+	$replacement = "$tag=\"$url\" $extra >";
 
 	return $replacement;
 }
