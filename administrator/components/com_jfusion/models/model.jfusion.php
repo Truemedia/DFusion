@@ -185,6 +185,17 @@ class JFusionFunction{
             $jdb->query();
             return 1;
         } else {
+        	//added check for missing files of copied plugins after upgrade
+			$admin_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname.DS.'admin.php';
+			if (!file_exists($admin_file)){
+				//output error message
+	            //Save this error for the integration
+    	        $query = 'UPDATE #__jfusion SET status = 4 WHERE name =' . $jdb->quote($jname);
+        	    $jdb->setQuery($query );
+            	$jdb->query();
+            	return 4;
+			}
+
             //get the user table name
             $JFusionPlugin = JFusionFactory::getAdmin($jname);
             $tablename = $JFusionPlugin->getTablename();

@@ -130,7 +130,7 @@ if ($record->dual_login =='1') { ?>
 
 
 //prepare an array of status messages
-$status = array(JText::_('NO_CONFIG'), JText::_('NO_DATABASE'), JText::_('NO_TABLE'), JText::_('GOOD_CONFIG'));
+$status = array(JText::_('NO_CONFIG'), JText::_('NO_DATABASE'), JText::_('NO_TABLE'), JText::_('GOOD_CONFIG'), JText::_('NO_FILES'));
 
 //added check for database configuration to prevent error after moving sites
 if ($record->slave == 1 || $record->master == 1) {
