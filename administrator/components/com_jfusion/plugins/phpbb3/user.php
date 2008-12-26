@@ -583,15 +583,13 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $user_color = $db->loadResult();;
 
             //set the correct new username color
-            $query = 'UPDATE #__config SET config_value = ' . $user_color . ' WHERE config_name = \'newest_user_colour\'';
+            $query = 'UPDATE #__config SET config_value = ' . $db->quote($user_color) . ' WHERE config_name = \'newest_user_colour\'';
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error
                 $status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
                 return;
             }
-
-
 
             //return the good news
             $status['debug'][] = JText::_('USER_CREATION');
