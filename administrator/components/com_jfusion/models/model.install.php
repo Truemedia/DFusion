@@ -402,7 +402,7 @@ class JFusionPluginInstaller extends JObject {
 		$replace	= array();
 
 		//change the classname
-		$regex[]	= '#JFusion(Plugin|Auth|User|Forum)_' . $jname .'#ms';
+		$regex[]	= '#JFusion(Auth|User|Forum|Public|Admin)_' . $jname .'#ms';
 		$replace[]	= 'JFusion$1_' . $new_jname;
 
 		//change the jname function
