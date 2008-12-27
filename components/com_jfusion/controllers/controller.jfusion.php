@@ -64,6 +64,7 @@ class JFusionControllerFrontEnd extends JController
             }
 
         } else {
+        	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
         	//make one final attempt to get a default view from the joomla_int plugin
 			$params = JFusionFactory::getParams('joomla_int');
 			$default_plugin = $params->get('default_plugin');
