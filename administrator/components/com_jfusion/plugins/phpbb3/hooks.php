@@ -155,6 +155,17 @@ class JFusionHook
         }
 		$uri->setVar('option', 'com_jfusion');
 
+		//needed in case the url is generated using default view from the joomla_int plugin
+		$view = JRequest::getVar('view');
+		if ($view){
+			$uri->setVar('view', $view);
+		}
+
+		$jname = JRequest::getVar('jname');
+		if ($jname){
+			$uri->setVar('jname', $jname);
+		}
+
 		$url = 'index.php'.$uri->toString(array('query', 'fragment'));
 
 		return urldecode(JRoute::_($url, $is_amp));

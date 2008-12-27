@@ -304,6 +304,17 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         	}
 			$uri->setVar('option', 'com_jfusion');
 
+			//needed in case the url is generated using default view from the joomla_int plugin
+			$view = JRequest::getVar('view');
+			if ($view){
+				$uri->setVar('view', $view);
+			}
+
+			$jname = JRequest::getVar('jname');
+			if ($jname){
+				$uri->setVar('jname', $jname);
+			}
+
 			$redirect_url = $source_url . 'index.php'.$uri->toString(array('query', 'fragment'));
 			$redirect_url = urldecode(JRoute::_($redirect_url, true));
 	    }
@@ -333,6 +344,17 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 				$uri->setVar('Itemid', $Itemid);
         	}
 			$uri->setVar('option', 'com_jfusion');
+
+			//needed in case the url is generated using default view from the joomla_int plugin
+			$view = JRequest::getVar('view');
+			if ($view){
+				$uri->setVar('view', $view);
+			}
+
+			$jname = JRequest::getVar('jname');
+			if ($jname){
+				$uri->setVar('jname', $jname);
+			}
 
 			$redirect_url = 'index.php'.$uri->toString(array('query', 'fragment'));
 			$redirect_url = urldecode(JRoute::_($redirect_url, true));
