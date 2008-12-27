@@ -12,7 +12,6 @@ defined('_JEXEC' ) or die('Restricted access' );
 
 jimport('joomla.application.component.controller');
 
-
 /**
 * JFusion Component Controller
 * @package JFusion
@@ -20,15 +19,15 @@ jimport('joomla.application.component.controller');
 
 class JFusionControllerFrontEnd extends JController
 {
-
     /**
 * Displays the integrated software inside Joomla without a frame
 */
     function displayplugin()
     {
         //find out if there is an itemID with the view variable
-        $menuitemid = JRequest::getInt('Itemid' );
-        if ($menuitemid) {
+        $menuitemid = JRequest::getVar('Itemid');
+        //we do not want the frontpage menuitem as it will cause a 500 error in some cases
+        if ($menuitemid && $menuitemid!=1) {
             $db =& JFactory::getDBO();
             $query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
             $menu_data = $db->loadResult();
@@ -37,7 +36,11 @@ class JFusionControllerFrontEnd extends JController
             $menu_param = new JParameter($params, '');
             $jview = $menu_param->get('visual_integration');
             $jname = $menu_param->get('JFusionPlugin');
-        } else {
+        } elseif ($menuitemid==1) {
+        	//if menuitemid is set to frontpage, unset it
+        	JRequest::setVar('Itemid','');
+        }
+         else {
             $jview = JRequest::getVar('view');
             $jname = JRequest::getVar('jname');
         }
@@ -54,28 +57,26 @@ class JFusionControllerFrontEnd extends JController
 	            $result = false;
     	        return $result;
             } else {
-
                 $view = &$this->getView($jview, 'html');
                 $view->assignRef('jname', $jname);
                 $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($jview).DS.'tmpl');
                 $view->setLayout('default');
                 $view->display();
             }
-
         } else {
         	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
         	//make one final attempt to get a default view from the joomla_int plugin
 			$params = JFusionFactory::getParams('joomla_int');
 			$default_plugin = $params->get('default_plugin');
-			$link_mode = $params->get('link_mode');
-			if(empty($link_mode) || empty($default_plugin)){
+			$jview = $params->get('link_mode');
+			if(empty($jview) || empty($default_plugin)){
 	            echo JText::_('NO_VIEW_SELECTED');
     	        $result = false;
         	    return $result;
 			} else {
                 $view = &$this->getView($jview, 'html');
                 $view->assignRef('jname', $default_plugin);
-                $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($link_mode).DS.'tmpl');
+                $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($jview).DS.'tmpl');
                 $view->setLayout('default');
                 $view->display();
 			}

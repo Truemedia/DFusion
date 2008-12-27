@@ -177,10 +177,27 @@ class JFusionForum
 	/**
      * Creates a table of posts to be displayed in content item
      * @param obj of thread information
+     * @param array of css classes
      * @return string HTML of table to displayed
      */
-	function createPostTable($existingthread)
+	function createPostTable($existingthread, $css)
 	{
+		/*
+		Use the following CSS classes to style your post table.  They are here only
+		for reference so there is no need to redeclare them as the array is passed
+		in by the plugin
+
+		$css['postArea'] = $params->get("cssClassPostArea");
+		$css['postHeader'] = $params->get("cssClassPostHeader");
+		$css['postBody'] = $params->get("cssClassPostBody");
+		$css['postTitle'] = $params->get("cssClassPostTitle");
+		$css['postUser'] = $params->get("cssClassPostUser");
+		$css['userAvatar'] = $params->get("cssClassUserAvatar");
+		$css['postDate'] = $params->get("cssClassPostDate");
+		$css['postText'] = $params->get("cssClassPostText");
+
+		*/
+
 		return '';
 	}
 

@@ -365,6 +365,13 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 	    } else {
 			//parse the non-SEF URL
 			$uri = new JURI($parts[1]);
+	    	//set the URL with the jFusion params to correct any domain mistakes
+			//set the jfusion references for Joomla
+        	$Itemid = JRequest::getVar('Itemid');
+        	if ($Itemid){
+				$uri->setVar('Itemid', $Itemid);
+        	}
+			$uri->setVar('option', 'com_jfusion');
 
 			//set the URL with the jFusion params to correct any domain mistakes
 			$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
@@ -525,17 +532,6 @@ function fixURL($matches)
 	$Itemid = JRequest::getVar('Itemid');
 	if ($Itemid){
 		$uri->setVar('Itemid', $Itemid);
-	}
-
-	//needed in case the url is generated using default view from the joomla_int plugin
-	$view = JRequest::getVar('view');
-	if ($view){
-		$uri->setVar('view', $view);
-	}
-
-	$jname = JRequest::getVar('jname');
-	if ($jname){
-		$uri->setVar('jname', $jname);
 	}
 
 	$uri->setVar('option', 'com_jfusion');

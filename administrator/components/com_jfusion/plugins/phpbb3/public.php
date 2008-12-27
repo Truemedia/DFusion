@@ -241,6 +241,18 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	    }
         unset($url_variables['Itemid']);
 
+        //needed in case the url is generated using default view from the joomla_int plugin
+		$view = JRequest::getVar('view');
+		if ($view){
+			$replacement .=  '<input type="hidden" name="view" value="'. $view . '">';
+		}
+		unset($url_variables['view']);
+		$jname = JRequest::getVar('jname');
+		if ($jname){
+			$replacement .=  '<input type="hidden" name="jname" value="'. $jname . '">';
+		}
+		unset($url_variables['jname']);
+
 		//add any other variables
 		if(is_array($url_variables)){
 			 foreach ($url_variables as $key => $value){
@@ -304,17 +316,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         	}
 			$uri->setVar('option', 'com_jfusion');
 
-			//needed in case the url is generated using default view from the joomla_int plugin
-			$view = JRequest::getVar('view');
-			if ($view){
-				$uri->setVar('view', $view);
-			}
-
-			$jname = JRequest::getVar('jname');
-			if ($jname){
-				$uri->setVar('jname', $jname);
-			}
-
 			$redirect_url = $source_url . 'index.php'.$uri->toString(array('query', 'fragment'));
 			$redirect_url = urldecode(JRoute::_($redirect_url, true));
 	    }
@@ -344,17 +345,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 				$uri->setVar('Itemid', $Itemid);
         	}
 			$uri->setVar('option', 'com_jfusion');
-
-			//needed in case the url is generated using default view from the joomla_int plugin
-			$view = JRequest::getVar('view');
-			if ($view){
-				$uri->setVar('view', $view);
-			}
-
-			$jname = JRequest::getVar('jname');
-			if ($jname){
-				$uri->setVar('jname', $jname);
-			}
 
 			$redirect_url = 'index.php'.$uri->toString(array('query', 'fragment'));
 			$redirect_url = urldecode(JRoute::_($redirect_url, true));
