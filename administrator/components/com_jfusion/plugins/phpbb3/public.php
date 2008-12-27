@@ -292,13 +292,51 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 		if (strpos($parts[1],'index.php/')){
 		    $query = explode('index.php/', $parts[1]);
     		$redirect_url = $source_url . 'index.php/' . $query[1];
-	    } else {
+		} else {
 			//parse the non-SEF URL
 			$uri = new JURI($parts[1]);
 
 			//set the URL with the jFusion params to correct any domain mistakes
-			$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
+			//set the jfusion references for Joomla
+        	$Itemid = JRequest::getVar('Itemid');
+        	if ($Itemid){
+				$uri->setVar('Itemid', $Itemid);
+        	}
+			$uri->setVar('option', 'com_jfusion');
+
+			$redirect_url = $source_url . 'index.php'.$uri->toString(array('query', 'fragment'));
+			$redirect_url = urldecode(JRoute::_($redirect_url, true));
 	    }
+
+       //let's do a test to see if the url exists as some redirects are corrupted by phpBB when using SEF
+	   //if it does not, then reconstruct the url for the main page of the board
+      	$exists = (($ftest = @fopen($redirect_url, ‘r’)) === false) ? false : @fclose($ftest);
+
+		if(!$exists)
+		{
+			//get the current base
+			$base = JURI::base();
+
+			//do we have a sid?
+			if(strpos($url,'sid,')){
+				$redirect_url = preg_replace('#url=(.*)\/sid,(.*)\/#mS',"$base/index.php?sid=$2",$url);
+			} else {
+				$redirect_url = $base;
+			}
+
+			//Create the URL
+			$uri = new JURI($redirect_url);
+
+			//set the jfusion references for Joomla
+        	$Itemid = JRequest::getVar('Itemid');
+        	if ($Itemid){
+				$uri->setVar('Itemid', $Itemid);
+        	}
+			$uri->setVar('option', 'com_jfusion');
+
+			$redirect_url = 'index.php'.$uri->toString(array('query', 'fragment'));
+			$redirect_url = urldecode(JRoute::_($redirect_url, true));
+		}
 
       	//reconstruct the redirect meta tag
         return '<meta http-equiv="refresh" content="'.$parts[0].';url=' . $redirect_url .'">';
