@@ -138,7 +138,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 		//temp comment out of filtering to test UTF8 functions
         $username = $this->filterUsername($username);
 
-        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation, user_lastvisit as lastvisit FROM #__users '.
+        $query = 'SELECT user_id as userid, username as name, username_clean as username, user_email as email, user_password as password, NULL as password_salt, user_actkey as activation, user_inactive_reason as reason, user_lastvisit as lastvisit FROM #__users '.
         'WHERE username_clean=' . $db->Quote($username);
         $db->setQuery($query);
         $result = $db->loadObject();
@@ -152,6 +152,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
             } else {
                 $result->block = 0;
             }
+
+            //if no inactive reason is set clear the activation code
+            if(empty($result->reason)){
+            	$result->activation = '';
+            }
+
         }
         return $result;
     }
