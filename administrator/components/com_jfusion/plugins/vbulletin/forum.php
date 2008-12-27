@@ -309,12 +309,12 @@ class JFusionForum_vbulletin extends JFusionForum
 
 		$jdb = & JFusionFactory::getDatabase($this->getJname());
 		$jdb->setQuery($query);
-		$posts = $jdb->loadRowList();
+		$posts = $jdb->loadObjectList();
 
 		return $posts;
 	}
 
-	function createPostTable($existingthread)
+	function createPostTable(&$existingthread, &$css)
 	{
 		//get required params
 		defined('_DATE_FORMAT_LC2') or define('_DATE_FORMAT_LC2','%A, %d %B %Y %H:%M');
@@ -322,11 +322,13 @@ class JFusionForum_vbulletin extends JFusionForum
 		$tz_offset = intval($this->params->get('tz_offset'));
 		$showdate = intval($this->params->get('show_date'));
 		$showuser = intval($this->params->get('show_user'));
+		$showavatar = $this->params->get("show_avatar");
 		$userlink = intval($this->params->get('user_link'));
 		$linkMode = $this->params->get("link_mode");
 		$jname = $this->getJname();
 		$forum = JFusionFactory::getForum($jname);
 		$header = $this->params->get("post_header");
+
 		if($showdate && $showuser) $colspan = 2;
 		else $colspan = 1;
 
@@ -334,41 +336,51 @@ class JFusionForum_vbulletin extends JFusionForum
 		$posts = $this->getPosts($existingthread->threadid,$existingthread->postid);
 
 
-		$table .= "<div 'jfusionpostarea'> \n";
-		$table  = "<div class='jfusionpostheader'>$header</div>\n";
+		$table .= "<div class='{$css["postArea"]}'> \n";
+		$table  = "<div class='{$css["postHeader"]}'>$header</div>\n";
 
 		for ($i=0; $i<count($posts); $i++)
 		{
 			$p = &$posts[$i];
 
-			$table .= "<div class = 'jfusionposttable'> \n";
+			$table .= "<div class = '{$css["postBody"]}'> \n";
 
-			$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($p[6],$p[0]), $jname, $linkMode);
-			$title = '<a href="'. $urlstring_pre . '">'. $p[3] .'</a>';
-			$table .= "<div><span class='jfusionposttitle'>{$title}</span> \n";
+			//avatar
+			if($showavatar){
+				$avatarSrc = $this->getAvatar($p->userid);
+				if($avatarSrc) {
+					$avatar = "<div class='{$css["userAvatar"]}'><img src='$avatarSrc'></div>";
+				} else {
+					$avatar = "";
+				}
+			} else {
+				$avatar = "";
+			}
+			$table .= $avatar;
 
-			//process user info
+			//post title
+			$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($p->threadid,$p->postid), $jname, $linkMode);
+			$title = '<a href="'. $urlstring_pre . '">'. $p->title .'</a>';
+			$table .= "<div class = '{$css["postTitle"]}'>{$title}</div>\n";
+
+			//user info
 			if ($showuser)
 			{
-				if ($userlink)
-				{
-					$user_url = JFusionfunction::createURL($forum->getProfileURL($p[2]), $jname, $linkMode);
-					$user = '<a href="'. $user_url . '">'.$p[1].'</a>';
-				}
-				else
-				{
-					$user = $p["username"];
+				if ($userlink) {
+					$user_url = JFusionfunction::createURL($forum->getProfileURL($p->userid), $jname, $linkMode);
+					$user = '<a href="'. $user_url . '">'.$p->username.'</a>';
+				} else {
+					$user = $p->username;
 				}
 
-				$table .= " by <span class='jfusionpostuser'>$user</span>";
+				$table .= "<div class='{$css["postUser"]}'> by $user</div>";
 			}
 
-			$table .= "</div>";
+			//post date
+			if($showdate) $table .= "<div class='{$css["postDate"]}'>".strftime($date_format, $tz_offset * 3600 + ($p->dateline)) . "</div>";
 
-			//process date info
-			if($showdate) $table .= "<div class='jfusionpostdate'>".strftime($date_format, $tz_offset * 3600 + ($p[4])) . "</div>";
-
-			$table .= "<div class='jfusionpostbody'>{$p[5]}</div> \n";
+			//post body
+			$table .= "<div class='{$css["postText"]}'>{$p->pagetext}</div> \n";
 			$table .= "</div>";
 		}
 

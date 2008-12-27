@@ -310,9 +310,14 @@ class JFusionPublic_vbulletin extends JFusionPublic{
         $url_search = '#href="(.*?)"(.*?)>#mS';
         $buffer = preg_replace_callback($url_search,'fixURL',$buffer);
 
-        //we need to do a few enhancements to prevent CSS clashes
-        $buffer = "<div id = 'framelessVb'>\n$buffer\n</div>";
+        //convert relative links from images and js files into absolute links
+	    $buffer = preg_replace('#(src="|background="|url\(\'?)(.*?)("|\'?\))#mS', '$1'.$integratedURL.'$2$3', $buffer);
 
+        //we need to fix the cron.php file
+		$buffer = preg_replace('#src="(.*)cron.php(.*)>#mS','src="'.$integratedURL.'cron.php$2>',$buffer);
+
+        //we need to wrap the body in a div to prevent some CSS clashes
+        $buffer = "<div id = 'framelessVb'>\n$buffer\n</div>";
 	}
 
 	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)

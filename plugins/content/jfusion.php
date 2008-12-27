@@ -52,6 +52,17 @@ class plgContentJfusion extends JPlugin
 				$linkMode = $params->get("link_mode");
 	        	$linkText = $params->get("link_text");
    	        	$auto = $params->get("auto_create");
+   	        	$css = array();
+				$css['threadLink'] = $params->get("cssClassThreadLink");
+				$css['postArea'] = $params->get("cssClassPostArea");
+				$css['postHeader'] = $params->get("cssClassPostHeader");
+				$css['postBody'] = $params->get("cssClassPostBody");
+				$css['postTitle'] = $params->get("cssClassPostTitle");
+				$css['postUser'] = $params->get("cssClassPostUser");
+				$css['userAvatar'] = $params->get("cssClassUserAvatar");
+				$css['postDate'] = $params->get("cssClassPostDate");
+				$css['postText'] = $params->get("cssClassPostText");
+
 
     	        if($discussBot)
     	        {
@@ -139,7 +150,7 @@ class plgContentJfusion extends JPlugin
 		                		$threadid = $existingthread->threadid;
 
 								$urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($threadid), $jname, $linkMode);
-			                    $urlstring = '<div class="jfusiondiscusslink"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
+			                    $urlstring = '<div class="'.$css['threadLink'].'"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
 
 								//add link to content
 			                    $contentitem->text = $contentitem->text . $urlstring;
@@ -147,7 +158,7 @@ class plgContentJfusion extends JPlugin
 			                    //add posts to content if enabled
 			                    if($params->get("show_posts"))
 			                    {
-									$tableOfPosts = $JFusionSlave->createPostTable($existingthread);
+									$tableOfPosts = $JFusionSlave->createPostTable($existingthread,$css);
 									$contentitem->text = $contentitem->text . $tableOfPosts;
 			                    }
 	    	        		}
@@ -160,7 +171,7 @@ class plgContentJfusion extends JPlugin
 		    	        	 {
 								//create the url string
 		                        $urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($id), $jname, $linkMode);
-		                        $urlstring = '<div class="jfusiondiscusslink"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
+		                        $urlstring = '<div class="'.$css["threadLink"].'"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
 
 		                        //replace plugin with link
 		                        $contentitem->text = str_replace("{jfusion_discuss $id}",$urlstring,$contentitem->text);
@@ -176,7 +187,7 @@ class plgContentJfusion extends JPlugin
 		    	        	 {
 								//create the url string
 		                        $urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($id), $jname, $linkMode);
-		                        $urlstring = '<div class="jfusiondiscusslink"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
+		                        $urlstring = '<div class="'.$css["threadLink"].'"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
 
 		                        //replace plugin with link
 		                        $contentitem->text = str_replace("{jfusion_discuss $id}",$urlstring,$contentitem->text);

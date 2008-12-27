@@ -52,8 +52,9 @@
 		</param>
 
 		<!-- Discussion bot parameters to be released at a later date
+
 		<param name="@spacer" type="spacer" default="" label="" description="" />
-		<param name=" " type="helptext" default="DISCUSSBOT_DESC"/>
+		<param name=" " type="helptext" label="DISCUSSBOT_DESC" default="DISCUSSBOT_GENERAL_DESC"/>
 		<param name="enable_discussbot" type="list" default="0" label="ENABLE_DISCUSSBOT" description="ENABLE_DISCUSSBOT_DESC">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
@@ -64,6 +65,9 @@
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
 		<param name="link_text" type="text" size="100" default="" label="DISCUSSBOT_LINK_TEXT" description="DISCUSSBOT_LINK_TEXT_DESC" />
+
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name=" " type="helptext" label="DISCUSSBOT_DESC" default="DISCUSSBOT_POST_SETUP_DESC"/>
 		<param name="show_posts" type="list" default="0" label="SHOW_POSTS" description="SHOW_POSTS_DESC">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
@@ -80,7 +84,7 @@
 			<option value="0">NO</option>
 		</param>
 		<param name="date_format" type="text" size="20" default="" label="DATE_FORMAT" description="DATE_FORMAT_DESC" />
-		<param name="tz_offset" type="text" size="20" default="" label="TZ_OFFSET" description="TZ_OFFSET_DESC" />
+		<param name="tz_offset" type="timezones" size="20" default="" label="TZ_OFFSET" description="TZ_OFFSET_DESC" />
 		<param name="show_user" type="list" default="1" label="SHOW_USER" description="SHOW_USER_DESC">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
@@ -89,6 +93,24 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
+		<param name="show_avatar" type="list" default="0" label="SHOW_AVATAR" description="SHOW_AVATAR_DESC">
+			<option value="1">YES</option>
+			<option value="0">NO</option>
+		</param>
+		<param name="date_format" type="text" size="20" default="" label="DATE_FORMAT" description="DATE_FORMAT_DESC" />
+
+		<param name="cssClassThreadLink" type="text" size="20" default="" label="CSS_THREAD_LINK" description="CSS_THREAD_LINK_DESC" />
+		<param name="cssClassPostArea" type="text" size="20" default="" label="CSS_POST_AREA" description="CSS_POST_AREA_DESC" />
+		<param name="cssClassPostHeader" type="text" size="20" default="" label="CSS_POST_HEADER" description="CSS_POST_HEADER_DESC" />
+		<param name="cssClassPostBody" type="text" size="20" default="" label="CSS_POST_BODY" description="CSS_POST_BODY_DESC" />
+		<param name="cssClassPostTitle" type="text" size="20" default="" label="CSS_POST_TITLE" description="CSS_POST_TITLE_DESC" />
+		<param name="cssClassPostUser" type="text" size="20" default="" label="CSS_POST_USER" description="CSS_POST_USER_DESC" />
+		<param name="cssClassUserAvatar" type="text" size="20" default="" label="CSS_USER_AVATAR" description="CSS_USER_AVATAR_DESC" />
+		<param name="cssClassPostDate" type="text" size="20" default="" label="CSS_POST_DATE" description="CSS_POST_DATE_DESC" />
+		<param name="cssClassPostText" type="text" size="20" default="" label="CSS_POST_TEXT" description="CSS_POST_TEXT_DESC" />
+
+		<param name="@spacer" type="spacer" default="" label="" description="" />
+		<param name=" " type="helptext" label="DISCUSSBOT_DESC" default="DISCUSSBOT_AUTO_DESC"/>
 		<param name="auto_create" type="list" default="0" label="AUTO_CREATE" description="AUTO_CREATE_DESC">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
@@ -106,7 +128,7 @@
 			<option value="articleText">FIRST_POST_TEXT</option>
 		</param>
 		<param name="first_post_link_text" type="text" size="100" default="" description="FIRST_POST_LINK_TEXT_DESC" label="FIRST_POST_LINK_TEXT" />
-		 -->
+		-->
   	</params>
 
 </install>
