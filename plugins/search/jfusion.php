@@ -75,81 +75,89 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 		$searchMe = JFusionFactory::getPublic($jname);
 		//get the query used to search
 		$query = $searchMe->getSearchQuery();
-		//assign specific table colums to title and text
-		$columns = $searchMe->getSearchQueryColumns();
 
-		//build the query
-		if($phrase == 'exact')
+		//only search if the query is not empty
+		if($query!="")
 		{
-			$where = "(LOWER({$columns->title}) LIKE '%$text%') OR (LOWER({$columns->text}) like '%$text%')";
-		}
-		else
-		{
-			$words = explode (' ', $text);
-			$wheres = array();
-			foreach($words as $word)
+			//assign specific table colums to title and text
+			$columns = $searchMe->getSearchQueryColumns();
+
+			//build the query
+			if($phrase == 'exact')
 			{
-				$wheres[] = "(LOWER({$columns->title}) LIKE '%$word%') OR (LOWER({$columns->text}) like '%$word%')";
+				$where = "(LOWER({$columns->title}) LIKE '%$text%') OR (LOWER({$columns->text}) like '%$text%')";
 			}
-
-			if($phrase == 'all') $separator = "AND";
-			else $separator = "OR";
-
-			$where = '(' . implode ( ") $separator (", $wheres) . ')';
-		}
-		$query .= " WHERE $where";
-
-		$db->setQuery($query);
-
-		//contains the rows returned from plugins
-		$rows = array();
-
-		//load the results
-		if($results = $db->loadObjectList())
-		{
-			foreach($results as $result)
+			else
 			{
-				//add a link
-				$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode);
-				$result->href = $href;
-				//open link in same window
-				$result->browsernav = 2;
-				//clean up the text such as removing bbcode, etc
-				$result->text = $searchMe->cleanUpSearchText($result->text);
-			}
-			$rows[] = $results;
-		}
-		else
-		{
-			JError::raiseWarning(500, $db->stderr());
-			return null;
-		}
+				$words = explode (' ', $text);
+				$wheres = array();
+				foreach($words as $word)
+				{
+					$wheres[] = "(LOWER({$columns->title}) LIKE '%$word%') OR (LOWER({$columns->text}) like '%$word%')";
+				}
 
+				if($phrase == 'all') $separator = "AND";
+				else $separator = "OR";
+
+				$where = '(' . implode ( ") $separator (", $wheres) . ')';
+			}
+			$query .= " WHERE $where";
+
+			$db->setQuery($query);
+
+			//contains the rows returned from plugins
+			$rows = array();
+
+			//load the results
+			if($results = $db->loadObjectList())
+			{
+				foreach($results as $result)
+				{
+					//add a link
+					$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode);
+					$result->href = $href;
+					//open link in same window
+					$result->browsernav = 2;
+					//clean up the text such as removing bbcode, etc
+					$result->text = $searchMe->cleanUpSearchText($result->text);
+				}
+				$rows[] = $results;
+			}
+			else
+			{
+				JError::raiseWarning(500, $db->stderr());
+				return null;
+			}
+		}
 	}
 
 	//To hold all the search results
 	$searchResults = array();
 
-	//merge all the rows into one array
-	foreach($rows AS $r)
+	//do we have any rows?
+	if(count($rows)>0)
 	{
-		$searchResults = array_merge($searchResults,$r);
-	}
+		//merge all the rows into one array
+		foreach($rows AS $r)
+		{
+			$searchResults = array_merge($searchResults,$r);
+		}
 
-	//sort the results
-	jimport('joomla.utilities.array');
+		//sort the results
+		jimport('joomla.utilities.array');
 
-	switch ($ordering){
-		case 'oldest':
-			JArrayHelper::sortObjects($searchResults, 'created');
-			break;
-		case 'alpha':
-			JArrayHelper::sortObjects($searchResults, 'title');
-			break;
-		case 'newest':
-		default:
-			JArrayHelper::sortObjects($searchResults, 'created', -1);
-			break;
+		switch ($ordering){
+			case 'oldest':
+				JArrayHelper::sortObjects($searchResults, 'created');
+				break;
+			case 'alpha':
+				JArrayHelper::sortObjects($searchResults, 'title');
+				break;
+			case 'newest':
+			default:
+				JArrayHelper::sortObjects($searchResults, 'created', -1);
+				break;
+		}
 	}
 
 	return $searchResults;

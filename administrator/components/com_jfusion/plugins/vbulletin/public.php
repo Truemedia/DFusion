@@ -420,7 +420,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function getSearchResultLink($post)
 	{
-		$forum = JFusionFactory::getForum($this->getJname);
+		$forum = JFusionFactory::getForum($this->getJname());
 		return $forum->getPostURL($post->threadid,$post->postid);
 	}
 
