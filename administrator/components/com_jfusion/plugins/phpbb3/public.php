@@ -387,6 +387,9 @@ function fixAppendedQueries($matches)
 		$url .= str_replace("=",",",$q)."/";
 	}
 
+	//strip out the ?
+	$url = str_replace("?","",$url);
+
 	//set the correct url and close the a tag
 	$replacement = "$tag=\"$url\" $extra >";
 
