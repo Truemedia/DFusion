@@ -7,7 +7,7 @@
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>webmaster@jfusion.org</authorEmail>
 	<authorUrl>www.jfusion.org</authorUrl>
-	<version>1.1.0-001</version>
+	<version>1.1.0-002</version>
 	<description>
 		This is the JFusion activity module, that displays the latest
 		posts from the integrated forum software.
