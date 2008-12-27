@@ -157,7 +157,12 @@ class JFusionHook
 
 		$url = urldecode('index.php'.$uri->toString(array('query', 'fragment')));
 
-		return urldecode(JRoute::_($url, $is_amp));
+		//phpbb 3.0.4 now can handle SEF urls, return a non-sef url if it contains a bracket
+		if (strpos($url,'{')){
+			return $url;
+		} else {
+			return JRoute::_($url, $is_amp);
+		}
 	}
 
 	/**

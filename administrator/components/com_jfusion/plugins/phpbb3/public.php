@@ -158,10 +158,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
     {
         static $regex_body, $replace_body;
 
-        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
-        $url_search = '#(href|action)="(.*?)"(.*?)>#mS';
-        $buffer = preg_replace_callback($url_search,'fixAppendedQueries',$buffer);
-
         if (! $regex_body || ! $replace_body ) {
             // Define our preg arrays
             $regex_body		= array();
@@ -170,6 +166,10 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             //convert relative links from images into absolute links
 	        $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
+
+	        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
+	        $regex_body[]	= '#href="(.*?)jfile(.*?)"(.*?)>#me';
+            $replace_body[]	= '$this->fixURL("$1jfile$2","$3")';
 
 			//fix for form actions
 	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
@@ -181,17 +181,25 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
     }
 
-      function fixURL($url){
-      	$url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
-      	return $url . '"';
-      }
+    function fixURL($url, $extra){
+  		//check to see if the URL is in SEF
+		if (strpos($url,'index.php/')){
+			//else do a regex to fix the SEF url
+        	$url = preg_replace('#(/&amp\;|/\?\|?|&amp;)(.*?)\=#mS', '/$2,', $url);
+        	$url = preg_replace('#(\?)(.*?)\=#mS', '/$2,', $url);
+		}
+
+		//return the string unchanged
+		return 'href="' . $url . '"' . $extra . '>';
+
+    }
 
       function fixAction($url, $extra, $baseURL){
       	$url = htmlspecialchars_decode($url);
 
       	//check to see if the URL is in SEF
 		if (strpos($url,'index.php/')){
-			$parts = preg_split('/\/\&|\//', $url);
+			$parts = preg_split('/\/\&|\/|&/', $url);
 			foreach ($parts as $part){
 				$vars =preg_split('/,|=/', $part);
 				if(isset($vars[1])){
@@ -355,8 +363,17 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       }
 }
 
-function fixAppendedQueries($matches)
+function fixAppendedQueries($url, $extra)
 {
+  	//check to see if the URL is in SEF
+	if (strpos($url,'index.php/')){
+		//else do a regex to fix the SEF url
+        $url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
+	}
+
+	//return the string unchanged
+	return 'href="' . $url . '"' . $extra . '>';
+
 	$tag = $matches[1];
 	$url = $matches[2];
 	$extra = $matches[3];
