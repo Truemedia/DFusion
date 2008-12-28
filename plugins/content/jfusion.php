@@ -40,32 +40,40 @@ class plgContentJfusion extends JPlugin
 			//prevent any output by the plugins (this could prevent cookies from being passed to the header)
 			ob_start();
 
-	    	//retrieve slave software
+	    	//retrieve plugin software
 	        $slaves = JFusionFunction::getSlaves();
+	        $master = JFusionFunction::getMaster();
 
-	        foreach($slaves as $slave)
+	        $plugins =& $slaves;
+
+	        if($master->name!="joomla_int" && $master->name!="joomla_ext") {
+	        	$plugins[] = $master;
+	        }
+
+	        foreach($plugins as $plugin)
 	        {
-				$jname = $slave->name;
+				$jname = $plugin->name;
 	            //get the params
     	        $params = JFusionFactory::getParams($jname);
 	        	$discussBot = $params->get("enable_discussbot",false);
-				$linkMode = $params->get("link_mode");
-	        	$linkText = $params->get("link_text");
-   	        	$auto = $params->get("auto_create");
-   	        	$css = array();
-				$css['threadLink'] = $params->get("cssClassThreadLink");
-				$css['postArea'] = $params->get("cssClassPostArea");
-				$css['postHeader'] = $params->get("cssClassPostHeader");
-				$css['postBody'] = $params->get("cssClassPostBody");
-				$css['postTitle'] = $params->get("cssClassPostTitle");
-				$css['postUser'] = $params->get("cssClassPostUser");
-				$css['userAvatar'] = $params->get("cssClassUserAvatar");
-				$css['postDate'] = $params->get("cssClassPostDate");
-				$css['postText'] = $params->get("cssClassPostText");
-
 
     	        if($discussBot)
     	        {
+    	        	//setup parameters
+    	        	$linkMode = $params->get("link_mode");
+		        	$linkText = $params->get("link_text");
+	   	        	$auto = $params->get("auto_create");
+	   	        	$css = array();
+					$css['threadLink'] = $params->get("cssClassThreadLink");
+					$css['postArea'] = $params->get("cssClassPostArea");
+					$css['postHeader'] = $params->get("cssClassPostHeader");
+					$css['postBody'] = $params->get("cssClassPostBody");
+					$css['postTitle'] = $params->get("cssClassPostTitle");
+					$css['postUser'] = $params->get("cssClassPostUser");
+					$css['userAvatar'] = $params->get("cssClassUserAvatar");
+					$css['postDate'] = $params->get("cssClassPostDate");
+					$css['postText'] = $params->get("cssClassPostText");
+
     	            //now check to see if the plugin is configured
 				    $jdb =& JFactory::getDBO();
 				    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->quote($jname);
@@ -138,15 +146,15 @@ class plgContentJfusion extends JPlugin
 	    	        		//generate the thread/post if article meets criteria above
 	    	        		if($generate)
 	    	        		{
-	      	      				$JFusionSlave = JFusionFactory::getForum($jname);
-	            	    		$SlaveThread = $JFusionSlave->checkThreadExists($contentitem);
+	      	      				$JFusionPlugin = JFusionFactory::getForum($jname);
+	            	    		$PluginThread = $JFusionPlugin->checkThreadExists($contentitem);
 
-	                			if ($SlaveThread['error']) {
-	                    			JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('FORUM') . ' ' .JText::_('UPDATE'), $SlaveThread['error'],1);
+	                			if ($PluginThread['error']) {
+	                    			JFusionFunction::raiseWarning($plugin->name . ' ' .JText::_('FORUM') . ' ' .JText::_('UPDATE'), $PluginThread['error'],1);
 		                		}
 
 		                		//get the ID of the thread
-		                		$existingthread = $JFusionSlave->getThread($contentitem->id);
+		                		$existingthread = $JFusionPlugin->getThread($contentitem->id);
 		                		$threadid = $existingthread->threadid;
 
 								$urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($threadid), $jname, $linkMode);
@@ -158,7 +166,7 @@ class plgContentJfusion extends JPlugin
 			                    //add posts to content if enabled
 			                    if($params->get("show_posts"))
 			                    {
-									$tableOfPosts = $JFusionSlave->createPostTable($existingthread,$css);
+									$tableOfPosts = $JFusionPlugin->createPostTable($existingthread,$css);
 									$contentitem->text = $contentitem->text . $tableOfPosts;
 			                    }
 	    	        		}
