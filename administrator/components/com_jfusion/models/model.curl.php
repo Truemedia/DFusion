@@ -322,11 +322,11 @@ class JFusionCurl{
         }
 
         $cookie = "";
-        if(trim($string) == ""){                                                            // MODS!
+        if(trim($string) == ""){
           foreach ($cookiearr as $key=>$value){
                 $cookie .= "$key=$value ";
             }
-//          curl_setopt($ch, CURLOPT_COOKIE, $cookie);    //echo $cookie."<br>";
+          curl_setopt($ch, CURLOPT_COOKIE, $cookie);
         }
         return $length;
     }
