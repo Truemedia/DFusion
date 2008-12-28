@@ -88,60 +88,70 @@ class plgContentJfusion extends JPlugin
 	    	        	{
 	    	        		$generate = true;
 
-	    					//check to see if there are sections/categories that are specifically included/excluded
-	    					$sections = $params->get("include_sections");
-							$includeSections = empty($sections) ? false : explode(",",$sections);
+	    	        		$forumid = $params->get("default_forum",false);
+							$sectionPairs = $params->get("pair_sections",false);
+							$categoryPairs = $params->get("pair_categories",false);
 
-							$categories = $params->get("include_categories");
-							$includeCategories = empty($categories) ? false : explode(",",$categories);
-
-							$sections = $params->get("exclude_sections");
-							$excludeSections = empty($sections) ? false : explode(",",$sections);
-
-							$categories = $params->get("exclude_categories");
-							$excludeCategories = empty($categories) ? false : explode(",",$categories);
-
-							//section and category id of content
-							$secid = $contentitem->sectionid;
-							$catid = $contentitem->catid;
-
-							//there are section stipulations on what articles to include
-							if($includeSections)
+							//first we need to check to see if we at least one forum to work with
+							if($forumid || $sectionPairs || $categoryPairs)
 							{
-								if($includeCategories)
+		    					//check to see if there are sections/categories that are specifically included/excluded
+		    					$sections = $params->get("include_sections");
+								$includeSections = empty($sections) ? false : explode(",",$sections);
+
+								$categories = $params->get("include_categories");
+								$includeCategories = empty($categories) ? false : explode(",",$categories);
+
+								$sections = $params->get("exclude_sections");
+								$excludeSections = empty($sections) ? false : explode(",",$sections);
+
+								$categories = $params->get("exclude_categories");
+								$excludeCategories = empty($categories) ? false : explode(",",$categories);
+
+								//section and category id of content
+								$secid = $contentitem->sectionid;
+								$catid = $contentitem->catid;
+
+								//there are section stipulations on what articles to include
+								if($includeSections)
 								{
-									//there are both specific sections and categories to include
-									//check to see if this article is not in the selected sections and categories
-									if(!in_array($secid,$includeSections) && !in_array($catid,$includeCategories)) $generate = false;
+									if($includeCategories)
+									{
+										//there are both specific sections and categories to include
+										//check to see if this article is not in the selected sections and categories
+										if(!in_array($secid,$includeSections) && !in_array($catid,$includeCategories)) $generate = false;
+									}
+									elseif($excludeCategories)
+									{
+										//exclude this article if it is in one of the excluded categories
+										if(in_array($catid,$excludeCategories)) $generate = false;
+									}
+									//there are only specific sections to include with no category stipulations
+									elseif(in_array($secid,$includeSections)) $generate = true;
+									//this article is not in one of the sections to include
+									else $generate = false;
 								}
-								elseif($excludeCategories)
-								{
-									//exclude this article if it is in one of the excluded categories
-									if(in_array($catid,$excludeCategories)) $generate = false;
-								}
-								//there are only specific sections to include with no category stipulations
-								elseif(in_array($secid,$includeSections)) $generate = true;
-								//this article is not in one of the sections to include
-								else $generate = false;
+								//there are category stipulations on what articles to include but no section stipulations
+		    	        		elseif($includeCategories)
+		    	        		{
+		    	        			//check to see if this article is not in the selected categories
+		    	        			if(!in_array($catid,$includeCategories)) $generate = false;
+		    	        		}
+		    	        		//there are section stipulations on what articles to exclude
+		    	        		elseif($excludeSections)
+		    	        		{
+		    	        			//check to see if this article is in the excluded sections
+		    	        			if(in_array($secid,$excludeSections)) $generate = false;
+		    	        		}
+		    	        		//there are category stipulations on what articles to exclude but no exclude stipulations on section
+		    	        		elseif($excludeCategories)
+		    	        		{
+		    	        			//check to see if this article is in the excluded categories
+		    	        			if(in_array($catid,$excludeCategories)) $generate = false;
+		    	        		}
+							} else {
+								$generate = false;
 							}
-							//there are category stipulations on what articles to include but no section stipulations
-	    	        		elseif($includeCategories)
-	    	        		{
-	    	        			//check to see if this article is not in the selected categories
-	    	        			if(!in_array($catid,$includeCategories)) $generate = false;
-	    	        		}
-	    	        		//there are section stipulations on what articles to exclude
-	    	        		elseif($excludeSections)
-	    	        		{
-	    	        			//check to see if this article is in the excluded sections
-	    	        			if(in_array($secid,$excludeSections)) $generate = false;
-	    	        		}
-	    	        		//there are category stipulations on what articles to exclude but no exclude stipulations on section
-	    	        		elseif($excludeCategories)
-	    	        		{
-	    	        			//check to see if this article is in the excluded categories
-	    	        			if(in_array($catid,$excludeCategories)) $generate = false;
-	    	        		}
 
 	    	        		//generate the thread/post if article meets criteria above
 	    	        		if($generate)
