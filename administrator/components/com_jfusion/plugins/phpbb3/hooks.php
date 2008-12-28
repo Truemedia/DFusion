@@ -159,7 +159,7 @@ class JFusionHook
 
 		//phpbb 3.0.4 now can handle SEF urls, return a non-sef url if it contains a bracket
 		if (strpos($url,'{')){
-			return $url;
+			return JURI::Base() . $url;
 		} else {
 			return JRoute::_($url, $is_amp);
 		}

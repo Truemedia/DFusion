@@ -263,9 +263,6 @@ if (!empty($userinfo)) {
 /**
 * Output the results of the JFusion user plugin
 */
-
-
-
 jimport('joomla.user.helper');
 global $JFusionActive;
 $JFusionActive = true;
@@ -275,8 +272,10 @@ $master = JFusionFunction::getMaster();
 $JFusionMaster = JFusionFactory::getUser($master->name);
 $userinfo = $JFusionMaster->getUser($user['username']);
 
-//apply the cleartext password to the user object
-$userinfo->password_clear = $user['password'];
+//apply the cleartext password to the user object if set
+if(!empty($user['password'])){
+	$userinfo->password_clear = $user['password'];
+}
 
 $MasterUser = $JFusionMaster->updateUser($userinfo,$overwrite);
 if ($MasterUser['error']) {
@@ -410,8 +409,10 @@ foreach($slaves as $slave) {
 		$SlaveUser['userinfo']->password_salt = $userinfo_password_salt;
         debug::show($SlaveUser['debug'], $slave->name.' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 
-        //apply the cleartext password to the user object
-        $SlaveUser['userinfo']->password_clear = $user['password'];
+		//apply the cleartext password to the user object if set
+		if(!empty($user['password'])){
+	        $SlaveUser['userinfo']->password_clear = $user['password'];
+		}
 
         JFusionFunction::updateLookup($SlaveUser['userinfo'], $slave->name, $JoomlaUser['userinfo']->userid);
 

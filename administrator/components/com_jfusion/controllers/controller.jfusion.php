@@ -231,6 +231,9 @@ class JFusionController extends JController
 */
     function saveconfig()
     {
+        //set jname as a global variable in order for elements to access it.
+        global $jname;
+
         //get the posted variables
         $post = JRequest::getVar('params', array(), 'post', 'array' );
         $jname = JRequest::getVar('jname', '', 'POST', 'STRING' );
