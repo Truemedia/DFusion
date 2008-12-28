@@ -24,7 +24,7 @@ $view = $params->get('link_mode', 'direct');
 //check if the JFusion component is installed
 $model_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php';
 $factory_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php';
-if (file_exists($model_file) && file_exists($model_file)) {
+if (file_exists($model_file) && file_exists($factory_file)) {
 
     /**
 * require the JFusion libraries
