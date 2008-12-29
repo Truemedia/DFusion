@@ -145,7 +145,7 @@ if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 }
 
 //create the jfusion_forum_plugin table if it does not exist already
-if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
+if (array_search($table_prefix . 'jfusion_forum_plugin',$table_list) == false) {
 	$query = 'CREATE TABLE IF NOT EXISTS #__jfusion_forum_plugin (
   contentid int(11) NOT NULL,
   threadid int(11) NOT NULL,
