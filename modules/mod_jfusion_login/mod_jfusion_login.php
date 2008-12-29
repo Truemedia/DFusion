@@ -69,24 +69,24 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 
         } else {
 	        //use the Joomla default urls
-    	    $url_lostpass = JRoute::_('index.php?option=com_user&view=reset' );
-        	$url_lostuser = JRoute::_('index.php?option=com_user&view=remind' );
-	        $url_register = JRoute::_('index.php?option=com_user&task=register' );
+    	    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
+        	$url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
+	        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
 
     } else {
         //use the Joomla default urls
-        $url_lostpass = JRoute::_('index.php?option=com_user&view=reset' );
-        $url_lostuser = JRoute::_('index.php?option=com_user&view=remind' );
-        $url_register = JRoute::_('index.php?option=com_user&task=register' );
+        $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
+        $url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
+        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
     	require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
     }
 
 } else {
     //use the Joomla default urls
-    $url_lostpass = JRoute::_('index.php?option=com_user&view=reset' );
-    $url_lostuser = JRoute::_('index.php?option=com_user&view=remind' );
-    $url_register = JRoute::_('index.php?option=com_user&task=register' );
+    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
+    $url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
+    $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
     require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
 }

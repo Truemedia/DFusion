@@ -147,17 +147,16 @@ echo $pane->startPanel( 'JFusion News', 'panel1' );
 
 //print out the news
 foreach ($this->JFusionNews->item as $item) {
-   echo '<h3><i>' . $item->date . '</i> - <a href="' .$item->link . '" target="_blank">' . $item->title . '</a></h3>';
-   echo $item->body . '<br/><br/>';
+   echo '<h3><i>' . $item->date[0]->data() . '</i> - <a href="' .$item->link[0]->data() . '" target="_blank">' . $item->title[0]->data() . '</a></h3>';
+   echo $item->body[0]->data() . '<br/><br/>';
 }
 
-echo $this->JFusionNews;
 echo $pane->endPanel();
 echo $pane->startPanel( 'JFusion Team Members', 'panel2' );
 
 //print out the team details
-foreach ($this->JFusionTeam->item as $item) {
-   echo $item->body . '<br/><br/>';
+foreach ($this->JFusionTeam->children() as $xml) {
+    echo $xml->body[0]->data() . '<br/><br/>';
 }
 
 echo $pane->endPanel();
