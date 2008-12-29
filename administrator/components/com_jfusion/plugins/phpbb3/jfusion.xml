@@ -18,11 +18,18 @@
 		<filename>case_fold_s.php</filename>
 		<filename>confusables.php</filename>
 		<filename>forum.php</filename>
+		<filename>hooks.php</filename>
 		<filename>index.html</filename>
 		<filename>jfusion.xml</filename>
 		<filename>public.php</filename>
 		<filename>user.php</filename>
 		<filename>username_clean.php</filename>
+		<filename>utf_canonical_comp.php</filename>
+		<filename>utf_canonical_decomp.php</filename>
+		<filename>utf_compatibility_decomp.php</filename>
+		<filename>utf_nfc_qc.php</filename>
+		<filename>utf_normalizer_common.php</filename>
+		<filename>utf_normalizer.php</filename>
 		<filename>PasswordHash.php</filename>
 	</files>
   <params addpath="/administrator/components/com_jfusion/elements">
