@@ -160,8 +160,10 @@ $syncdata = unserialize(base64_decode($record->syncdata));
 <?php
 //get the total errors
 $total_error = 0;
-foreach ($syncdata['slave_data'] as $slave) {
-$total_error = $total_error = $slave['error'];
+if(is_array($syncdata['slave_data'])){
+	foreach ($syncdata['slave_data'] as $slave) {
+		$total_error = $total_error = $slave['error'];
+	}
 }
 
 echo '<td>' . $total_error . '</td>';?>
