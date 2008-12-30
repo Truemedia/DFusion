@@ -230,13 +230,13 @@ class JFusionJplugin{
 		$login_identifier = $params->get('login_identifier');
 		if ($login_identifier == 1){
 			$identifier_type = 'b.username';
-			$identifier = $this->filterUsername($identifier);
+//			$identifier = $this->filterUsername($identifier);
 		} elseif ($login_identifier == 3){
 			if(strpos($identifier, '@')) {
 				$identifier_type = 'b.email';
 			} else {
 				$identifier_type = 'b.username';
-				$identifier = $this->filterUsername($identifier);
+//				$identifier = $this->filterUsername($identifier);
 			}
 		} else {
 			$identifier_type = 'b.email';
@@ -386,11 +386,12 @@ class JFusionJplugin{
 
 	function updateUsername($userinfo, &$existinguser, &$status,$jname){
 		//generate the filtered integration username
-		$username_clean = $this->filterUsername($userinfo->username, $jname);
+		$username_clean = $userinfo->$userinfo->username;// $this->filterUsername($userinfo->username, $jname);
 		//the return statement did not work, used global as a temp measure
 		global $filtered_username;
-		$username_clean = $filtered_username;
-
+//		$username_clean = $filtered_username;
+//debug
+		$username_clean= $userinfo->username; /// DEBUG statement because username filtering does not work
 		//define which characters which Joomla forbids in usernames
 		$trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
 
@@ -422,7 +423,7 @@ class JFusionJplugin{
 		} else {
 			$status['debug'][] = JText::_('USERNAME_UPDATE') .': ' . $username_clean;
 		}
-
+if ($jname == 'joomla_int'){
 		//delete old entries in the #__jfusion_users table
 		$query = 'DELETE FROM #__jfusion_users WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
@@ -443,7 +444,7 @@ class JFusionJplugin{
 		if (!$db->query()) {
 			$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
 		}
-
+}
 
 	}
 
@@ -457,7 +458,7 @@ class JFusionJplugin{
 
 		if (empty($existinguser)) {
 			//apply username filtering
-			$username_clean = $this->filterUsername($userinfo->username);
+			$username_clean = $userinfo->username;//$this->filterUsername($userinfo->username);
 
 			//define which characters which Joomla forbids in usernames
 			$trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
@@ -532,7 +533,7 @@ class JFusionJplugin{
 					unset ($user['aid']);
 					unset ($user['guest']);
 					// set the creationtime and lastaccess time
-					// TODO
+					$user['registerDate'] = date('Y-m-d H:i:s', time());
 					$user= (object) $user;
 					$user->id = NULL;
 					if (!$db->insertObject('#__users', $user, 'id' )) {
@@ -540,14 +541,32 @@ class JFusionJplugin{
 						$status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
 						return;
 					}
-					//add a new entry in the #__jfusion_users table to allow login with the new username
-					$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $user->userid . ',' . $db->Quote($userinfo->userrname) . ')';
+					//find out the new userid
+					$query = 'SELECT id FROM #__users WHERE username =' . $db->Quote($username_clean);
+					$db->setQuery($query);
+					$userid = $db->loadResult();
+					//add the user to the core_acl_aro	
+					$acl = array();
+					$acl['section_value']='users';
+					$acl['value']=$userid;
+					$acl['order_value']=0;
+					$acl['name']=$userinfo->name;
+					$acl['hidden']=0;					
+					$acl= (object) $acl;
+					$acl->id = NULL;
+					if (!$db->insertObject('#__core_acl_aro', $acl, 'id' )) {
+						//return the error
+						$status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
+						return;
+					}
+					// find out the new aro id
+          			$aro_id = $db->insertid();
+					// and finally add the user to the core_acl_groups_aro_map
+					$query = 'INSERT INTO #__core_acl_groups_aro_map (group_id, aro_id) VALUES (' . $gid . ',' . $aro_id . ')';
 					$db->setQuery($query);
 					if (!$db->query()) {
-						$status['error'][] = JText::_('USER_CREATION_ERROR'). ': ' . $db->stderr();
+						$status['error'][] = JText::_('USER_CREATION_ERROR') . $db->stderr();
 					}
-
-
 				}
 
 				//check to see if the user exists now
