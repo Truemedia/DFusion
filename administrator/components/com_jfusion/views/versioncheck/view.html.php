@@ -22,6 +22,7 @@ class jfusionViewversioncheck extends JView {
     function display($tpl = null)
     {
     	//get the jfusion news
+    	ob_start();
 		$url = 'http://jfusion.googlecode.com/svn/branches/jfusion_version.xml';
     	if(function_exists('curl_init')){
     		//curl is the preferred function
@@ -42,14 +43,19 @@ class jfusionViewversioncheck extends JView {
 		    }
     	}
 
-		$JFusionVersion = new SimpleXMLElement($JFusionVersionRaw);
+ 		$parser = JFactory::getXMLParser('Simple');
+	    if ($parser->loadString($JFusionVersionRaw)) {
+        	if (isset( $parser->document )) {
+            	$JFusionVersion    = $parser->document;
+         	} else {
+				echo JText::_('CURL_DISABLED');
+				return;
+         	}
+      	}
+		unset($parser);
+		ob_end_clean();
+
 		$this->assignRef('JFusionVersion', $JFusionVersion);
-
         parent::display($tpl);
-
     }
 }
-
-
-
-

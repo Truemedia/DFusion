@@ -12,8 +12,8 @@ defined('_JEXEC') or die('Restricted access');
 
 //display the paypal donation button
 JFusionFunction::displayDonate();
-
 ?>
+
 <table><tr><td width="100px">
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
@@ -37,7 +37,7 @@ table.adminform td {width: 33%;}
 
 <?php
 $server_compatible = true;
-if (version_compare(phpversion(), $this->JFusionVersion->php) == -1){
+if (version_compare(phpversion(), $this->JFusionVersion->php[0]->data()) == -1){
 	echo '<tr class = "bad0">';
 	$server_compatible = false;
 } else {
@@ -47,7 +47,7 @@ if (version_compare(phpversion(), $this->JFusionVersion->php) == -1){
 
 <td>PHP</td>
 <td><?php echo phpversion();?></td>
-<td><?php echo $this->JFusionVersion->php;?></td></tr>
+<td><?php echo $this->JFusionVersion->php[0]->data();?></td></tr>
 
 <?
 $version =& new JVersion;
@@ -55,7 +55,7 @@ $joomla_version = $version->getShortVersion();
 //remove any letters from the version
 $joomla_versionclean = ereg_replace("[A-Za-z !]","", $joomla_version);
 
-if (version_compare($joomla_versionclean, $this->JFusionVersion->joomla) == -1){
+if (version_compare($joomla_versionclean, $this->JFusionVersion->joomla[0]->data()) == -1){
 	echo '<tr class = "bad1">';
 	$server_compatible = false;
 } else {
@@ -64,11 +64,11 @@ if (version_compare($joomla_versionclean, $this->JFusionVersion->joomla) == -1){
 
 <td>Joomla</td>
 <td><?php echo $joomla_version;?></td>
-<td><?php echo $this->JFusionVersion->joomla;?></td></tr>
+<td><?php echo $this->JFusionVersion->joomla[0]->data();?></td></tr>
 
 <?
 $phpinfo = JFusionFunction::phpinfo_array();
-if (version_compare($phpinfo['mysql']['Client API version'], $this->JFusionVersion->mysql) == -1){
+if (version_compare($phpinfo['mysql']['Client API version'], $this->JFusionVersion->mysql[0]->data()) == -1){
 	echo '<tr class = "bad0">';
 	$server_compatible = false;
 } else {
@@ -77,7 +77,7 @@ if (version_compare($phpinfo['mysql']['Client API version'], $this->JFusionVersi
 
 <td>MySQL</td>
 <td><?php echo $phpinfo['mysql']['Client API version'];?></td>
-<td><?php echo $this->JFusionVersion->mysql;?></td></tr>
+<td><?php echo $this->JFusionVersion->mysql[0]->data();?></td></tr>
 
 </table>
 <?php
@@ -121,7 +121,7 @@ $up2date = true;
 if (file_exists($component_xml)) {
 	//get the version number
 	$xml = simplexml_load_file($component_xml);
-	if (version_compare($xml->version, $this->JFusionVersion->component) == -1){
+	if (version_compare($xml->version, $this->JFusionVersion->component[0]->data()) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
 		$up2date = false;
 	} else {
@@ -129,7 +129,7 @@ if (file_exists($component_xml)) {
 	}	?>
 	<td>JFusion Component</td>
 	<td><?php echo $xml->version;?></td>
-	<td><?php echo $this->JFusionVersion->component;?></td></tr><?php
+	<td><?php echo $this->JFusionVersion->component[0]->data();?></td></tr><?php
 	unset($xml);
 	if ($row_count == 1){
 		$row_count = 0;
@@ -142,7 +142,7 @@ if (file_exists($component_xml)) {
 if (file_exists($auth_xml)) {
 	//get the version number
 	$xml = simplexml_load_file($auth_xml);
-	if (version_compare($xml->version, $this->JFusionVersion->auth) == -1){
+	if (version_compare($xml->version, $this->JFusionVersion->auth[0]->data()) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
 		$up2date = false;
 	} else {
@@ -150,7 +150,7 @@ if (file_exists($auth_xml)) {
 	}	?>
 	<td>JFusion Auth Plugin</td>
 	<td><?php echo $xml->version;?></td>
-	<td><?php echo $this->JFusionVersion->auth;?></td></tr><?php
+	<td><?php echo $this->JFusionVersion->auth[0]->data();?></td></tr><?php
 	unset($xml);
 	if ($row_count == 1){
 		$row_count = 0;
@@ -161,7 +161,7 @@ if (file_exists($auth_xml)) {
 if (file_exists($user_xml)) {
 	//get the version number
 	$xml = simplexml_load_file($user_xml);
-	if (version_compare($xml->version, $this->JFusionVersion->user) == -1){
+	if (version_compare($xml->version, $this->JFusionVersion->user[0]->data()) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
 		$up2date = false;
 	} else {
@@ -169,7 +169,7 @@ if (file_exists($user_xml)) {
 	}	?>
 	<td>JFusion User Plugin</td>
 	<td><?php echo $xml->version;?></td>
-	<td><?php echo $this->JFusionVersion->user;?></td></tr><?php
+	<td><?php echo $this->JFusionVersion->user[0]->data();?></td></tr><?php
 	unset($xml);
 	if ($row_count == 1){
 		$row_count = 0;
@@ -180,7 +180,7 @@ if (file_exists($user_xml)) {
 if (file_exists($activity_xml)) {
 	//get the version number
 	$xml = simplexml_load_file($activity_xml);
-	if (version_compare($xml->version, $this->JFusionVersion->activity) == -1){
+	if (version_compare($xml->version, $this->JFusionVersion->activity[0]->data()) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
 		$up2date = false;
 	} else {
@@ -188,7 +188,7 @@ if (file_exists($activity_xml)) {
 	}	?>
 	<td>JFusion Activity Module</td>
 	<td><?php echo $xml->version;?></td>
-	<td><?php echo $this->JFusionVersion->activity;?></td></tr><?php
+	<td><?php echo $this->JFusionVersion->activity[0]->data();?></td></tr><?php
 	unset($xml);
 	if ($row_count == 1){
 		$row_count = 0;
@@ -199,7 +199,7 @@ if (file_exists($activity_xml)) {
 if (file_exists($login_xml)) {
 	//get the version number
 	$xml = simplexml_load_file($login_xml);
-	if (version_compare($xml->version, $this->JFusionVersion->login) == -1){
+	if (version_compare($xml->version, $this->JFusionVersion->login[0]->data()) == -1){
 		echo '<tr class = "bad'.$row_count.'">';
 		$up2date = false;
 	} else {
@@ -207,7 +207,7 @@ if (file_exists($login_xml)) {
 	}	?>
 	<td>JFusion Login Module</td>
 	<td><?php echo $xml->version;?></td>
-	<td><?php echo $this->JFusionVersion->login;?></td></tr><?php
+	<td><?php echo $this->JFusionVersion->login[0]->data();?></td></tr><?php
 	unset($xml);
 	if ($row_count == 1){
 		$row_count = 0;
@@ -233,8 +233,8 @@ foreach ($plugins as $plugin) {
     $plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$plugin->name.DS.'jfusion.xml';
 	//get the version number
 	$xml = simplexml_load_file($plugin_xml);
-	if($this->JFusionVersion->{$plugin->name}){
-		if (version_compare($xml->version, $this->JFusionVersion->{$plugin->name}) == -1){
+	if(isset($this->JFusionVersion->{$plugin->name})){
+		if (version_compare($xml->version, $this->JFusionVersion->{$plugin->name}[0]->data()) == -1){
 			echo '<tr class = "bad'.$row_count.'">';
 			$up2date = false;
 		} else {
@@ -247,14 +247,16 @@ foreach ($plugins as $plugin) {
 	<td>JFusion <?echo $plugin->name;?> Plugin</td>
 	<td><?php echo $xml->version;?></td>
 	<td><?php
-	if (is_object($this->JFusionVersion)){
-		if ($this->JFusionVersion->{$plugin->name}){
-			echo $this->JFusionVersion->{$plugin->name};
+
+	if(isset($this->JFusionVersion->{$plugin->name}))	{
+		$plugin_version = $this->JFusionVersion->{$plugin->name};
+		if ($plugin_version[0]->data()){
+			echo $plugin_version[0]->data();
 		} else {
 			echo JText::_('UNKNOWN');
 		}
 	} else {
-    	echo JText::_('UNKNOWN');
+		echo JText::_('UNKNOWN');
 	}
 
 	?></td></tr><?php

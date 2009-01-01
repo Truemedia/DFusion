@@ -19,6 +19,7 @@ $params->def('greeting', 1);
 $type 	= modjfusionLoginHelper::getType();
 $return	= modjfusionLoginHelper::getReturnURL($params, $type);
 $view = $params->get('link_mode', 'direct');
+$link_mode_forum = $params->get('link_mode_forum', 'direct');
 
 
 //check if the JFusion component is installed
@@ -55,11 +56,11 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 
             	if ($params->get('pmcount')) {
                 	$pmcount = $JFusionPlugin->getPrivateMessageCounts($userlookup->userid);
-                	$url_pm = JFusionfunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $view);
+                	$url_pm = JFusionfunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $link_mode_forum);
             	}
 
             	if ($params->get('viewnewmessages')) {
-                	$url_viewnewmessages = JFusionfunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $view);
+                	$url_viewnewmessages = JFusionfunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $link_mode_forum);
             	}
     			//output the login module
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));
