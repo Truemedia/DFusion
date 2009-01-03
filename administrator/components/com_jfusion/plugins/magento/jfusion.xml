@@ -58,7 +58,7 @@
      <param name="override" type="text" size="100" label=""
       default="login[indirect]=no" description="CURL_COOKIE_OVERRIDE" />
     <param name="leavealone" type="text" size="100" label=""
-      default="" description="CURL_COOKIE_LEAVEALONE" />
+      default="magento=>" description="CURL_COOKIE_LEAVEALONE" />
     <param name="integrationtype" type="text" size="3" label=""
       default="1" description="CURL_CURL_INTEGRATIONTYPE" />
     <param name="relpath" type="list" default="" label="" description="CURL_CURL_RELPATH">
