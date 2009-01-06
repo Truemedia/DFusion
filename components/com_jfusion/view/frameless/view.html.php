@@ -82,7 +82,7 @@ class jfusionViewframeless extends JView {
 			$pattern = '#<title>(.*?)<\/title>#';
 			preg_match($pattern, $head, $page_title);
 			global $mainframe;
-			$mainframe->setPageTitle($page_title[1]);
+			$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
 
             // Output the headers
             $document	= JFactory::getDocument();
@@ -121,7 +121,7 @@ class jfusionViewframeless extends JView {
 					$pattern = '#<title>(.*?)<\/title>#';
 					preg_match($pattern, $data[1][0], $page_title);
 					global $mainframe;
-					$mainframe->setPageTitle($page_title[1]);
+					$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
                 }
 
                 // Output the body
