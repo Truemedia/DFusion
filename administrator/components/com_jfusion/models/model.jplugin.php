@@ -545,13 +545,13 @@ if ($jname == 'joomla_int'){
 					$query = 'SELECT id FROM #__users WHERE username =' . $db->Quote($username_clean);
 					$db->setQuery($query);
 					$userid = $db->loadResult();
-					//add the user to the core_acl_aro	
+					//add the user to the core_acl_aro
 					$acl = array();
 					$acl['section_value']='users';
 					$acl['value']=$userid;
 					$acl['order_value']=0;
 					$acl['name']=$userinfo->name;
-					$acl['hidden']=0;					
+					$acl['hidden']=0;
 					$acl= (object) $acl;
 					$acl->id = NULL;
 					if (!$db->insertObject('#__core_acl_aro', $acl, 'id' )) {
@@ -634,10 +634,10 @@ if ($jname == 'joomla_int'){
             }
 
 
-			if (isset($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
+			if (!empty($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
 				//if not salt set, update the password
 				if(empty($userinfo->password_salt)){
-					$this->updatePassword($userinfo, $existinguser, $status,$jname);					
+					$this->updatePassword($userinfo, $existinguser, $status,$jname);
 				} else {
 					// add password_clear to existinguser for the Joomla helper routines
 					$existinguser->password_clear=$userinfo->password_clear;
