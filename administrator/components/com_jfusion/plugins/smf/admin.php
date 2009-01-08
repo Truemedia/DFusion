@@ -101,11 +101,18 @@ class JFusionAdmin_smf extends JFusionAdmin{
     {
         //getting the connection to the db
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT ID_GROUP as id, groupName as name FROM #__membergroups';
+        $query = 'SELECT ID_GROUP as id, groupName as name FROM #__membergroups WHERE minPosts = -1';
         $db->setQuery($query );
+ 		$usergrouplist = $db->loadObjectList();
 
-        //getting the results
-        return $db->loadObjectList();
+ 		//append the default usergroup
+ 		$default_group = new stdClass;
+        $default_group->id = 0;
+        $default_group->name = 'Default User';
+        $usergrouplist[] = $default_group;
+
+
+        return $usergrouplist;
     }
 
     function getDefaultUsergroup()

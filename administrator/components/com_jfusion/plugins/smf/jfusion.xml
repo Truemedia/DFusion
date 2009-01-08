@@ -34,7 +34,7 @@
 		<param name="cookie_name" type="text" size="40" default="" description="COOKIE_NAME" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
-		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
+		<param name="usergroup" default="0" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="SMF_DUAL_TEXT" />
 		<param name=" " type="helptext" default="SMF_VISUAL_TEXT" />

@@ -352,8 +352,8 @@ class JFusionUser_smf extends JFusionUser{
         $user->personalText = '';
         $user->pm_email_notify = 1;
         $user->ID_THEME = 0;
-        $user->ID_GROUP = $params->get('usergroup', 4);
-        $user->ID_POST_GROUP = $params->get('usergroup', 4);
+        $user->ID_GROUP = $params->get('usergroup', 0);
+        $user->ID_POST_GROUP = 4;
 
         //now append the new user data
         if (!$db->insertObject('#__members', $user, 'ID_MEMBER' )) {
