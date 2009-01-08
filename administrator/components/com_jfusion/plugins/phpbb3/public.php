@@ -39,6 +39,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
     function & getBuffer()
     {
+    	//save the current globals
+    	$joomla_globals = $GLOBALS;
+
         // Get the path
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
@@ -112,12 +115,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $result = false;
             return $result;
         }
-
+       
         //set the current directory to phpBB3
         chdir($source_path);
-
-        //get the Itemid
-        $Itemid_joomla = JRequest::getVar('Itemid');
 
         /* set scope for variables required later */
         global $phpbb_root_path, $phpEx, $db, $config, $user, $auth, $cache, $template, $phpbb_hook, $module, $mode;
@@ -145,9 +145,34 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         //change the current directory back to Joomla.
         chdir(JPATH_SITE);
 
-        //reset the global itemid
-        global $Itemid;
-        $Itemid = $Itemid_joomla;
+    	//restore the joomla globals like nothing happened
+    	$GLOBALS = $joomla_globals;
+
+		//check to see if the Joomla database is still connnected
+		$db = & JFactory::getDBO();
+		if (!is_resource($db->_resource)) {
+			//joomla connection needs to be re-established		
+			jimport('joomla.database.database');
+			jimport( 'joomla.database.table' );
+			$conf =& JFactory::getConfig();
+
+			$host 		= $conf->getValue('config.host');
+			$user 		= $conf->getValue('config.user');
+			$password 	= $conf->getValue('config.password');
+			$database	= $conf->getValue('config.db');
+			$prefix 	= $conf->getValue('config.dbprefix');
+
+			// connect to the server
+			if (!($db->_resource = @mysql_connect( $host, $user, $password, true ))) {
+				$db->_errorNum = 2;
+				$db->_errorMsg = 'Could not connect to MySQL';
+				die ('could not reconnect to the Joomla database');
+			}
+
+			// select the database
+			$db->select($database);		
+		}			
+
 
         return $buffer;
     }
@@ -198,7 +223,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	$url = htmlspecialchars_decode($url);
 
       	//check to see if the URL is in SEF
-		if (strpos($url,'index.php/')){
+		if (strpos($url,'index.php/') || strpos($url,'component/')){
 			$parts = preg_split('/\/\&|\/|&/', $url);
 			foreach ($parts as $part){
 				$vars =preg_split('/,|=/', $part);

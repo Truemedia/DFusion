@@ -169,8 +169,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
     function destroySession($userinfo, $options)
     {
-        $userid = 0;
-        $sessionid = 0;
+        $status = array();
         $status['error'] = array();
         $status['debug'] = array();
 
@@ -185,52 +184,33 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $phpbb_cookie_domain = '';
         }
 
-        if (isset($_COOKIE[$phpbb_cookie_name . '_u']) && isset($_COOKIE[$phpbb_cookie_name . '_sid'])) {
-            $userid = intval($_COOKIE[$phpbb_cookie_name.'_u']);
-            $sessionid = $_COOKIE[$phpbb_cookie_name.'_sid'];
-            $status['debug'][] = 'Found session cookie:' . $sessionid .' for userid:' . $userid ;
-        } else {
-            $status['error'][] = 'No userid and session cookie found';
-            return $status;
+        //update session time for the user into user table
+        $query = 'UPDATE #__users SET user_lastvisit =' . time() . ' WHERE user_id =' . $userid;
+        $db->setQuery($query);
+        if (!$db->query()) {
+            $status['debug'][] = 'Error could not update the last visit field ' . $db->stderr();
         }
 
-        if ($userid > 0 && $sessionid) {
-            $db = JFusionFactory::getDatabase($this->getJname());
+		//delete the cookies
+        setcookie($phpbb_cookie_name . '_u', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
+        setcookie($phpbb_cookie_name . '_sid', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
+        setcookie($phpbb_cookie_name . '_k', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
 
-            //update session time for the user into user table
-            $query = 'UPDATE #__users SET user_lastvisit =' . time() . ' WHERE user_id =' . $userid;
-            $db->setQuery($query);
-            if (!$db->query()) {
-                $status['debug'][] = 'Error could not update the last visit field ' . $db->stderr();
-            }
 
-            // delete session data in db and cookies
-            $query = 'DELETE FROM #__sessions WHERE session_user_id =' . $userid . " OR session_id=" . $db->Quote($sessionid);
-            $db->setQuery($query);
-            if ($db->query()) {
-                setcookie($phpbb_cookie_name . '_u', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
-                setcookie($phpbb_cookie_name . '_sid', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
-            } else {
-                $status['error'][] = 'Error: Could not delete session in database ' . $db->stderr();
-                return $status;
-            }
-
-            // delete remember me cookie and session keys
-            if (isset($_COOKIE[$phpbb_cookie_name . '_k'])) {
-                $query = 'DELETE FROM #__sessions_keys WHERE user_id =' . $userid;
-                $db->setQuery($query);
-                if ($db->query()) {
-                    setcookie($phpbb_cookie_name . '_k', '', time()-3600, $phpbb_cookie_path, $phpbb_cookie_domain);
-                    $status['debug'][] = 'Deleted the session key';
-                } else {
-                    $status['debug'][] = 'Error could not delete the session key:' . $db->stderr();
-                }
-            }
-            $status['debug'][] = 'Session destroyed succesfully';
+		//delete the database sessions
+        $query = 'DELETE FROM #__sessions WHERE session_user_id =' . $userinfo->userid;
+        $db->setQuery($query);
+        if (!$db->query()) {
+            $status['error'][] = 'Error: Could not delete session in database ' . $db->stderr();
             return $status;
+         }
+
+        $query = 'DELETE FROM #__sessions_keys WHERE user_id =' . $userinfo->userid;
+        $db->setQuery($query);
+        if ($db->query()) {
+            $status['debug'][] = 'Deleted the session key';
         } else {
-            $status['error'][] = 'Userid and sessionid were not valid';
-            return $status;
+            $status['debug'][] = 'Error could not delete the session key:' . $db->stderr();
         }
     }
 

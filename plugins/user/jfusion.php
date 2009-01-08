@@ -94,7 +94,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             $userinfo->password_clear = $user['password'];
 
             $MasterUser = $JFusionMaster->updateUser($userinfo,0);
-            if ($MasterUser['error']) {
+            if (!empty($MasterUser['error'])) {
                	JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' . JText::_('UPDATE'), $MasterUser['error'],1);
 	        }
 
@@ -106,7 +106,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
     	        foreach($slaves as $slave) {
         	        $JFusionSlave = JFusionFactory::getUser($slave->name);
             	    $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
-                	if ($SlaveUser['error']) {
+                	if (!empty($SlaveUser['error'])) {
                     	JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],1);
 	                }
     	        }
@@ -129,7 +129,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
 			//setup the master session
             $MasterSession = $JFusionMaster->createSession($userinfo, $options);
-            if ($MasterSession['error']) {
+            if (!empty($MasterSession['error'])) {
             	//report the error back
                 JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), $MasterSession['error'],1);
                 if ($master->name == 'joomla_int'){
@@ -147,7 +147,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
                 //setup the Joomla user
                 $JFusionJoomla = JFusionFactory::getUser('joomla_int');
                 $JoomlaUser = $JFusionJoomla->updateUser($userinfo,0);
-                if ($JoomlaUser['error']) {
+                if (!empty($JoomlaUser['error'])) {
                     //no Joomla user could be created, fatal error
                     JFusionFunction::raiseWarning('joomla_int: '.' ' .JText::_('USER')  .' ' .JText::_('UPDATE'), $JoomlaUser['error'],1);
 					//hide the default Joomla login failure message
@@ -159,7 +159,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
                 //create a Joomla session
                 $JoomlaSession = $JFusionJoomla->createSession($JoomlaUser['userinfo'], $options);
-                if ($JoomlaSession['error']) {
+                if (!empty($JoomlaSession['error'])) {
                     //no Joomla session could be created -> deny login
                     JFusionFunction::raiseWarning('joomla_int ' .' ' .JText::_('SESSION') .' ' .JText::_('CREATE'), $JoomlaSession ['error'],1);
 					//hide the default Joomla login failure message
@@ -191,7 +191,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             foreach($slaves as $slave) {
                 $JFusionSlave = JFusionFactory::getUser($slave->name);
                 $SlaveUser = $JFusionSlave->updateUser($userinfo,0);
-                if ($SlaveUser['error']) {
+                if (!empty($SlaveUser['error'])) {
                    	JFusionFunction::raiseWarning($slave->name . ' ' . JText::_('USER') .' ' .JText::_('UPDATE') , $SlaveUser['error'],1);
                 } else {
                     //apply the cleartext password to the user object
@@ -201,7 +201,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
                     if (!isset($options['group']) && $slave->dual_login == 1) {
                         $SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);
-                        if ($SlaveSession['error']) {
+                        if (!empty($SlaveSession['error'])) {
                             JFusionFunction::raiseWarning($slave->name . ' ' . JText::_('SESSION') .' ' .JText::_('CREATE'), $SlaveSession['error'],1);
                         }
                     }
@@ -243,7 +243,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
                     //check if a user was found
                     if ($MasterUser) {
                         $MasterSession = $JFusionMaster->destroySession($MasterUser, $options);
-                        if ($MasterSession['error']) {
+                        if (!empty($MasterSession['error'])) {
                             JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'), $MasterSession['error']);
                         }
                     } else {
@@ -262,7 +262,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
                         //check if a user was found
                         if ($SlaveUser) {
                             $SlaveSession = $JFusionSlave->destroySession($SlaveUser, $options);
-                            if ($SlaveSession['error']) {
+                            if (!empty($SlaveSession['error'])) {
                                 JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('SESSION'). ' ' .JText::_('DESTROY'),$SlaveSession['error'],1);
                             }
                         } else {
@@ -309,7 +309,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
     	        if($master->name != 'joomla_int'){
 		            $JFusionMaster = JFusionFactory::getUser($master->name);
 		            $MasterUser = $JFusionMaster->updateUser($JoomlaUser,1);
-                    if ($MasterUser['error']) {
+                    if (!empty($MasterUser['error'])) {
                			JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $MasterUser['error'],1);
                     }
     	        }
@@ -319,7 +319,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             	foreach($slaves as $slave) {
                 	$JFusionSlave = JFusionFactory::getUser($slave->name);
                 	$SlaveUser = $JFusionSlave->updateUser($JoomlaUser,1);
-                    if ($SlaveUser['error']) {
+                    if (!empty($SlaveUser['error'])) {
                			JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],1);
                     }
             	}
