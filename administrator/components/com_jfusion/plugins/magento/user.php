@@ -214,7 +214,7 @@ class JFusionUser_magento extends JFusionUser{
         if (!empty($existinguser)) {
             //a matching user has been found
 			$status['debug'][] = JText::_('USER_DATA_FOUND');
-            if (!empty($userinfo->password_clear)) {
+            if (!empty($userinfo->password_clear) && strlen($userinfo->password_clear) != 32) {
             	//we can update the password but first find out if we need to
               	if($existinguser->password_salt) {
                   	$existingpassword = md5($existinguser->password_salt.$userinfo->password_clear);

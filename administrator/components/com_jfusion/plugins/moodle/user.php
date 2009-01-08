@@ -87,7 +87,7 @@ class JFusionUser_moodle extends JFusionUser{
 	
 
     function &getUser($identifier){
-        $db = JFusionFactory::getDatabase($this->getJname());
+       $db = JFusionFactory::getDatabase($this->getJname());
         $params = JFusionFactory::getParams($this->getJname());
         $update_block = $params->get('update_block');
         //decide what can be used as a login credential
@@ -182,7 +182,7 @@ class JFusionUser_moodle extends JFusionUser{
               }
             }
 
-            if (!empty($userinfo->password_clear)) {
+            if (!empty($userinfo->password_clear) && strlen($userinfo->password_clear) != 32) {
                 if ($params->get('passwordsaltmain')) {
                    $existingpassword = md5($userinfo->password_clear.$params->get('passwordsaltmain'));
               	} else {
