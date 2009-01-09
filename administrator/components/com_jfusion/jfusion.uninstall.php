@@ -62,6 +62,16 @@ $db->Query();
 _uninstallPlugin('plugin','jfusion', 'user', 'JFusion User Plugin');
 _uninstallPlugin('plugin','jfusion', 'authentication', 'JFusion Authentication Plugin');
 
-
+//remove the jfusion tables.
+$db =& JFactory::getDBO();
+$query = "DROP TABLE #__jfusion;
+DROP TABLE #__jfusion_sync;
+DROP TABLE #__jfusion_users;
+DROP TABLE #__jfusion_users_plugin;
+";
+$db->setQuery($query);
+if (!$db->queryBatch()){
+	echo $db->stderr() . '<br/>';
+}
 
 

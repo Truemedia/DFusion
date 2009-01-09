@@ -277,6 +277,13 @@ class JFusionUser_mybb extends JFusionUser{
                 $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
                 return;
             }
+
+            //check the oldgroup
+            if(empty($oldgroup)){
+	            $params = JFusionFactory::getParams($this->getJname());
+    	        $oldgroup = $params->get('usergroup');
+            }
+
     	    //restore the usergroup
             $query = 'UPDATE #__users SET usergroup = '.$oldgroup.' WHERE uid = '.$existinguser->userid;
             $db->setQuery($query);
