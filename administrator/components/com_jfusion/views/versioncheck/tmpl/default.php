@@ -68,7 +68,16 @@ if (version_compare($joomla_versionclean, $this->JFusionVersion->joomla[0]->data
 
 <?
 $phpinfo = JFusionFunction::phpinfo_array();
-if (version_compare($phpinfo['mysql']['Client API version'], $this->JFusionVersion->mysql[0]->data()) == -1){
+$mysql_version = $phpinfo['mysql']['Client API version'];
+if (empty($mysql_version) || strpos($mysql_version,'X')){
+	//get the version directly from mySQL
+	$db = & JFactory::getDBO();
+	$query = 'SELECT version();';
+	$db->setQuery($query );
+	$mysql_version = $db->loadResult();
+}
+
+if (version_compare($mysql_version, $this->JFusionVersion->mysql[0]->data()) == -1){
 	echo '<tr class = "bad0">';
 	$server_compatible = false;
 } else {
@@ -76,7 +85,7 @@ if (version_compare($phpinfo['mysql']['Client API version'], $this->JFusionVersi
 }?>
 
 <td>MySQL</td>
-<td><?php echo $phpinfo['mysql']['Client API version'];?></td>
+<td><?php echo $mysql_version;?></td>
 <td><?php echo $this->JFusionVersion->mysql[0]->data();?></td></tr>
 
 </table>

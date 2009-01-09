@@ -85,7 +85,15 @@ $phpinfo = JFusionFunction::phpinfo_array();
 $server_info = array();
 $server_info['Joomla Version'] = $version->getShortVersion();
 $server_info['PHP Version'] = phpversion();
-$server_info['MySQL Version'] = $phpinfo['mysql']['Client API version'];
+$mysql_version = $phpinfo['mysql']['Client API version'];
+if (empty($mysql_version) || strpos($mysql_version,'X')){
+	//get the version directly from mySQL
+	$db = & JFactory::getDBO();
+	$query = 'SELECT version();';
+	$db->setQuery($query );
+	$mysql_version = $db->loadResult();
+}
+$server_info['MySQL Version'] = $mysql_version;
 $server_info['System Information'] = $phpinfo['phpinfo']['System'];
 $server_info['Browser Information'] = $_SERVER['HTTP_USER_AGENT'];
 
