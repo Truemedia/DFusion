@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 /**
 * @package JFusion_Moodle
@@ -42,34 +42,38 @@ defined('_JEXEC' ) or die('Restricted access' );
             while (!feof($file_handle)) {
                 $line = fgets($file_handle);
                 if (strpos($line, '$') === 0) {
+				eval($line);
+
+/*
                     //extract the name and value, it was coded to avoid the use of eval() function
                     $vars = split("'", $line);
                     $name = trim($vars[0], ' $=');
                     $value = trim($vars[1], ' $=');
                     $config[$name] = $value;
-                }
+*/                }
             }
             fclose($file_handle);
 
+
             //save the parameters into array
             $params = array();
-            $params['database_host']        = $config['CFG->dbhost'];
-            $params['database_name']        = $config['CFG->dbname'];
-            $params['database_user']        = $config['CFG->dbuser'];
-            $params['database_password']    = $config['CFG->dbpass'];
-            $params['database_prefix']      = $config['CFG->prefix'];
-            $params['database_type']        = $config['CFG->dbtype'];
-            $params['passwordsaltmain']    = $config['CFG->passwordsaltmain'];
+            $params['database_host']        = $CFG->dbhost;
+            $params['database_name']        = $CFG->dbname;
+            $params['database_user']        = $CFG->dbuser;
+            $params['database_password']    = $CFG->dbpass;
+            $params['database_prefix']      = $CFG->prefix;
+            $params['database_type']        = $CFG->dbtype;
+            if (!empty($CFG->passwordsaltmain)) {$params['passwordsaltmain']     = $CFG->passwordsaltmain;}
             for ($i=1; $i<=20; $i++) { //20 alternative salts should be enough, right?
                   $alt = 'passwordsaltalt'.$i;
-                  if ($config['CFG->'.$alt]){$params[$alt] = $config['CFG->'.$alt];}
+                  if (!empty($CFG->$alt)){$params[$alt] = $CFG->$alt;}
             }
             $params['source_path']        = $forumPath;
-            if (substr($config['wwwroot'], -1) == '/') {
-              $params['source_url'] = $config['CFG->wwwroot'];
+            if (substr($CFG->wwwroot, -1) == '/') {
+              $params['source_url'] = $CFG->wwwroot;
             } else {
                 //no slashes found, we need to add one
-                $params['source_url'] = $config['CFG->wwwroot'] . '/' ;
+                $params['source_url'] = $CFG->wwwroot . '/' ;
             }
             $params['usergroup'] = '7';  #make sure we do not assign roles with more capabilities automatically
             //return the parameters so it can be saved permanently
