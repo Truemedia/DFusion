@@ -27,9 +27,7 @@ $lang->load('com_jfusion', JPATH_BASE);
 <img src="components/com_jfusion/images/manager.png" height="75px" width="75px">
 <td><h2><?php echo JText::_('JFUSION') . ' 1.1.0 Beta Patch 1'. JText::_('INSTALLATION'); ?></h2></td></tr></table>
 <h3><?php echo JText::_('STARTING') . ' ' . JText::_('INSTALLATION') . ' ...' ?></h3>
-<table bgcolor="#d9f9e2" width ="100%"><tr><td width="50px">
-<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
-<td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('COMPONENT');?> </b></font></td></tr></table>
+
 <?php
 
 /**
@@ -40,7 +38,6 @@ $lang->load('com_jfusion', JPATH_BASE);
 * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
 */
 
-
 //see if we need to create SQL tables
 $db =& JFactory::getDBO();
 $table_list = $db->getTableList();
@@ -48,62 +45,73 @@ $table_prefix = $db->getPrefix();
 
 //create the jfusion table if it does not exist already
 if (array_search($table_prefix . 'jfusion',$table_list) == false) {
-$batch_query = "CREATE TABLE #__jfusion (
-  id int(11) NOT NULL auto_increment,
-  name varchar(50) NOT NULL,
-  description varchar(150) NOT NULL,
-  version varchar(50),
-  date varchar(50),
-  author varchar(50),
-  support varchar(50),
-  params text,
-  master tinyint(4) NOT NULL,
-  slave tinyint(4) NOT NULL,
-  status tinyint(4) NOT NULL,
-  dual_login tinyint(4) NOT NULL,
-  check_encryption tinyint(4) NOT NULL,
-  activity tinyint(4) NOT NULL,
-  PRIMARY KEY  (id)
-);
 
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status, check_encryption, activity)
-VALUES ('joomla_int', 'Current Joomla Installation', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/',  0, 0,  0, 3,  0, 0);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('joomla_ext', 'External Joomla Installation', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/', 0, 3, 3, 0,  0, 0);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('vbulletin', 'vBulletin 3.7.x', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/', 0,  0, 0, 0,  0, 1);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('phpbb3', 'phpBB3','1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/', 0, 0, 0, 0, 0, 1);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('smf', 'SMF 1.1.x', '1.00', '25th May 2008', 'JFusion development team', 'www.jfusion.org/support/', 0, 0, 0, 0,  0, 1);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('mybb', 'myBB 1.4.1','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0,  0, 0, 0,  0, 1);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('magento', 'magento','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0, 0, 0, 0,  0, 3);
-INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('moodle', 'moodle','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0,  0, 0, 0,  0, 3);
-";
+	$batch_query = "CREATE TABLE #__jfusion (
+	  id int(11) NOT NULL auto_increment,
+	  name varchar(50) NOT NULL,
+	  params text,
+	  master tinyint(4) NOT NULL,
+	  slave tinyint(4) NOT NULL,
+	  status tinyint(4) NOT NULL,
+	  dual_login tinyint(4) NOT NULL,
+	  check_encryption tinyint(4) NOT NULL,
+	  activity tinyint(4) NOT NULL,
+	  plugin_files LONGBLOB,
+	  original_name varchar(50) NULL
+	  PRIMARY KEY  (id)
+	);
+
+	INSERT INTO #__jfusion  (name , params,  slave, dual_login, status, check_encryption, activity) VALUES
+	('joomla_int', 0, 0,  0, 3,  0, 0),
+	('joomla_ext',  0, 3, 3, 0,  0, 0),
+	('vbulletin',  0,  0, 0, 0,  0, 1),
+	('phpbb3', 0, 0, 0, 0, 0, 1),
+	('smf', 0, 0, 0, 0,  0, 1),
+	('mybb', 0,  0, 0, 0,  0, 1),
+	('magento', 0, 0, 0, 0,  0, 3),
+	('moodle', 0,  0, 0, 0,  0, 3);
+	";
 	$db->setQuery($batch_query);
 	if (!$db->queryBatch()){
 		echo $db->stderr() . '<br/>';
 	}
 } else {
-	//make sure the magento plugin is installed
-	$query = 'SELECT name FROM #__jfusion WHERE name = \'magento\'';
+	//list of default plugins
+	$defaultPlugins = array('joomla_int','joomla_ext','vbulletin','phpbb3','smf','mybb','magento','moodle');
+
+	//make sure default plugins are installed
+	$query = "SELECT name FROM #__jfusion";
 	$db->setQuery($query);
-	if (!$db->loadResult()) {
-		$query = "INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('magento', 'magento','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0, 0, 0, 0,  0, 3);";
- 		$db->Execute($query);
+	$installedPlugins = $db->loadResultArray();
+	$pluginSql = array();
+	foreach($defaultPlugins as $plugin){
+		if(!in_array($plugin,$installedPlugins)){
+			if($plugin=='joomla_int') {
+				$pluginSql[] = "('joomla_int', 0, 0,  0, 3,  0, 0)";
+			} elseif ($plugin=='joomla_ext') {
+				$pluginSql[] = "('joomla_ext',  0, 3, 3, 0,  0, 0)";
+			} elseif ($plugin=='vbulletin') {
+				$pluginSql[] = "('vbulletin',  0,  0, 0, 0,  0, 1)";
+			} elseif ($plugin=='phpbb3') {
+				$pluginSql[] = "('phpbb3', 0, 0, 0, 0, 0, 1)";
+			} elseif ($plugin=='smf') {
+				$pluginSql[] = "('smf', 0, 0, 0, 0,  0, 1)";
+			} elseif ($plugin=='mybb') {
+				$pluginSql[] = "('mybb', 0,  0, 0, 0,  0, 1)";
+			} elseif ($plugin=='magento') {
+				$pluginSql[] = "('magento', 0, 0, 0, 0,  0, 3),";
+			} elseif ($plugin=='moodle') {
+				$pluginSql[] = "('moodle', 0,  0, 0, 0,  0, 3)";
+			}
+		}
 	}
 
-	//make sure the moodle plugin is installed
-	$query = 'SELECT name FROM #__jfusion WHERE name = \'moodle\'';
-	$db->setQuery($query);
-	if (!$db->loadResult()) {
-		$query = "INSERT INTO #__jfusion  (name ,description, version, date, author, support, params,  slave, dual_login, status,  check_encryption, activity)
-VALUES ('moodle', 'moodle','1.01','07th September 2008',  'JFusion development team', 'www.jfusion.org/support/',  0,  0, 0, 0,  0, 3);";
- 		$db->Execute($query);
+	if(count($pluginSql)>0){
+		$query = "INSERT INTO #__jfusion  (name, params,  slave, dual_login, status,  check_encryption, activity) VALUES " . implode(', ',$pluginSql);
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
 	}
 
 	//make sure that the slave capabilties of the joomla_ext plugin is enabled
@@ -112,6 +120,112 @@ VALUES ('moodle', 'moodle','1.01','07th September 2008',  'JFusion development t
 	if ($db->loadResult() != 3) {
 		$query = 'UPDATE #__jfusion SET slave = 3 WHERE name = \'joomla_ext\'';
  		$db->Execute($query);
+	}
+
+	//if pre 1.1.0 Beta Patch 2 columns exist, drop them
+	//see if the columns exists
+	$query = "SHOW COLUMNS FROM #__jfusion";
+	$db->setQuery($query);
+	$columns = $db->loadResultArray();
+
+	//check to see if the description column exists, if it does remove all pre 1.1.0 Beta Patch 2 columns
+	if(in_array('description',$columns)){
+		$query = "ALTER TABLE #__jfusion DROP COLUMN version, DROP COLUMN description, DROP COLUMN date, DROP COLUMN author, DROP COLUMN support";
+			$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
+	}
+
+	//add the plugin_files and original columns if it does not exist
+	if(!in_array('plugin_files',$columns)){
+		//add the column
+		$query = "ALTER TABLE #__jfusion ADD COLUMN plugin_files LONGBLOB, ADD COLUMN original_name varchar(50) NULL";
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
+	}
+
+	//restore deleted plugins if possible and applicable
+
+	//get a list of installed plugins
+	$query = "SELECT name, original_name, plugin_files FROM #__jfusion";
+	$db->setQuery($query);
+	$installedPlugins = $db->loadObjectList();
+	//jfusion plugin directory
+	$pluginDir = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins';
+	//stores the plugins that are to be removed from the database during the upgrade process
+	$uninstallPlugin = array();
+	//stores the reason why the plugin had to be unsinstalled
+	$uninstallReason = array();
+	//stores plugin names of plugins that was attempted to be restored
+	$restorePlugins = array();
+	//require the model.install.php file to recreate copied plugins
+	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'models'.DS. 'model.install.php');
+	$model = new JFusionModelInstaller();
+
+	foreach($installedPlugins as $plugin) {
+		//attempt to restore missing plugins
+		if(!file_exists($pluginDir.DS.$plugin->name)){
+			//restore files for custom/copied plugins if available
+			$restorePlugins[] = $plugin->name;
+			$config =& JFactory::getConfig();
+			$tmpDir =& $config->getValue('config.tmp_path');
+
+			//check to see if this is a copy of a default plugin
+			if(in_array($plugin->original_name,$defaultPlugins)) {
+				//recreate the copy and update the database
+				if(!$model->copy($plugin->original_name, $plugin->name, true)){
+					//the original plugin could not be copied so uninstall the plugin
+					$uninstallPlugin[] = $plugin->name;
+					$uninstallReason[$plugin->name] = JText::_('UPGRADE_CREATINGCOPY_FAILED');
+				}
+			} elseif(!empty($plugin->plugin_files)) {
+				//save the compressed file to the tmp dir
+				$file = $tmpDir.DS.$plugin->name.'.zip';
+				if(JFile::write($file,$plugin->plugin_files)){
+					//decompress the file
+					if (!JArchive::extract($tmpDir.DS.$plugin->name.'.zip', $pluginDir)) {
+						//the files were not able to be copied to the plugin directory so remove the plugin
+						$uninstallPlugin[] = $plugin->name;
+						$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
+					} else {
+						//remove the file
+						unset($file);
+					}
+				} else {
+					//the compressed file was not able to be written to the tmp dir so remove it
+					$uninstallPlugin[] = $plugin->name;
+					$uninstallReason[$plugin->name] = JText::_('UPGRADE_WRITEFILE_FAILED');
+				}
+			} else {
+				//the backup file was missing so remove plugin
+				$uninstallPlugin[] = $plugin->name;
+				$uninstallReason[$plugin->name] = JText::_('UPGRADE_NO_BACKUP');
+			}
+		}
+	}
+
+	//remove bad plugin entries from the table
+	if(count($uninstallPlugin) > 0){
+		$query = "DELETE FROM #__jfusion WHERE name IN ('" . implode("', '", $uninstallPlugin) . "')";
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
+	}
+
+	foreach($restorePlugins as $plugin) {
+		if(!in_array($plugin,$uninstallPlugin)) {?>
+		<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
+		<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
+		<td><font size="2"><b><?php echo JText::_('RESTORED') . ' ' . $plugin . ' ' . JText::_('SUCCESS'); ?></b></font></td></tr></table>
+	<?php } else { ?>
+		<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px"><td width="50px">
+		<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px"></td>
+		<td><font size="2"><b><?php echo JText::_('ERROR') . ' ' . JText::_('RESTORING') . ' ' . $plugin . '. ' . JText::_('UPGRADE_CUSTOM_PLUGIN_FAILED') . ': ' . $uninstallReason[$plugin]; ?></b></font></td></tr></table>
+	<?php }
 	}
 }
 
@@ -145,7 +259,7 @@ if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 }
 
 //create the jfusion_forum_plugin table if it does not exist already
-if (array_search($table_prefix . 'jfusion_forum_plugin',$table_list) == false) {
+if (array_search($table_prefix . '#__jfusion_forum_plugin',$table_list) == false) {
 	$query = 'CREATE TABLE IF NOT EXISTS #__jfusion_forum_plugin (
   contentid int(11) NOT NULL,
   threadid int(11) NOT NULL,
@@ -176,7 +290,13 @@ if (array_search($table_prefix . 'jfusion_sync',$table_list) == false) {
 	}
 }
 
+?>
 
+<table bgcolor="#d9f9e2" width ="100%"><tr><td width="50px">
+<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
+<td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('COMPONENT');?> </b></font></td></tr></table>
+
+<?php
 //Install Package Manager
 jimport('joomla.installer.helper');
 

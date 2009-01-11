@@ -133,7 +133,7 @@ class JFusionModelInstaller extends InstallerModelInstall {
 
 	}
 
-	function copy($jname, $new_jname) {
+	function copy($jname, $new_jname, $update = false) {
 		$db =& JFactory::getDBO();
 		$db->setQuery('SELECT id FROM #__jfusion WHERE name ='. $db->Quote($jname));
 		$myId = $db->loadResult();
@@ -143,7 +143,7 @@ class JFusionModelInstaller extends InstallerModelInstall {
 
 		$installer = new JfusionPluginInstaller($this);
 		// Install the package
-		if (!$installer->copy($jname, $new_jname)) {
+		if (!$installer->copy($jname, $new_jname, $update)) {
 			// There was an error installing the package
 			$msg = 'JFusion ' . JText::_('PLUGIN') . ' ' . JText::_('COPY') . ' ' . JText::_('FAILED');
 			$result = false;
@@ -154,9 +154,7 @@ class JFusionModelInstaller extends InstallerModelInstall {
 		}
 
 		return $result;
-
 	}
-
 }
 
 /**
@@ -278,39 +276,31 @@ class JFusionPluginInstaller extends JObject {
 
 		// Was there a module already installed with the same name?
 		if ($id) {
-
-			if (!$this->parent->getOverwrite())
-			{
+			if (!$this->parent->getOverwrite()) {
 				// Install failed, roll back changes
 				$this->parent->abort(JText::_('PLUGIN').' '.JText::_('Install').': '.JText::_('PLUGIN').' "'.$pname.'" '.JText::_('ALREADY_EXISTS'));
 	            $result = false;
     	        return $result;
+			} else {
+				//update the plugin files in the database
+				$plugin_files = $this->backup($name);
+				$db->setQuery("UPDATE #__jfusion SET plugin_files = '$plugin_files' WHERE id = $id");
+				$db->Query();
 			}
-
 		} else {
-
 			//get some more details
-		$version = & $this->manifest->getElementByPath('version');
-		$creationDate = & $this->manifest->getElementByPath('creationdate');
-		$author = & $this->manifest->getElementByPath('author');
-		$support = & $this->manifest->getElementByPath('authorurl');
-		$dual_login = & $this->manifest->getElementByPath('dual_login');
-		$slave = & $this->manifest->getElementByPath('slave');
-		$activity = & $this->manifest->getElementByPath('activity');
+			$dual_login = & $this->manifest->getElementByPath('dual_login');
+			$slave = & $this->manifest->getElementByPath('slave');
+			$activity = & $this->manifest->getElementByPath('activity');
 
             //prepare the variables
             $plugin_entry = new stdClass;
             $plugin_entry->id = NULL;
             $plugin_entry->name = $name;
-			$plugin_entry->description = $myDesc;
-			$plugin_entry->version = JFilterInput::clean($version->data(), 'string');
-			$plugin_entry->date = JFilterInput::clean($creationDate->data(), 'string');
-			$plugin_entry->author = JFilterInput::clean($author->data(), 'string');
-			$plugin_entry->support = JFilterInput::clean($support->data(), 'string');
 			$plugin_entry->dual_login = JFilterInput::clean($dual_login->data(), 'integer');
 			$plugin_entry->slave = JFilterInput::clean($slave->data(), 'integer');
 			$plugin_entry->activity = JFilterInput::clean($activity->data(), 'integer');
-
+			$plugin_entry->plugin_files = $this->backup($name);
 
             //now append the new plugin data
 			if (!$db->insertObject('#__jfusion', $plugin_entry, 'id' )) echo 'OWNED'. $db->getQuery();
@@ -330,6 +320,18 @@ class JFusionPluginInstaller extends JObject {
             $result = false;
             return $result;
 		}
+
+
+		//check to see if this is updating a plugin that has been copied
+		$query = "SELECT name FROM #__jfusion WHERE original_name = {$db->Quote($name)}";
+		$db->setQuery($query);
+		$copiedPlugins = $db->loadResultArray();
+
+		foreach($copiedPlugins as $plugin){
+			//update the copied version with the new files
+			$this->copy($name,$plugin->jname,true);
+		}
+
         $result = true;
         return $result;
 	}
@@ -365,11 +367,14 @@ class JFusionPluginInstaller extends JObject {
 	}
 
 	/**
-	 * handles JFusion plugin un-installation
+	 * handles copying JFusion plugins
      * @param string $jname name of the JFusion plugin used
+     * @param string $new_jname name of the copied plugin
+     * @param boolean $update mark if we updating a copied plugin
 	 * @return boolean
 	 */
-	function copy($jname, $new_jname) {
+	function copy($jname, $new_jname, $update = false) {
+
 		$dir = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname;
 		$new_dir = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $new_jname;
 
@@ -378,24 +383,13 @@ class JFusionPluginInstaller extends JObject {
             $result = false;
             return $result;
 		}
+
 		//copy the files
-		if (!JFolder::copy($dir, $new_dir)) {
+		if (!JFolder::copy($dir, $new_dir, null, $update)) {
 			$this->parent->abort(JText::_('COPY_ERROR'));
             $result = false;
             return $result;
 		}
-
-
-		//add the new entry in the JFusion plugin table
-		$db =& JFactory::getDBO();
-		$db->setQuery('SELECT * FROM #__jfusion WHERE name = '.$db->Quote($jname));
-		$plugin_entry = $db->loadObject();
-		$plugin_entry->name = $new_jname;
-		$plugin_entry->id = NULL;
-        if (!$db->insertObject('#__jfusion', $plugin_entry, 'id' )) {
-            //return the error
-            $this->parent->abort('Error while creating the user: ' . $db->stderr());
-        }
 
 		// Define our preg arrays
 		$regex		= array();
@@ -425,9 +419,34 @@ class JFusionPluginInstaller extends JObject {
 			}
 		}
 
+		$db =& JFactory::getDBO();
+		if($update) {
+			//update the copied plugin files
+			$plugin_files = $this->backup($new_jname);
+			$query = "UPDATE #__jfusion SET plugin_files = '$plugin_files' WHERE jname = '$new_jname'";
+			$db->setQuery($query);
+			$db->Query();
+		} else {
+			//add the new entry in the JFusion plugin table
+			$db->setQuery('SELECT * FROM #__jfusion WHERE name = '.$db->Quote($jname));
+			$plugin_entry = $db->loadObject();
+			$plugin_entry->name = $new_jname;
+			$plugin_entry->id = NULL;
+			$plugin_entry->plugin_files = $this->backup($new_jname);
+
+			//only change the original name if this is not a copy itself
+			if(empty($plugin_entry->original_name)) {
+				$plugin_entry->original_name = $jname;
+			}
+
+	        if (!$db->insertObject('#__jfusion', $plugin_entry, 'id' )) {
+	            //return the error
+	            $this->parent->abort('Error while creating the plugin: ' . $db->stderr());
+	        }
+		}
+
         $result = true;
         return $result;
-
 	}
 
 
@@ -464,9 +483,29 @@ class JFusionPluginInstaller extends JObject {
 
 		// Valid manifest file return the object
 		return $xml;
-
-
 	}
 
+	/**
+	 * handles JFusion plugin backups
+     * @param string $jname name of the JFusion plugin used
+	 * @return backup zip file data or location
+	 */
+	function backup($jname)
+	{
+		$config =& JFactory::getConfig();
+		$tmpDir =& $config->getValue('config.tmp_path');
 
+		//compress the files
+		$filename = $tmpDir.DS."$jname.zip";
+		//retrieve a list of files within the plugin directory
+		$files = JFolder::files(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname,null,false,true);
+
+		//compress the plugin
+		JArchive::create($filename, $files, 'zip');
+
+		//now get the contents of the compressed file to return
+		$data = addslashes(file_get_contents($filename));
+
+		return $data;
+	}
 }
