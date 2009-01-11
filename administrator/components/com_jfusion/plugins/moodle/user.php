@@ -118,7 +118,7 @@ class JFusionUser_moodle extends JFusionUser{
           	$query = 'SELECT value FROM #__config WHERE  name = sitepolicy';
           	$db->setQuery($query);
 			$sitepolicy = $db->loadResult();
-      		if ($sitepolicy->value){
+      		if ($sitepolicy){
         		$result->block = !$result->block;
       		}  else {
               	$result->block = 0;
@@ -235,7 +235,7 @@ class JFusionUser_moodle extends JFusionUser{
     	$status = array();
 		$status=JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
 		// check if the login was successfull
-		if ($status['cURL']['moodle']){
+		if (!empty($status['cURL']['moodle'])){
       		$loggedin_user=$this->rc4decrypt($status['cURL']['moodle']);
       		$status['debug'][]=JText::_('CURL_MOODLE_USER')." ".$loggedin_user;
       		if ($loggedin_user!='nobody'){
@@ -250,7 +250,7 @@ class JFusionUser_moodle extends JFusionUser{
 		$status = JFusionJplugin::createSession($userinfo, $options,$this->getJname());
 		
 		// check if the login was successfull
-		if ($status['cURL']['moodle']){
+		if (!empty($status['cURL']['moodle'])){
       		$loggedin_user=$this->rc4decrypt($status['cURL']['moodle']);
       		$status['debug'][]=JText::_('CURL_MOODLE_USER')." ".$loggedin_user;
       		if ($loggedin_user!=$userinfo->username){
