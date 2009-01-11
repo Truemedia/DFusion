@@ -167,63 +167,6 @@ class JFusionFunction{
 * @param string $jname name of the JFusion plugin used
 */
 
-    function checkConfig($jname)
-    {
-
-		//internal Joomla plugin is always properly configured
-		if ($jname == 'joomla_int') {
-			return 3;
-		}
-
-        $db = JFusionFactory::getDatabase($jname);
-        $jdb =& JFactory::getDBO();
-
-        if (JError::isError($db) || !$db || !method_exists($jdb,'setQuery')) {
-            //Save this error for the integration
-            $query = 'UPDATE #__jfusion SET status = 1 WHERE name =' . $jdb->quote($jname);
-            $jdb->setQuery($query );
-            $jdb->query();
-            return 1;
-        } else {
-        	//added check for missing files of copied plugins after upgrade
-			$admin_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname.DS.'admin.php';
-			if (!file_exists($admin_file)){
-				//output error message
-	            //Save this error for the integration
-    	        $query = 'UPDATE #__jfusion SET status = 4 WHERE name =' . $jdb->quote($jname);
-        	    $jdb->setQuery($query );
-            	$jdb->query();
-            	return 4;
-			}
-
-            //get the user table name
-            $JFusionPlugin = JFusionFactory::getAdmin($jname);
-            $tablename = $JFusionPlugin->getTablename();
-
-            //lets see if we can get some data
-            $query = 'SELECT * FROM #__' . $tablename . ' LIMIT 1';
-            $db->setQuery($query );
-            $result = $db->loadObject();
-            if ($result) {
-                //Save this succes on check
-                $query = 'UPDATE #__jfusion SET status = 3 WHERE name =' . $db->quote($jname);
-                $jdb->setQuery($query );
-                $jdb->query();
-                return 3;
-            } else {
-                //Save this error for the integration
-                $query = 'UPDATE #__jfusion SET status = 2 WHERE name =' . $db->quote($jname);
-                $jdb->setQuery($query );
-                $jdb->query();
-                return 2;
-
-            }
-
-        }
-    }
-
-
-
     /**
 * Tests if a plugin is installed with the specified name, where folder is the type (e.g. user)
 * @param string $element element name of the plugin

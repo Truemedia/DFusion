@@ -244,10 +244,15 @@ class JFusionController extends JController
             $post['source_url'] .= '/';
         }
 
-        //now also check to see that the url starts with http:// or https://
-        if (substr($post['source_url'], 0, 7) != 'http://' && substr($post['source_url'], 0, 8) != 'https://') {
-            $post['source_url'] = 'http://' . $post['source_url'];
-        }
+		//now also check to see that the url starts with http:// or https://
+		if (substr($post['source_url'], 0, 7) != 'http://' &&
+		    substr($post['source_url'], 0, 8) != 'https://') {
+		   if(substr($post['source_url'], 0, 1) != '/') {
+		      $post['source_url'] = 'http://' . $post['source_url'];
+   			} else {
+		      $post['source_url'] = $post['source_url'];
+		   }
+		}
 
         if (JFusionFunction::saveParameters($jname, $post)) {
             JError::raiseNotice(0, JText::_('SAVE_SUCCESS'));

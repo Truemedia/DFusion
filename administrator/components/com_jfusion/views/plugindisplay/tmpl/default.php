@@ -80,6 +80,10 @@ if ($row_count == 1){
 }	else {
 	$row_count = 1;
 }
+
+$JFusionPlugin = NULL;
+$JFusionPlugin = JFusionFactory::getAdmin($record->name);
+
 	?>
 <td><?php echo $record->id; ?></td>
 <td><INPUT TYPE=RADIO NAME="jname" VALUE="<?php echo $record->name; ?>"><?php echo $record->name; ?></td>
@@ -128,26 +132,25 @@ if ($record->dual_login =='1') { ?>
 <?php }
 
 
-
 //prepare an array of status messages
-$status = array(JText::_('NO_CONFIG'), JText::_('NO_DATABASE'), JText::_('NO_TABLE'), JText::_('GOOD_CONFIG'), JText::_('NO_FILES'));
+$status = array(JText::_('NO_CONFIG'), JText::_('NO_DATABASE'), JText::_('NO_TABLE'), JText::_('GOOD_CONFIG'));
 
 //added check for database configuration to prevent error after moving sites
 if ($record->slave == 1 || $record->master == 1) {
-	$config_status =  JFusionFunction::checkConfig($record->name);
+	$config_status =  $JFusionPlugin->checkConfig($record->name);
 } else {
-	$config_status = '0';
+	$config_status = array();
+	$config_status['config'] = 0;
+	$config_status['message'] = JText::_('NO_CONFIG');
 }
 
 //check to see what the config status is
-if ($config_status == '3') {
+if ($config_status['config'] == 1) {
 
-echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' . $status[$config_status] .'</td>';
+echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' . $config_status['message'] .'</td>';
 
 //output the total number of users for the plugin
-$JFusionPlugin = NULL;
 $total_users = NULL;
-$JFusionPlugin = JFusionFactory::getAdmin($record->name);
 $total_users = $JFusionPlugin->getUserCount();
 
 echo '<td>' .$total_users . '</td>';
