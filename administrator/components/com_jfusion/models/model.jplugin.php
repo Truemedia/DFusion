@@ -24,19 +24,11 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 */
 class JFusionJplugin{
 
-/**
- * Common code for auth.php
- */
-
 	function generateEncryptedPassword($userinfo){
 		jimport('joomla.user.helper');
 		$crypt = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
 		return $crypt;
     }
-
-/**
- *  Common code for jfusion_plugin.php
- */
 
 	function getTablename(){
 		return 'users';

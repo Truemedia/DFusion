@@ -12,7 +12,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 //check to see if PHP5 is used
 if (version_compare(PHP_VERSION, '5.0.0', '<')) {
     //die if php4 is used
-    die( JText::_('PHP_VERSION_OUTDATED'). PHP_VERSION );
+    die( JText::_('PHP_VERSION_OUTDATED'). PHP_VERSION . '<br/><br/>' . JText::_('PHP_VERSION_UPGRADE'));
 }
 
 /**

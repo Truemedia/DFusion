@@ -304,6 +304,8 @@ class JFusionFunction{
         } else {
 	        //add support for UTF8
     	    $jfusion_database->Execute('SET names \'utf8\'');
+    	    //support debugging
+			$jfusion_database->debug($debug);
 	        return $jfusion_database;
         }
 

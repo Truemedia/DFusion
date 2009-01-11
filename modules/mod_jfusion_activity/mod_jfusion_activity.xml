@@ -22,6 +22,10 @@
 	</languages>
 
 	<params addpath="/administrator/components/com_jfusion/elements">
+    <param name="cache" type="radio" default="0" label="Enable Cache" description="Select whether to cache the content of this module">
+	    <option value="0">No</option>
+    	<option value="1">Yes</option>
+    </param>
 		<param name="moduleclass_sfx" type="text" default=""
 			label="MODULE_SUFFIX" description="MODULE_SUFFIX_DESCR" />
 
