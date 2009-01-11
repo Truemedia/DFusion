@@ -1,5 +1,4 @@
 <?php
-
 /**
 * @package JFusion_vBulletin
 * @author JFusion development team
@@ -18,6 +17,7 @@ defined('_JEXEC' ) or die('Restricted access' );
 class JFusionUser_vbulletin extends JFusionUser{
 
 	var $params;
+	var $joomla_globals;
 
 	function JFusionUser_vbulletin()
 	{
@@ -75,6 +75,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 			return $status;
 		}
 
+		//backup Joomla's global scope
+		$this->backupGlobals();
+
         //find out if the user already exists
         $existinguser = $this->getUser($userinfo->username);
 
@@ -91,12 +94,17 @@ class JFusionUser_vbulletin extends JFusionUser{
 			    $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_DISABLED');
                 $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
                 $status['userinfo'] = $existinguser;
+
+                //restore Joomla's global scope
+				$this->restoreGlobals();
+
                 return $status;
               }
             }
 
 			if (!empty($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
 				// add password_clear to existinguser for the Joomla helper routines
+				//die("<pre>".print_r($existinguser,true)."<br>".print_r($userinfo,true)."</pre>");
 				$existinguser->password_clear=$userinfo->password_clear;
 			    //check if the password needs to be updated
 	    	    $model = JFusionFactory::getAuth($this->getJname());
@@ -143,6 +151,9 @@ class JFusionUser_vbulletin extends JFusionUser{
               }
             }
 
+            //backup Joomla's global scope
+			$this->restoreGlobals();
+
             $status['userinfo'] = $existinguser;
             if (empty($status['error'])) {
                 $status['action'] = 'updated';
@@ -155,6 +166,10 @@ class JFusionUser_vbulletin extends JFusionUser{
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
+
+            //restore Joomla's global scope
+			$this->restoreGlobals();
+
             return $status;
         }
     }
@@ -209,6 +224,9 @@ class JFusionUser_vbulletin extends JFusionUser{
         $status['debug'] = array();
         $status['error'] = array();
 
+		//backup Joomla's global scope
+		$this->backupGlobals();
+
     	//initialize vb framework
 		if(!$this->vBulletinInit()) return null;
 
@@ -228,8 +246,11 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$status['error'] = false;
 			$status['debug'][] = JText::_('USER_DELETION'). ' ' . $existinguser->userid;
 		}
-
 		unset($userdm);
+
+       //restore Joomla's global scope
+		$this->restoreGlobals();
+
 		return $status;
     }
 
@@ -238,6 +259,9 @@ class JFusionUser_vbulletin extends JFusionUser{
     	//vbulletin will take care of this when logging out via jfusion vbulletin authentication plugin
    	  	if(!defined("_VBULLETIN_JFUSION_HOOK"))
     	{
+    		//backup Joomla's global scope
+			$this->backupGlobals();
+
 	    	//initialize vb framework
 			if(!$this->vBulletinInit()) return null;
 
@@ -253,8 +277,13 @@ class JFusionUser_vbulletin extends JFusionUser{
 			unset($GLOBALS["db"]);
 
 			$status['debug'] .= 'Destroyed session: ' .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
+
+			//restore Joomla's global scope
+			$this->restoreGlobals();
+
 			return $status;
     	}
+
     }
 
     function createSession($userinfo, $options)
@@ -262,6 +291,9 @@ class JFusionUser_vbulletin extends JFusionUser{
     	//vbulletin will take care of this when logging in via jfusion vbulletin authentication plugin
     	if(!defined("_VBULLETIN_JFUSION_HOOK"))
     	{
+    		//backup Joomla's global scope
+			$this->backupGlobals();
+
   			//initialize vb framework
 			if(!$this->vBulletinInit()) return null;
 
@@ -311,6 +343,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 	        }
 
 			unset($userdm);
+
+			//restore Joomla's global scope
+			$this->restoreGlobals();
 
 	        return $status;
     	}
@@ -518,9 +553,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 			$db->setQuery($query);
 	        if($db->loadResult() == 0)
 	        {
-		    	//initialize vb framework
-				if(!$this->vBulletinInit()) return null;
-
 	        	//if not, then add an activation catch to vbulletin's database
 				$useractivation = new stdClass;
 				$useractivation->userid = $existinguser->userid;
@@ -534,7 +566,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 				else {
 					$status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . ': ' . $db->stderr();
 				}
-
 	        }
 	        else{
 	        	$status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
@@ -631,6 +662,21 @@ class JFusionUser_vbulletin extends JFusionUser{
 		$db->setQuery($query);
 		$result	 = $db->loadObject();
 		return $result->title;
+    }
+
+    //backs up joomla's global scope
+    function backupGlobals()
+    {
+    	$this->joomla_globals = $GLOBALS;
+    }
+
+    //restore joomla's global scope
+    function restoreGlobals()
+    {
+    	if(is_array($this->joomla_globals)) {
+    		$GLOBALS = $this->joomla_globals;
+    		$this->joomla_globals = "";
+    	}
     }
 }
 ?>

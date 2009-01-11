@@ -66,6 +66,22 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
             }
             fclose($file_handle);
 
+			//newer versions of vB no longer have the license number in the config file so we need to get it elsewhere
+            if(empty($vb_lic)) {
+            	$myfile = str_replace('config.php','functions.php',$myfile);
+                $file_handle = fopen($myfile, 'r');
+            	while (!feof($file_handle)) {
+	                $line = fgets($file_handle);
+					if (strpos($line, 'Licence Number')) {
+	                    //extract the vbulletin license code while we are at it
+	                    $vb_lic = substr($line, strpos($line, 'Licence Number') + 14, strlen($line));
+	                    fclose($file_handle);
+	                    break;
+	                }
+            	}
+            }
+
+
             //save the parameters into the standard JFusion params format
             $params = array();
             $params['database_host'] = $config['MasterServer']['servername'];
