@@ -138,11 +138,15 @@ if ($row_count == 1){
 
 <td><?php echo $record->id; ?></td>
 <td><INPUT TYPE=RADIO NAME="jname" VALUE="<?php echo $record->name; ?>"><?php echo $record->name; ?></td>
-<td><?php echo $record->description; ?></td>
-<td><?php echo $record->version; ?></td>
-<td><?php echo $record->date; ?></td>
-<td><?php echo $record->author; ?></td>
-<td><?php echo $record->support; ?></td>
+<?php
+$plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$record->name.DS.'jfusion.xml';
+$xml = simplexml_load_file($plugin_xml);
+?>
+<td><?php echo $xml->description; ?></td>
+<td><?php echo $xml->version; ?></td>
+<td><?php echo $xml->creationDate; ?></td>
+<td><?php echo $xml->author; ?></td>
+<td><?php echo $xml->authorUrl; ?></td>
 </tr>
 
 <?php } ?>

@@ -26,9 +26,9 @@ class jfusionViewpluginmanager extends JView {
         $bar->appendButton('Standard', 'copy', JText::_('COPY'), 'copy_plugin', false, false );
         $toolbar = $bar->render();
 
-        //get the data about the JFusion plugins
+        //get the data about the JFusion plugins except for joomla_int
         $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion';
+        $query = "SELECT id, name from #__jfusion WHERE name != 'joomla_int'";
         $db->setQuery($query );
         $rows = $db->loadObjectList();
 
@@ -44,6 +44,3 @@ class jfusionViewpluginmanager extends JView {
 
 }
 ?>
-
-
-
