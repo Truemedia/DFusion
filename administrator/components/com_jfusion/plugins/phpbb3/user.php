@@ -352,7 +352,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         unset($t_hasher);
 
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__users SET user_password =' . $db->quote($existinguser->password) . ' WHERE user_id =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET user_password =' . $db->quote($existinguser->password) . ', user_pass_convert = 0 WHERE user_id =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();

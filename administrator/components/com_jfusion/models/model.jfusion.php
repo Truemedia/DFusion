@@ -26,7 +26,7 @@ class JFusionFunction{
     function getMaster()
     {
         $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion WHERE master = 1 and status = 3';
+        $query = 'SELECT * from #__jfusion WHERE master = 1 and status = 1';
         $db->setQuery($query );
         $jname = $db->loadObject();
 
@@ -44,7 +44,7 @@ class JFusionFunction{
     {
         //find the first forum that is enabled
         $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion WHERE slave = 1 and status = 3';
+        $query = 'SELECT * from #__jfusion WHERE slave = 1 and status = 1';
         $db->setQuery($query );
         $jname = $db->loadObjectList();
         return $jname;
@@ -60,7 +60,7 @@ class JFusionFunction{
     {
         //find the first forum that is enabled
         $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 3 AND name NOT LIKE \'joomla_int\')';
+        $query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
         $db->setQuery($query );
         $list = $db->loadObjectList();
         return $list;
@@ -339,7 +339,7 @@ class JFusionFunction{
         $query = 'SELECT status FROM #__jfusion WHERE name =' . $db->quote($jname);
         $db->setQuery($query);
         $result = $db->loadResult();
-		if ($result == '3') {
+		if ($result == '1') {
             $result = true;
             return $result;
 		} else {

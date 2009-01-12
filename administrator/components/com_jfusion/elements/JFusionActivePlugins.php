@@ -23,7 +23,7 @@ defined('_JEXEC') or die();
         function fetchElement($name, $value, &$node, $control_name)
         {
             $db = & JFactory::getDBO();
-            $query = 'SELECT name as id, name as name from #__jfusion WHERE status = 3';
+            $query = 'SELECT name as id, name as name from #__jfusion WHERE status = 1';
             $db->setQuery($query );
             $rows = $db->loadObjectList();
 

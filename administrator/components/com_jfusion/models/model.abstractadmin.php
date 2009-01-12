@@ -104,18 +104,7 @@ class JFusionAdmin{
         $jdb =& JFactory::getDBO();
         $status = array();
 
-		//here is the key for the status field of the jos_jfusion table
-		// 0 = No config
-		// 1 = No database
-		// 2 = No table
-		// 3 = Good Config
-		// 4 = No files
-
         if (JError::isError($db) || !$db || !method_exists($jdb,'setQuery')) {
-            //Save this error for the integration
-            $query = 'UPDATE #__jfusion SET status = 1 WHERE name =' . $jdb->quote($jname);
-            $jdb->setQuery($query );
-            $jdb->query();
             $status['config'] = 0;
 			$status['message'] = JText::_('NO_DATABASE');
             return $status;
@@ -123,11 +112,6 @@ class JFusionAdmin{
         	//added check for missing files of copied plugins after upgrade
 			$admin_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname.DS.'admin.php';
 			if (!file_exists($admin_file)){
-				//output error message
-	            //Save this error for the integration
-    	        $query = 'UPDATE #__jfusion SET status = 4 WHERE name =' . $jdb->quote($jname);
-        	    $jdb->setQuery($query );
-            	$jdb->query();
 	            $status['config'] = 0;
 				$status['message'] = JText::_('NO_FILES');
 	            return $status;
@@ -142,18 +126,10 @@ class JFusionAdmin{
             $db->setQuery($query );
             $result = $db->loadObject();
             if ($result) {
-                //Save this succes on check
-                $query = 'UPDATE #__jfusion SET status = 3 WHERE name =' . $db->quote($jname);
-                $jdb->setQuery($query );
-                $jdb->query();
 	            $status['config'] = 1;
 				$status['message'] = JText::_('GOOD_CONFIG');
 	            return $status;
             } else {
-                //Save this error for the integration
-                $query = 'UPDATE #__jfusion SET status = 2 WHERE name =' . $db->quote($jname);
-                $jdb->setQuery($query );
-                $jdb->query();
 	            $status['config'] = 0;
 				$status['message'] = JText::_('NO_TABLE');
 	            return $status;

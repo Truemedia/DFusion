@@ -360,4 +360,17 @@ echo '<br/>' . JText::_('INSTALLATION_INSTRUCTIONS') . '<br/><br/>';
 $package_dir = $basedir . DS . 'packages';
 JFolder::delete($package_dir);
 
+//Make sure the status field in jos_jfusion has got either 0 or 1
+$query = 'SELECT status FROM #__jfusion WHERE status = 3';
+$db->setQuery($query);
+if ($db->loadResult()) {
+	$query = 'UPDATE #__jfusion SET status = 0 WHERE status <> 3';
+	$db->Execute($query);
+
+	$query = 'UPDATE #__jfusion SET status = 1 WHERE status = 3';
+	$db->Execute($query);
+}
+
+
+
 

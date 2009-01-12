@@ -23,11 +23,11 @@ class jfusionViewsyncoptions extends JView {
     {
         //find out what the JFusion master and slaves are
         $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion WHERE master = 1 and status = 3';
+        $query = 'SELECT * from #__jfusion WHERE master = 1 and status = 1';
         $db->setQuery($query );
         $master = $db->loadObject();
 
-        $query = 'SELECT * from #__jfusion WHERE slave = 1 and status = 3';
+        $query = 'SELECT * from #__jfusion WHERE slave = 1 and status = 1';
         $db->setQuery($query );
         $slaves = $db->loadObjectList();
 

@@ -132,12 +132,18 @@ if ($record->dual_login =='1') { ?>
 <?php }
 
 
-//prepare an array of status messages
-$status = array(JText::_('NO_CONFIG'), JText::_('NO_DATABASE'), JText::_('NO_TABLE'), JText::_('GOOD_CONFIG'));
-
 //added check for database configuration to prevent error after moving sites
 if ($record->slave == 1 || $record->master == 1) {
 	$config_status =  $JFusionPlugin->checkConfig($record->name);
+
+	//do a check to see if the status field is correct
+	if ($config_status['config'] != $record->status){
+	    //Save this error for the integration
+        $jdb =& JFactory::getDBO();
+        $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $db->quote($record->name);
+        $jdb->setQuery($query );
+        $jdb->query();
+	}
 } else {
 	$config_status = array();
 	$config_status['config'] = 0;
@@ -184,10 +190,10 @@ if ($usergroup) {
 }
 
 } else {
-if ($record->status == 3){
-echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' .$status[$record->status] . '</td>';
+if (!empty($record->status)){
+	echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' .JText::_('GOOD_CONFIG') . '</td>';
 } else {
-echo '<td><img src="images/publish_x.png" border="0" alt="Wrong Config" />' .$status[$record->status] . '</td>';
+	echo '<td><img src="images/publish_x.png" border="0" alt="Wrong Config" />' .JText::_('NO_CONFIG') . '</td>';
 }
 
 echo '<td></td><td></td><td></td></tr>';
