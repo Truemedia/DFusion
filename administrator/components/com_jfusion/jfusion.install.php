@@ -99,7 +99,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 			} elseif ($plugin=='mybb') {
 				$pluginSql[] = "('mybb', 0,  0, 0, 0,  0, 1)";
 			} elseif ($plugin=='magento') {
-				$pluginSql[] = "('magento', 0, 0, 0, 0,  0, 3),";
+				$pluginSql[] = "('magento', 0, 0, 0, 0,  0, 3)";
 			} elseif ($plugin=='moodle') {
 				$pluginSql[] = "('moodle', 0,  0, 0, 0,  0, 3)";
 			}
