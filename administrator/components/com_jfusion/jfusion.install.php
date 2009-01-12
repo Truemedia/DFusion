@@ -57,7 +57,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	  check_encryption tinyint(4) NOT NULL,
 	  activity tinyint(4) NOT NULL,
 	  plugin_files LONGBLOB,
-	  original_name varchar(50) NULL
+	  original_name varchar(50) NULL,
 	  PRIMARY KEY  (id)
 	);
 
