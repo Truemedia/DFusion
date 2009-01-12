@@ -241,6 +241,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
             $params = JFusionFactory::getParams($this->getJname());
             $phpbb_cookie_name = $params->get('cookie_prefix');
+            $phpbb_cookie_expiry = $params->get('cookie_expiry');
 
             if ($phpbb_cookie_name) {
 
@@ -268,7 +269,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
                 if ($jautologin) {
                     $expires = 60*60*24*365;
                 } else {
-                    $expires = 60*30;
+                    $expires = 60 * $phpbb_cookie_expiry;
                 }
 
                 $session_start = time();

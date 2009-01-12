@@ -123,7 +123,6 @@ class JFusionController extends JController
             if ($params) {
                 //save the params first in order for elements to utilize data
                 JFusionFunction::saveParameters($jname, $params);
-                JFusionFunction::checkConfig($jname);
 
                 $parameters = JFusionFactory::getParams($jname);
                 $param2_output = $parameters->render();
@@ -256,11 +255,6 @@ class JFusionController extends JController
 
         if (JFusionFunction::saveParameters($jname, $post)) {
             JError::raiseNotice(0, JText::_('SAVE_SUCCESS'));
-            //the internal Joomla database does not need to be checked
-            if ($jname != 'joomla_int') {
-                JFusionFunction::checkConfig($jname);
-            }
-
         } else {
             JError::raiseWarning(500, JText::_('SAVE_FAILURE'));
         }

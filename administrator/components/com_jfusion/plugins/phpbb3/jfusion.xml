@@ -45,8 +45,12 @@
 		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
 		<param name="cookie_domain" type="text" size="10" default="" description="COOKIE_DOMAIN" />
 		<param name="cookie_path" type="text" size="40" default="/" description="COOKIE_PATH" />
-		<param name="cookie_prefix" type="text" size="10" default="bb" description="COOKIE_PREFIX." />
-		<param name="allow_autologin" type="text" size="10" default="/" description="ALLOW_AUTOLOGIN" />
+		<param name="cookie_prefix" type="text" size="10" default="bb" description="COOKIE_PREFIX" />
+		<param name="cookie_expiry" type="text" size="10" default="60" description="COOKIE_EXPIRY" />
+		<param name="allow_autologin" type="list" default="1" label="" description="ALLOW_AUTOLOGIN">
+			<option value="0">DISABLED</option>
+			<option value="1">ENABLED</option>
+		</param>
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />

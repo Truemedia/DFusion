@@ -43,6 +43,14 @@
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
 
+		<param name="@spacer" type="spacer" default="" label=""
+			description="" />
+
+    <param name=" " type="helptext" default="ITEMID_DESCR"/>
+
+		<param name="itemid" type="text" size="5" default="150"
+			description="ITEMID" />
+
 		<param name="frameless_limits" type="helptext" default="FRAMELESS_LIMITS" />
 
 		<param name="WRAPPER_OPTIONS" type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
