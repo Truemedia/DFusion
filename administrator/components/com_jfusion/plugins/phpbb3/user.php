@@ -172,6 +172,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         $status = array();
         $status['error'] = array();
         $status['debug'] = array();
+        $db = JFusionFactory::getDatabase($this->getJname());
 
         //get the cookie parameters
         $params = JFusionFactory::getParams($this->getJname());

@@ -19,8 +19,9 @@ $params->def('greeting', 1);
 $type 	= modjfusionLoginHelper::getType();
 $return	= modjfusionLoginHelper::getReturnURL($params, $type);
 $view = $params->get('link_mode', 'direct');
-$link_mode_forum = $params->get('link_mode_forum', 'direct');
-
+$view2 = $params->get('link_mode2', 'direct');
+$itemid = $params->get('itemid');
+$itemid2 = $params->get('itemid2');
 
 //check if the JFusion component is installed
 $model_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php';
@@ -37,9 +38,9 @@ if (file_exists($model_file) && file_exists($factory_file)) {
     $jname = JFusionFunction::getMaster();
     if ($jname->status == 3 ) {
         $MasterPlugin = JFusionFactory::getPublic($jname->name);
-        $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view);
-        $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view);
-        $url_register = JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view);
+        $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view, $itemid);
+        $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view, $itemid);
+        $url_register = JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view, $itemid);
 
 		//now find out from which plugin the avatars need to be displayed
 		$PluginName = $params->get('JFusionPlugin');
@@ -56,11 +57,11 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 
             	if ($params->get('pmcount')) {
                 	$pmcount = $JFusionPlugin->getPrivateMessageCounts($userlookup->userid);
-                	$url_pm = JFusionfunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $link_mode_forum);
+                	$url_pm = JFusionfunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $view2,  $itemid2);
             	}
 
             	if ($params->get('viewnewmessages')) {
-                	$url_viewnewmessages = JFusionfunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $link_mode_forum);
+                	$url_viewnewmessages = JFusionfunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $view2, $itemid2);
             	}
     			//output the login module
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));

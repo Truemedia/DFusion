@@ -59,77 +59,33 @@ class jfusionViewframeless extends JView {
             return $result;
         }
 
-        if (class_exists('tidy') ) {
-            // Parse the output using Tidy
-            $options	= array('wrap' => 0 );
-            $tidy = new tidy();
-            $tidy->parseString($buffer, $options);
-            $root = $tidy->root();
+        $pattern	= '#<head>(.*?)</head>\s*<body>(.*)</body>#';
+        $pattern	= '#<head[^>]*>(.*)<\/head>\s*<body[^>]*>(.*)<\/body>#si';
+        preg_match_all($pattern, $buffer, $data);
 
-            // Make sure that we have something
-            if (! $root || ! $root->hasChildren()) {
-                JError::raiseWarning(500, JText::_('NO_HTML'));
-	            $result = false;
-    	        return $result;
-            }
+        // Check if we found something
+        if (count($data) < 3 ) {
+            JError::raiseWarning(500, JText::_('NO_HTML'));
+        } else {
 
-            // Get the important nodes
-            $html = $root->child[1];
-            $head = $html->child[0];
-            $body = $html->child[1];
+            // Add the header information
+            if (isset($data[1][0]) ) {
+                $document	= JFactory::getDocument();
+                $JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
+                $document->addCustomTag($data[1][0]);
 
-            //change the page title
-			$pattern = '#<title>(.*?)<\/title>#';
-			preg_match($pattern, $head, $page_title);
-			global $mainframe;
-			$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
-
-            // Output the headers
-            $document	= JFactory::getDocument();
-            foreach($head->child as $child ) {
-                $name	= $child->name;
-                if ($name == 'script' || $name == 'link' ) {
-                    $JFusionPlugin->parseHeader($child, $baseURL, $fullURL, $integratedURL);
-                    $document->addCustomTag($child);
-                }
+	            //change the page title
+				$pattern = '#<title>(.*?)<\/title>#';
+				preg_match($pattern, $data[1][0], $page_title);
+				global $mainframe;
+				$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
             }
 
             // Output the body
-            foreach($body->child as $child ) {
-                // parse the URL's'
-                $JFusionPlugin->parseBody($child, $baseURL, $fullURL, $integratedURL);
-                echo $child;
-            }
-        } else {
-            $pattern	= '#<head>(.*?)</head>\s*<body>(.*)</body>#';
-            $pattern	= '#<head[^>]*>(.*)<\/head>\s*<body[^>]*>(.*)<\/body>#si';
-            preg_match_all($pattern, $buffer, $data);
-
-            // Check if we found something
-            if (count($data) < 3 ) {
-                JError::raiseWarning(500, JText::_('NO_HTML'));
-            } else {
-
-                // Add the header information
-
-                if (isset($data[1][0]) ) {
-                    $document	= JFactory::getDocument();
-                    $JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
-                    $document->addCustomTag($data[1][0]);
-
-		            //change the page title
-					$pattern = '#<title>(.*?)<\/title>#';
-					preg_match($pattern, $data[1][0], $page_title);
-					global $mainframe;
-					$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
-                }
-
-                // Output the body
-                if (isset($data[2][0]) ) {
-                    // 	parse the URL's'
-                    $JFusionPlugin->parseBody($data[2][0], $baseURL, $fullURL, $integratedURL);
-                    echo $data[2][0];
-                }
+            if (isset($data[2][0]) ) {
+                // 	parse the URL's'
+                $JFusionPlugin->parseBody($data[2][0], $baseURL, $fullURL, $integratedURL);
+                echo $data[2][0];
             }
         }
     }

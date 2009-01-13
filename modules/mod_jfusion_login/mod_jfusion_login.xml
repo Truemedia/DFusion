@@ -30,8 +30,10 @@
 			<option value="direct">LINK_MODE_1</option>
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
-		<param name="frameless_limits" type="helptext" default="FRAMELESS_LIMITS" />
-		<param name="WRAPPER_OPTIONS" type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
+		<param name="itemid" type="text" size="5" default="150"
+			description="ITEMID" />
+		<param name=" " type="helptext" default="FRAMELESS_LIMITS" />
+		<param name=" " type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
 			description="" />
 		<param name="pretext" type="textarea" cols="20" rows="5"
 			default="" label="PRE_TEXT" description="PRE_TEXT_DESCR" />
@@ -84,12 +86,14 @@
 		<param name="JFusionPlugin" type="JFusionActivePlugins" default=""
 			label="JFUSION_PLUGIN"
 			description="JFUSION_PLUGIN_DESCR" />
-		<param name="link_mode_forum" type="list" default="direct" label="LINK_MODE"
+		<param name="link_mode2" type="list" default="direct" label="LINK_MODE"
 			description="LINK_MODE_DESCR">
 			<option value="wrapper">LINK_MODE_0</option>
 			<option value="direct">LINK_MODE_1</option>
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
+		<param name="itemid2" type="text" size="5" default="150"
+			description="ITEMID" />
 		<param name="avatar" type="radio" default="1"
 			label="AVATAR_IMAGE" description="AVATAR_IMAGE_DESCR">
 			<option value="0">HIDE</option>

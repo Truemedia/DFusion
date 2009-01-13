@@ -261,19 +261,26 @@ class JFusionFunction{
 * @return string full URL to the filename passed to this function
 */
 
-    function createURL($url, $jname, $view)
+    function createURL($url, $jname, $view, $itemid)
     {
-        if ($view == 'direct') {
+    	if(!empty($itemid)){
+            //use the itemid only to identify plugin name and view type
+            $base_url = 'index.php?option=com_jfusion&amp;Itemid=' . $itemid;
+    	} elseif ($view == 'direct') {
             $params = JFusionFactory::getParams($jname);
             $url = $params->get('source_url') . $url;
-        } elseif ($view == 'wrapper') {
+            return $url;
+        } else {
+            $base_url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname;
+    	}
+
+    	if ($view == 'wrapper') {
         	//use base64_encode to encode the URL for passing.  But, base64_code uses / which throws off SEF urls.  Thus slashes
         	//must be translated into something base64_encode will not generate and something that will not get changed by Joomla or Apache.
-            $url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname . '&amp;wrap='. str_replace("/","_slash_",base64_encode($url));
+            $url = $base_url . '&amp;wrap='. str_replace("/","_slash_",base64_encode($url));
             $url = JRoute::_($url);
+            return $url;
         } elseif ($view == 'frameless'){
-            $base_url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname;
-
             //split the filename from the query
             $parts = explode('?', $url);
             if (isset($parts[1])) {
@@ -283,9 +290,8 @@ class JFusionFunction{
             }
 
             $url = JRoute::_($base_url);
+        	return $url;
         }
-        return $url;
-
     }
 
     /**

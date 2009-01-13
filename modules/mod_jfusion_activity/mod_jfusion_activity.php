@@ -45,6 +45,7 @@ $showdate = intval($params->get('showdate'));
 $showuser = intval($params->get('showuser'));
 $userlink = intval($params->get('userlink'));
 $view= $params->get('link_mode');
+$itemid= $params->get('itemid');
 
 if ($params->get('new_window')) {
 	$new_window = '_blank';
@@ -59,7 +60,7 @@ if ($jname) {
     $jdb =& JFactory::getDBO();
     $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->quote($jname);
     $jdb->setQuery($query );
-    if ($jdb->loadResult() == 3) {
+    if ($jdb->loadResult() == 1) {
 
         $forum = JFusionFactory::getForum($jname);
         $db = JFusionFactory::getDatabase($jname);
@@ -115,7 +116,7 @@ if ($jname) {
 			            //process user info
                         if ($showuser) {
                             if ($userlink) {
-								$user_url = JFusionfunction::createURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $jname, $view);
+								$user_url = JFusionfunction::createURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $jname, $view, $itemid);
 								$user = '<a href="'. $user_url . '" target="' . $new_window . '">'.$result[$i][1].'</a>'; 								$user = '<a href="'. $user_url . '" target="' . $new_window . '">'.$result[$i][1].'</a>';
                             } else {
 								$user = $result[$i][1];
@@ -141,10 +142,10 @@ if ($jname) {
 
                         //combine all info into an urlstring
                         if ($linktype == LINKPOST) {
-							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0]), $jname, $view);
+							$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0]), $jname, $view, $itemid);
     	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">'. $subject.'</a>';
                         } else {
-                        	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0]), $jname, $view);
+                        	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0]), $jname, $view, $itemid);
                         	$urlstring = '<a href="'. $urlstring_pre . '" target="' . $new_window . '">' .$subject.'</a>';
                         }
 

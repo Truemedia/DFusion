@@ -54,7 +54,7 @@ class jfusionViewWrapper extends JView {
     	$query = 'SELECT status from #__jfusion WHERE name = ' . $db->quote($jname);
     	$db->setQuery($query );
 
-    	if ($db->loadResult() != 3) {
+    	if ($db->loadResult() != 1) {
             	//die gracefully as the plugin is not configured properly
 				echo JText::_('ERROR_PLUGIN_CONFIG');
 	            $result = false;

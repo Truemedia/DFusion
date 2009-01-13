@@ -32,7 +32,7 @@
 		<param name="@spacer" type="spacer" default="" label=""
 			description="" />
 
-		<param name="JFusionPlugins" type="ActivityPlugins" default=""
+		<param name="JFusionPlugins" type="JFusionActivePlugins" default=""
 			label="JFUSION_PLUGIN"
 			description="JFUSION_PLUGIN_DESCR" />
 
@@ -51,9 +51,12 @@
 		<param name="itemid" type="text" size="5" default="150"
 			description="ITEMID" />
 
-		<param name="frameless_limits" type="helptext" default="FRAMELESS_LIMITS" />
+		<param name="@spacer" type="spacer" default="" label=""
+			description="" />
 
-		<param name="WRAPPER_OPTIONS" type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
+		<param name=" " type="helptext" default="FRAMELESS_LIMITS" />
+
+		<param name=" " type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
 			description="" />
 
 		<param name="mode" type="list" default="0" label="MODE"
