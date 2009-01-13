@@ -140,7 +140,7 @@ if ($record->slave == 1 || $record->master == 1) {
 	if ($config_status['config'] != $record->status){
 	    //Save this error for the integration
         $jdb =& JFactory::getDBO();
-        $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $db->quote($record->name);
+        $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $jdb->quote($record->name);
         $jdb->setQuery($query );
         $jdb->query();
 	}
