@@ -171,7 +171,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 			//restore files for custom/copied plugins if available
 			$restorePlugins[] = $plugin->name;
 			$config =& JFactory::getConfig();
-			$tmpDir =& $config->getValue('config.tmp_path');
+			$tmpDir = $config->getValue('config.tmp_path');
 
 			//check to see if this is a copy of a default plugin
 			if(in_array($plugin->original_name,$defaultPlugins)) {
@@ -186,7 +186,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 				$file = $tmpDir.DS.$plugin->name.'.zip';
 				if(JFile::write($file,$plugin->plugin_files)){
 					//decompress the file
-					if (!JArchive::extract($tmpDir.DS.$plugin->name.'.zip', $pluginDir)) {
+					if (!JArchive::extract($file, $pluginDir)) {
 						//the files were not able to be copied to the plugin directory so remove the plugin
 						$uninstallPlugin[] = $plugin->name;
 						$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
