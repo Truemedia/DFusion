@@ -607,7 +607,14 @@ if ($jname == 'joomla_int'){
 		}
 
 		//find out if the user already exists
-		$existinguser = $this->getUser($userinfo->username,$jname);
+		$login_identifier = $params->get('login_identifier');
+		if ($login_identifier == 2){
+			$existinguser = $this->getUser($userinfo->email,$jname);
+		} else {
+			$existinguser = $this->getUser($userinfo->username,$jname);
+		}
+
+
         if (!empty($existinguser)) {
             //a matching user has been found
 			$status['debug'][] = JText::_('USER_DATA_FOUND');
