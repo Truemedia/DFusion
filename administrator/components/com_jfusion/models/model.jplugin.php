@@ -378,7 +378,7 @@ class JFusionJplugin{
 
 	function updateUsername($userinfo, &$existinguser, &$status,$jname){
 		//generate the filtered integration username
-		$username_clean = $userinfo->$userinfo->username;// $this->filterUsername($userinfo->username, $jname);
+		$username_clean = $userinfo->username;// $this->filterUsername($userinfo->username, $jname);
 		//the return statement did not work, used global as a temp measure
 		global $filtered_username;
 //		$username_clean = $filtered_username;
