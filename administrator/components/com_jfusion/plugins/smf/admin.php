@@ -120,11 +120,22 @@ class JFusionAdmin_smf extends JFusionAdmin{
         $params = JFusionFactory::getParams($this->getJname());
         $usergroup_id = $params->get('usergroup');
 
+        if ($usergroup_id==0) return "Default Usergroup";
+
         //we want to output the usergroup name
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT groupName FROM #__membergroups WHERE ID_GROUP = ' . $usergroup_id;
         $db->setQuery($query );
         return $db->loadResult();
+    }
+
+    function getUserpostgroupList()
+    {
+        //getting the connection to the db
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'SELECT ID_GROUP as id, groupName as name FROM #__membergroups WHERE minPosts != -1';
+        $db->setQuery($query);
+	    return $db->loadObjectList();
     }
 
     function allowRegistration()

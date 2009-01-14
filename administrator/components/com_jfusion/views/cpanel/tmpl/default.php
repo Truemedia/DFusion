@@ -143,25 +143,12 @@ if ($plugin_user && $plugin_auth){
 jimport('joomla.html.pane');
 $pane =& JPane::getInstance('tabs');
 echo $pane->startPane( 'pane' );
-echo $pane->startPanel( 'JFusion News', 'panel1' );
 
-//print out the news
-foreach ($this->JFusionNews->item as $item) {
-   echo '<h3><i>' . $item->date[0]->data() . '</i> - <a href="' .$item->link[0]->data() . '" target="_blank">' . $item->title[0]->data() . '</a></h3>';
-   echo $item->body[0]->data() . '<br/><br/>';
+foreach ($this->JFusionCpanel->item as $item) {
+	echo $pane->startPanel( $item->title[0]->data(), $item->title[0]->data());
+	$item->body[0]->data();
+	echo $pane->endPanel();
 }
-
-echo $pane->endPanel();
-echo $pane->startPanel( 'JFusion Team Members', 'panel2' );
-
-//print out the team details
-foreach ($this->JFusionTeam->children() as $xml) {
-    echo $xml->body[0]->data() . '<br/><br/>';
-}
-
-echo $pane->endPanel();
-echo $pane->endPane();
-
 
 ?>
 </td></tr></table>
