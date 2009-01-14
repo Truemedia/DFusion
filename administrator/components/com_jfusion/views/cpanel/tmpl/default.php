@@ -146,7 +146,7 @@ echo $pane->startPane( 'pane' );
 
 foreach ($this->JFusionCpanel->item as $item) {
 	echo $pane->startPanel( $item->title[0]->data(), $item->title[0]->data());
-	$item->body[0]->data();
+	echo $item->body[0]->data();
 	echo $pane->endPanel();
 }
 
