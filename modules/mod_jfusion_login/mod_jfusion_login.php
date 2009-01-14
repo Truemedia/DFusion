@@ -36,7 +36,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 
     //Get the forum integration object
     $jname = JFusionFunction::getMaster();
-    if ($jname->status == 3 ) {
+    if ($jname->status == 1 ) {
         $MasterPlugin = JFusionFactory::getPublic($jname->name);
         $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view, $itemid);
         $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view, $itemid);

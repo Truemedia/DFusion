@@ -39,8 +39,7 @@ class JFusionControllerFrontEnd extends JController
         } elseif ($menuitemid==1) {
         	//if menuitemid is set to frontpage, unset it
         	JRequest::setVar('Itemid','');
-        }
-         else {
+        } else {
             $jview = JRequest::getVar('view');
             $jname = JRequest::getVar('jname');
         }
@@ -51,17 +50,11 @@ class JFusionControllerFrontEnd extends JController
             $query = 'SELECT status from #__jfusion WHERE name = ' . $db->quote($jname);
             $db->setQuery($query );
 
-            if ($db->loadResult() != 3) {
+            if ($db->loadResult() != 1) {
                 //die gracefully as the plugin is not configured properly
                 echo JText::_('ERROR_PLUGIN_CONFIG');
 	            $result = false;
     	        return $result;
-            } else {
-                $view = &$this->getView($jview, 'html');
-                $view->assignRef('jname', $jname);
-                $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($jview).DS.'tmpl');
-                $view->setLayout('default');
-                $view->display();
             }
         } else {
         	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
@@ -73,13 +66,49 @@ class JFusionControllerFrontEnd extends JController
 	            echo JText::_('NO_VIEW_SELECTED');
     	        $result = false;
         	    return $result;
-			} else {
-                $view = &$this->getView($jview, 'html');
-                $view->assignRef('jname', $default_plugin);
-                $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($jview).DS.'tmpl');
-                $view->setLayout('default');
-                $view->display();
 			}
         }
+
+		//load the view
+        $view = &$this->getView($jview, 'html');
+
+		//parse required variables and render output
+		if ($jview == 'wrapper') {
+				if ($menuitemid){
+					//get the wrapper params from the menu item
+					$db =& JFactory::getDBO();
+	            	$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
+                	$menu_data = $db->loadResult();
+            		$db->setQuery($query);
+	    	        $params = $db->loadResult();
+    	    	    $menu_param = new JParameter($params, '');
+				} else {
+	                //fetch the general wrapper settings from joomla_int
+                    $menu_param  = JFusionFactory::getParams('joomla_int');
+				}
+
+	        	//parse the url
+	    	    $wrap = urldecode(JRequest::getVar('wrap', '', 'get'));
+    	    	$wrap = base64_decode(str_replace("_slash_","/",$wrap));
+		        $params2 = JFusionFactory::getParams($jname);
+		        $source_url = $params2->get('source_url');
+
+		        //check for trailing slash
+        		if (substr($source_url, -1) == '/') {
+		            $url = $source_url . $wrap;
+        		} else {
+		            $url = $source_url . '/'. $wrap;
+        		}
+
+    	    	//set params
+                $view->assignRef('url', $url);
+                $view->assignRef('params', $menu_param);
+		}
+
+		//render the view
+        $view->assignRef('jname', $jname);
+        $view->addTemplatePath(JPATH_COMPONENT . DS . 'view'.DS.strtolower($jview).DS.'tmpl');
+        $view->setLayout('default');
+        $view->display();
     }
 }

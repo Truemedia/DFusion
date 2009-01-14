@@ -36,8 +36,6 @@ class jfusionViewframeless extends JView {
             $baseURL	= JRoute::_('index.php?option=com_jfusion&view=frameless&jname='.$this->jname);
         }
 
-
-
         //Get the full URL, making note of the query
         $query	= $uri->getQuery();
         $url	= $uri->current();
