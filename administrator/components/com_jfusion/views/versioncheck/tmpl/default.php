@@ -238,23 +238,32 @@ $query = 'SELECT * from #__jfusion';
 $db->setQuery($query );
 $plugins = $db->loadObjectList();
 foreach ($plugins as $plugin) {
-
+	?>
+	<?php
     $plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$plugin->name.DS.'jfusion.xml';
-	//get the version number
-	$xml = simplexml_load_file($plugin_xml);
-	if(isset($this->JFusionVersion->{$plugin->name})){
-		if (version_compare($xml->version, $this->JFusionVersion->{$plugin->name}[0]->data()) == -1){
-			echo '<tr class = "bad'.$row_count.'">';
-			$up2date = false;
+    //get the version number
+	if(file_exists($plugin_xml) && is_readable($plugin_xml)) {
+		$xml = simplexml_load_file($plugin_xml);
+
+		if(isset($this->JFusionVersion->{$plugin->name})){
+			if (version_compare($xml->version, $this->JFusionVersion->{$plugin->name}[0]->data()) == -1){
+				echo '<tr class = "bad'.$row_count.'">';
+				$up2date = false;
+			} else {
+				echo '<tr class = "good'.$row_count.'">';
+			}
 		} else {
-			echo '<tr class = "good'.$row_count.'">';
+			echo '<tr>';
 		}
+		echo "<td>JFusion {$plugin->name} " . JText::_('PLUGIN') . "</td>";
+		echo "<td>{$xml->version}</td>\n";
 	} else {
-		echo '<tr>';
+		JFusionFunction::raiseWarning(JText::_('ERROR'), JText::_('XML_FILE_MISSING') . ' JFusion ' . $plugin->name . ' ' .JText::_('PLUGIN'), 1);
+		echo '<tr class = "bad'.$row_count.'">';
+		echo "<td>JFusion {$plugin->name} " . JText::_('PLUGIN') . "</td>";
+		echo "<td>".JText::_('UNKNOWN')."</td>\n";
 	}
 	?>
-	<td>JFusion <?echo $plugin->name;?> Plugin</td>
-	<td><?php echo $xml->version;?></td>
 	<td><?php
 
 	if(isset($this->JFusionVersion->{$plugin->name}))	{

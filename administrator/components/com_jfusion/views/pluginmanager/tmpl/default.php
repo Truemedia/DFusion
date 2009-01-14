@@ -140,16 +140,31 @@ if ($row_count == 1){
 <td><INPUT TYPE=RADIO NAME="jname" VALUE="<?php echo $record->name; ?>"><?php echo $record->name; ?></td>
 <?php
 $plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$record->name.DS.'jfusion.xml';
-$xml = simplexml_load_file($plugin_xml);
+
+if(file_exists($plugin_xml) && is_readable($plugin_xml))
+{
+	$xml = simplexml_load_file($plugin_xml);
 ?>
 <td><?php echo $xml->description; ?></td>
 <td><?php echo $xml->version; ?></td>
 <td><?php echo $xml->creationDate; ?></td>
 <td><?php echo $xml->author; ?></td>
 <td><?php echo $xml->authorUrl; ?></td>
-</tr>
 
-<?php } ?>
+<?php
+} else {
+	JFusionFunction::raiseWarning(JText::_('ERROR'), JText::_('XML_FILE_MISSING') . ' JFusion ' . $plugin->name . ' ' .JText::_('PLUGIN'), 1);
+	?>
+	<td><?php echo JText::_('UNKNOWN'); ?></td>
+	<td><?php echo JText::_('UNKNOWN'); ?></td>
+	<td><?php echo JText::_('UNKNOWN'); ?></td>
+	<td><?php echo JText::_('UNKNOWN'); ?></td>
+	<td><?php echo JText::_('UNKNOWN'); ?></td>
+	<?php
+	}
+
+	echo "</tr>";
+} ?>
 
 
 </tbody></table><br/><br/><br/>
