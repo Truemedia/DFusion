@@ -39,12 +39,8 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
         //try to open the file
         if (($file_handle = @fopen($myfile, 'r')) === FALSE) {
             JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). ": $myfile " . JText::_('WIZARD_MANUAL'));
-
-            //get the default parameters object
-            $params = AbstractForum::getSettings($this->getJname());
-            return $params;
-
-
+            $result = false;
+            return $result;
         } else {
 
             //parse the file line by line to get only the config variables
