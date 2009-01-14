@@ -189,6 +189,12 @@ class JFusionPluginInstaller extends JObject {
 
 		// Get the extension manifest object
 		$manifest = $this->_getManifest($dir);
+		if(is_null($manifest)) {
+			$this->parent->abort(JText::_('INSTALL_NOT_VALID_PLUGIN'));
+            $result = false;
+            return $result;
+		}
+
 		$this->manifest =& $manifest->document;
 		//var_dump($this->manifest);
 
@@ -299,7 +305,7 @@ class JFusionPluginInstaller extends JObject {
 		        $this->parent->abort(JText::_('PLUGIN').' '.JText::_('INSTALL').' '.JText::_('ERROR').': ' . $db->stderr());
 		        return false;
 			}
-			$this->parent->pushStep(array ('type' => 'plugin', 'id' => $row->id));
+			$this->parent->pushStep(array ('type' => 'plugin', 'id' => $plugin_entry->id));
 		}
 
 		/**
