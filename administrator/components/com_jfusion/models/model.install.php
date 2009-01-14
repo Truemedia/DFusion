@@ -89,7 +89,7 @@ class JFusionModelInstaller extends InstallerModelInstall {
 		$mainframe->enqueueMessage($msg);
 		$this->setState('name', $installer->get('name'));
 		$this->setState('result', $result);
-		$this->setState('message', $installer->message);
+		$this->setState('message', $installer->parent->message);
 		$this->setState('extension.message', $installer->get('extension.message'));
 
 		// Cleanup the install files
@@ -218,15 +218,6 @@ class JFusionPluginInstaller extends JObject {
 
 		// get files to copy
 		$element =& $this->manifest->getElementByPath('files');
-		if (is_a($element, 'JSimpleXMLElement') && count($element->children())) {
-			$files =& $element->children();
-			foreach ($files as $file) {
-				if ($file->attributes($type)) {
-					$pname = $file->attributes($type);
-					break;
-				}
-			}
-		}
 
 		/**
 		 * ---------------------------------------------------------------------------------------------
@@ -278,7 +269,7 @@ class JFusionPluginInstaller extends JObject {
 		if ($id) {
 			if (!$this->parent->getOverwrite()) {
 				// Install failed, roll back changes
-				$this->parent->abort(JText::_('PLUGIN').' '.JText::_('Install').': '.JText::_('PLUGIN').' "'.$pname.'" '.JText::_('ALREADY_EXISTS'));
+				$this->parent->abort(JText::_('PLUGIN').' '.JText::_('Install').': '.JText::_('PLUGIN').' "'.$name.'" '.JText::_('ALREADY_EXISTS'));
 	            $result = false;
     	        return $result;
 			} else {
@@ -303,7 +294,11 @@ class JFusionPluginInstaller extends JObject {
 			$plugin_entry->plugin_files = $this->backup($name);
 
             //now append the new plugin data
-			if (!$db->insertObject('#__jfusion', $plugin_entry, 'id' )) echo 'OWNED'. $db->getQuery();
+			if (!$db->insertObject('#__jfusion', $plugin_entry, 'id' )){
+		        // Install failed, roll back changes
+		        $this->parent->abort(JText::_('PLUGIN').' '.JText::_('INSTALL').' '.JText::_('ERROR').': ' . $db->stderr());
+		        return false;
+			}
 			$this->parent->pushStep(array ('type' => 'plugin', 'id' => $row->id));
 		}
 
@@ -320,7 +315,6 @@ class JFusionPluginInstaller extends JObject {
             $result = false;
             return $result;
 		}
-
 
 		//check to see if this is updating a plugin that has been copied
 		$query = "SELECT name FROM #__jfusion WHERE original_name = {$db->Quote($name)}";
