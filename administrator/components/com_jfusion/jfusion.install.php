@@ -191,8 +191,14 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 						$uninstallPlugin[] = $plugin->name;
 						$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
 					} else {
-						//remove the file
-						unset($file);
+						//extra check to make sure the files were decompressed to prevent possible fatal errors
+						if(file_exists($pluginDir.DS.$plugin->name)) {
+							//remove the file
+							unset($file);
+						} else {
+							$uninstallPlugin[] = $plugin->name;
+							$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
+						}
 					}
 				} else {
 					//the compressed file was not able to be written to the tmp dir so remove it
