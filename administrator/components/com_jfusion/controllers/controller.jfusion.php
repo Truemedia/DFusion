@@ -258,6 +258,15 @@ class JFusionController extends JController
         } else {
             JError::raiseWarning(500, JText::_('SAVE_FAILURE'));
         }
+
+        //update the status field
+		$JFusionPlugin = JFusionFactory::getAdmin($jname);
+		$config_status =  $JFusionPlugin->checkConfig($jname);
+        $db = & JFactory::getDBO();
+   	    $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $db->quote($jname);
+       	$db->setQuery($query );
+        $db->query();
+
         $action = JRequest::getVar('action', '', 'POST', 'STRING' );
         if ($action == 'apply'){
 
