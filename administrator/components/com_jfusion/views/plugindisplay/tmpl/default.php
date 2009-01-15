@@ -92,7 +92,13 @@ $description = $JFusionParam->get('description');
 if($description){
 	echo $description;
 } else {
-	echo $record->description;
+	$plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$record->name.DS.'jfusion.xml';
+	if(file_exists($plugin_xml) && is_readable($plugin_xml)) {
+		$xml = simplexml_load_file($plugin_xml);
+		echo $xml->description;
+	} else {
+		echo "";
+	}
 }?></td>
 
 <?php //check to see if module is a master
