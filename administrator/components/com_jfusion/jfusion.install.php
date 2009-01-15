@@ -25,7 +25,7 @@ $lang->load('com_jfusion', JPATH_BASE);
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/manager.png" height="75px" width="75px">
-<td><h2><?php echo JText::_('JFUSION') . ' 1.1.0 Beta Patch 1'. JText::_('INSTALLATION'); ?></h2></td></tr></table>
+<td><h2><?php echo JText::_('JFUSION') .' '. ' 1.1.1 Beta '. JText::_('INSTALLATION'); ?></h2></td></tr></table>
 <h3><?php echo JText::_('STARTING') . ' ' . JText::_('INSTALLATION') . ' ...' ?></h3>
 
 <?php
