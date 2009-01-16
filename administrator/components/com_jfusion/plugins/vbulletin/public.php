@@ -350,16 +350,35 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		//we need to find and change the call to vb's yahoo connection file to our own customized one
 		//that adds the source url to the ajax calls
 		$yuiURL = JURI::base() . 'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname();
-		$buffer = preg_replace('#\<script type="text\/javascript" src="(.*?)yui/connection/connection-min.js\?v=(.*?)"\>#mS',"<script type=\"text/javascript\">var vbSourceURL = '$integratedURL'; </script> <script type=\"text/javascript\" src=\"$yuiURL/yui/connection/connection-min.js?v=$2\">",$buffer);
+		$buffer = preg_replace('#\<script type="text\/javascript" src="(.*?)(connection-min.js|connection.js)\?v=(.*?)"\>#mS',"<script type=\"text/javascript\">var vbSourceURL = '$integratedURL'; </script> <script type=\"text/javascript\" src=\"$yuiURL/yui/connection/connection-min.js?v=$3\">",$buffer);
 
         //convert relative links into absolute links
         $url_search = '#(src="|background="|href="|url\("|url\(\'?)(?!http)(.*?)("\)|\'?\)|")#mS';
 	    $buffer = preg_replace_callback($url_search, 'fixInclude', $buffer);
 
 		//now we need to do a little CSS cleanup to optimize frameless
-		$buffer = preg_replace("!\b(body)\b!",'#framelessVb',$buffer);
-		$buffer = str_replace("td, th, p, li", "#framelessVb td, #framelessVb th, #framelessVb p, #framelessVb li",$buffer);
-		$buffer = str_replace("td.thead, th.thead, div.thead","#framelessVb td.thead, #framelessVb th.thead, #framelessVb div.thead",$buffer);
+		//$buffer = preg_replace("!\b(body)\b!",'#framelessVb',$buffer);
+
+		//$css_search = '#\<style type="text\/css" id="vbulletin_css"\>(.*?)\<\/style\>#mS';
+
+	    $start = '<style type="text/css" id="vbulletin_css">';
+	    $end = '</style>';
+
+	    $buffer = " ".$buffer;
+        $ini = strpos($buffer,$start);
+        if ($ini !== false) {
+        	$ini += strlen($start);
+        	$len = strpos($buffer,$end,$ini) - $ini;
+        	$css = substr($buffer,$ini,$len);
+        	$newCss = fixCSS($css);
+        	$buffer = str_replace($css,$newCss,$buffer);
+        }
+
+		//$buffer = str_replace("td, th, p, li", "#framelessVb td, #framelessVb th, #framelessVb p, #framelessVb li",$buffer);
+		//$buffer = str_replace("td.thead, th.thead, div.thead","#framelessVb td.thead, #framelessVb th.thead, #framelessVb div.thead",$buffer);
+		//$buffer = str_replace("a:link, body_alink","#framelessVb a:link",$buffer);
+		//$buffer = str_replace("a:visited, body_avisited","#framelessVb a:visited, #framelessVb body_avisited",$buffer);
+		//$buffer = str_replace("a:hover, a:active, body_ahover","#framelessVb a:hover, #framelessVb a:active, #framlessVb body_ahover",$buffer);
 	}
 
 	function getSearchQueryColumns()
@@ -672,4 +691,58 @@ function fixRedirect($matches)
 	}
 
 	return $replacement;
+}
+
+function fixCSS($css)
+{
+	if(defined('_JFUSION_DEBUG')) {
+		$debug = array();
+		$debug['function'] = 'fixCSS';
+		$debug['original'] = $css;
+	}
+
+	//remove comments
+	//trim off top to the body selector
+	$ini = strpos($css,'body');
+    $len = strlen($css);
+    $css = substr($css,$ini,$len);
+
+	$css = preg_replace('#\/\*(.*?)\*\/#mS','',$css);
+
+	//strip newlines
+	$css = str_replace("\r\n","",$css);
+
+	//break up the CSS into styles
+	$elements = explode('}',$css);
+	//unset the last one as it is empty
+	unset($elements[count($elements)-1]);
+
+	//rewrite css
+	foreach($elements as $k => $v) {
+		//breakup each element into selectors and properties
+		$element = explode("{", $v);
+		//breakup the selectors
+		$selectors = explode(",",$element[0]);
+		foreach($selectors as $sk => $sv){
+			//add vb framless container
+			if($sv == 'body'){
+				$selectors[$sk] = '#framelessVb';
+			} else {
+				$selectors[$sk] = "#framelessVb $sv";
+			}
+		}
+
+		//reconstruct the element
+		$elements[$k] = implode(', ', $selectors) . ' {' . $element[1] . '}';
+	}
+
+	//reconstruct the css
+	$css = implode("\n",$elements);
+
+	if(defined('_JFUSION_DEBUG')) {
+		$debug['parsed'] = $css;
+		$_SESSION["jfvbdebug"] = $debug;
+	}
+
+	return $css;
 }
