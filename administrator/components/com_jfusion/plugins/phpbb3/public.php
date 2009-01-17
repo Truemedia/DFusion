@@ -42,6 +42,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
     	//save the current globals
     	$joomla_globals = $GLOBALS;
 
+		//get the Itemid
+  		$Itemid_joomla = JRequest::getVar('Itemid');
+
         // Get the path
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
@@ -115,7 +118,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $result = false;
             return $result;
         }
-       
+
         //set the current directory to phpBB3
         chdir($source_path);
 
@@ -148,10 +151,15 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
     	//restore the joomla globals like nothing happened
     	$GLOBALS = $joomla_globals;
 
+       //reset the global itemid
+        global $Itemid;
+        $Itemid = $Itemid_joomla;
+
+
 		//check to see if the Joomla database is still connnected
 		$db = & JFactory::getDBO();
 		if (!is_resource($db->_resource)) {
-			//joomla connection needs to be re-established		
+			//joomla connection needs to be re-established
 			jimport('joomla.database.database');
 			jimport( 'joomla.database.table' );
 			$conf =& JFactory::getConfig();
@@ -161,17 +169,47 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 			$password 	= $conf->getValue('config.password');
 			$database	= $conf->getValue('config.db');
 			$prefix 	= $conf->getValue('config.dbprefix');
+			$dbtype 	= $conf->getValue('config.dbtype');
 
-			// connect to the server
-			if (!($db->_resource = @mysql_connect( $host, $user, $password, true ))) {
-				$db->_errorNum = 2;
-				$db->_errorMsg = 'Could not connect to MySQL';
-				die ('could not reconnect to the Joomla database');
+			if($dbtype == 'mysqli'){
+				// Unlike mysql_connect(), mysqli_connect() takes the port and socket
+				// as separate arguments. Therefore, we have to extract them from the
+				// host string.
+				$port	= NULL;
+				$socket	= NULL;
+				$targetSlot = substr( strstr( $host, ":" ), 1 );
+				if (!empty( $targetSlot )) {
+					// Get the port number or socket name
+					if (is_numeric( $targetSlot ))
+						$port	= $targetSlot;
+					else
+						$socket	= $targetSlot;
+
+					// Extract the host name only
+					$host = substr( $host, 0, strlen( $host ) - (strlen( $targetSlot ) + 1) );
+					// This will take care of the following notation: ":3306"
+					if($host == '')
+						$host = 'localhost';
+				}
+
+				// connect to the server
+				if (!($db->_resource->_resource = @mysqli_connect($host, $user, $password, NULL, $port, $socket))) {
+					$db->_errorNum = 2;
+					$db->_errorMsg = 'Could not connect to MySQL';
+					die ('could not reconnect to the Joomla database');
+				}
+			} else {
+				// connect using mysql
+				if (!($db->_resource = @mysql_connect( $host, $user, $password, true ))) {
+					$db->_errorNum = 2;
+					$db->_errorMsg = 'Could not connect to MySQL';
+					die ('could not reconnect to the Joomla database');
+				}
 			}
 
 			// select the database
-			$db->select($database);		
-		}			
+			$db->select($database);
+		}
 
 
         return $buffer;
