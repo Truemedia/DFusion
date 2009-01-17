@@ -67,17 +67,6 @@ class JFusionUser_phpbb3 extends JFusionUser{
             	} else {
                 	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
             	}
-
-                //this is a proper login attemp, update last visit field
-                $query = 'UPDATE #__users SET user_lastvisit = ' . time() . ' WHERE user_id = ' . $existinguser->userid;
-		        $db->setQuery($query);
-        		$db->query();
-		        if (!$db->query()) {
-        		    $status['error'][] = JText::_('LASTVISIT_UPDATE') . ' ' . JText::_('ERROR') . $db->stderr();
-		        } else {
-	    		    $status['debug'][] = JText::_('LASTVISIT_UPDATE'). ' ' . JText::_('SUCCESS');
-        		}
-
         	} else {
             	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
         	}

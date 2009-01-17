@@ -266,15 +266,15 @@ class JFusionFunction{
     	if(!empty($itemid)){
             //use the itemid only to identify plugin name and view type
             $base_url = 'index.php?option=com_jfusion&amp;Itemid=' . $itemid;
-    	} elseif ($view == 'direct') {
-            $params = JFusionFactory::getParams($jname);
-            $url = $params->get('source_url') . $url;
-            return $url;
-        } else {
+    	} else {
             $base_url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname;
     	}
 
-    	if ($view == 'wrapper') {
+		if ($view == 'direct') {
+            $params = JFusionFactory::getParams($jname);
+            $url = $params->get('source_url') . $url;
+            return $url;
+		} elseif ($view == 'wrapper') {
         	//use base64_encode to encode the URL for passing.  But, base64_code uses / which throws off SEF urls.  Thus slashes
         	//must be translated into something base64_encode will not generate and something that will not get changed by Joomla or Apache.
             $url = $base_url . '&amp;wrap='. str_replace("/","_slash_",base64_encode($url));
