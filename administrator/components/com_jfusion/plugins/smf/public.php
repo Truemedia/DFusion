@@ -39,6 +39,7 @@ class JFusionPublic_smf extends JFusionPublic{
 
 	function & getBuffer()
 	{
+        $joomla_globals = $GLOBALS;
 		// We're going to want a few globals... these are all set later.
 		global $time_start, $maintenance, $msubject, $mmessage, $mbname, $language;
 		global $boardurl, $boarddir, $sourcedir, $webmaster_email, $cookiename;
@@ -55,6 +56,11 @@ class JFusionPublic_smf extends JFusionPublic{
 		// Get the path
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
+
+        $user 		= $params->get('database_user');
+        $host 		= $params->get('database_host');
+        $database	= $params->get('database_name');
+
         if (substr($source_path, -1) == DS) {
             $index_file = $source_path .'index.php';
         } else {
@@ -84,6 +90,28 @@ class JFusionPublic_smf extends JFusionPublic{
             JError::raiseWarning(500, 'Could not find SMF in the specified directory');
 		}
 
+    	//restore the joomla globals like nothing happened
+    	$GLOBALS = $joomla_globals;
+		//check to see if the Joomla database is still connnected
+	    jimport('joomla.database.database');
+    	jimport( 'joomla.database.table' );
+		$db = & JFactory::getDBO();
+        $conf =& JFactory::getConfig();
+
+        $j_host 		= $conf->getValue('config.host');
+        $j_user 		= $conf->getValue('config.user');
+        $j_password 	= $conf->getValue('config.password');
+        $j_database	    = $conf->getValue('config.db');
+
+        if ( $user == $j_user || $database != $j_database || $host != $j_host ) {
+            if (!($db->_resource = @mysql_connect( $j_host, $j_user, $j_password, true ))) {
+              $db->_errorNum = 2;
+              $db->_errorMsg = 'Could not connect to MySQL';
+              die ('could not reconnect to the Joomla database');
+            }
+            // select the database
+            $db->select($j_database);
+        }
 		return $buffer;
 	}
 
