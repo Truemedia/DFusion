@@ -634,4 +634,46 @@ class JFusionController extends JController
         	return;
 		}
 	}
+
+        /**
+         * Displays the JFusion PluginMenu Parameters
+         */
+        function advancedparam()
+        {
+                JRequest::setVar('view', 'advancedparam');
+                parent::display();
+        }
+
+        /**
+         * Displays the JFusion PluginMenu Parameters
+         */
+        function advancedparamsubmit()
+        {
+                $param = JRequest::getVar('params');
+                $multiselect = JRequest::getVar('multiselect');
+                if($multiselect) $multiselect = true;
+                else $multiselect = false;
+                
+                $serParam = base64_encode(serialize($param));
+                $title = "";
+                if(isset($param["jfusionplugin"])) {
+                	$title = $param["jfusionplugin"];
+                } else if($multiselect) {
+                	$del = "";
+                	foreach($param as $key => $value) {
+                		if(isset($value["jfusionplugin"])) {
+                			$title .= $del . $value["jfusionplugin"];
+                			$del = "; ";
+                		}
+                	}
+                }
+                if(empty($title)) {
+                	$title = "No Plugin Selected";
+                }
+                
+                echo '<script type="text/javascript">'.
+                     'window.parent.jAdvancedParamSet("'.$title.'", "'.$serParam.'");'.
+                     '</script>';
+                return;
+        }
 }

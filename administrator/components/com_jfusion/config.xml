@@ -8,8 +8,8 @@
 		</param>
 		<param name="limits" type="helptext" default="frameless_limits" />
 
-		<param name="JFusionPlugin" type="JFusionPlugins" default=""
-			label="JFUSION_PLUGIN"
+		<param name="JFusionPluginParam" type="JFusionAdvancedParam" default=""
+			label="JFUSION_PLUGIN" configfile="1"
 			description="JFUSION_PLUGIN_DESCR" />
 
 		<param name="wrapper_scroll" type="radio" default="auto"

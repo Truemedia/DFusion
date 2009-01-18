@@ -1,0 +1,4 @@
+Usage:
+
+$jpluginparam = new JParameter($params->get('JFusionPluginParam'));
+$jname = $jpluginparam->get('jfusionplugin');

@@ -31,7 +31,7 @@
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
         <param name=" " type="helptext" default="ITEMID_DESCR"/>
-		<param name="itemid" type="text" size="5" default=""
+		<param name="itemid" type="text" size="5" default="150"
 			description="ITEMID" />
 		<param name=" " type="helptext" default="FRAMELESS_LIMITS" />
 		<param name=" " type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
@@ -94,7 +94,7 @@
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
         <param name=" " type="helptext" default="ITEMID_DESCR"/>
-		<param name="itemid2" type="text" size="5" default=""
+		<param name="itemid2" type="text" size="5" default="150"
 			description="ITEMID" />
 		<param name="avatar" type="radio" default="1"
 			label="AVATAR_IMAGE" description="AVATAR_IMAGE_DESCR">
