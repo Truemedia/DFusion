@@ -46,7 +46,7 @@ return;
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/editor.png" height="75px" width="75px">
-<td><h2><? echo $this->jname . ' ' . JText::_('PLUGIN_EDITOR'); ?></h2></td></tr></table><br/>
+<td><h2><?php echo $this->jname . ' ' . JText::_('PLUGIN_EDITOR'); ?></h2></td></tr></table><br/>
 
 <?php echo $this->parameters; ?>
 

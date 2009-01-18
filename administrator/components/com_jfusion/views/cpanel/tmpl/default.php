@@ -54,7 +54,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=plugineditor&jname=joomla_int" >
 				<img src="components/com_jfusion/images/joomla.png" height="50px" width="50px">
-				<span><? echo JText::_('JOOMLA_OPTIONS'); ?></span>
+				<span><?php echo JText::_('JOOMLA_OPTIONS'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -62,7 +62,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=plugindisplay" >
 				<img src="components/com_jfusion/images/controlpanel.png" height="50px" width="50px">
-				<span><? echo JText::_('CONFIGURE_PLUGINS'); ?></span>
+				<span><?php echo JText::_('CONFIGURE_PLUGINS'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -70,7 +70,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=pluginmanager" >
 				<img src="components/com_jfusion/images/manager.png" height="50px" width="50px">
-				<span><? echo JText::_('MANAGE_PLUGINS'); ?></span>
+				<span><?php echo JText::_('MANAGE_PLUGINS'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -78,7 +78,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=syncoptions" >
 				<img src="components/com_jfusion/images/syncmaster.png" height="50px" width="50px">
-				<span><? echo JText::_('NEW_USER_SYNC'); ?></span>
+				<span><?php echo JText::_('NEW_USER_SYNC'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -86,7 +86,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=synchistory" >
 				<img src="components/com_jfusion/images/synchistory.png" height="50px" width="50px">
-				<span><? echo JText::_('USER_SYNC_HISTORY'); ?></span>
+				<span><?php echo JText::_('USER_SYNC_HISTORY'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -95,7 +95,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index.php?option=com_jfusion&task=loginchecker" >
 				<img src="components/com_jfusion/images/login_checker.png" height="50px" width="50px">
-				<span><? echo JText::_('CP_LOGIN_CHECKER'); ?></span>
+				<span><?php echo JText::_('CP_LOGIN_CHECKER'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -103,7 +103,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index2.php?option=com_jfusion&task=versioncheck" >
 				<img src="components/com_jfusion/images/versioncheck.png" height="50px" width="50px">
-				<span><? echo JText::_('VERSION_CHECK'); ?></span>
+				<span><?php echo JText::_('VERSION_CHECK'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -111,7 +111,7 @@ JFusionFunction::displayDonate();
 			<div class="icon">
 				<a href="index2.php?option=com_jfusion&task=help" >
 				<img src="components/com_jfusion/images/help.png" height="50px" width="50px">
-				<span><? echo JText::_('CP_HELP'); ?></span>
+				<span><?php echo JText::_('CP_HELP'); ?></span>
 				</a>
 			</div>
 	</div>
@@ -130,13 +130,13 @@ if ($plugin_user && $plugin_auth){
 ?>
 <table bgcolor="#d9f9e2" width ="100%"><tr><td width="50px"><td>
 <img src="components/com_jfusion/images/check_good.png" height="30px" width="30px">
-<td><h2><? echo JText::_('PLUGINS_ENABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=disableplugins" onCLick="return confirm('<?php echo JText::_('PLUGINS_DISABLE_CONFIRM');?>')"><?php echo JText::_('PLUGINS_DISABLE');?></a></td></tr></table>
+<td><h2><?php echo JText::_('PLUGINS_ENABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=disableplugins" onCLick="return confirm('<?php echo JText::_('PLUGINS_DISABLE_CONFIRM');?>')"><?php echo JText::_('PLUGINS_DISABLE');?></a></td></tr></table>
 <?php
 } else {
 ?>
 <table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
 <img src="components/com_jfusion/images/check_bad.png" height="30px" width="30px">
-<td><h2><? echo JText::_('PLUGINS_DISABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=enableplugins" onCLick="return confirm('<?php echo JText::_('PLUGINS_ENABLE_CONFIRM');?>')"><?php echo JText::_('PLUGINS_ENABLE');?></a></td></tr></table>
+<td><h2><?php echo JText::_('PLUGINS_DISABLED'); ?></h2></td><td><a href="index.php?option=com_jfusion&task=enableplugins" onCLick="return confirm('<?php echo JText::_('PLUGINS_ENABLE_CONFIRM');?>')"><?php echo JText::_('PLUGINS_ENABLE');?></a></td></tr></table>
 <?php
 }
 

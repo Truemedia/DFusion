@@ -143,6 +143,12 @@ class JFusionHook
 				$view = 'ucp.php';
 		}
 
+		//captha codes should be displayed as direct links
+		if ($view == 'ucp.php' && $arrParams['mode'] == 'confirm'){
+	        global $jfusion_source_url;
+	        return $jfusion_source_url . 'ucp.php' .$uri->toString(array('query', 'fragment'));
+		}
+
 		//set the jfile param if needed
         if(!empty($view)){
 			$uri->setVar('jfile', $view);

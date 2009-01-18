@@ -18,7 +18,7 @@ JFusionFunction::displayDonate();
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/versioncheck.png" height="75px" width="75px">
-<td><h2><? echo JText::_('VERSION_CHECKER');?></h2></td>
+<td><h2><?php echo JText::_('VERSION_CHECKER');?></h2></td>
 </tr></table><br/>
 
 <style type="text/css">
@@ -95,14 +95,14 @@ if($server_compatible){
 	?>
 <table bgcolor="#d9f9e2" width ="100%"><tr><td>
 <img src="components/com_jfusion/images/check_good.png" height="30px" width="30px">
-<td><h2><? echo JText::_('SERVER_UP2DATE'); ?></h2></td><td></td></tr></table>
+<td><h2><?php echo JText::_('SERVER_UP2DATE'); ?></h2></td><td></td></tr></table>
 
 <?php
 } else {
 	//output the bad news and automatic upgrade option ?>
 <table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
 <img src="components/com_jfusion/images/check_bad.png" height="30px" width="30px">
-<td><h2><? echo JText::_('SERVER_OUTDATED'); ?></h2></td>
+<td><h2><?php echo JText::_('SERVER_OUTDATED'); ?></h2></td>
 
 <td></td></tr></table>
 
@@ -293,14 +293,14 @@ if($up2date){
 	?>
 <table bgcolor="#d9f9e2" width ="100%"><tr><td>
 <img src="components/com_jfusion/images/check_good.png" height="30px" width="30px">
-<td><h2><? echo JText::_('JFUSION_UP2DATE'); ?></h2></td><td></td></tr></table>
+<td><h2><?php echo JText::_('JFUSION_UP2DATE'); ?></h2></td><td></td></tr></table>
 
 <?php
 } else {
 	//output the bad news and automatic upgrade option ?>
 <table bgcolor="#f9ded9" width ="100%"><tr><td width="50px"><td>
 <img src="components/com_jfusion/images/check_bad.png" height="30px" width="30px">
-<td><h2><? echo JText::_('JFUSION_OUTDATED'); ?></h2></td>
+<td><h2><?php echo JText::_('JFUSION_OUTDATED'); ?></h2></td>
 
 <td>
 <script language="javascript" type="text/javascript">
@@ -330,7 +330,7 @@ else
 
 <table bgcolor="#ffffce" width ="100%"><tr><td width="50px"><td>
 <img src="components/com_jfusion/images/advanced.png" height="75px" width="75px">
-<td><h3><? echo JText::_('ADVANCED') . ' ' . JText::_('VERSION'). ' ' . JText::_('MANAGEMENT'); ?></h3>
+<td><h3><?php echo JText::_('ADVANCED') . ' ' . JText::_('VERSION'). ' ' . JText::_('MANAGEMENT'); ?></h3>
 <script language="javascript" type="text/javascript">
 <!--
 function confirmSubmit2(action)

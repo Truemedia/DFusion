@@ -31,7 +31,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/login_checker2.png" height="75px" width="75px">
-<td><h2><? echo JText::_('LOGIN_CHECKER_RESULT');?></h2></td>
+<td><h2><?php echo JText::_('LOGIN_CHECKER_RESULT');?></h2></td>
 </tr></table>
 
 <div style="border: 0pt none ; margin: 0pt; padding: 0pt 5px; width: 800px; float: left;">

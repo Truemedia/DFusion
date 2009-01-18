@@ -33,15 +33,15 @@ JFusionFunction::displayDonate();
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/usersync.png" height="75px" width="75px">
-<td><h2><? echo JText::_('RESOLVE_CONLFICTS'); ?></h2></td></tr></table><br/>
+<td><h2><?php echo JText::_('RESOLVE_CONLFICTS'); ?></h2></td></tr></table><br/>
 <br/>
-<font size="2"><? echo JText::_('CONFLICT_INSTRUCTION'); ?></font><br/>
-<h3><? echo JText::_('EMAIL') . ' ' . JText::_('CONFLICTS'); ?></h3>
-<font size="2"><? echo JText::_('CONFLICTS_EMAIL'); ?></font><br/>
-<h3><? echo JText::_('USERNAME') . ' ' . JText::_('CONFLICTS'); ?></h3>
-<font size="2"><? echo JText::_('CONFLICTS_USERNAME'); ?></font><br/>
-<h3><? echo JText::_('USERSYNC') . ' ' . JText::_('ERROR'); ?></h3>
-<font size="2"><? echo JText::_('CONFLICTS_ERROR'); ?></font><br/><br/>
+<font size="2"><?php echo JText::_('CONFLICT_INSTRUCTION'); ?></font><br/>
+<h3><?php echo JText::_('EMAIL') . ' ' . JText::_('CONFLICTS'); ?></h3>
+<font size="2"><?php echo JText::_('CONFLICTS_EMAIL'); ?></font><br/>
+<h3><?php echo JText::_('USERNAME') . ' ' . JText::_('CONFLICTS'); ?></h3>
+<font size="2"><?php echo JText::_('CONFLICTS_USERNAME'); ?></font><br/>
+<h3><?php echo JText::_('USERSYNC') . ' ' . JText::_('ERROR'); ?></h3>
+<font size="2"><?php echo JText::_('CONFLICTS_ERROR'); ?></font><br/><br/>
 
 
 <form method="post" action="index2.php" name="adminForm">
@@ -49,7 +49,7 @@ JFusionFunction::displayDonate();
 <input type="hidden" name="task" value="syncerror" />
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
-<div id="ajax_bar"><? echo JText::_('APPLY_ACTION_ALL_CONFLICTS'); ?>
+<div id="ajax_bar"><?php echo JText::_('APPLY_ACTION_ALL_CONFLICTS'); ?>
 <select name="default_value" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
@@ -130,7 +130,7 @@ if ($error_type != 'Error'){
 ?>
 </td>
 <td>
-<a href="index.php?option=com_jfusion&task=syncerrordetails&syncid=<?php echo $this->syncdata['syncid'];?>&errorid=<? echo $i;?>" rel="moodalbox"><? echo JText::_('DETAILS'); ?></a>
+<a href="index.php?option=com_jfusion&task=syncerrordetails&syncid=<?php echo $this->syncdata['syncid'];?>&errorid=<?php echo $i;?>" rel="moodalbox"><?php echo JText::_('DETAILS'); ?></a>
 </td><td>
 <?php
 if ($error_type != 'Error'){ ?>

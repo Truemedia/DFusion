@@ -112,8 +112,8 @@ function submitbutton4(pressbutton)
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/manager.png" height="75px" width="75px">
-<td><h2><? echo JText::_('PLUGIN_MANAGER'); ?></h2></td></tr></table>
-<? echo JText::_('PLUGIN_MANAGER_INSTR'); ?><br/><br/>
+<td><h2><?php echo JText::_('PLUGIN_MANAGER'); ?></h2></td></tr></table>
+<?php echo JText::_('PLUGIN_MANAGER_INSTR'); ?><br/><br/>
 
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
@@ -174,8 +174,8 @@ if(file_exists($plugin_xml) && is_readable($plugin_xml))
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/install.png" height="75px" width="75px">
-<td><h2><? echo JText::_('PLUGIN_INSTALL'); ?></h2></td></tr></table>
-<? echo JText::_('PLUGIN_INSTALL_INSTR'); ?><br/><br/>
+<td><h2><?php echo JText::_('PLUGIN_INSTALL'); ?></h2></td></tr></table>
+<?php echo JText::_('PLUGIN_INSTALL_INSTR'); ?><br/><br/>
 
 
 <table class="adminform"><tr><td>

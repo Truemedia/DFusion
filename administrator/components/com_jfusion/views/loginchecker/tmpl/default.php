@@ -53,12 +53,12 @@ radioObj[i].checked = true;
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/login_checker.png" height="75px" width="75px">
-<td><h2><? echo JText::_('LOGIN_CHECKER'); ?></h2></td></tr></table><br/>
+<td><h2><?php echo JText::_('LOGIN_CHECKER'); ?></h2></td></tr></table><br/>
 
 <font size="2"><?php echo JText::_('LOGIN_CHECKER_TEXT'); ?></font>
 <br/><br/>
 <table class="adminlist" cellspacing="1"><thead><tr><th colspan="2" class="title" >
-<? echo JText::_('LOGIN_CHECKER'); ?>
+<?php echo JText::_('LOGIN_CHECKER'); ?>
 </th></td></thead><tr><td width="200px">
 <?php echo JText::_('USERNAME'); ?>
 </td><td>

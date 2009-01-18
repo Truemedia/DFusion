@@ -49,7 +49,7 @@ function applyAll() {
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/synchistory.png" height="75px" width="75px">
-<td><h2><? echo JText::_('SYNC_HISTORY'); ?></h2></td></tr></table><br/>
+<td><h2><?php echo JText::_('SYNC_HISTORY'); ?></h2></td></tr></table><br/>
 
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px">
@@ -169,7 +169,7 @@ if(is_array($syncdata['slave_data'])){
 echo '<td>' . $total_error . '</td>';?>
 
 
-<td><a href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"><? echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a></td>
+<td><a href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"><?php echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a></td>
 </tr>
 
 

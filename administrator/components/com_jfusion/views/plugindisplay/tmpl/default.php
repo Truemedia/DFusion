@@ -56,7 +56,7 @@ radioObj[i].checked = true;
 <img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
 <img src="components/com_jfusion/images/controlpanel.png" height="75px" width="75px">
-<td><h2><? echo JText::_('PLUGIN_CONFIGURATION'); ?></h2></td></tr></table><br/>
+<td><h2><?php echo JText::_('PLUGIN_CONFIGURATION'); ?></h2></td></tr></table><br/>
 
 <table class="adminlist" cellspacing="1"><thead><tr>
 <th class="title" width="20px"><?php echo JText::_('ID'); ?></th>
@@ -210,7 +210,7 @@ echo '<td></td><td></td><td></td></tr>';
 ?>
 </tbody></table><br/><br/>
 
-<? echo JText::_('PLUGIN_CONFIG_INSTR'); ?>
+<?php echo JText::_('PLUGIN_CONFIG_INSTR'); ?>
 
 <input type="hidden" name="field_name" value=""><input type="hidden" name="field_value" value=""></form>
 
