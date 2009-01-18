@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<params addpath="/administrator/components/com_jfusion/plugins/gallery2/elements">
+		<param name="view" type="list" default="recent_image" label="Select View"
+			description="Select View">
+			<option value="image_block">Gallery2 Imageblock</option>
+			<option value="sidebar">Gallery2 Sidebar</option>
+		</param>
+		<param name="" type="helptext" default="Default settings for all Views" />
+		<param name="@spacer" type="spacer" default="" label="Default" description="" />
+		<param name="g2_align" type="list" default="center" label="Alignment" description="Should it be left, right or in the middle.">
+			<option value="left">left</option>
+			<option value="center">center</option>
+			<option value="right">right</option>
+		</param>
+		<param name="g2_count" type="text" size="3" label="How many" description="how many pictures to show"/>
+		<param name="g2_block" type="list" default="randomImage" label="Block type" description="What kind of picture you want to show. NOTE: If you select \'Specific Picture\' also Fill in Item id!">
+			<option value="randomImage">Random Image</option>
+			<option value="recentImage">Last Added Image</option>
+			<option value="viewedImage">Most Viewed Image</option>
+			<option value="dailyImage">Daily Image</option>
+			<option value="weeklyImage">Weekly Image</option>
+			<option value="monthlyImage">Monthly image</option>
+			<option value="specificItem">Specific Picture</option>
+		</param>
+		<param name="g2_header" type="radio" default="1" label="Show Header">
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</param>
+		<param name="g2_title" type="radio" default="1" label="Show title">
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</param>
+		<param name="g2_date" type="radio" default="1" label="Show date">
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</param>
+		<param name="g2_views" type="radio" default="1" label="Show views">
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</param>
+		<param name="g2_owner" type="radio" default="1" label="Show owner">
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</param>
+		<param name="g2_itemId" type="Galleries" size="3" label="itemId" description="Limit the item selection to the subtree of the gallery under the album with the given id; or the id of the item to display when used with specificItem block type">
+		</param>
+		<param name="g2_maxSize" type="text" size="3" label="Maximum Size" description="Scale images to this maximum size">
+		</param>
+		<param name="g2_link_target" type="list" label="Link target" description=" Add a link target (for example, to open links in a new browser window)">
+			<option value="_self">self</option>
+			<option value="_blank">blank</option>
+		</param>
+		<param name="g2_frame" type="list" label="item frame" description="Select Itemframe to use">
+			<option value="none">none</option>
+			<option label="Solid" value="solid">Solid</option>
+			<option label="Book" value="book">Book</option>
+			<option label="Dots" value="dots">Dots</option>
+			<option label="Gold" value="gold">Gold</option>
+			<option label="Wood" value="wood">Wood</option>
+			<option label="Spiral Notebook" value="notebook">Spiral Notebook</option>
+			<option label="Branded Wood" value="brand">Branded Wood</option>
+			<option label="Gold 2" value="gold2">Gold 2</option>
+			<option label="Shells" value="shell">Shells</option>
+			<option label="Slide" value="slide">Slide</option>
+			<option label="Polaroid" value="polaroid">Polaroid</option>
+			<option label="Polaroids" value="polaroids">Polaroids</option>
+			<option label="Bamboo" value="bamboo">Bamboo</option>
+			<option label="Shadow" value="shadow">Shadow</option>
+		</param>
+		<param name="g2_strip_anchor" type="radio" default="0" label="Remove link to image">
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</param>
+	</params>
+</config>

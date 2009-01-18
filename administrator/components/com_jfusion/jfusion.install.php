@@ -62,14 +62,15 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	);
 
 	INSERT INTO #__jfusion  (name , params,  slave, dual_login, status, check_encryption, activity) VALUES
-	('joomla_int', 0, 0,  0, 3,  0, 0),
-	('joomla_ext',  0, 3, 3, 0,  0, 0),
-	('vbulletin',  0,  0, 0, 0,  0, 1),
+	('joomla_int', 0, 0, 0, 3, 0, 0),
+	('joomla_ext', 0, 3, 3, 0, 0, 0),
+	('vbulletin',  0, 0, 0, 0, 0, 1),
 	('phpbb3', 0, 0, 0, 0, 0, 1),
-	('smf', 0, 0, 0, 0,  0, 1),
-	('mybb', 0,  0, 0, 0,  0, 1),
-	('magento', 0, 0, 0, 0,  0, 3),
-	('moodle', 0,  0, 0, 0,  0, 3);
+	('smf', 0, 0, 0, 0, 0, 1),
+	('mybb', 0, 0, 0, 0, 0, 1),
+	('magento', 0, 0, 0, 0, 0, 3),
+	('moodle', 0, 0, 0, 0, 0, 3),
+	('gallery2', 0, 0, 0, 0, 0, 1);
 	";
 	$db->setQuery($batch_query);
 	if (!$db->queryBatch()){
@@ -77,7 +78,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	}
 } else {
 	//list of default plugins
-	$defaultPlugins = array('joomla_int','joomla_ext','vbulletin','phpbb3','smf','mybb','magento','moodle');
+	$defaultPlugins = array('joomla_int','joomla_ext','vbulletin','phpbb3','smf','mybb','magento','moodle','gallery2');
 
 	//make sure default plugins are installed
 	$query = "SELECT name FROM #__jfusion";
@@ -102,6 +103,8 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 				$pluginSql[] = "('magento', 0, 0, 0, 0,  0, 3)";
 			} elseif ($plugin=='moodle') {
 				$pluginSql[] = "('moodle', 0,  0, 0, 0,  0, 3)";
+			} elseif ($plugin=='gallery2') {
+				$pluginSql[] = "('gallery2', 0, 0, 0, 0, 0, 1)";
 			}
 		}
 	}
