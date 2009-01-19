@@ -8,7 +8,7 @@
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <authorEmail>admin@mijnbreincoach.nl</authorEmail>
   <authorUrl>www.mijnbreincoach.nl</authorUrl>
-  <version>1.1.1-000</version>
+  <version>1.1.2</version>
   <description>JFusion (1.1.0+) plugin for Moodle E-learning 1.8+</description>
   <slave>0</slave>
   <dual_login>0</dual_login>

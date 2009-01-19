@@ -40,14 +40,17 @@ class JElementForumlist extends JElement
 		if (JFusionFunction::validPlugin($jname)) {
 
             $JFusionPlugin = JFusionFactory::getForum($jname);
-            $forumlist = $JFusionPlugin->getForumList();
-
-            if (!empty($forumlist)) {
-                return JHTML::_('select.genericlist', $forumlist, $control_name.'['.$name.'][]', 'multiple size="6" class="inputbox"',
-                'id', 'name', $value);
-            } else {
-                return JText::_('NO_LIST');
-            }
+            if (method_exists($JFusionPlugin,'getForumList')){
+	            $forumlist = $JFusionPlugin->getForumList();
+    	        if (!empty($forumlist)) {
+        	        return JHTML::_('select.genericlist', $forumlist, $control_name.'['.$name.'][]', 'multiple size="6" class="inputbox"',
+            	    'id', 'name', $value);
+	            } else {
+    	            return $jname . ': ' . JText::_('NO_LIST');
+        	    }
+			} else {
+    	        return $jname . ': ' . JText::_('NO_LIST');
+			}
         } else {
             return JText::_('NO_PLUGIN_SELECT');
         }
