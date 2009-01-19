@@ -246,7 +246,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
     function fixURL($url, $extra){
   		//check to see if the URL is in SEF
-		if (strpos($url,'index.php/')){
+		if (strpos($url,'option,com_jfusion')){
 			//else do a regex to fix the SEF url
         	$url = preg_replace('#(/&amp\;|/\?\|?|&amp;)(.*?)\=#mS', '/$2,', $url);
         	$url = preg_replace('#(\?)(.*?)\=#mS', '/$2,', $url);
@@ -261,7 +261,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	$url = htmlspecialchars_decode($url);
 
       	//check to see if the URL is in SEF
-		if (strpos($url,'index.php/') || strpos($url,'component/')){
+		if (strpos($url,'option,com_jfusion')){
 			$parts = preg_split('/\/\&|\/|&/', $url);
 			foreach ($parts as $part){
 				$vars =preg_split('/,|=/', $part);
@@ -375,6 +375,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 		if (strpos($parts[1],'index.php/')){
 		    $query = explode('index.php/', $parts[1]);
     		$redirect_url = $source_url . 'index.php/' . $query[1];
+		} elseif (strpos($parts[1],'component/')) {
+		    $query = explode('component/', $parts[1]);
+    		$redirect_url = $source_url . 'component/' . $query[1];
 		} else {
 			//parse the non-SEF URL
 			$uri = new JURI($parts[1]);
@@ -426,52 +429,3 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       }
 }
 
-function fixAppendedQueries($url, $extra)
-{
-  	//check to see if the URL is in SEF
-	if (strpos($url,'index.php/')){
-		//else do a regex to fix the SEF url
-        $url = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $url);
-	}
-
-	//return the string unchanged
-	return 'href="' . $url . '"' . $extra . '>';
-
-	$tag = $matches[1];
-	$url = $matches[2];
-	$extra = $matches[3];
-
-	//Clean the url and the params first
-	$url  = str_replace( '&amp;', '&', $url );
-
-	//we need to make some exceptions
-
-	//this only applies to a SEF'd URL
-	if(!strpos($url,"jfile,")){
-		return "$tag=\"$url\" $extra >";
-	}
-
-	//only parse urls that have a query attached
-	if(!strpos($url,"?") && !strpos($url,"&")){
-		return "$tag=\"$url\" $extra >";
-	}
-
-	//we need to get the query
-	$query = explode("&",$url);
-
-	$url = "";
-
-	//now rebuild the URL
-	foreach($query as $k => $q)
-	{
-		$url .= str_replace("=",",",$q)."/";
-	}
-
-	//strip out the ?
-	$url = str_replace("?","",$url);
-
-	//set the correct url and close the a tag
-	$replacement = "$tag=\"$url\" $extra >";
-
-	return $replacement;
-}
