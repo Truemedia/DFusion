@@ -70,10 +70,16 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 	        }
 
         } else {
-	        //use the Joomla default urls
+ /*
+ THIS CANNOT BE CORRECT. WHEN WE ARE HERE, WE HAVE NO LOGGED IN USER AS A START. PRETTY MUCH CORRECT FOR A LOGIN MODULE.
+NOW, WHEN WE USE JOOMLA'S DEFAULT REGISTRATION AND LOST PASSWORDS URL'S A NOT LOGGED IN USER CANNOT RESTORE PASSWORD OR REGISTER
+AS I HAVE NO IDEA WHY YOU NEED TO CHANGE THESE'S URL'S ONCE A USER IS LOGGED IN I COMMENTED YTHESE OUT AS A STOP GAP MEASURE. 
+HENK 19-1-2009 	        
+ 	        //use the Joomla default urls
     	    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
         	$url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
 	        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
+*/	        
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
 
