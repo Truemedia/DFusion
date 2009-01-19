@@ -64,16 +64,14 @@ if (file_exists($model_file) && file_exists($factory_file)) {
                 	$url_viewnewmessages = JFusionfunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $view2, $itemid2);
             	}
     			//output the login module
-    		require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));
+    			require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));
 	        } else {
     			require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
 	        }
 
         } else {
  /*
- THIS CANNOT BE CORRECT. WHEN WE ARE HERE, WE HAVE NO LOGGED IN USER AS A START. PRETTY MUCH CORRECT FOR A LOGIN MODULE.
-NOW, WHEN WE USE JOOMLA'S DEFAULT REGISTRATION AND LOST PASSWORDS URL'S A NOT LOGGED IN USER CANNOT RESTORE PASSWORD OR REGISTER
-AS I HAVE NO IDEA WHY YOU NEED TO CHANGE THESE'S URL'S ONCE A USER IS LOGGED IN I COMMENTED YTHESE OUT AS A STOP GAP MEASURE. 
+ THIS CANNOT BE CORRECT. WHEN WE ARE HERE, THE MASTER IS NOT JOOMLA_INT SO WE SHOULD NOT RESET THE URL's BELOW I COMMENTED THESE OUT AS A STOP GAP MEASURE. 
 HENK 19-1-2009 	        
  	        //use the Joomla default urls
     	    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
