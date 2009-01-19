@@ -25,13 +25,17 @@ class JFusionFunction{
 
     function getMaster()
     {
-        $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion WHERE master = 1 and status = 1';
-        $db->setQuery($query );
-        $jname = $db->loadObject();
-
-        if ($jname) {
-            return $jname;
+        static $jfusion_master;
+        if (!isset($jfusion_master )) {
+          	$db = & JFactory::getDBO();
+	        $query = 'SELECT * from #__jfusion WHERE master = 1 and status = 1';
+    	    $db->setQuery($query );
+        	$jfusion_master = $db->loadObject();
+	        if ($jfusion_master) {
+    	        return $jfusion_master;
+        	}
+        } else {
+    	    return $jfusion_master;
         }
     }
 
@@ -42,13 +46,14 @@ class JFusionFunction{
 
     function getSlaves()
     {
-        //find the first forum that is enabled
-        $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion WHERE slave = 1 and status = 1';
-        $db->setQuery($query );
-        $jname = $db->loadObjectList();
-        return $jname;
-
+        static $jfusion_slaves;
+        if (!isset($jfusion_slaves )) {
+	        $db = & JFactory::getDBO();
+    	    $query = 'SELECT * from #__jfusion WHERE slave = 1 and status = 1';
+        	$db->setQuery($query );
+	        $jfusion_slaves = $db->loadObjectList();
+        }
+    	return $jfusion_slaves;
     }
 
     /**
@@ -58,12 +63,14 @@ class JFusionFunction{
 
     function getPlugins()
     {
-        //find the first forum that is enabled
-        $db = & JFactory::getDBO();
-        $query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
-        $db->setQuery($query );
-        $list = $db->loadObjectList();
-        return $list;
+        static $jfusion_plugins;
+        if (!isset($jfusion_plugins )) {
+	        $db = & JFactory::getDBO();
+    	    $query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
+	        $db->setQuery($query );
+    	    $jfusion_plugins = $db->loadObjectList();
+        }
+        return $jfusion_plugins;
     }
 
     /**

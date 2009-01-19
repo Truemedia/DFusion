@@ -91,6 +91,7 @@ class plgAuthenticationjfusion extends JPlugin
                     $response->email = $userinfo->email;
                     $response->fullname = $userinfo->name;
                     $response->error_message = '';
+                    $response->userinfo = $userinfo;
 	    	        $result = true;
     	    	    return $result;
                 }

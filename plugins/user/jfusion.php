@@ -88,11 +88,16 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             //get the JFusion master
             $master = JFusionFunction::getMaster();
             $JFusionMaster = JFusionFactory::getUser($master->name);
-            $userinfo = $JFusionMaster->getUser($user['username']);
+
+            //check to see if userinfo is already present
+            if(empty($user['userinfo'])){
+            	$userinfo = $JFusionMaster->getUser($user['username']);
+            } else {
+            	$userinfo =$user['userinfo'];
+            }
 
             //apply the cleartext password to the user object
             $userinfo->password_clear = $user['password'];
-
             $MasterUser = $JFusionMaster->updateUser($userinfo,0);
             if (!empty($MasterUser['error'])) {
                	JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' . JText::_('UPDATE'), $MasterUser['error'],1);
