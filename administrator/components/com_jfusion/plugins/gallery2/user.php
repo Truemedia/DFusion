@@ -54,13 +54,13 @@ class JFusionUser_gallery2 extends JFusionUser {
 
 		if (!empty($g2_existinguser)) {
 			//a matching user has been found
-			
+
 			//Set Write Lock
 			list($ret, $id) = GalleryCoreApi::acquireWriteLock($g2_existinguser->getId());
 			if($ret) {
 				echo $ret->getAsHtml();
 			}
-			
+
 			//Set user Attributes
 			$g2_existinguser->setFullName($userinfo->name);
 
@@ -76,7 +76,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 					return $status;
 				}
 			}
-			
+
 			//Check Password
 			if (isset($userinfo->password_clear) && !empty($userinfo->password_clear)){
 				$testcrypt = GalleryUtilities::md5Salt($userinfo->password_clear, $g2_existinguser->hashedPassword);
@@ -95,7 +95,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 				$g2_existinguser->locked = false;
 				$change = true;
 			}
-			
+
 			/*//check the blocked status
 			if ($g2_existinguser->locked != $userinfo->block) {
 				if ($update_block || $overwrite) {
@@ -167,6 +167,47 @@ class JFusionUser_gallery2 extends JFusionUser {
 			return $status;
 		}
 	}
+
+	function updatePassword($userinfo, &$existinguser, &$status)
+	{
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
+		DS.'gallery2'.DS.'gallery2.php');
+		G2BridgeCore::loadGallery2Api(false);
+
+		// Initialise some variables
+		$db = & JFusionFactory::getDatabase($this->getJname());
+		$params = JFusionFactory::getParams($this->getJname());
+
+			//Set Write Lock
+			list($ret, $id) = GalleryCoreApi::acquireWriteLock($g2_existinguser->getId());
+			if($ret) {
+				echo $ret->getAsHtml();
+			}
+
+			//Check Password
+			if (isset($userinfo->password_clear) && !empty($userinfo->password_clear)){
+				$testcrypt = GalleryUtilities::md5Salt($userinfo->password_clear, $g2_existinguser->hashedPassword);
+				if ($testcrypt != $g2_existinguser->hashedPassword) {
+					$g2_existinguser->setHashedPassword($testcrypt);
+					$changed = true;
+				} else {
+					$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+				}
+			} else {
+				$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
+			}
+
+
+			if($changed) {
+				$ret = $g2_existinguser->save();
+				if($ret) {
+					echo $ret->getAsHtml();
+				}
+			}
+
+			GalleryEmbed::done();
+	}
+
 
 	function &getUser($username)
 	{
@@ -263,7 +304,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 		}
 		//Login the Current User
 		$gallery->setActiveUser($user);
-		
+
 		//Save the Session
 		$session =& $gallery->getSession();
 		$phpVm = $gallery->getPhpVm();
@@ -276,7 +317,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 		    $session->put('session.siteAdminActivityTimestamp', $phpVm->time());
 		}
 		$ret = $session->regenerate();
-		
+
 		//Close GalleryApi
 		GalleryEmbed::done();
 	}
