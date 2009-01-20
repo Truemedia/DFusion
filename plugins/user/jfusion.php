@@ -90,10 +90,46 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             $JFusionMaster = JFusionFactory::getUser($master->name);
 
             //check to see if userinfo is already present
-            if(empty($user['userinfo'])){
-            	$userinfo = $JFusionMaster->getUser($user['username']);
-            } else {
+            if(!empty($user['userinfo'])){
+            	//the jfusion auth plugin is enabled
             	$userinfo =$user['userinfo'];
+            } else {
+            	//other auth plugin enabled get the userinfo again
+            	$userinfo = $JFusionMaster->getUser($user['username']);
+            	if(empty($userinfo)){
+					//should be auto-create users?
+        			$params = JFusionFactory::getParams('joomla_int');
+        			$autoregister = $params->get('autoregister',0);
+        			if($autoregister == 1){
+        				//create a JFusion userinfo object
+						$userinfo = new stdClass;
+						$userinfo->username = $user['username'];
+						$userinfo->password_clear = $user['password_clear'];
+						$userinfo->email = $user['email'];
+						$status = array();
+						$status['debug'] = array();
+						$status['error'] = array();
+
+						//try to create a Joomla user
+						require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
+						JFusionJplugin::createUser($userinfo, 0, $status,'joomla_int');
+						if(empty($status['error'])){
+							//success
+							$userinfo = $status['userinfo'];
+						} else {
+							//could not create user
+		                    ob_end_clean();
+	                    	JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],1);
+    		                $success = false;
+        		            return $success;
+						}
+        			} else {
+        				//return an error
+	                    ob_end_clean();
+    	                $success = false;
+        	            return $success;
+        			}
+            	}
             }
 
             //apply the cleartext password to the user object

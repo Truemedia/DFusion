@@ -34,6 +34,12 @@
 		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
 		<param name="usergroup" default="18" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="AUTOREGISTER_DESCR"/>
+		<param name="autoregister" type="list" default="0" label="" description="AUTOREGISTER">
+			<option value="1">YES</option>
+			<option value="0">NO</option>
+		</param>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
