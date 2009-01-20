@@ -69,18 +69,52 @@ class jfusionViewframeless extends JView {
         if (count($data) < 3 ) {
             JError::raiseWarning(500, JText::_('NO_HTML'));
         } else {
-
-            // Add the header information
+			// Add the header information
             if (isset($data[1][0]) ) {
                 $document	= JFactory::getDocument();
-                $JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
-                $document->addCustomTag($data[1][0]);
+                global $mainframe;
+				$regex_header = array();
+				$replace_header = array();
+				
+	            //change the page title
+				$pattern = '#<title>(.*?)<\/title>#Si';
+				preg_match($pattern, $data[1][0], $page_title);
+				$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
+        		$regex_header[]	= $pattern;
+        		$replace_header[] = '';
+				
+				//set meta data to that of softwares
+        		$meta = array('keywords','description','robots');
+        		
+				foreach($meta as $m) {
+	        		$pattern = '#<meta name=["|\']'.$m.'["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
+	        		 if (preg_match($pattern, $data[1][0], $page_meta)){ 	
+				    	if($page_meta[2]) {
+				    		$document->setMetaData( $m, $page_meta[2] );
+				    	} 					    				
+				    	$regex_header[]	= $pattern;
+	       				$replace_header[] = '';
+				    }
+        		} 
+			    
+        		$pattern = '#<meta name=["|\']generator["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
+                if(preg_match($pattern, $data[1][0], $page_generator)) {
+                	if($page_generator[2]) {
+                		$document->setGenerator( $document->getGenerator().', '. $page_generator[2]);	
+                	}
+					$regex_header[]	= $pattern;
+					$replace_header[] = '';
+                }
+				
+                //use Joomla's default
+                $regex_header[]	= '#<meta http-equiv=["|\']Content-Type["|\'](.*?)>#Si';
+				$replace_header[] = '';
+				
+                //remove above set meta data from software's header                       
+    	        $data[1][0] = preg_replace($regex_header, $replace_header, $data[1][0]);
 
-		//change the page title
-		$pattern = '#<title>(.*?)<\/title>#';
-		preg_match($pattern, $data[1][0], $page_title);
-		global $mainframe;
-		$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
+				$JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
+                $document->addCustomTag($data[1][0]);
             }
 
             // Output the body
