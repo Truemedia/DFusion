@@ -53,7 +53,7 @@ class jfusionViewframeless extends JView {
         	echo $this->jname . ': ' . JText::_('NO_BUFFER');
         	return;
         }
-        $buffer =& $JFusionPlugin->getBuffer();
+        $buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
 
         if (! $buffer ) {
             JError::raiseWarning(500, JText::_('NO_BUFFER'));
@@ -76,11 +76,11 @@ class jfusionViewframeless extends JView {
                 $JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
                 $document->addCustomTag($data[1][0]);
 
-	            //change the page title
-				$pattern = '#<title>(.*?)<\/title>#';
-				preg_match($pattern, $data[1][0], $page_title);
-				global $mainframe;
-				$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
+		//change the page title
+		$pattern = '#<title>(.*?)<\/title>#';
+		preg_match($pattern, $data[1][0], $page_title);
+		global $mainframe;
+		$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
             }
 
             // Output the body
