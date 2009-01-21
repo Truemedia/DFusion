@@ -13,6 +13,7 @@
 	<files>
 		<filename>admin.php</filename>
 		<filename>auth.php</filename>
+		<filename>auth_db_jfusion.php</filename>
 		<filename>case_fold_c.php</filename>
 		<filename>case_fold_f.php</filename>
 		<filename>case_fold_s.php</filename>

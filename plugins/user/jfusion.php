@@ -85,6 +85,9 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 			global $JFusionActive;
 			$JFusionActive = true;
 
+			//allow for the detection of external mods to exclude jfusion plugins
+        	global $JFusionActivePlugin;
+
             //get the JFusion master
             $master = JFusionFunction::getMaster();
             $JFusionMaster = JFusionFactory::getUser($master->name);
@@ -174,19 +177,21 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             }
 
 			//setup the master session
-            $MasterSession = $JFusionMaster->createSession($userinfo, $options);
-            if (!empty($MasterSession['error'])) {
-            	//report the error back
-                JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), $MasterSession['error'],1);
-                if ($master->name == 'joomla_int'){
-                  	//we can not tolerate Joomla session failures
-	                ob_end_clean();
-					//hide the default Joomla login failure message
-					JError::setErrorHandling(E_WARNING, 'ignore');
-                    $success = false;
-                    return $success;
-                }
-            }
+			if ($JFusionActivePlugin != $master->name){
+	            $MasterSession = $JFusionMaster->createSession($userinfo, $options);
+    	        if (!empty($MasterSession['error'])) {
+        	    	//report the error back
+            	    JFusionFunction::raiseWarning($master->name .' ' .JText::_('SESSION').' ' .JText::_('CREATE'), $MasterSession['error'],1);
+                	if ($master->name == 'joomla_int'){
+	                  	//we can not tolerate Joomla session failures
+		                ob_end_clean();
+						//hide the default Joomla login failure message
+						JError::setErrorHandling(E_WARNING, 'ignore');
+                	    $success = false;
+                    	return $success;
+	                }
+    	        }
+			}
 
             //check to see if we need to setup a Joomla session
             if ($master->name != 'joomla_int'){
@@ -245,7 +250,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
                     JFusionFunction::updateLookup($SlaveUser['userinfo'], $slave->name, $JoomlaUser['userinfo']->userid);
 
-                    if (!isset($options['group']) && $slave->dual_login == 1) {
+                    if (!isset($options['group']) && $slave->dual_login == 1 && $JFusionActivePlugin != $slave->name) {
                         $SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);
                         if (!empty($SlaveSession['error'])) {
                             JFusionFunction::raiseWarning($slave->name . ' ' . JText::_('SESSION') .' ' .JText::_('CREATE'), $SlaveSession['error'],1);
