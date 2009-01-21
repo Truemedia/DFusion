@@ -539,6 +539,8 @@ class JFusionCurl{
         if (!(substr($curl_options['post_url'],-1) == "/")) {
            $curl_options['post_url'] = $curl_options['post_url']."/";
         }
+		$status['debug'][] = JText::_('CURL_POST_URL_1')." ".$curl_options['post_url'];
+		
 
         # read the login page
         $ch = curl_init();
@@ -585,7 +587,7 @@ class JFusionCurl{
               $helpthem = $helpthem.' -- Name='.$result[$i]['form_data']['name'].' &ID='.$result[$i]['form_data']['id'];
               $i +=1;
             } while ($i<$frmcount);
-			$status['error'][] = JText::_('CURL_NO_LOGINFORM')." ".$helpthem;;
+			$status['error'][] = JText::_('CURL_NO_LOGINFORM')." ".$helpthem;
            return $status;
         }
         $status['debug'][] = JText::_('CURL_VALID_FORM');
