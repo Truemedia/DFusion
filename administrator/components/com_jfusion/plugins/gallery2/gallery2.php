@@ -19,7 +19,7 @@ class G2BridgeCore {
 	static $loadedGallery = false;
 	static $registry = array();
 
-	function loadGallery2Api($fullInit) {
+	function loadGallery2Api($fullInit, $itemId = NULL) {
 		if(self::$loadedGallery) {
 			return true;
 		}
@@ -39,7 +39,7 @@ class G2BridgeCore {
 		}
 
 		$initParams["g2Uri"] = $source_url;
-		$initParams["embedUri"] = G2BridgeCore::getEmbedUri();
+		$initParams["embedUri"] = G2BridgeCore::getEmbedUri($itemId);
 		$initParams["loginRedirect"] = JRoute::_("index.php?option=com_user&view=login");
 		$initParams["fullInit"] = $fullInit;
 
@@ -65,11 +65,14 @@ class G2BridgeCore {
 		return true;
 	}
 
-	function getEmbedUri()
+	function getEmbedUri( $itemId = NULL )
 	{
 		global $mainframe;
 		$router = $mainframe->getRouter();
 		$id = JRequest::getVar( 'Itemid', -1 );
+		if($itemId !== NULL) {
+			$id = $itemId;
+		}
 		//Create Gallery Embed Path
 		$path = 'index.php?option=com_jfusion';
 		if($id > 0) {

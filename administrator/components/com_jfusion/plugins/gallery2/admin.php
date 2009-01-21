@@ -148,9 +148,80 @@ class JFusionAdmin_gallery2 extends JFusionAdmin{
 		return false;
 	}
 	
-	function getMenuParameter()
-	{
-		
-	}
+	function getSitemapTree($jFusionParam, $jPluginParam, $itemId) {
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
+		DS.'gallery2'.DS.'gallery2.php');
+		G2BridgeCore::loadGallery2Api(true);
 
+		global $gallery;
+		$params = JFusionFactory::getParams('gallery2');
+		$source_url = $params->get('source_url');
+		$urlGenerator = new GalleryUrlGenerator();
+		$urlGenerator->init(G2BridgeCore::getEmbedUri($itemId), $source_url, null);
+		
+		$album = $jPluginParam->get('album');
+		if($album == -1) {
+			$album = 7;
+		}
+		
+		// Fetch all items contained in the root album
+		list ($ret, $rootItems) =
+			GalleryCoreApi::fetchChildItemIdsWithPermission($album, 'core.view');
+		if ( $ret ) {
+			return null;
+		}
+		$parent = $node = new stdClass();
+		$parent->uid = "gallery2";
+		$tree = $this->_getTree($rootItems, $urlGenerator, $parent);
+		return $tree;
+	}	
+	
+	function _getTree( &$items, $urlGenerator, $parent ) {
+		
+		$albums = array();
+		if( !$items )
+			return null;
+		
+		foreach( $items as $itemId ) {
+			
+			// Fetch the details for this item
+			list ($ret, $entity) = GalleryCoreApi::loadEntitiesById($itemId);
+			if ($ret){
+				// error, skip and continue, catch this error in next component version
+				continue;
+			}// Fetch the details for this item
+
+			$node = new stdClass();
+			$node->id    = $entity->getId();
+			$node->uid   = $parent->uid.'a'.$entity->getId();
+			$node->name  = $entity->getTitle();
+			$node->pid   = $entity->getParentId();
+			$node->modified = $entity->getModificationTimestamp();
+			$node->type = 'separator'; //fool joomap in not trying to add $Itemid=	
+			$node->link = $urlGenerator->generateUrl (
+               array('view' => 'core.ShowItem', 'itemId' => $node->id),
+               array('forceSessionId' => false, 'forceFullUrl' => true)
+         	);
+
+			// Make sure it's an album
+			if ($entity->getCanContainChildren()) {
+				$node->element = "group";
+				// Get all child items contained in this album and add them to the tree
+				list ($ret, $childIds) =
+					GalleryCoreApi::fetchChildItemIdsWithPermission($node->id, 'core.view');
+				if ($ret) {
+					// error, skip and continue, catch this error in next component version
+					continue;	
+				}
+				$node->tree = $this->_getTree( $childIds, $urlGenerator, $node);
+			} else {
+				$node->element = "element";
+				$node->uid = $parent->uid.'p'.$entity->getId();
+			}
+			
+			$albums[] = $node;
+		}
+		
+		return $albums;
+	}
 } 
