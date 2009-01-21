@@ -306,62 +306,29 @@ if (array_search($table_prefix . 'jfusion_sync',$table_list) == false) {
 <td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('COMPONENT');?> </b></font></td></tr></table>
 
 <?php
-//Install Package Manager
+//install the JFusion packages
 jimport('joomla.installer.helper');
+$packages['Login Module'] = $basedir . DS . 'packages' . DS . 'jfusion_mod_login.zip';
+$packages['Activity Module'] = $basedir . DS . 'packages' . DS . 'jfusion_mod_activity.zip';
+$packages['User Plugin'] = $basedir . DS . 'packages' . DS . 'jfusion_plugin_user.zip';
+$packages['Authentication Plugin'] = $basedir . DS . 'packages' . DS . 'jfusion_plugin_auth.zip';
+$packages['Search Plugin'] = $basedir . DS . 'packages' . DS . 'jfusion_plugin_search.zip';
+$packages['Discussion Bot'] = $basedir . DS . 'packages' . DS . 'jfusion_plugin_content.zip';
 
-//set the filenames
-$module_login = $basedir . DS . 'packages' . DS . 'jfusion_mod_login.zip';
-$module_activity = $basedir . DS . 'packages' . DS . 'jfusion_mod_activity.zip';
-$plugin_user = $basedir . DS . 'packages' . DS . 'jfusion_plugin_user.zip';
-$plugin_auth = $basedir . DS . 'packages' . DS . 'jfusion_plugin_auth.zip';
-
-$package = JInstallerHelper::unpack($module_login);
-$tmpInstaller = new JInstaller();
-if($tmpInstaller->install($package['dir'])) {?>
-	<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('LOGIN') . ' ' . JText::_('MODULE'); ?></b></font></td></tr></table>
-<?php } else { ?>
-	<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('ERROR') .' ' . JText::_('INSTALLING') . '' . JText::_('JFUSION') . ' ' . JText::_('LOGIN') . ' ' . JText::_('MODULE'); ?></b></font></td></tr></table>
-<?php }
-
-$package = JInstallerHelper::unpack($module_activity);
-$tmpInstaller = new JInstaller();
-if($tmpInstaller->install($package['dir'])) {?>
-	<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('ACTIVITY') . ' ' . JText::_('MODULE'); ?></b></font></td></tr></table>
-<?php } else { ?>
-	<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('ERROR') .' ' . JText::_('INSTALLING') . '' . JText::_('JFUSION') . ' ' . JText::_('ACTIVITY') . ' ' . JText::_('MODULE'); ?></b></font></td></tr></table>
-<?php }
-
-$package = JInstallerHelper::unpack($plugin_auth);
-$tmpInstaller = new JInstaller();
-if($tmpInstaller->install($package['dir'])) {?>
-	<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('AUTHENTICATION') . ' ' . JText::_('PLUGIN'); ?></b></font></td></tr></table>
-<?php } else { ?>
-	<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('ERROR') .' ' . JText::_('INSTALLING') . '' . JText::_('JFUSION') . ' ' . JText::_('AUTHENTICATION') . ' ' . JText::_('PLUGIN'); ?></b></font></td></tr></table>
-<?php }
-
-$package = JInstallerHelper::unpack($plugin_user);
-$tmpInstaller = new JInstaller();
-if($tmpInstaller->install($package['dir'])) {?>
-	<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . JText::_('USER') . ' ' . JText::_('PLUGIN'); ?></b></font></td></tr></table>
-<?php } else { ?>
-	<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px"><td width="50px">
-	<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px"></td>
-	<td><font size="2"><b><?php echo JText::_('ERROR') .' ' . JText::_('INSTALLING') . '' . JText::_('JFUSION') . ' ' . JText::_('USER') . ' ' . JText::_('PLUGIN'); ?></b></font></td></tr></table>
-<?php }
+foreach ($packages as $name => $filename){
+	$package = JInstallerHelper::unpack($filename);
+	$tmpInstaller = new JInstaller();
+	if($tmpInstaller->install($package['dir'])) {?>
+		<table bgcolor="#d9f9e2" width ="100%"><tr style="height:30px"><td width="50px">
+		<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px"></td>
+		<td><font size="2"><b><?php echo JText::_('INSTALLED') . ' ' . JText::_('JFUSION') . ' ' . $name; ?></b></font></td></tr></table>
+	<?php } else { ?>
+		<table bgcolor="#f9ded9" width ="100%"><tr style="height:30px"><td width="50px">
+		<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px"></td>
+		<td><font size="2"><b><?php echo JText::_('ERROR') .' ' . JText::_('INSTALLING') . '' . JText::_('JFUSION') . ' ' . $name; ?></b></font></td></tr></table>
+	<?php }
+	unset ($package, $tmpInstaller);
+}
 
 echo '<br/>' . JText::_('INSTALLATION_INSTRUCTIONS') . '<br/><br/>';
 
