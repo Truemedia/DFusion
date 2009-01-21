@@ -178,36 +178,35 @@ class JFusionUser_gallery2 extends JFusionUser {
 		$db = & JFusionFactory::getDatabase($this->getJname());
 		$params = JFusionFactory::getParams($this->getJname());
 
-			//Set Write Lock
-			list($ret, $id) = GalleryCoreApi::acquireWriteLock($g2_existinguser->getId());
+		//Set Write Lock
+		list($ret, $id) = GalleryCoreApi::acquireWriteLock($g2_existinguser->getId());
+		if($ret) {
+			echo $ret->getAsHtml();
+		}
+
+		//Check Password
+		if (isset($userinfo->password_clear) && !empty($userinfo->password_clear)){
+			$testcrypt = GalleryUtilities::md5Salt($userinfo->password_clear, $g2_existinguser->hashedPassword);
+			if ($testcrypt != $g2_existinguser->hashedPassword) {
+				$g2_existinguser->setHashedPassword($testcrypt);
+				$changed = true;
+			} else {
+				$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+			}
+		} else {
+			$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
+		}
+
+
+		if($changed) {
+			$ret = $g2_existinguser->save();
 			if($ret) {
 				echo $ret->getAsHtml();
 			}
+		}
 
-			//Check Password
-			if (isset($userinfo->password_clear) && !empty($userinfo->password_clear)){
-				$testcrypt = GalleryUtilities::md5Salt($userinfo->password_clear, $g2_existinguser->hashedPassword);
-				if ($testcrypt != $g2_existinguser->hashedPassword) {
-					$g2_existinguser->setHashedPassword($testcrypt);
-					$changed = true;
-				} else {
-					$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
-				}
-			} else {
-				$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
-			}
-
-
-			if($changed) {
-				$ret = $g2_existinguser->save();
-				if($ret) {
-					echo $ret->getAsHtml();
-				}
-			}
-
-			GalleryEmbed::done();
+		GalleryEmbed::done();
 	}
-
 
 	function &getUser($username)
 	{
@@ -248,30 +247,30 @@ class JFusionUser_gallery2 extends JFusionUser {
 
 	function deleteUser($username)
 	{
-        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
-               DS.'gallery2'.DS.'gallery2.php');
-        G2BridgeCore::loadGallery2Api(true);
-        //Fetch GalleryUser
-        list ($ret, $user) = GalleryCoreApi::fetchUserByUserName($username);
-        if ($ret) {
-            return false;
-        }
-        //Get Write Lock
-        list ($ret, $lockId) = GalleryCoreApi::acquireWriteLock($user->getId());
-        if ($ret) {
-            return false;
-        }
-        //Delete User name
-        $ret = $user->delete();
-        if ($ret) {
-            return false;
-        }
-        //Release Lock
-        $ret = GalleryCoreApi::releaseLocks($lockId);
-        if ($ret) {
-            return false;
-        }
-        return true;
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
+		DS.'gallery2'.DS.'gallery2.php');
+		G2BridgeCore::loadGallery2Api(true);
+		//Fetch GalleryUser
+		list ($ret, $user) = GalleryCoreApi::fetchUserByUserName($username);
+		if ($ret) {
+			return false;
+		}
+		//Get Write Lock
+		list ($ret, $lockId) = GalleryCoreApi::acquireWriteLock($user->getId());
+		if ($ret) {
+			return false;
+		}
+		//Delete User name
+		$ret = $user->delete();
+		if ($ret) {
+			return false;
+		}
+		//Release Lock
+		$ret = GalleryCoreApi::releaseLocks($lockId);
+		if ($ret) {
+			return false;
+		}
+		return true;
 	}
 
 	function filterUsername($username)
@@ -285,19 +284,52 @@ class JFusionUser_gallery2 extends JFusionUser {
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
 		G2BridgeCore::loadGallery2Api(true);
-		global $gallery;
 		GalleryEmbed::logout();
 		GalleryEmbed::done();
 	}
 
 	function createSession($userinfo, $options)
 	{
-		//Code is paticulary taken from the GalleryEmbed::login function
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
 		G2BridgeCore::loadGallery2Api(true);
 		global $gallery;
 
+		//Code is taken from GalleryEmbed::checkActiveUser function
+		$session =& $gallery->getSession();
+		$activeUserId = $session->getUserId();
+		if ($activeUserId === $userinfo->userid) {
+			return null;
+		}
+
+		/* Logout the existing user from Gallery */
+		if (!empty($idInSession)) {
+			list ($ret, $anonymousUserId) = GalleryCoreApi::getAnonymousUserId();
+			if ($ret) {
+				return $ret;
+			}
+			/* Can't use getActiveUser() since it might not be set at this point */
+			$activeGalleryUserId = $gallery->getActiveUserId();
+			if ($anonymousUserId != $activeGalleryUserId) {
+				list ($ret, $activeUser) =
+				GalleryCoreApi::loadEntitiesById($activeGalleryUserId, 'GalleryUser');
+				if ($ret) {
+					return $ret;
+				}
+				$event = GalleryCoreApi::newEvent('Gallery::Logout');
+				$event->setEntity($activeUser);
+				list ($ret, $ignored) = GalleryCoreApi::postEvent($event);
+				if ($ret) {
+					return $ret;
+				}
+			}
+			$ret = $session->reset();
+			if ($ret) {
+				return $ret;
+			}
+		}
+
+		//Code is paticulary taken from the GalleryEmbed::login function
 		list ($ret, $user) = GalleryCoreApi::fetchUserByUserName($userinfo->username);
 		if ($ret) {
 			return null;
@@ -311,10 +343,10 @@ class JFusionUser_gallery2 extends JFusionUser {
 		//Set Siteadmin if necessarey
 		list ($ret, $isSiteAdmin)  = GalleryCoreApi::isUserInSiteAdminGroup($user->id);
 		if ($ret) {
-		    return $ret;
+			return $ret;
 		}
 		if ($isSiteAdmin) {
-		    $session->put('session.siteAdminActivityTimestamp', $phpVm->time());
+			$session->put('session.siteAdminActivityTimestamp', $phpVm->time());
 		}
 		$ret = $session->regenerate();
 

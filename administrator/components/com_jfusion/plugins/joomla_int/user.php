@@ -134,7 +134,6 @@ class JFusionUser_joomla_int extends JFusionUser{
         // Get the session object
         $table = & JTable::getInstance('session');
         $table->load($session->getId() );
-
         $table->guest = $instance->get('guest');
         $table->username = $instance->get('username');
         $table->userid = intval($instance->get('id'));
@@ -144,13 +143,12 @@ class JFusionUser_joomla_int extends JFusionUser{
         $table->update();
 
         // Hit the user last visit field
-        $instance->setLastVisit();
-        if (!$instance->save()) {
-            $status['error'] = $instance->getError();
-            return $status;
-        } else {
+        if($instance->setLastVisit()) {
             $status['error'] = false;
             $status['debug'] = 'Joomla session created';
+            return $status;
+        } else {
+            $status['error'] = $instance->getError();
             return $status;
         }
     }
