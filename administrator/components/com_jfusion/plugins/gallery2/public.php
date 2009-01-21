@@ -84,8 +84,12 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 				exit();
 			}
 		}
+		
 	    /* Register Sidebare for Module Usage */
-	    G2BridgeCore::setVar("sidebar", $g2data["sidebarBlocksHtml"]);
+		if(isset($g2data["sidebarBlocksHtml"])) {
+	    	G2BridgeCore::setVar("sidebar", $g2data["sidebarBlocksHtml"]);
+		}
+		
 	    G2BridgeCore::setPathway();
 	    
 		$buffer = "<html><head>".$g2data['headHtml']."</head><body>".
