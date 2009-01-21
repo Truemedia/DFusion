@@ -87,7 +87,7 @@ var default_value = document.forms['adminForm'].elements['default_value'].select
 </tr></thead><tbody>
 
 <?php $row_count = 0;
-
+if(!isset($this->syncdata['errors'])) $this->syncdata['errors'] = array();
 for ($i=0; $i<count($this->syncdata['errors']); $i++) {
 $error =  $this->syncdata['errors'][$i];
 
