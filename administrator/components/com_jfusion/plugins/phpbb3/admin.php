@@ -173,5 +173,37 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
             return $result;
         }
     }
+
+    function show_auth_mod()
+    {
+    	//check to see if a path is defined
+        $params = JFusionFactory::getParams($this->getJname());
+        $path = $params->get('source_path');
+        if(empty($path)){
+        	return '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('SET_PATH_FIRST');
+        }
+        //check for trailing slash and generate file path
+        if (substr($path, -1) == DS) {
+            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+        } else {
+            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+        }
+        //see if the auth mod file exists
+		if (!file_exists($auth_file)){
+        	return '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('DISABLED');
+		}
+
+		//check to see if the mod is enabled
+        $db = JFusionFactory::getDatabase($this->getJname());
+        $query = 'SELECT config_value FROM #__config WHERE config_name = \'auth_method\'';
+        $db->setQuery($query );
+        $auth_method = $db->loadResult();
+        if($auth_method != 'auth_jfusion'){
+        	return '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('DISABLED');
+        }
+
+		//return success
+		return '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('ENABLED');
+    }
 }
 

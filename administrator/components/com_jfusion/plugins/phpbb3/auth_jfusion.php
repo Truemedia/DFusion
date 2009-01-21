@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 /**
  * Login function
  */
-function login_db_jfusion(&$username, &$password)
+function login_jfusion(&$username, &$password)
 {
     require_once('auth_db.php');
     $result = login_db($username, $password);
@@ -45,15 +45,15 @@ function login_db_jfusion(&$username, &$password)
     return $result;
 }
 
-function logout_db_jfusion(&$data)
+function logout_jfusion(&$data)
 {
     //check to see if JFusion is not active
 	global $JFusionActive;
     if (empty($JFusionActive))
     {
         //define that the phpBB3 JFusion plugin needs to be excluded
-        global $JFusionPlugin;
-        $JFusionPlugin = 'phpbb3';
+        global $JFusionActivePlugin;
+        $JFusionActivePlugin = 'phpbb3';
 
         $mainframe = startJoomla();
 
@@ -94,5 +94,3 @@ function startJoomla()
     $GLOBALS['mainframe'] =& $mainframe;
     return $mainframe;
 }
-
-?>
