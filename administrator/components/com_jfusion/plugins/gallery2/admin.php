@@ -151,13 +151,13 @@ class JFusionAdmin_gallery2 extends JFusionAdmin{
 	function getSitemapTree($jFusionParam, $jPluginParam, $itemId) {
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(true);
+		jFusion_g2BridgeCore::loadGallery2Api(true);
 
 		global $gallery;
 		$params = JFusionFactory::getParams('gallery2');
 		$source_url = $params->get('source_url');
 		$urlGenerator = new GalleryUrlGenerator();
-		$urlGenerator->init(G2BridgeCore::getEmbedUri($itemId), $source_url, null);
+		$urlGenerator->init(jFusion_g2BridgeCore::getEmbedUri($itemId), $source_url, null);
 		
 		$album = $jPluginParam->get('album');
 		if($album == -1) {

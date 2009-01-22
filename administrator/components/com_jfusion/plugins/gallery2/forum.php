@@ -107,7 +107,7 @@ class JFusionForum_gallery2 extends JFusionForum
 			//Initialize the Framework
 			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 			             DS.'gallery2'.DS.'gallery2.php');
-			if(!G2BridgeCore::loadGallery2Api(true)) {
+			if(!jFusion_g2BridgeCore::loadGallery2Api(true)) {
 				$content .= '<strong>Error</strong><br />Can\'t initialise G2Bridge.';
 			} else {
 				list ($ret, $imageBlockHtml, $headContent) = GalleryEmbed::getImageBlock($array);
@@ -133,7 +133,7 @@ class JFusionForum_gallery2 extends JFusionForum
 	function renderSideBar($config, $view, $pluginParam) {
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		$g2sidebar = G2BridgeCore::getVar("sidebar", -1);
+		$g2sidebar = jFusion_g2BridgeCore::getVar("sidebar", -1);
 		if ($g2sidebar != -1) {
 			return '<div id="gsSidebar" class="gcBorder1"> '.implode('', $g2sidebar).'</div>';
 		} else {

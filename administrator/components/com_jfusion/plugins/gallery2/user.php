@@ -29,7 +29,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 	{
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(false);
+		jFusion_g2BridgeCore::loadGallery2Api(false);
 
 		// Initialise some variables
 		$db = & JFusionFactory::getDatabase($this->getJname());
@@ -172,7 +172,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 	{
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(false);
+		jFusion_g2BridgeCore::loadGallery2Api(false);
 
 		// Initialise some variables
 		$db = & JFusionFactory::getDatabase($this->getJname());
@@ -212,7 +212,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 	{
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(false);
+		jFusion_g2BridgeCore::loadGallery2Api(false);
 
 		list ($ret, $g2_user) = GalleryCoreApi::fetchUserByUserName($username);
 		if ($ret) {
@@ -249,7 +249,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 	{
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(true);
+		jFusion_g2BridgeCore::loadGallery2Api(true);
 		//Fetch GalleryUser
 		list ($ret, $user) = GalleryCoreApi::fetchUserByUserName($username);
 		if ($ret) {
@@ -283,7 +283,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 	{
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(true);
+		jFusion_g2BridgeCore::loadGallery2Api(true);
 		GalleryEmbed::logout();
 		GalleryEmbed::done();
 	}
@@ -293,7 +293,7 @@ class JFusionUser_gallery2 extends JFusionUser {
 		if($framework) {
 			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 			DS.'gallery2'.DS.'gallery2.php');
-			G2BridgeCore::loadGallery2Api(true);
+			jFusion_g2BridgeCore::loadGallery2Api(true);
 		}
 		global $gallery;
 

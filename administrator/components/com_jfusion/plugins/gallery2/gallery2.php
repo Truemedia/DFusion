@@ -15,7 +15,7 @@ defined('_JEXEC' ) or die('Restricted access' );
  * JFusion plugin class for Gallery2
  * @package JFusion_Gallery2
  */
-class G2BridgeCore {
+class jFusion_g2BridgeCore {
 	static $loadedGallery = false;
 	static $registry = array();
 
@@ -39,7 +39,7 @@ class G2BridgeCore {
 		}
 
 		$initParams["g2Uri"] = $source_url;
-		$initParams["embedUri"] = G2BridgeCore::getEmbedUri($itemId);
+		$initParams["embedUri"] = jFusion_g2BridgeCore::getEmbedUri($itemId);
 		$initParams["loginRedirect"] = JRoute::_("index.php?option=com_user&view=login");
 		$initParams["fullInit"] = $fullInit;
 

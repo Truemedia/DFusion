@@ -47,7 +47,7 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 	{
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(true);
+		jFusion_g2BridgeCore::loadGallery2Api(true);
 		global $gallery;
 		
 		$album = $jPluginParam->get('album');
@@ -87,10 +87,10 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 		
 	    /* Register Sidebare for Module Usage */
 		if(isset($g2data["sidebarBlocksHtml"])) {
-	    	G2BridgeCore::setVar("sidebar", $g2data["sidebarBlocksHtml"]);
+	    	jFusion_g2BridgeCore::setVar("sidebar", $g2data["sidebarBlocksHtml"]);
 		}
 		
-	    G2BridgeCore::setPathway();
+	    jFusion_g2BridgeCore::setPathway();
 	    
 		$buffer = "<html><head>".$g2data['headHtml']."</head><body>".
 		$g2data['bodyHtml']."</body></html>";

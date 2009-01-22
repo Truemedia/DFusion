@@ -24,7 +24,7 @@ class JElementGalleries extends JElement
 	{
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(true);
+		jFusion_g2BridgeCore::loadGallery2Api(true);
 
 		list($ret, $tree) = GalleryCoreApi::fetchAlbumTree();
 
