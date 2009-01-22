@@ -33,7 +33,7 @@
 			?></td>
 		</tr>
 		<tr>
-			<td colspan="2"><input type="submit" value="Speichern" /></td>
+			<td colspan="2"><input type="submit" value="Save" /></td>
 		</tr>
 	</tbody>
 </table>
