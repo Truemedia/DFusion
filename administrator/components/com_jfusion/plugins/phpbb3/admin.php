@@ -176,11 +176,13 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
 
     function show_auth_mod()
     {
+    	$error = 0;
     	//check to see if a path is defined
         $params = JFusionFactory::getParams($this->getJname());
         $path = $params->get('source_path');
         if(empty($path)){
-        	return '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('SET_PATH_FIRST');
+        	$error = 1;
+        	$reason = JText::_('SET_PATH_FIRST');
         }
         //check for trailing slash and generate file path
         if (substr($path, -1) == DS) {
@@ -189,21 +191,94 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
             $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
         }
         //see if the auth mod file exists
+		if (!file_exists($auth_file) && $error == 0){
+        	$error = 1;
+        	$reason = JText::_('NO_FILE_FOUND');
+		}
+
+		if ($error == 0){
+			//check to see if the mod is enabled
+    	    $db = JFusionFactory::getDatabase($this->getJname());
+        	$query = 'SELECT config_value FROM #__config WHERE config_name = \'auth_method\'';
+	        $db->setQuery($query );
+    	    $auth_method = $db->loadResult();
+        	if($auth_method != 'auth_jfusion'){
+	        	$error = 1;
+    	    	$reason = JText::_('MOD_NOT_ENABLED');
+	        }
+	    }
+
+
+?>
+<script language="javascript" type="text/javascript">
+<!--
+function auth_mod(action) {
+var form = document.adminForm;
+form.customcommand.value = action;
+form.action.value = 'apply';
+submitform('saveconfig');
+return;
+}
+
+//-->
+</script>
+
+<?php
+		if ($error == 0){
+			//return success
+			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('ENABLED');
+			$output .= '<a href="javascript:void(0);" onclick="return auth_mod(\'disable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_DISABLE') . '</a>';
+			return $output;
+		} else {
+       		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('DISABLED') .': ' . $reason;
+			$output .= '<a href="javascript:void(0);" onclick="return auth_mod(\'enable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_ENABLE') . '</a>';
+			return $output;
+		}
+    }
+
+    function enable_auth_mod()
+    {
+    	//check to see if a path is defined
+        $params = JFusionFactory::getParams($this->getJname());
+        $path = $params->get('source_path');
+        if (substr($path, -1) == DS) {
+            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+        } else {
+            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+        }
+
+        //see if the auth mod file exists
 		if (!file_exists($auth_file)){
-        	return '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('DISABLED');
+			jimport('joomla.filesystem.file');
+			$copy_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'auth_jfusion.php';
+			JFile::copy($copy_file,$auth_file);
 		}
 
 		//check to see if the mod is enabled
-        $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT config_value FROM #__config WHERE config_name = \'auth_method\'';
+   	    $db = JFusionFactory::getDatabase($this->getJname());
+       	$query = 'SELECT config_value FROM #__config WHERE config_name = \'auth_method\'';
         $db->setQuery($query );
-        $auth_method = $db->loadResult();
-        if($auth_method != 'auth_jfusion'){
-        	return '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('DISABLED');
+   	    $auth_method = $db->loadResult();
+       	if($auth_method != 'auth_jfusion'){
+	       	$query = 'UPDATE #__config SET config_value = \'auth_jfusion\' WHERE config_name = \'auth_method\'';
+	        $db->setQuery($query );
+    	    if (!$db->query()) {
+        	    //there was an error saving the parameters
+            	JError::raiseWarning(0,$db->stderr());
+	        }
         }
+    }
 
-		//return success
-		return '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('ENABLED');
+    function disable_auth_mod()
+    {
+		//check to see if the mod is enabled
+   	    $db = JFusionFactory::getDatabase($this->getJname());
+       	$query = 'UPDATE #__config SET config_value = \'db\' WHERE config_name = \'auth_method\'';
+        $db->setQuery($query );
+   	    if (!$db->query()) {
+      	    //there was an error saving the parameters
+           	JError::raiseWarning(0,$db->stderr());
+        }
     }
 }
 

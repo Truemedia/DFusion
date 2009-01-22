@@ -16,6 +16,7 @@
 	<files folder="components/com_jfusion">
 		<filename>index.html</filename>
 		<filename>jfusion.php</filename>
+		<filename>router.php</filename>
 		<filename>controllers/controller.jfusion.php</filename>
 		<filename>controllers/index.html</filename>
         <folder>view</folder>

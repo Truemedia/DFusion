@@ -38,7 +38,7 @@ return;
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="" />
 <input type="hidden" name="action" value="" />
-
+<input type="hidden" name="customcommand" value="" />
 
 <?php echo $this->toolbar; ?>
 

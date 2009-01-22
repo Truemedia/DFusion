@@ -174,7 +174,6 @@ class JFusionController extends JController
             }
 
             //perform the update
-
             $query = 'UPDATE #__jfusion SET ' . $field_name . ' =' . $db->quote($field_value) . ' WHERE name = ' . $db->quote($jname);
             $db->setQuery($query );
             $db->query();
@@ -267,7 +266,16 @@ class JFusionController extends JController
        	$db->setQuery($query );
         $db->query();
 
-        $action = JRequest::getVar('action', '', 'POST', 'STRING' );
+		//check for any custom commands
+        $customcommand = JRequest::getVar('customcommand');
+        if (!empty($customcommand)){
+            $JFusionPlugin = JFusionFactory::getAdmin($jname);
+            if (method_exists($JFusionPlugin,$customcommand)){
+                $JFusionPlugin->$customcommand();
+            }
+        }
+
+        $action = JRequest::getVar('action');
         if ($action == 'apply'){
 
             $parameters = JFusionFactory::getParams($jname);
@@ -653,7 +661,7 @@ class JFusionController extends JController
                 $multiselect = JRequest::getVar('multiselect');
                 if($multiselect) $multiselect = true;
                 else $multiselect = false;
-                
+
                 $serParam = base64_encode(serialize($param));
                 $title = "";
                 if(isset($param["jfusionplugin"])) {
@@ -670,7 +678,7 @@ class JFusionController extends JController
                 if(empty($title)) {
                 	$title = "No Plugin Selected";
                 }
-                
+
                 echo '<script type="text/javascript">'.
                      'window.parent.jAdvancedParamSet("'.$title.'", "'.$serParam.'");'.
                      '</script>';

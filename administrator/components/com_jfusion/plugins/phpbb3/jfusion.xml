@@ -76,6 +76,5 @@
 			<option value="0">NO</option>
 		</param>
 		<param name="show_auth_mod" default="show_auth_mod" type="JFusionCustomParam" description="AUTHENTICATION_MOD"/>
-
 	</params>
 </install>

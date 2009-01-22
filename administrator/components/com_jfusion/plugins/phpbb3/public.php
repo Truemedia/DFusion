@@ -261,7 +261,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	$url = htmlspecialchars_decode($url);
 
       	//check to see if the URL is in SEF
-		if (strpos($url,'option,com_jfusion')){
+      	if(preg_match("/option\,com_jfusion|index\.php\//",$url)) {
 			$parts = preg_split('/\/\&|\/|&/', $url);
 			foreach ($parts as $part){
 				$vars =preg_split('/,|=/', $part);
