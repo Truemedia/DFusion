@@ -35,7 +35,7 @@ $config['linktype'] = intval($params->get('linktype'));
 $config['display_body'] = intval($params->get('display_body'));
 $config['lxt_type'] = intval($params->get('linktype'));
 $config['forum_mode'] = $params->get('forum_mode', 0);
-$config['selected_forums'] = $params->get('selected_forums');
+//$config['selected_forums'] = $params->get('selected_forums');
 $config['display_limit'] = intval($params->get('display_limit'));
 $config['display_limit_subject'] = intval($params->get('display_limit_subject'));
 $config['result_limit'] = intval($params->get('result_limit'));
@@ -70,7 +70,7 @@ if(is_array($pluginParamValue)) {
 			$output = "<h4>".$pluginParam->get('title', $jname)."</h4>\n";
 		}
 		if($view == 'auto') {
-			$output .= modjfusionActivityHelper::renderPluginAuto($jname, $config);
+			$output .= modjfusionActivityHelper::renderPluginAuto($jname, $config, $params);
 		} else {
 			$output .= modjfusionActivityHelper::renderPluginMode($jname, $config, $view, $pluginParam);
 		}

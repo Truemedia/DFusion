@@ -1,10 +1,12 @@
 <?php
 class modjfusionActivityHelper {
-	function renderPluginAuto($jname, $config) {
+	function renderPluginAuto($jname, $config, $params) {
 		//now check to see if the plugin is configured
 	    $jdb =& JFactory::getDBO();
 	    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->quote($jname);
 	    $jdb->setQuery($query );
+	    $config['selected_forums'] = $params->get('selected_forums_'.$jname);
+	    
 	    if ($jdb->loadResult() == 1) {
 	
 	        $forum = JFusionFactory::getForum($jname);
@@ -15,7 +17,7 @@ class modjfusionActivityHelper {
 	        } else {
 	            if ($config['forum_mode'] == 0 || empty($config['selected_forums'])) {
 	                $selectedforumssql = "";
-	            } else if (is_array($selected_forums)) {
+	            } else if (is_array($config['selected_forums'])) {
 	                $selectedforumssql = implode(",", $config['selected_forums']);
 	            } else {
 	                $selectedforumssql = $config['selected_forums'];

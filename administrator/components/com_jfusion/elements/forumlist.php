@@ -35,24 +35,40 @@ class JElementForumlist extends JElement
         $params = $db->loadResult();
         $parametersInstance = new JParameter($params, '' );
 
-        $jname = $parametersInstance->get('JFusionPlugins');
-
-		if (JFusionFunction::validPlugin($jname)) {
-
-            $JFusionPlugin = JFusionFactory::getForum($jname);
-            if (method_exists($JFusionPlugin,'getForumList')){
-	            $forumlist = $JFusionPlugin->getForumList();
-    	        if (!empty($forumlist)) {
-        	        return JHTML::_('select.genericlist', $forumlist, $control_name.'['.$name.'][]', 'multiple size="6" class="inputbox"',
-            	    'id', 'name', $value);
-	            } else {
-    	            return $jname . ': ' . JText::_('NO_LIST');
-        	    }
-			} else {
-    	        return $jname . ': ' . JText::_('NO_LIST');
+		//load custom plugin parameter
+		$jPluginParam = new JParameter('');
+		$jPluginParamRaw = unserialize(base64_decode($parametersInstance->get('JFusionPluginParam')));
+		$output = "";
+		if(is_array($jPluginParamRaw)) {
+			foreach($jPluginParamRaw as $jname => $value) {
+		
+				$jPluginParam->loadArray($value);
+				$jname = $jPluginParam->get('jfusionplugin');
+		
+				if (JFusionFunction::validPlugin($jname)) {
+					$output .= "<b>".$jname . "</b><br />\n";
+		            $JFusionPlugin = JFusionFactory::getForum($jname);
+		            if (method_exists($JFusionPlugin,'getForumList')){
+			            $forumlist = $JFusionPlugin->getForumList();
+		    	        if (!empty($forumlist)) {
+		    	        	$selectedValue = $parametersInstance->get($name.'_'.$jname);
+		        	        $output .= JHTML::_('select.genericlist', $forumlist, $control_name.'['.$name.'_'.$jname.'][]', 'multiple size="6" class="inputbox"',
+		            	    'id', 'name', $selectedValue);
+			            } else {
+		    	            $output .= $jname . ': ' . JText::_('NO_LIST');
+		        	    }
+					} else {
+		    	        $output .= $jname . ': ' . JText::_('NO_LIST');
+					}
+					$output .= "<br />\n";
+		        } else {
+		            $output .= $jname . ": " . JText::_('NO_VALID_PLUGIN') . "<br />";
+		        }
 			}
-        } else {
-            return JText::_('NO_PLUGIN_SELECT');
-        }
+		} else {
+			$output .= JText::_('NO_PLUGIN_SELECT');
+		}
+		
+		return $output;
     }
 }
