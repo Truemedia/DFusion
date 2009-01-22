@@ -61,6 +61,18 @@ class G2BridgeCore {
 			JError::raiseWarning(500, 'Error while setting cookie path');
 			return false;
 		}
+		
+		if($fullInit) {
+			$user = &JFactory::getUser();
+			if($user->id != 0) {
+				$userPlugin = JFusionFactory::getUser('gallery2');
+				$g2_user = $userPlugin->getUser($user->username);
+				$userPlugin->createSession($g2_user, NULL, false);
+			} else {
+				GalleryEmbed::logout();
+			}
+		}
+		
 		self::$loadedGallery = true;
 		return true;
 	}

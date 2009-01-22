@@ -288,11 +288,13 @@ class JFusionUser_gallery2 extends JFusionUser {
 		GalleryEmbed::done();
 	}
 
-	function createSession($userinfo, $options)
+	function createSession($userinfo, $options, $framework = true )
 	{
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
-		DS.'gallery2'.DS.'gallery2.php');
-		G2BridgeCore::loadGallery2Api(true);
+		if($framework) {
+			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
+			DS.'gallery2'.DS.'gallery2.php');
+			G2BridgeCore::loadGallery2Api(true);
+		}
 		global $gallery;
 
 		//Code is taken from GalleryEmbed::checkActiveUser function
@@ -351,6 +353,8 @@ class JFusionUser_gallery2 extends JFusionUser {
 		$ret = $session->regenerate();
 
 		//Close GalleryApi
-		GalleryEmbed::done();
+		if($framework) {
+			GalleryEmbed::done();
+		}
 	}
 }
