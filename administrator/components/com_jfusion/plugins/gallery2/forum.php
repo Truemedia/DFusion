@@ -110,6 +110,14 @@ class JFusionForum_gallery2 extends JFusionForum
 			if(!jFusion_g2BridgeCore::loadGallery2Api(true)) {
 				$content .= '<strong>Error</strong><br />Can\'t initialise G2Bridge.';
 			} else {
+				if(isset($config['itemid']) && $config['itemid'] != 150) {
+					global $gallery;
+					$params = JFusionFactory::getParams('gallery2');
+					$source_url = $params->get('source_url');
+					$urlGenerator = new GalleryUrlGenerator();
+					$urlGenerator->init(jFusion_g2BridgeCore::getEmbedUri($config['itemid']), $source_url, null);
+					$gallery->setUrlGenerator($urlGenerator);
+				}
 				list ($ret, $imageBlockHtml, $headContent) = GalleryEmbed::getImageBlock($array);
 				if ($ret) {
 					if($ret->getErrorCode() == 4194305) {
