@@ -85,7 +85,7 @@ class modjfusionActivityHelper {
 	
 	                        //combine all info into an urlstring
 	                        if ($config['linktype'] == LINKPOST) {
-					$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][5], $result[$i][0]), $jname, $config['view'], $config['itemid']);
+					$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][6], $result[$i][0]), $jname, $config['view'], $config['itemid']);
 	    	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $config['new_window'] . '">'. $subject.'</a>';
 	                        } else {
 	                        	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0]), $jname, $config['view'], $config['itemid']);
