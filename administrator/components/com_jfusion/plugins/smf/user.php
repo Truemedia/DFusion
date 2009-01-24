@@ -130,7 +130,7 @@ class JFusionUser_smf extends JFusionUser{
 
         if ($result) {
             //Check to see if they are banned
-            $query = 'SELECT ID_BAN_GROUP, expire_time FROM #__ban_groups WHERE name= ' . $db->quote($result->username);
+            $query = 'SELECT ID_BAN_GROUP, expire_time FROM #__ban_groups WHERE name= ' . $db->Quote($result->username);
             $db->setQuery($query);
             $expire_time = $db->loadObject();
             if ($expire_time) {
@@ -220,7 +220,7 @@ class JFusionUser_smf extends JFusionUser{
         $existinguser->password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
         $existinguser->password_salt = substr(md5(rand()), 0, 4);
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__members SET passwd = ' . $db->quote($existinguser->password). ', passwordSalt = ' . $db->quote($existinguser->password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
+        $query = 'UPDATE #__members SET passwd = ' . $db->Quote($existinguser->password). ', passwordSalt = ' . $db->Quote($existinguser->password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
         $db = JFusionFactory::getDatabase($this->getJname());
         $db->setQuery($query );
         if (!$db->query()) {
@@ -239,7 +239,7 @@ class JFusionUser_smf extends JFusionUser{
     {
         //we need to update the email
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__members SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
+        $query = 'UPDATE #__members SET emailAddress ='.$db->Quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();
@@ -274,7 +274,7 @@ class JFusionUser_smf extends JFusionUser{
     function unblockUser($userinfo, &$existinguser, &$status)
     {
         	$db = JFusionFactory::getDatabase($this->getJname());
-            $query = 'DELETE FROM #__ban_groups WHERE name = ' . $db->quote($existinguser->username);
+            $query = 'DELETE FROM #__ban_groups WHERE name = ' . $db->Quote($existinguser->username);
             $db->setQuery($query);
 		    if (!$db->query()) {
         	    $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
@@ -370,7 +370,7 @@ class JFusionUser_smf extends JFusionUser{
                 return;
             }
 
-            $query = 'REPLACE INTO #__settings (variable, value) VALUES (\'latestMember\', ' . $user->ID_MEMBER . '), (\'latestRealName\', ' . $db->quote($userinfo->username) . ')';
+            $query = 'REPLACE INTO #__settings (variable, value) VALUES (\'latestMember\', ' . $user->ID_MEMBER . '), (\'latestRealName\', ' . $db->Quote($userinfo->username) . ')';
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error

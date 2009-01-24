@@ -313,7 +313,7 @@ $db->Execute('BEGIN TRANSACTION');
       }
           $increment_last_id_int = (int) $db->loadresult();
       $increment_last_id = sprintf("%'09u",($increment_last_id_int+1));
-            $query =  'UPDATE #__eav_entity_store SET increment_last_id = '.$db->quote($increment_last_id).
+            $query =  'UPDATE #__eav_entity_store SET increment_last_id = '.$db->Quote($increment_last_id).
                       ' WHERE entity_type_id = '.$this->getMagentoEntityTypeID('customer').' AND store_id = 0';
            $db->Execute($query);
       if ($db->_errorNum != 0){
@@ -325,7 +325,7 @@ $db->Execute('BEGIN TRANSACTION');
       // so far so good, now create an empty user, to be updates later
       $query = 'INSERT INTO #__customer_entity   (entity_type_id, increment_id, is_active, created_at, updated_at) VALUES ' .
                             '('.$this->getMagentoEntityTypeID('customer').','.
-                            $db->quote($increment_last_id).',1,'.$db->quote($sqlDateTime).', '.$db->quote($sqlDateTime).')';
+                            $db->Quote($increment_last_id).',1,'.$db->Quote($sqlDateTime).', '.$db->Quote($sqlDateTime).')';
            $db->Execute($query);
       if ($db->_errorNum != 0){
         $db->Execute('ROLLBACK TRANSACTION');
@@ -335,7 +335,7 @@ $db->Execute('BEGIN TRANSACTION');
           $entity_id = $db->insertid();
     } else { // we are updating
       $query= 'UPDATE #__customer_entity' .
-          ' SET updated_at = '.$db->quote($sqlDateTime).
+          ' SET updated_at = '.$db->Quote($sqlDateTime).
           ' WHERE entity_id = '.$entity_id;
            $db->Execute($query);
       if ($db->_errorNum != 0){
@@ -349,7 +349,7 @@ $db->Execute('BEGIN TRANSACTION');
       if ($user[$i][backend_type] == 'static'){
         if (isset($user[$i][value])){
           $query= 'UPDATE #__customer_entity' .
-              ' SET '.$user[$i][attribute_code].'= '.$db->quote($user[$i][value]).
+              ' SET '.$user[$i][attribute_code].'= '.$db->Quote($user[$i][value]).
               ' WHERE entity_id = '.$entity_id;
               $db->Execute($query);
           if ($db->_errorNum != 0){
@@ -373,14 +373,14 @@ $db->Execute('BEGIN TRANSACTION');
                   ' AND attribute_id = '.$user[$i][attribute_id] ;
             } else {
               $query= 'UPDATE #__customer_entity'.'_'.$user[$i][backend_type].
-                  ' SET value = '.$db->quote($user[$i][value]).
+                  ' SET value = '.$db->Quote($user[$i][value]).
                   ' WHERE entity_id = '.$entity_id.' AND entity_type_id = '.$this->getMagentoEntityTypeID('customer').
                   ' AND attribute_id = '.$user[$i][attribute_id] ;
             }
           } else  { // must create
             $query= 'INSERT INTO #__customer_entity'.'_'.$user[$i][backend_type].
               ' (value, attribute_id, entity_id, entity_type_id) VALUES ('.
-            $db->quote($user[$i][value]).', '.$user[$i][attribute_id].', '.
+            $db->Quote($user[$i][value]).', '.$user[$i][attribute_id].', '.
             $entity_id.', '.$this->getMagentoEntityTypeID('customer').')';
           }
               $db->Execute($query);

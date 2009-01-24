@@ -272,7 +272,7 @@ class JFusionUser_moodle extends JFusionUser{
       	$existinguser->password = md5($userinfo->password_clear);
     }
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__user SET password =' . $db->quote($existinguser->password) . ' WHERE id =' . $existinguser->userid;
+        $query = 'UPDATE #__user SET password =' . $db->Quote($existinguser->password) . ' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
@@ -287,7 +287,7 @@ class JFusionUser_moodle extends JFusionUser{
     function updateEmail($userinfo, &$existinguser, &$status){  //TODO ? check for duplicates, or leave it atdb error
         //we need to update the email
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__user SET email =' . $db->quote($existinguser->email) . ' WHERE id =' . $existinguser->userid;
+        $query = 'UPDATE #__user SET email =' . $db->Quote($existinguser->email) . ' WHERE id =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();

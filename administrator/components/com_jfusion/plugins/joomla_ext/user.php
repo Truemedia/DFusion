@@ -62,7 +62,7 @@ class JFusionUser_joomla_ext extends JFusionUser{
             $status['debug'][] = JText::_('USER_DELETION'). ' ' . $username;
         } else {
             //this user was NOT create by JFusion. Therefore we need to delete it in the Joomla user table only
-            $query = 'SELECT id from #__users WHERE username = ' . $db->quote($username);
+            $query = 'SELECT id from #__users WHERE username = ' . $db->Quote($username);
             $db->setQuery($query);
             $userid = $db->loadResult();
             if ($userid) {

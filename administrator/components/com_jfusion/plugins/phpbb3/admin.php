@@ -186,15 +186,27 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
         }
         //check for trailing slash and generate file path
         if (substr($path, -1) == DS) {
-            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
         } else {
-            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
         }
         //see if the auth mod file exists
 		if (!file_exists($auth_file) && $error == 0){
         	$error = 1;
         	$reason = JText::_('NO_FILE_FOUND');
 		}
+
+		//get the joomla path from the file
+		jimport('joomla.filesystem.file');
+		$file_data = JFile::read($auth_file);
+      	preg_match_all('/define\(\'JPATH_BASE\'\,(.*)\)/',$file_data,$matches);
+
+		//compare it with our joomla path
+		if($matches[1][0] != '\''. JPATH_SITE.'\''){
+        	$error = 1;
+        	$reason = JText::_('PATH') . ' ' . JText::_('INVALID');
+		}
+
 
 		if ($error == 0){
 			//check to see if the mod is enabled
@@ -242,9 +254,9 @@ return;
         $params = JFusionFactory::getParams($this->getJname());
         $path = $params->get('source_path');
         if (substr($path, -1) == DS) {
-            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
         } else {
-            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_db_jfusion.php';
+            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
         }
 
         //see if the auth mod file exists
@@ -252,6 +264,17 @@ return;
 			jimport('joomla.filesystem.file');
 			$copy_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'phpbb3'.DS.'auth_jfusion.php';
 			JFile::copy($copy_file,$auth_file);
+		}
+
+		//get the joomla path from the file
+		jimport('joomla.filesystem.file');
+		$file_data = JFile::read($auth_file);
+      	preg_match_all('/define\(\'JPATH_BASE\'\,(.*)\)/',$file_data,$matches);
+
+		//compare it with our joomla path
+		if($matches[1][0] != '\'' . JPATH_SITE . '\''){
+			$file_data = preg_replace('/define\(\'JPATH_BASE\'\,(.*)\)/', 'define(\'JPATH_BASE\',\''.JPATH_SITE.'\')', $file_data);
+			JFile::write($auth_file, $file_data);
 		}
 
 		//check to see if the mod is enabled

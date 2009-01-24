@@ -190,7 +190,7 @@ class JFusionUser_mybb extends JFusionUser{
 
             //get myBB uid, loginkey
             $db = JFusionFactory::getDatabase($this->getJname());
-            $query = 'SELECT uid, loginkey FROM #__users WHERE username=' .$db->quote($userinfo->username) ;
+            $query = 'SELECT uid, loginkey FROM #__users WHERE username=' .$db->Quote($userinfo->username) ;
             $db->setQuery($query );
             $user = $db->loadObject();
 
@@ -303,7 +303,7 @@ class JFusionUser_mybb extends JFusionUser{
             $existinguser->password = md5(md5($existinguser->password_salt).md5($userinfo->password_clear));
 
             $db = JFusionFactory::getDatabase($this->getJname());
-            $query = 'UPDATE #__users SET password =' . $db->quote($existinguser->password) . ', salt = '.$db->quote($existinguser->password_salt). ' WHERE uid =' . $existinguser->userid;
+            $query = 'UPDATE #__users SET password =' . $db->Quote($existinguser->password) . ', salt = '.$db->Quote($existinguser->password_salt). ' WHERE uid =' . $existinguser->userid;
             $db->setQuery($query);
 	        if (!$db->query()) {
     	        $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
@@ -368,7 +368,7 @@ class JFusionUser_mybb extends JFusionUser{
         {
         //we need to update the email
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE uid =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET email ='.$db->Quote($userinfo->email) .' WHERE uid =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();

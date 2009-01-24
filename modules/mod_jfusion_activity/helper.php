@@ -3,7 +3,7 @@ class modjfusionActivityHelper {
 	function renderPluginAuto($jname, $config, $params) {
 		//now check to see if the plugin is configured
 	    $jdb =& JFactory::getDBO();
-	    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->quote($jname);
+	    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->Quote($jname);
 	    $jdb->setQuery($query );
 	    $config['selected_forums'] = $params->get('selected_forums_'.$jname);
 	    

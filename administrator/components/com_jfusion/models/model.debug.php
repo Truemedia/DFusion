@@ -787,22 +787,22 @@ class trans {
 	}
 
 	/**
-	*	Like trans::hashJoin except the the Values will be quoted with the giver quote Charachter
+	*	Like trans::hashJoin except the the Values will be Quoted with the giver Quote Charachter
 	*
 	*	Useful to build-up attribute-lists for HTML Tags
 	*
 	*	@param string $hashy the Hashtable to join
 	*	@param string $delim, the delemiter that seperates the entries, typically ' '
-	*	@param string $quote, The Charachter used to quote the Values, typically '"'
+	*	@param string $Quote, The Charachter used to Quote the Values, typically '"'
 	*	@param string $equiv, the delimiter that seperates the key from the Value, typically '='
 	*
 	*	@return the created string
 	*/
-	function joinToAttrList($hashy, $delim, $quote, $equiv) {
+	function joinToAttrList($hashy, $delim, $Quote, $equiv) {
 		$arr = array();
 		foreach ($hashy as $key => $val) {
 			$val = htmlentities($val);
-			$arr[] = $key.$equiv.$quote.$val.$quote;
+			$arr[] = $key.$equiv.$Quote.$val.$Quote;
 		}
 		return join($delim, $arr);
 	}

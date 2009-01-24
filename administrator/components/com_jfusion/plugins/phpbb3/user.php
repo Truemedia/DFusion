@@ -343,7 +343,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         unset($t_hasher);
 
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__users SET user_password =' . $db->quote($existinguser->password) . ', user_pass_convert = 0 WHERE user_id =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET user_password =' . $db->Quote($existinguser->password) . ', user_pass_convert = 0 WHERE user_id =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
@@ -361,7 +361,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     {
         //we need to update the email
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__users SET user_email ='.$db->quote($userinfo->email) .' WHERE user_id =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET user_email ='.$db->Quote($userinfo->email) .' WHERE user_id =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();
@@ -416,7 +416,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
     {
         //set activation key
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__users SET user_actkey =' . $db->quote($userinfo->activation) . ' WHERE user_id =' . $existinguser->userid;
+        $query = 'UPDATE #__users SET user_actkey =' . $db->Quote($userinfo->activation) . ' WHERE user_id =' . $existinguser->userid;
         $db->setQuery($query);
         $db->query();
         if (!$db->query()) {
@@ -537,7 +537,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             }
 
             //update the newest username
-            $query = 'UPDATE #__config SET config_value = '. $db->quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
+            $query = 'UPDATE #__config SET config_value = '. $db->Quote($userinfo->username) . ' WHERE config_name = \'newest_username\'';
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error
@@ -560,7 +560,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
             $user_color = $db->loadResult();;
 
             //set the correct new username color
-            $query = 'UPDATE #__config SET config_value = ' . $db->quote($user_color) . ' WHERE config_name = \'newest_user_colour\'';
+            $query = 'UPDATE #__config SET config_value = ' . $db->Quote($user_color) . ' WHERE config_name = \'newest_user_colour\'';
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error
@@ -678,7 +678,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 		$post_username = "Guest";
 
 		$query = 'UPDATE #__forums
-			SET forum_last_poster_id = 1, forum_last_poster_name = ' . $db->quote($post_username) . ", forum_last_poster_colour = ''
+			SET forum_last_poster_id = 1, forum_last_poster_name = ' . $db->Quote($post_username) . ", forum_last_poster_colour = ''
 			WHERE forum_last_poster_id = $user_id";
     	$db->setQuery($query);
 		if(!$db->query()){
@@ -688,7 +688,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 		}
 
 		$query = "UPDATE #__posts
-			SET poster_id = 1, post_username = " . $db->quote($post_username) . "
+			SET poster_id = 1, post_username = " . $db->Quote($post_username) . "
 			WHERE poster_id = $user_id";
     	$db->setQuery($query);
 		if(!$db->query()){
@@ -707,7 +707,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 		}
 
 		$query = "UPDATE #__topics
-			SET topic_poster = 1, topic_first_poster_name = " . $db->quote($post_username) . ", topic_first_poster_colour = ''
+			SET topic_poster = 1, topic_first_poster_name = " . $db->Quote($post_username) . ", topic_first_poster_colour = ''
 			WHERE topic_poster = $user_id";
     	$db->setQuery($query);
 		if(!$db->query()){
@@ -718,7 +718,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
 
 
 		$query = "UPDATE #__topics
-			SET topic_last_poster_id = 1, topic_last_poster_name = " . $db->quote($post_username) . ", topic_last_poster_colour = ''
+			SET topic_last_poster_id = 1, topic_last_poster_name = " . $db->Quote($post_username) . ", topic_last_poster_colour = ''
 			WHERE topic_last_poster_id = $user_id";
     	$db->setQuery($query);
 		if(!$db->query()){

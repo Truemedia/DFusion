@@ -83,7 +83,7 @@ class JFusionFunction{
     {
         //get the current parameters from the jfusion table
         $db = & JFactory::getDBO();
-        $query = 'SELECT params from #__jfusion WHERE name = ' . $db->quote($jname);
+        $query = 'SELECT params from #__jfusion WHERE name = ' . $db->Quote($jname);
         $db->setQuery($query );
         $serialized = $db->loadResult();
 
@@ -125,7 +125,7 @@ class JFusionFunction{
 
         //set the current parameters in the jfusion table
         $db = & JFactory::getDBO();
-        $query = 'UPDATE #__jfusion SET params = ' . $db->quote($serialized) .' WHERE name = ' . $db->quote($jname);
+        $query = 'UPDATE #__jfusion SET params = ' . $db->Quote($serialized) .' WHERE name = ' . $db->Quote($jname);
         $db->setQuery($query );
 
         if (!$db->query()) {
@@ -184,7 +184,7 @@ class JFusionFunction{
     function isPluginInstalled($element,$folder, $testPublished)
     {
         $db =& JFactory::getDBO();
-        $query = 'SELECT published FROM #__plugins WHERE element=' . $db->quote($element) . ' AND folder=' . $db->quote($folder);
+        $query = 'SELECT published FROM #__plugins WHERE element=' . $db->Quote($element) . ' AND folder=' . $db->Quote($folder);
         $db->setQuery($query);
         $result = $db->loadObject();
         if ($result) {
@@ -334,7 +334,7 @@ class JFusionFunction{
     function lookupUser($jname, $userid)
     {
         $db =& JFactory::getDBO();
-        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE id =' . $userid . ' AND jname = ' . $db->quote($jname);
+        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE id =' . $userid . ' AND jname = ' . $db->Quote($jname);
         $db->setQuery($query);
         $result = $db->loadObject();
         return $result;
@@ -349,7 +349,7 @@ class JFusionFunction{
     function validPlugin($jname)
     {
         $db =& JFactory::getDBO();
-        $query = 'SELECT status FROM #__jfusion WHERE name =' . $db->quote($jname);
+        $query = 'SELECT status FROM #__jfusion WHERE name =' . $db->Quote($jname);
         $db->setQuery($query);
         $result = $db->loadResult();
 		if ($result == '1') {
@@ -365,7 +365,7 @@ class JFusionFunction{
     {
     	//Delete old user data in the lookup table
 		$db =& JFactory::getDBO();
-        $query = 'DELETE FROM #__jfusion_users WHERE id =' . $userinfo->userid . ' OR username =' . $db->quote($userinfo->username);
+        $query = 'DELETE FROM #__jfusion_users WHERE id =' . $userinfo->userid . ' OR username =' . $db->Quote($userinfo->username);
        	$db->setQuery($query);
 		if(!$db->query()) {
             JError::raiseWarning(0,$db->stderr());

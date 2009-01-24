@@ -364,7 +364,7 @@ class JFusionUser_vbulletin extends JFusionUser{
         $existinguser->password_salt = JUserHelper::genRandomPassword(3);
 		$existinguser->password = md5(md5($userinfo->password_clear).$existinguser->password_salt);
         $db = JFusionFactory::getDatabase($this->getJname());
-                $query = 'UPDATE #__user SET password = ' . $db->quote($existinguser->password). ', salt = ' . $db->quote($existinguser->password_salt). ' WHERE userid  = ' . $existinguser->userid;
+                $query = 'UPDATE #__user SET password = ' . $db->Quote($existinguser->password). ', salt = ' . $db->Quote($existinguser->password_salt). ' WHERE userid  = ' . $existinguser->userid;
             $db->setQuery($query );
         if (!$db->query()) {
             $status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . ': ' . $db->stderr();
@@ -382,7 +382,7 @@ class JFusionUser_vbulletin extends JFusionUser{
     {
         //we need to update the email
         $db = JFusionFactory::getDatabase($this->getJname());
-       	$query = 'UPDATE #__user SET email ='.$db->quote($userinfo->email) .' WHERE userid =' . $existinguser->userid;
+       	$query = 'UPDATE #__user SET email ='.$db->Quote($userinfo->email) .' WHERE userid =' . $existinguser->userid;
        	$db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . ': ' . $db->stderr();

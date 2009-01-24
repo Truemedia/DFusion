@@ -174,41 +174,41 @@ class JFusionController extends JController
             }
 
             //perform the update
-            $query = 'UPDATE #__jfusion SET ' . $field_name . ' =' . $db->quote($field_value) . ' WHERE name = ' . $db->quote($jname);
+            $query = 'UPDATE #__jfusion SET ' . $field_name . ' =' . $db->Quote($field_value) . ' WHERE name = ' . $db->Quote($jname);
             $db->setQuery($query );
             $db->query();
 
             //get the new plugin settings
-            $query = 'SELECT * FROM #__jfusion WHERE name = ' . $db->quote($jname);
+            $query = 'SELECT * FROM #__jfusion WHERE name = ' . $db->Quote($jname);
             $db->setQuery($query );
             $result = $db->loadObject();
 
             //disable a slave when it is turned into a master
             if ($field_name == 'master' && $field_value == '1' && $result->slave == '1' ) {
-                $query = 'UPDATE #__jfusion SET slave = 0 WHERE name = ' . $db->quote($jname);
+                $query = 'UPDATE #__jfusion SET slave = 0 WHERE name = ' . $db->Quote($jname);
                 $db->setQuery($query );
                 $db->query();
             }
 
             //disable a master when it is turned into a slave
             if ($field_name == 'slave' && $field_value == '1' && $result->master == '1' ) {
-                $query = 'UPDATE #__jfusion SET master = 0 WHERE name = ' . $db->quote($jname);
+                $query = 'UPDATE #__jfusion SET master = 0 WHERE name = ' . $db->Quote($jname);
                 $db->setQuery($query );
                 $db->query();
             }
 
             //auto enable the auth and dual login for newly enabled plugins
             if (($field_name == 'slave' || $field_name == 'master') && $field_value == '1') {
-            	$query = 'SELECT dual_login FROM #__jfusion WHERE name = ' . $db->quote($jname);
+            	$query = 'SELECT dual_login FROM #__jfusion WHERE name = ' . $db->Quote($jname);
             	$db->setQuery($query );
             	$dual_login = $db->loadResult();
             	if ($dual_login > 1) {
                 	//only set the encryption if dual login is disabled
-                	$query = 'UPDATE #__jfusion SET check_encryption = 1 WHERE name = ' . $db->quote($jname);
+                	$query = 'UPDATE #__jfusion SET check_encryption = 1 WHERE name = ' . $db->Quote($jname);
                 	$db->setQuery($query );
                 	$db->query();
             	} else {
-                	$query = 'UPDATE #__jfusion SET dual_login = 1, check_encryption = 1 WHERE name = ' . $db->quote($jname);
+                	$query = 'UPDATE #__jfusion SET dual_login = 1, check_encryption = 1 WHERE name = ' . $db->Quote($jname);
                 	$db->setQuery($query );
                 	$db->query();
             	}
@@ -262,7 +262,7 @@ class JFusionController extends JController
 		$JFusionPlugin = JFusionFactory::getAdmin($jname);
 		$config_status =  $JFusionPlugin->checkConfig($jname);
         $db = & JFactory::getDBO();
-   	    $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $db->quote($jname);
+   	    $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $db->Quote($jname);
        	$db->setQuery($query );
         $db->query();
 

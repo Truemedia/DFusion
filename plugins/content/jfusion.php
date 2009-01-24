@@ -76,7 +76,7 @@ class plgContentJfusion extends JPlugin
 
     	            //now check to see if the plugin is configured
 				    $jdb =& JFactory::getDBO();
-				    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->quote($jname);
+				    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->Quote($jname);
 				    $jdb->setQuery($query );
 
 				    if ($jdb->loadResult() == 3)

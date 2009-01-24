@@ -51,7 +51,7 @@ class JFusionControllerFrontEnd extends JController
 		if ($jview) {
 			//check to see if the plugin is configured properly
 			$db =& JFactory::getDBO();
-			$query = 'SELECT status from #__jfusion WHERE name = ' . $db->quote($jname);
+			$query = 'SELECT status from #__jfusion WHERE name = ' . $db->Quote($jname);
 			$db->setQuery($query );
 
 			if ($db->loadResult() != 1) {

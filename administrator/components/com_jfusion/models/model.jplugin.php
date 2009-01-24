@@ -236,17 +236,17 @@ class JFusionJplugin{
 
 		if ($jname == 'joomla_int') {
 			//first check the JFusion user table
-			$db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier_type . '=' . $db->quote($identifier));
+			$db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier_type . '=' . $db->Quote($identifier));
 			$result = $db->loadObject();
 
 			if (!$result) {
 				//check directly in the joomla user table
-				$db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier_type . '=' .$db->quote($identifier));
+				$db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier_type . '=' .$db->Quote($identifier));
 				$result = $db->loadObject();
 
 				if($result){
 					//Delete old user data in the lookup table
-					$query = 'DELETE FROM #__jfusion_users WHERE id =' . $result->userid . ' OR username =' . $db->quote($result->username);
+					$query = 'DELETE FROM #__jfusion_users WHERE id =' . $result->userid . ' OR username =' . $db->Quote($result->username);
 					$db->setQuery($query);
 					if (!$db->query()) {
 						JError::raiseWarning(0,$db->stderr());
@@ -259,7 +259,7 @@ class JFusionJplugin{
 					}
 
 					//create a new entry in the lookup table
-					$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ', ' . $db->quote($identifier) . ')';
+					$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $result->userid . ', ' . $db->Quote($identifier) . ')';
 					$db->setQuery($query);
 					if (!$db->query()) {
 						JError::raiseWarning(0,$db->stderr());
@@ -267,7 +267,7 @@ class JFusionJplugin{
 				}
 			}
 		} else {
-			$db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier_type . '=' .$db->quote($identifier));
+			$db->setQuery('SELECT b.id as userid, b.activation, b.username, b.name, b.password, b.email, b.block FROM #__users as b WHERE '. $identifier_type . '=' .$db->Quote($identifier));
 			$result = $db->loadObject();
 		}
 		if ($result) {
@@ -288,7 +288,7 @@ class JFusionJplugin{
 
 	function updateEmail($userinfo, &$existinguser, &$status,$jname){
         $db = & JFusionFactory::getDatabase($jname);
-		$query = 'UPDATE #__users SET email ='.$db->quote($userinfo->email) .' WHERE id =' . $existinguser->userid;
+		$query = 'UPDATE #__users SET email ='.$db->Quote($userinfo->email) .' WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		if (!$db->query()) {
 			$status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();
@@ -302,7 +302,7 @@ class JFusionJplugin{
 		$userinfo->password_salt  = JUserHelper::genRandomPassword(32);
 		$userinfo->password = JUserHelper::getCryptedPassword($userinfo->password_clear, $userinfo->password_salt);
 		$new_password = $userinfo->password . ':' . $userinfo->password_salt;
-		$query = 'UPDATE #__users SET password =' . $db->quote($new_password) . ' WHERE id =' . $existinguser->userid;
+		$query = 'UPDATE #__users SET password =' . $db->Quote($new_password) . ' WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 			if (!$db->query()) {
 			$status['error'][] = JText::_('PASSWORD_UPDATE_ERROR')  . $db->stderr();
@@ -350,7 +350,7 @@ class JFusionJplugin{
 	function inactivateUser($userinfo, &$existinguser, &$status,$jname){
 		//unblock the user
         $db = & JFusionFactory::getDatabase($jname);
-		$query = 'UPDATE #__users SET block = 1, activation = '.$db->quote($userinfo->activation) .' WHERE id =' . $existinguser->userid;
+		$query = 'UPDATE #__users SET block = 1, activation = '.$db->Quote($userinfo->activation) .' WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		$db->query();
 		if (!$db->query()) {
@@ -407,7 +407,7 @@ class JFusionJplugin{
 
     	$status['debug'][] = JText::_('USERNAME'). ': ' . $userinfo->username . ' -> ' .  JText::_('FILTERED_USERNAME') . ':' . $username_clean;
 
-		$query = 'UPDATE #__users SET username =' . $db->quote($username_clean) . 'WHERE id =' . $existinguser->userid;
+		$query = 'UPDATE #__users SET username =' . $db->Quote($username_clean) . 'WHERE id =' . $existinguser->userid;
 		$db->setQuery($query);
 		if (!$db->query()) {
 			//update failed, return error
@@ -444,7 +444,7 @@ if ($jname == 'joomla_int'){
 		//load the database
         $db = & JFusionFactory::getDatabase($jname);
 		//joomla does not allow duplicate email addresses, check to see if the email is unique
-		$query = 'SELECT id as userid, username, email from #__users WHERE email ='.$db->quote($userinfo->email);
+		$query = 'SELECT id as userid, username, email from #__users WHERE email ='.$db->Quote($userinfo->email);
 		$db->setQuery($query);
 		$existinguser = $db->loadObject();
 

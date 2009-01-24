@@ -40,7 +40,7 @@ class JFusionUsersync{
         $serialized = base64_encode(serialize($syncdata));
 
         $db =& JFactory::getDBO();
-        $query = 'INSERT INTO #__jfusion_sync (syncdata, syncid, time_start, action) VALUES (' . $db->quote($serialized) .', ' . $db->Quote($syncdata['syncid']) . ', ' . $db->quote(time()). ', ' . $db->Quote($syncdata['action']) . ')';
+        $query = 'INSERT INTO #__jfusion_sync (syncdata, syncid, time_start, action) VALUES (' . $db->Quote($serialized) .', ' . $db->Quote($syncdata['syncid']) . ', ' . $db->Quote(time()). ', ' . $db->Quote($syncdata['action']) . ')';
         $db->setQuery($query );
         $db->query();
 
@@ -53,7 +53,7 @@ class JFusionUsersync{
 
         //find out if the syncid already exists
         $db =& JFactory::getDBO();
-        $query = 'UPDATE #__jfusion_sync SET syncdata = ' . $db->quote($serialized) .' WHERE syncid =' . $db->Quote($syncdata['syncid']);
+        $query = 'UPDATE #__jfusion_sync SET syncdata = ' . $db->Quote($serialized) .' WHERE syncid =' . $db->Quote($syncdata['syncid']);
         $db->setQuery($query );
         $db->query();
     }
@@ -227,7 +227,7 @@ class JFusionUsersync{
 
             //update the finish time
       		$db =& JFactory::getDBO();
-       		$query = 'UPDATE #__jfusion_sync SET time_end = ' . $db->quote(time()) .' WHERE syncid =' . $db->Quote($syncdata['syncid']);
+       		$query = 'UPDATE #__jfusion_sync SET time_end = ' . $db->Quote(time()) .' WHERE syncid =' . $db->Quote($syncdata['syncid']);
        		$db->setQuery($query );
        		$db->query();
 
