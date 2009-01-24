@@ -425,6 +425,11 @@ class JFusionForum_vbulletin extends JFusionForum
         return 'private.php';
     }
 
+   function getViewNewMessagesURL()
+   {
+      return 'search.php?do=getnew';
+   }
+   
    function getAvatar($userid)
    {
         if ($userid) {
