@@ -29,8 +29,9 @@ class JFusionPublic{
     /**
      * gets the visual html output from the plugin
      */
-    function & getBuffer()
+    function & getBuffer($jPluginParam)
     {
+    	return 0;
     }
 
     /**

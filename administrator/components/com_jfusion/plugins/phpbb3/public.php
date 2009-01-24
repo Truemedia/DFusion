@@ -37,7 +37,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         return 'ucp.php?mode=sendpassword';
     }
 
-    function & getBuffer()
+    function & getBuffer($jPluginParam)
     {
     	//save the current globals
     	$joomla_globals = $GLOBALS;

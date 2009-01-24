@@ -37,7 +37,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
         return 'login.php?do=lostpw';
     }
 
-	function & getBuffer()
+	function & getBuffer($jPluginParam)
 	{
      	//JError::raiseWarning(500, 'Frameless integration is not yet implemented for vBulletin.');
 		//return null;

@@ -138,15 +138,6 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             //apply the cleartext password to the user object
             $userinfo->password_clear = $user['password'];
 
-            //allow for password updates of the master plugin
-			$status = array();
-			$status['debug'] = array();
-			$status['error'] = array();
-            $JFusionMaster->updatePassword($userinfo, $userinfo, $status);
-            if (!empty($status['error'])) {
-               	JFusionFunction::raiseWarning($master->name . ' ' .JText::_('PASSWORD') . ' ' . JText::_('UPDATE'), $status['error'],1);
-	        }
-
             // See if the user has been blocked or is not activated
             if (!empty($userinfo->block) || !empty($userinfo->activation)) {
 

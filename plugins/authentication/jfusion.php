@@ -75,8 +75,22 @@ class plgAuthenticationjfusion extends JPlugin
             //apply the cleartext password to the user object
             $userinfo->password_clear = $credentials['password'];
 
-			//get a list of authentication models
-            $query = 'SELECT name FROM #__jfusion WHERE master = 1 OR check_encryption = 1 ORDER BY master DESC';
+			//check the master plugin for a valid password
+            $model = JFusionFactory::getAuth($master->name);
+            $testcrypt = $model->generateEncryptedPassword($userinfo);
+            if ($testcrypt == $userinfo->password){
+                //found a match
+                $response->status = JAUTHENTICATE_STATUS_SUCCESS;
+                $response->email = $userinfo->email;
+                $response->fullname = $userinfo->name;
+                $response->error_message = '';
+                $response->userinfo = $userinfo;
+  	            $result = true;
+    	    	return $result;
+            }
+
+			//otherwise check the other authentication models
+            $query = 'SELECT name FROM #__jfusion WHERE master = 0 AND check_encryption = 1';
             $db->setQuery($query);
             $auth_models = $db->loadObjectList();
 
@@ -92,6 +106,17 @@ class plgAuthenticationjfusion extends JPlugin
                     $response->fullname = $userinfo->name;
                     $response->error_message = '';
                     $response->userinfo = $userinfo;
+
+					//update the password format to what the master expects
+					$status = array();
+					$status['debug'] = array();
+					$status['error'] = array();
+            		$JFusionMaster = JFusionFactory::getUser($master->name);
+		            $JFusionMaster->updatePassword($userinfo, $userinfo, $status);
+        		    if (!empty($status['error'])) {
+               			JFusionFunction::raiseWarning($master->name . ' ' .JText::_('PASSWORD') . ' ' . JText::_('UPDATE'), $status['error'],1);
+	        		}
+
 	    	        $result = true;
     	    	    return $result;
                 }

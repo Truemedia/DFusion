@@ -37,7 +37,7 @@ class JFusionPublic_smf extends JFusionPublic{
         return 'index.php?action=reminder';
     }
 
-	function & getBuffer()
+	function & getBuffer($jPluginParam)
 	{
         $joomla_globals = $GLOBALS;
 		// We're going to want a few globals... these are all set later.

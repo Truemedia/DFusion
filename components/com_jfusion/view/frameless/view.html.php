@@ -48,12 +48,13 @@ class jfusionViewframeless extends JView {
         // Get the output from the JFusion plugin
         $JFusionPlugin = JFusionfactory::getPublic($this->jname);
 
-        //Get the output buffer
-        if (!method_exists($JFusionPlugin,'getBuffer')){
-        	echo $this->jname . ': ' . JText::_('NO_BUFFER');
-        	return;
-        }
         $buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
+
+		if ($buffer == 0){
+            JError::raiseWarning(500, JText::_('NO_FRAMELESS'));
+            $result = false;
+            return $result;
+		}
 
         if (! $buffer ) {
             JError::raiseWarning(500, JText::_('NO_BUFFER'));
@@ -75,42 +76,42 @@ class jfusionViewframeless extends JView {
                 global $mainframe;
 				$regex_header = array();
 				$replace_header = array();
-				
+
 	            //change the page title
 				$pattern = '#<title>(.*?)<\/title>#Si';
 				preg_match($pattern, $data[1][0], $page_title);
 				$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
         		$regex_header[]	= $pattern;
         		$replace_header[] = '';
-				
+
 				//set meta data to that of softwares
         		$meta = array('keywords','description','robots');
-        		
+
 				foreach($meta as $m) {
 	        		$pattern = '#<meta name=["|\']'.$m.'["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
-	        		 if (preg_match($pattern, $data[1][0], $page_meta)){ 	
+	        		 if (preg_match($pattern, $data[1][0], $page_meta)){
 				    	if($page_meta[2]) {
 				    		$document->setMetaData( $m, $page_meta[2] );
-				    	} 					    				
+				    	}
 				    	$regex_header[]	= $pattern;
 	       				$replace_header[] = '';
 				    }
-        		} 
-			    
+        		}
+
         		$pattern = '#<meta name=["|\']generator["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
                 if(preg_match($pattern, $data[1][0], $page_generator)) {
                 	if($page_generator[2]) {
-                		$document->setGenerator( $document->getGenerator().', '. $page_generator[2]);	
+                		$document->setGenerator( $document->getGenerator().', '. $page_generator[2]);
                 	}
 					$regex_header[]	= $pattern;
 					$replace_header[] = '';
                 }
-				
+
                 //use Joomla's default
                 $regex_header[]	= '#<meta http-equiv=["|\']Content-Type["|\'](.*?)>#Si';
 				$replace_header[] = '';
-				
-                //remove above set meta data from software's header                       
+
+                //remove above set meta data from software's header
     	        $data[1][0] = preg_replace($regex_header, $replace_header, $data[1][0]);
 
 				$JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
