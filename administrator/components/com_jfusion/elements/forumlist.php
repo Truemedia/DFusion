@@ -28,9 +28,15 @@ class JElementForumlist extends JElement
 
     function fetchElement($name, $value, &$node, $control_name)
     {
+	//Query current selected Module Id
+	$id     = JRequest::getVar( 'id', 0, 'method', 'int' );
+	$cid    = JRequest::getVar( 'cid', array( $id ), 'method', 'array' );
+	JArrayHelper::toInteger($cid, array(0));
+
         //find out which JFusion plugin is used in the activity module
         $db = & JFactory::getDBO();
-        $query = 'SELECT params FROM #__modules  WHERE module = \'mod_jfusion_activity\'';
+        $query = 'SELECT params FROM #__modules  WHERE module = \'mod_jfusion_activity\' and id = '.$db->Quote($cid[0]);
+
         $db->setQuery( $query );
         $params = $db->loadResult();
         $parametersInstance = new JParameter($params, '' );
