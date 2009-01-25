@@ -63,6 +63,35 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
             $db->setQuery('DELETE FROM #__session WHERE userid = '.$db->Quote($user['id']));
             $db->Query();
 
+
+             //convert the user array into a user object
+             $userinfo = new stdClass();
+             foreach ($user as $key => $value) {
+              	$JoomlaUser->$key = $value;
+            }
+
+            //delete the master user if it is not Joomla
+            $master = JFusionFunction::getMaster();
+            if($master->name != 'joomla_int'){
+	            $JFusionMaster = JFusionFactory::getUser($master->name);
+	            $status = $JFusionMaster->deleteUser($userinfo);
+				if(!empty($status['error'])){
+					//could not delete user
+                   	JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' .JText::_('DELETE'), $status['error'],1);
+				}
+            }
+
+            //delete the user in the slave plugins
+            $slaves = JFusionFunction::getPlugins();
+            foreach($slaves as $slave) {
+	            $JFusionSlave = JFusionFactory::getUser($slave->name);
+	            $status = $JFusionSlave->deleteUser($userinfo);
+				if(!empty($status['error'])){
+					//could not delete user
+                   	JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('DELETE'), $status['error'],1);
+				}
+            }
+
             $result = true;
             return $result;
         }
@@ -325,6 +354,10 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 
         function onAfterStoreUser($user, $isnew, $succes, $msg)
         {
+			if(!$succes){
+				$result = false;
+				return $result;
+			}
 
 			//prevent any output by the plugins (this could prevent cookies from being passed to the header)
 			ob_start();
