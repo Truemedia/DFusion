@@ -457,7 +457,7 @@ class JFusionFunction{
 <input type="hidden" name="tax" value="0"/>
 <input type="hidden" name="lc" value="AU"/>
 <input type="hidden" name="bn" value="PP-DonationsBF"/>
-<input type="image" src="https://www.paypal.com/en_AU/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal donation button."/>
+<input type="image" src="components/com_jfusion/images/donate.png" name="submit" alt="PayPal donation button."/>
 <img alt="" border="0" src="https://www.paypal.com/en_AU/i/scr/pixel.gif" width="1" height="1"/>
 </form></td></tr></table>
 
