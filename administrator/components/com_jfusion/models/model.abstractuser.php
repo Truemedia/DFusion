@@ -201,7 +201,7 @@ class JFusionUser{
         $status['debug'] = array();
         $status['error'] = array();
 
-        $status['error'][] = JText::_('DELETE_FUNCTION_MISSING')
+        $status['error'][] = JText::_('DELETE_FUNCTION_MISSING');
 
         return $status;
     }

@@ -54,10 +54,8 @@ JFusionFunction::displayDonate();
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
 <option value="2"><?php echo JText::_('UPDATE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
-<?php
-//<option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')</option>
-//<option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')</option>
-?>
+<option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
+<option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
 </select>
 
 <script language="javascript" type="text/javascript">
@@ -138,9 +136,8 @@ if ($error_type != 'Error'){ ?>
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')?></option>
 <option value="2"><?php echo JText::_('UPDATE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')?></option>
-<?php
-//<option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')</option>
-//<option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')</option>
+<option value="3"><?php echo JText::_('DELETE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')</option>
+<option value="4"><?php echo JText::_('DELETE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')</option>
 ?>
 </select>
 <?php }
