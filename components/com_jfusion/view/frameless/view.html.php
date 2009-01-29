@@ -42,15 +42,15 @@ class jfusionViewframeless extends JView {
         $fullURL = $url.'?'.$query;
 
         //Get the integrated URL
-        $JFusionParam = JFusionfactory::getParams($this->jname);
+        $JFusionParam = JFusionFactory::getParams($this->jname);
         $integratedURL =$JFusionParam->get('source_url');
 
         // Get the output from the JFusion plugin
-        $JFusionPlugin = JFusionfactory::getPublic($this->jname);
+        $JFusionPlugin = JFusionFactory::getPublic($this->jname);
 
         $buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
 
-		if ($buffer == 0){
+		if ($buffer === 0){
             JError::raiseWarning(500, JText::_('NO_FRAMELESS'));
             $result = false;
             return $result;
