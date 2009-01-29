@@ -13,13 +13,18 @@
 	<files folder="plugins/search">
 		<filename plugin="jfusion">jfusion.php</filename>
 	</files>
-
-	<params>
-		<param name="link_mode" type="list" default="direct" label="Display linked URLs In:"
-			description="Links should be displayed in a wrapper or as a direct link">
-			<option value="wrapper">Display in wrapper</option>
-			<option value="direct">Display as direct link</option>
-			<option value="frameless">Display directly inside Joomla</option>
+	
+	<languages>
+		 <language tag="en-GB">administrator/language/en-GB/en-GB.plg_search_jfusion.ini</language>
+	</languages>
+	
+	<params addpath="/administrator/components/com_jfusion/elements">
+		<param name="link_mode" type="list" default="direct" label="LINK_MODE" description="LINK_MODE_DESC">
+			<option value="LINK_MODE_0">Display in wrapper</option>
+			<option value="LINK_MODE_1">Display as direct link</option>
+			<option value="LINK_MODE_2">Display directly inside Joomla</option>
 		</param>
+   		<param name=" " type="helptext" default="ITEMID_DESC"/>
+		<param name="itemid" label="ITEMID" type="text" size="5" default="" description="ITEMID" />		
 	</params>
 </install>

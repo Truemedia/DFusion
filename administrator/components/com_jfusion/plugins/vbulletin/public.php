@@ -39,9 +39,6 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function & getBuffer($jPluginParam)
 	{
-     	//JError::raiseWarning(500, 'Frameless integration is not yet implemented for vBulletin.');
-		//return null;
-
 		// Get the path
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
@@ -343,10 +340,6 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
 	{
-	   //fix for URL redirects
-       //$url_search	= '#<meta http-equiv="Refresh" content="(.*?)"(.*?)>#mS';
-	   //$buffer = preg_replace_callback($url_search, 'fixRedirect', $buffer);
-
 		//we need to find and change the call to vb's yahoo connection file to our own customized one
 		//that adds the source url to the ajax calls
 		$yuiURL = JURI::base() . 'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname();
@@ -355,11 +348,6 @@ class JFusionPublic_vbulletin extends JFusionPublic{
         //convert relative links into absolute links
         $url_search = '#(src="|background="|href="|url\("|url\(\'?)(?!http)(.*?)("\)|\'?\)|")#mS';
 	    $buffer = preg_replace_callback($url_search, 'fixInclude', $buffer);
-
-		//now we need to do a little CSS cleanup to optimize frameless
-		//$buffer = preg_replace("!\b(body)\b!",'#framelessVb',$buffer);
-
-		//$css_search = '#\<style type="text\/css" id="vbulletin_css"\>(.*?)\<\/style\>#mS';
 
 	    $start = '<style type="text/css" id="vbulletin_css">';
 	    $end = '</style>';
@@ -373,12 +361,17 @@ class JFusionPublic_vbulletin extends JFusionPublic{
         	$newCss = fixCSS($css);
         	$buffer = str_replace($css,$newCss,$buffer);
         }
+	}
 
-		//$buffer = str_replace("td, th, p, li", "#framelessVb td, #framelessVb th, #framelessVb p, #framelessVb li",$buffer);
-		//$buffer = str_replace("td.thead, th.thead, div.thead","#framelessVb td.thead, #framelessVb th.thead, #framelessVb div.thead",$buffer);
-		//$buffer = str_replace("a:link, body_alink","#framelessVb a:link",$buffer);
-		//$buffer = str_replace("a:visited, body_avisited","#framelessVb a:visited, #framelessVb body_avisited",$buffer);
-		//$buffer = str_replace("a:hover, a:active, body_ahover","#framelessVb a:hover, #framelessVb a:active, #framlessVb body_ahover",$buffer);
+
+	/************************************************
+	 * For JFusion Search Plugin
+	 ***********************************************/
+
+	function cleanUpSearchText($text)
+	{
+		$text = JFusionFunction::parseCode("html",$text);
+		return $text;
 	}
 
 	function getSearchQueryColumns()
@@ -392,30 +385,13 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 	function getSearchQuery()
 	{
 		//need to return threadid, postid, title, text, created
-		$query = 'SELECT p.threadid, p.postid, p.title, p.pagetext AS text,
+		$query = 'SELECT p.threadid, p.postid, CASE WHEN p.title = "" THEN t.title ELSE p.title END AS title, p.pagetext AS text,
 					FROM_UNIXTIME(p.dateline, "%Y-%m-%d %h:%i:%s") AS created,
 					CONCAT_WS( "/", f.title, t.title ) AS section
 					FROM #__post AS p
 					INNER JOIN #__thread AS t ON p.threadid = t.threadid
 					INNER JOIN #__forum AS f on f.forumid = t.forumid';
 		return $query;
-	}
-
-	function cleanUpSearchText($text)
-	{
-		//TODO make more exhaustive
-		$pagetext = str_replace("[QUOTE]","", $text);
-		$pagetext = str_replace("[/QUOTE]","", $pagetext);
-		$pagetext = str_replace("[URL=","<a href=", $pagetext);
-		$pagetext = str_replace("[/URL]","</a>", $pagetext);
-		$pagetext = str_replace("]",">", $pagetext);
-		$pagetext = str_replace("[B>","<br /><br /><b>", $pagetext);
-		$pagetext = str_replace("[/B>","</b>", $pagetext);
-		$pagetext = str_replace("[IMG>","<img src=", $pagetext);
-		$pagetext = str_replace("[/IMG>","></img>", $pagetext);
-		$pagetext = str_replace("[br />","<br />", $pagetext);
-
-		return $pagetext;
 	}
 
 	function getSearchResultLink($post)

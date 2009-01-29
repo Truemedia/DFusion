@@ -191,7 +191,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		{
 			//create link
 			$forumText = $this->params->get("first_post_link_text");
-			$text = $this->prepareText(jFusionFunction::createJoomlaArticleURL($contentitem->id,$forumText));
+			$text = $this->prepareText(jFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
 		}
 		else
 		{

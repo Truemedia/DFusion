@@ -30,13 +30,25 @@ function &plgSearchjfusionAreas()
 	//get the softwares
 	$master = JFusionFunction::getMaster();
 	$slaves = JFusionFunction::getSlaves();
-
-	if($master->name!="joomla_int") $areas[$master->name] = $master->description;
+		
+	if($master->name!="joomla_int"){
+		//make sure that search is enabled
+		$public =& JFusionFactory::getPublic($master->name);
+		$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
+		if($searchEnabled){
+			$areas[$master->name] = ucwords($master->name);
+		}
+	}
 
 	foreach($slaves as $slave)
 	{
 		if($slave->name!="joomla_int") {
-			$areas[$slave->name] = $slave->description;
+			//make sure that search is enabled
+			$public =& JFusionFactory::getPublic($slave->name);
+			$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
+			if($searchEnabled){
+				$areas[$slave->name] = ucwords($slave->name);
+			}
 		}
 	}
 
@@ -66,33 +78,29 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 	$plugin =& JPluginHelper::getPlugin('search','jfusion');
 	$params = new JParameter( $plugin->params);
 	$linkMode = $params->get('link_mode','direct');
-
+	$itemid = $params->get('Itemid',false);
+	
 	foreach($searchPlugins AS $key => $jname)
 	{
 		//initialize plugin database
 		$db = & JFusionFactory::getDatabase($jname);
 		//load jfusion plugin search functions
-		$searchMe = JFusionFactory::getPublic($jname);
+		$searchMe =& JFusionFactory::getPublic($jname);
 		//get the query used to search
 		$query = $searchMe->getSearchQuery();
 
 		//only search if the query is not empty
-		if($query!="")
-		{
+		if($query!="") {
 			//assign specific table colums to title and text
 			$columns = $searchMe->getSearchQueryColumns();
 
 			//build the query
-			if($phrase == 'exact')
-			{
+			if($phrase == 'exact') {
 				$where = "(LOWER({$columns->title}) LIKE '%$text%') OR (LOWER({$columns->text}) like '%$text%')";
-			}
-			else
-			{
+			} else {
 				$words = explode (' ', $text);
 				$wheres = array();
-				foreach($words as $word)
-				{
+				foreach($words as $word) {
 					$wheres[] = "(LOWER({$columns->title}) LIKE '%$word%') OR (LOWER({$columns->text}) like '%$word%')";
 				}
 
@@ -109,12 +117,10 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 			$rows = array();
 
 			//load the results
-			if($results = $db->loadObjectList())
-			{
-				foreach($results as $result)
-				{
+			if($results = $db->loadObjectList()) {
+				foreach($results as $result) {
 					//add a link
-					$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode);
+					$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode,$itemid);
 					$result->href = $href;
 					//open link in same window
 					$result->browsernav = 2;
@@ -122,9 +128,7 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 					$result->text = $searchMe->cleanUpSearchText($result->text);
 				}
 				$rows[] = $results;
-			}
-			else
-			{
+			} else {
 				JError::raiseWarning(500, $db->stderr());
 				return null;
 			}
@@ -135,11 +139,9 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 	$searchResults = array();
 
 	//do we have any rows?
-	if(count($rows)>0)
-	{
+	if(count($rows)>0) {
 		//merge all the rows into one array
-		foreach($rows AS $r)
-		{
+		foreach($rows AS $r) {
 			$searchResults = array_merge($searchResults,$r);
 		}
 

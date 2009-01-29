@@ -85,6 +85,10 @@ class JFusionPublic{
         return '';
     }
 
+	/************************************************
+	 * Functions For JFusion Search Plugin
+	 ***********************************************/
+	   
      /**
      * Assigns specific db columns to title and text of content retrieved
      * @return object Db columns assigned to title and text of content retrieved
@@ -107,6 +111,16 @@ class JFusionPublic{
 	}
 
 	/**
+	 * Returns the URL for a post
+	 * @param $vars mixed 
+	 * @return string with URL
+	 */
+	function getSearchResultLink($vars)
+	{
+		return '';
+	}
+	
+	/**
 	 * Cleans up the text before presented to user; useful for removing BB code, etc
 	 * @param $text Text to be cleaned up
 	 * @return Cleaned up text
@@ -115,10 +129,4 @@ class JFusionPublic{
 	{
 		return $text;
 	}
-
-
-
 }
-
-
-

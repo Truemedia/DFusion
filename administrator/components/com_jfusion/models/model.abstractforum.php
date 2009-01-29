@@ -17,43 +17,6 @@ defined('_JEXEC' ) or die('Restricted access' );
 */
 class JFusionForum
 {
-	 /**
-     * Checks to see if a thread already exists for the content item and calls the appropriate function
-     *
-     * @param object $contentitem object containing content information
-     * @return array Returns status of actions with errors if any
-     */
-	function checkThreadExists($contentitem)
-	{
-	    $status = array();
-        $status['debug'] = array();
-        $status['error'] = array();
-
-        return $status;
-	}
-
-    /**
-     * Retrieves the default forum based on section/category stipulations or default set in the plugins config
-     *
-     * @param object $contentitem object containing content information
-     * @return int Returns id number of the forum
-     */
-	function getDefaultForum($contentitem)
-	{
-		return 0;
-	}
-
-    /**
-     * Retrieves thread information
-     *
-     * @param int Id of specific thread
-     * @return object Returns object with thread information
-     */
-    function &getThread($contentid)
-    {
-		return new stdObject();
-    }
-
      /**
      * returns the name of this JFusion plugin
      * @return string name of current JFusion plugin
@@ -141,6 +104,47 @@ class JFusionForum
     }
 
 
+    /************************************************
+	 * Functions For JFusion Discussion Bot Plugin
+	 ***********************************************/
+    
+    /**
+     * Checks to see if a thread already exists for the content item and calls the appropriate function
+     *
+     * @param object $contentitem object containing content information
+     * @return array Returns status of actions with errors if any
+     */
+	function checkThreadExists($contentitem)
+	{
+	    $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+        return $status;
+	}
+
+    /**
+     * Retrieves the default forum based on section/category stipulations or default set in the plugins config
+     *
+     * @param object $contentitem object containing content information
+     * @return int Returns id number of the forum
+     */
+	function getDefaultForum($contentitem)
+	{
+		return 0;
+	}
+
+    /**
+     * Retrieves thread information
+     *
+     * @param int Id of specific thread
+     * @return object Returns object with thread information
+     */
+    function &getThread($contentid)
+    {
+		return new stdClass();
+    }
+    
      /**
      * Creates new thread and posts first post
      * @param object $contentitem object containing content information
@@ -171,7 +175,15 @@ class JFusionForum
      */
 	function prepareText($text)
 	{
-		return '';
+		//first thing is to remove all joomla plugins
+		preg_match_all('/\{(.*)\}/U',$text,$matches);
+
+		//find each thread by the id
+		foreach($matches[1] AS $plugin) {
+			//replace plugin with nothing
+			$text = str_replace('{'.$plugin.'}',"",$text);
+		}
+		return $text;
 	}
 
 	/**
@@ -210,5 +222,14 @@ class JFusionForum
 	function getPosts($threadid,$postid)
 	{
 		return array();
+	}
+	
+	/**
+	 * Returns HTML of a quick reply
+	 * @return string of html
+	 */
+	function createQuickReply()
+	{
+		return '';
 	}
 }

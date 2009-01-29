@@ -268,7 +268,7 @@ class JFusionFunction{
 * @return string full URL to the filename passed to this function
 */
 
-    function createURL($url, $jname, $view, $itemid)
+    function createURL($url, $jname, $view, $itemid='')
     {
     	if(!empty($itemid)){
             //use the itemid only to identify plugin name and view type
@@ -496,10 +496,32 @@ class JFusionFunction{
 	    }
     }
 
-    function createJoomlaArticleURL($contentid,$text)
+    function createJoomlaArticleURL(&$contentitem,$text)
     {
-		$link = JRoute::_('index.php?option=com_content&view=article&id=' . $contentid);
+    	//jimport('joomla.application.component.controller');
+    	$itemid = ContentHelper::getItemid($contentitem->id, $contentitem->catid, $contentitem->sectionid);
+		$link = JRoute::_('index.php?option=com_content&view=article&id=' . $contentid.'&Itemid='.$itemid);
 		$link = "<a href='$link'>$text</a>";
 		return $link;
+    }
+    
+    function parseCode($to='bbcode',$text)
+    {
+    	
+    	global $smiley_folder, $cb_guide_path, $use_pajamas, $prevent_spam, $spammer_strings, $spammer_agents,  $prevent_xss, $cb_ref_title;
+    	include_once('cbparser/cbparser.php');
+    	if($to=="bbcode") {
+   			$converted = html2bb($text);
+	
+    	} elseif($to=="html") {
+    		$converted = bb2html($text);
+    	}
+    	
+		if ($converted == ''){
+			JError::raiseWarning(500, JText::_('CODE_PARSE_ERROR'));
+			$converted = $text;
+		}
+
+		return $converted;
     }
 }

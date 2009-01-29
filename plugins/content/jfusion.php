@@ -52,36 +52,122 @@ class plgContentJfusion extends JPlugin
 
 	        foreach($plugins as $plugin)
 	        {
-				$jname = $plugin->name;
-	            //get the params
-    	        $params = JFusionFactory::getParams($jname);
-	        	$discussBot = $params->get("enable_discussbot",false);
+				$jname =& $plugin->name;
+				if (JFusionFunction::validPlugin($jname))
+				{
+		            //get the params
+	    	        $params =& JFusionFactory::getParams($jname);
+		        	$discussBot =& $params->get("enable_discussbot",false);
 
-    	        if($discussBot)
-    	        {
-    	        	//setup parameters
-    	        	$linkMode = $params->get("link_mode");
-		        	$linkText = $params->get("link_text");
-	   	        	$auto = $params->get("auto_create");
-	   	        	$css = array();
-					$css['threadLink'] = $params->get("cssClassThreadLink");
-					$css['postArea'] = $params->get("cssClassPostArea");
-					$css['postHeader'] = $params->get("cssClassPostHeader");
-					$css['postBody'] = $params->get("cssClassPostBody");
-					$css['postTitle'] = $params->get("cssClassPostTitle");
-					$css['postUser'] = $params->get("cssClassPostUser");
-					$css['userAvatar'] = $params->get("cssClassUserAvatar");
-					$css['postDate'] = $params->get("cssClassPostDate");
-					$css['postText'] = $params->get("cssClassPostText");
+	    	        if($discussBot)
+	    	        {
+	    	        	//get the jfusion forum object
+	        			$JFusionPlugin =& JFusionFactory::getForum($jname);
+	        			//get the Joomla user object
+	        			$JoomlaUser =& JFactory::getUser();
 
-    	            //now check to see if the plugin is configured
-				    $jdb =& JFactory::getDBO();
-				    $query = 'SELECT status from #__jfusion WHERE name = ' . $jdb->Quote($jname);
-				    $jdb->setQuery($query );
+	    	        	//first process any submitted quick replies
+	    	        	if(!$JoomlaUser->guest && JRequest::getVar('jfusionForm'.$contentitem->id, false, 'POST') && $params->get("enable_quickreply",false))
+	    	        	{
+	    	        		//get the threadid from the lookup table
+	    	        		$db =& JFactory::getDBO();
+	    	        		$query = 'SELECT threadid FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentitem->id . ' AND jname = ' . $db->Quote($jname);
+        					$db->setQuery($query);
+        					$threadid = $db->loadResult();
+        					//create the post if a threadid is found otherwise return an error
+        					if($threadid){
+        						//retrieve the userid from forum software
+        						$JFusionUser = JFusionFactory::getUser($jname);
+        						$userinfo = $JFusionUser->getUser($JoomlaUser->username);
 
-				    if ($jdb->loadResult() == 3)
-				    {
-        				$forum = JFusionFactory::getForum($jname);
+        						$status = $JFusionPlugin->createPost($threadid,$contentitem->id,$userinfo);
+        						if($status['error']){
+        							JFusionFunction::raiseWarning($jname . ' ' . JTEXT::_('DISCUSS_BOT_ERROR'), $status['error'],1);
+        						}
+        					} else {
+        						JError::raiseWarning($jname . ' ' . JTEXT::_('DISCUSS_BOT_ERROR'), JText::_('THREADID_NOT_FOUND'));
+        					}
+	    	        	}
+
+	    	        	//setup parameters
+	    	        	$linkMode =& $params->get("link_mode");
+			        	$linkText =& $params->get("link_text");
+		   	        	$auto =& $params->get("auto_create");
+		   	        	$css = array();
+						$css['threadLink'] = $params->get("cssClassThreadLink");
+						$css['postArea'] = $params->get("cssClassPostArea");
+						$css['postHeader'] = $params->get("cssClassPostHeader");
+						$css['postBody'] = $params->get("cssClassPostBody");
+						$css['postTitle'] = $params->get("cssClassPostTitle");
+						$css['postUser'] = $params->get("cssClassPostUser");
+						$css['userAvatar'] = $params->get("cssClassUserAvatar");
+						$css['postDate'] = $params->get("cssClassPostDate");
+						$css['postText'] = $params->get("cssClassPostText");
+						$css['quickReply'] = $params->get("cssClassQuickReply");
+
+						$empty = false;
+						foreach ($css AS $k => $v)
+						{
+							if(empty($v)){
+								$empty = true;
+								$css[$k] = "jfDb" . ucfirst($k);
+							}
+						}
+
+						if($empty) {
+
+							$defaultCSS = "
+								<style type=\"text/css\">
+
+								.jfDbThreadLink{
+									font-size:12px;
+									margin:5px;
+								}
+								.jfDbPostArea{
+									width:100%;
+									margin:10px;
+
+								}
+								.jfDbPostHeader{
+									font-size:11px;
+									color:#000000;
+									font-weight:bold;
+								}
+								.jfDbPostBody{
+									border:1px solid #eee;
+									min-height: 90px;
+								}
+								.jfDbPostTitle{
+									color:#000000;
+									float:left;
+									margin-right:4px;
+								}
+								.jfDbPostUser{
+
+								}
+								.jfDbUserAvatar{
+									float:left;
+									margin-right:5px;
+								}
+								.jfDbPostDate{
+									font-size:9px;
+								}
+								.jfDbPostText{
+									margin-top:5px;
+								}
+
+								.jfDbQuickReply textarea{
+									width:400px;
+									height: 100px;
+								}
+
+								.jfDbQuickReply .inputbox{
+									width:400px;
+								}
+								</style>";
+							$document =& JFactory::getDocument();
+							$document->addCustomTag($defaultCSS);
+						}
 
         				//create the thread if set to auto generate but only if the content is published
 	    	        	if($auto && $contentitem->state)
@@ -96,21 +182,21 @@ class plgContentJfusion extends JPlugin
 							if($forumid || $sectionPairs || $categoryPairs)
 							{
 		    					//check to see if there are sections/categories that are specifically included/excluded
-		    					$sections = $params->get("include_sections");
+		    					$sections =& $params->get("include_sections");
 								$includeSections = empty($sections) ? false : explode(",",$sections);
 
-								$categories = $params->get("include_categories");
+								$categories =& $params->get("include_categories");
 								$includeCategories = empty($categories) ? false : explode(",",$categories);
 
-								$sections = $params->get("exclude_sections");
+								$sections =& $params->get("exclude_sections");
 								$excludeSections = empty($sections) ? false : explode(",",$sections);
 
-								$categories = $params->get("exclude_categories");
+								$categories =& $params->get("exclude_categories");
 								$excludeCategories = empty($categories) ? false : explode(",",$categories);
 
 								//section and category id of content
-								$secid = $contentitem->sectionid;
-								$catid = $contentitem->catid;
+								$secid =& $contentitem->sectionid;
+								$catid =& $contentitem->catid;
 
 								//there are section stipulations on what articles to include
 								if($includeSections)
@@ -156,28 +242,49 @@ class plgContentJfusion extends JPlugin
 	    	        		//generate the thread/post if article meets criteria above
 	    	        		if($generate)
 	    	        		{
-	      	      				$JFusionPlugin = JFusionFactory::getForum($jname);
-	            	    		$PluginThread = $JFusionPlugin->checkThreadExists($contentitem);
+	            	    		$status = $JFusionPlugin->checkThreadExists($contentitem);
 
-	                			if ($PluginThread['error']) {
-	                    			JFusionFunction::raiseWarning($plugin->name . ' ' .JText::_('FORUM') . ' ' .JText::_('UPDATE'), $PluginThread['error'],1);
+	                			if ($status['error']) {
+	                    			JFusionFunction::raiseWarning($plugin->name . ' ' .JText::_('FORUM') . ' ' .JText::_('UPDATE'), $status['error'],1);
 		                		}
 
 		                		//get the ID of the thread
-		                		$existingthread = $JFusionPlugin->getThread($contentitem->id);
-		                		$threadid = $existingthread->threadid;
+		                		$existingthread =& $JFusionPlugin->getThread($contentitem->id);
+		                		$threadid =& $existingthread->threadid;
 
-								$urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($threadid), $jname, $linkMode);
+								$urlstring_pre = JFusionFunction::createURL($JFusionPlugin->getThreadURL($threadid), $jname, $linkMode);
 			                    $urlstring = '<div class="'.$css['threadLink'].'"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
 
 								//add link to content
 			                    $contentitem->text = $contentitem->text . $urlstring;
 
+			                    //prepare quick reply box if enabled
+			                    if($params->get("enable_quickreply") && !$JoomlaUser->guest) {
+			                    	$replyForm .= "<form name='jfusionQuickReply{$contentitem->id}' method=post action='".JRoute::_(JURI::base().'index.php')."'>\n";
+			                    	$replyForm .= "<input type=hidden name='jfusionForm{$contentitem->id}' value='1'>\n";
+			                    } else {
+			                    	$replyForm = false;
+			                    }
+
 			                    //add posts to content if enabled
 			                    if($params->get("show_posts"))
 			                    {
-									$tableOfPosts = $JFusionPlugin->createPostTable($existingthread,$css);
+			                    	$tableOfPosts  = "<div class='{$css["postArea"]}'> \n";
+
+			                    	if($replyForm && $params->get("quickreply_location")=="above") {
+			                    		$tableOfPosts .= "<div class='{$css["quickReply"]}'>\n". $replyForm . $JFusionPlugin->createQuickReply()."</form>\n</div>\n";
+			                    	}
+
+									$tableOfPosts .= $JFusionPlugin->createPostTable($existingthread,$css);
+
+									if($replyForm && $params->get("quickreply_location")=="below"){
+										$tableOfPosts .= "<div class='{$css["quickReply"]}'>\n". $replyForm . $JFusionPlugin->createQuickReply()."</form>\n</div>\n";
+									}
+									$tableOfPosts .= "</div> \n";
 									$contentitem->text = $contentitem->text . $tableOfPosts;
+			                    } elseif($replyForm){
+			                    	$quickReply = "<div class='{$css["quickReply"]}'>\n". $replyForm . $JFusionPlugin->createQuickReply()."</form>\n</div>\n";
+			                    	$contentitem->text = $contentitem->text . $quickReply;
 			                    }
 	    	        		}
 
@@ -188,7 +295,7 @@ class plgContentJfusion extends JPlugin
 		    	        	 foreach($matches[1] AS $id)
 		    	        	 {
 								//create the url string
-		                        $urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($id), $jname, $linkMode);
+		                        $urlstring_pre = JFusionFunction::createURL($JFusionPlugin->getThreadURL($id), $jname, $linkMode);
 		                        $urlstring = '<div class="'.$css["threadLink"].'"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
 
 		                        //replace plugin with link
@@ -204,7 +311,7 @@ class plgContentJfusion extends JPlugin
 		    	        	 foreach($matches[1] AS $id)
 		    	        	 {
 								//create the url string
-		                        $urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($id), $jname, $linkMode);
+		                        $urlstring_pre = JFusionFunction::createURL($JFusionPlugin->getThreadURL($id), $jname, $linkMode);
 		                        $urlstring = '<div class="'.$css["threadLink"].'"><a href="'. $urlstring_pre . '" target="' . $new_window . '">' . $linkText . '</a></div>';
 
 		                        //replace plugin with link
