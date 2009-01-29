@@ -165,9 +165,16 @@ class JFusionJplugin{
         $status['error'] = '';
        	$status['debug'] = '';
         $cookies_to_set_index = 0;
-
         $params = JFusionFactory::getParams($jname);
-		$curl_options['post_url']			= $params->get('source_url').$params->get('login_url');
+
+		$source_url = $params->get('source_url');
+        #prevent usererror by not supplying trailing backslash
+        if (!(substr($source_url,-1) == "/")) {
+           $source_url = $source_url."/";
+        }
+		
+
+		$curl_options['post_url']			= $source_url.$params->get('login_url');
 		$curl_options['formid']				= $params->get('loginform_id');
 		$curl_options['username']			= $userinfo->username;
 		$curl_options['password']			= $userinfo->password_clear;

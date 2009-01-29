@@ -536,9 +536,9 @@ class JFusionCurl{
         }
 
         # prevent usererror by not supplying trailing backslash
-        if (!(substr($curl_options['post_url'],-1) == "/")) {
-           $curl_options['post_url'] = $curl_options['post_url']."/";
-        }
+#        if (!(substr($curl_options['post_url'],-1) == "/")) {
+#           $curl_options['post_url'] = $curl_options['post_url']."/";
+#        }
 		$status['debug'][] = JText::_('CURL_POST_URL_1')." ".$curl_options['post_url'];
 		
 
@@ -631,14 +631,22 @@ class JFusionCurl{
 
         $input_username_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
-        	if (strpos(strtolower($elements_keys[$i]),'user')!==false){$input_username_name=$elements_keys[$i];break;}
-          	if (strpos(strtolower($elements_keys[$i]),'name')!==false){$input_username_name=$elements_keys[$i];break;}
-          	if ($curl_options['input_username_id']) {
-          		if (strpos(strtolower($elements_keys[$i]),strtolower($curl_options['input_username_id']))!==false){
-                 	$input_username_name=$elements_keys[$i];break;
-               	}
-           	}
+            if ($curl_options['input_username_id']) {
+                if (strtolower($elements_keys[$i]) == strtolower($curl_options['input_username_id'])){
+                $input_username_name=$elements_keys[$i];
+                break;
+              }
+            }  
+            if (strpos(strtolower($elements_keys[$i]),'user')!==false){
+                $input_username_name=$elements_keys[$i];
+                break;
+            }
+            if (strpos(strtolower($elements_keys[$i]),'name')!==false){
+                $input_username_name=$elements_keys[$i];
+                break;
+            }
         }
+ 
         if ($input_username_name==""){
          	$status['error'][] = JText::_('CURL_NO_NAMEFIELD');
              return $status;
@@ -646,13 +654,17 @@ class JFusionCurl{
 
         $input_password_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
-            if (strpos(strtolower($elements_keys[$i]),'pass')!==false){$input_password_name=$elements_keys[$i];break;}
-        	if ($curl_options['input_password_id']) {
-           		if (strpos(strtolower($elements_keys[$i]),strtolower($curl_options['input_password_id']))!==false){
-             		$input_password_name=$elements_keys[$i];break;
-           		}
-         	}
+            if ($curl_options['input_password_id']) {
+             if (strtolower($elements_keys[$i]) == strtolower($curl_options['input_password_id'])){
+                $input_password_name=$elements_keys[$i];
+                break;
+              }
+            }  
+            if (strpos(strtolower($elements_keys[$i]),'pass')!==false){
+                $input_password_name=$elements_keys[$i];
+            }
         }
+
 
         if ($input_password_name==""){
         	$status['error'][] = JText::_('CURL_NO_PASSWORDFIELD');
