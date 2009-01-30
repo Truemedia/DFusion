@@ -48,11 +48,13 @@ case $1 in
 
 		cd $FULLPATH
 		zip -r $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_search.zip plugins/search -x *.svn* > /dev/null
+		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_search.zip administrator/language/en-GB/en-GB.plg_search_jfusion.ini -x *.svn* > /dev/null
 		cd $FULLPATH/plugins/search/
 		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_search.zip jfusion.xml -x *.svn* > /dev/null
 
 		cd $FULLPATH
 		zip -r $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_content.zip plugins/content -x *.svn* > /dev/null
+		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_content.zip administrator/language/en-GB/en-GB.plg_content_jfusion.ini -x *.svn* > /dev/null
 		cd $FULLPATH/plugins/content/
 		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_content.zip jfusion.xml -x *.svn* > /dev/null
 

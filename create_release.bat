@@ -17,9 +17,11 @@ wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_user.zip p
 
 wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_search.zip plugins/search
 wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_search.zip plugins/search/jfusion.xml
+wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_search.zip administrator/language/en-GB/en-GB.plg_search_jfusion.ini
 
 wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_content.zip plugins/content
 wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_content.zip plugins/content/jfusion.xml
+wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_content.zip administrator/language/en-GB/en-GB.plg_content_jfusion.ini
 
 REM create the new master package
 wzzip -rP jfusion_package.zip administrator components language/en-GB/en-GB.com_jfusion.ini README.htm
