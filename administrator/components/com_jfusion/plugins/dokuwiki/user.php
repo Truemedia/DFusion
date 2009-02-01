@@ -27,7 +27,7 @@ class JFusionUser_dokuwiki extends JFusionUser {
     function updateUser($userinfo, $overwrite)
     {
         // Initialise some variables
-        $db = & JFusionFactory::getDatabase($this->getJname());
+        //$db = & JFusionFactory::getDatabase($this->getJname());
         $params = JFusionFactory::getParams($this->getJname());
         $share = Dokuwiki::getInstance();
 
