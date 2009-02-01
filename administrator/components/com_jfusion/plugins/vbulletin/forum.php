@@ -224,6 +224,11 @@ class JFusionForum_vbulletin extends JFusionForum
 		}
 	}
 
+	function createPost($threadid, $contentitemId, $userinfo)
+	{
+		
+	}
+	
 	function updateThread($threadid,$postid,$contentitem,&$status)
 	{
 		//initialize the vb framework
@@ -239,7 +244,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		{
 			//create link
 			$forumText = $this->params->get("first_post_link_text");
-			$text = $this->prepareText(jFusionFunction::createJoomlaArticleURL($contentitem->id,$forumText));
+			$text = $this->prepareText(jFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
 		}
 		else
 		{
@@ -280,19 +285,13 @@ class JFusionForum_vbulletin extends JFusionForum
 		preg_match_all('/\{(.*)\}/U',$text,$matches);
 
 		//find each thread by the id
-		foreach($matches[1] AS $plugin)
-		{
+		foreach($matches[1] AS $plugin) {
 			//replace plugin with nothing
-			$text = str_replace("{$plugin}","",$text);
+			$text = str_replace('{'.$plugin.'}',"",$text);
 		}
 
-		//for vbulletin we need to convert html to bbcode
-		$allowhtml = false;
-		$p_two_linebreak = true;
-
-		require_once(CWD . '/includes/functions_wysiwyg.php');
-		$parsed_text = convert_wysiwyg_html_to_bbcode($text, $allowhtml, $p_two_linebreak);
-		return $parsed_text;
+		$text = JFusionFunction::parseCode("bbcode",$text);
+		return $text;
 	}
 
 	function getPosts($threadid,$postid)
@@ -314,27 +313,24 @@ class JFusionForum_vbulletin extends JFusionForum
 		return $posts;
 	}
 
-	function createPostTable(&$existingthread, &$css)
+	function createPostTable(&$existingthread, &$posts, &$css, &$params)
 	{
 		//get required params
 		defined('_DATE_FORMAT_LC2') or define('_DATE_FORMAT_LC2','%A, %d %B %Y %H:%M');
-		$date_format = $this->params->get('custom_date', _DATE_FORMAT_LC2);
-		$tz_offset = intval($this->params->get('tz_offset'));
-		$showdate = intval($this->params->get('show_date'));
-		$showuser = intval($this->params->get('show_user'));
-		$showavatar = $this->params->get("show_avatar");
-		$userlink = intval($this->params->get('user_link'));
-		$linkMode = $this->params->get("link_mode");
+		$date_format = $params->get('custom_date', _DATE_FORMAT_LC2);
+		$tz_offset = intval($params->get('tz_offset'));
+		$showdate = intval($params->get('show_date'));
+		$showuser = intval($params->get('show_user'));
+		$showavatar = $params->get("show_avatar");
+		$userlink = intval($params->get('user_link'));
+		$linkMode = $params->get("link_mode");
+		$itemid = $params->get("itemid");
 		$jname = $this->getJname();
 		$forum = JFusionFactory::getForum($jname);
-		$header = $this->params->get("post_header");
+		$header = $params->get("post_header");
 
 		if($showdate && $showuser) $colspan = 2;
 		else $colspan = 1;
-
-		//get the posts
-		$posts = $this->getPosts($existingthread->threadid,$existingthread->postid);
-
 
 		$table .= "<div class='{$css["postArea"]}'> \n";
 		$table  = "<div class='{$css["postHeader"]}'>$header</div>\n";
@@ -359,7 +355,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			$table .= $avatar;
 
 			//post title
-			$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($p->threadid,$p->postid), $jname, $linkMode);
+			$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($p->threadid,$p->postid), $jname, $linkMode, $itemid);
 			$title = '<a href="'. $urlstring_pre . '">'. $p->title .'</a>';
 			$table .= "<div class = '{$css["postTitle"]}'>{$title}</div>\n";
 

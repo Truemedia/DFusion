@@ -61,16 +61,16 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	  PRIMARY KEY  (id)
 	);
 
-	INSERT INTO #__jfusion  (name , params,  slave, dual_login, status, check_encryption, activity) VALUES
-	('joomla_int', 0, 0, 0, 3, 0, 0),
-	('joomla_ext', 0, 3, 3, 0, 0, 0),
-	('vbulletin',  0, 0, 0, 0, 0, 1),
-	('phpbb3', 0, 0, 0, 0, 0, 1),
-	('smf', 0, 0, 0, 0, 0, 1),
-	('mybb', 0, 0, 0, 0, 0, 1),
-	('magento', 0, 0, 0, 0, 0, 3),
-	('moodle', 0, 0, 0, 0, 0, 3),
-	('gallery2', 0, 0, 0, 0, 0, 1);
+	INSERT INTO #__jfusion  (name , params,  slave, dual_login, status, check_encryption, activity, search, discussion) VALUES
+	('joomla_int', 0, 0, 0, 3, 0, 0, 0, 0),
+	('joomla_ext', 0, 3, 3, 0, 0, 0, 0, 0),
+	('vbulletin',  0, 0, 0, 0, 0, 1, 1, 1),
+	('phpbb3', 0, 0, 0, 0, 0, 1, 1, 1),
+	('smf', 0, 0, 0, 0, 0, 1, 0, 0),
+	('mybb', 0, 0, 0, 0, 0, 1, 0, 0),
+	('magento', 0, 0, 0, 0, 0, 3, 0, 0),
+	('moodle', 0, 0, 0, 0, 0, 3, 0, 0),
+	('gallery2', 0, 0, 0, 0, 0, 1, 0, 0);
 	";
 	$db->setQuery($batch_query);
 	if (!$db->queryBatch()){

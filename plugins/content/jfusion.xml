@@ -8,7 +8,7 @@
 	<authorUrl>http://www.jfusion.org</authorUrl>
 	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<version>1.1.0</version>
+	<version>1.1.2</version>
 	<description>
 		This is a discussion bot plugin for jFusion. Compatible plugins will have discussion bot settings available in their
 		configuration page.  To use for a single article place {jfusion_discuss id#} where id# is the id
@@ -25,29 +25,37 @@
 	</languages>
 	
 	<params addpath="/administrator/components/com_jfusion/elements">
-
+		<param name="jname" type="JFusionActiveDiscussionEnabledPlugins" default="" label="JFUSION_PLUGIN" description="JFUSION_PLUGIN_DESC" />
+			
 		<param name=" " type="helptext" label="" default="DISCUSSBOT_GENERAL_DESC"/>
-		<param name="enable_discussbot" type="list" default="0" label="ENABLE_DISCUSSBOT" description="ENABLE_DISCUSSBOT_DESC">
-			<option value="1">YES</option>
-			<option value="0">NO</option>
-		</param>
+
 		<param name="link_mode" type="list" default="direct" label="" description="LINK_MODE_DESCR">
 			<option value="wrapper">LINK_MODE_0</option>
 			<option value="direct">LINK_MODE_1</option>
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
+		<param name="itemid" type="JFusionMenuItems" default='' label='ITEMID' description='ITEMID_DESCR' />
 		<param name="link_text" type="text" size="20" default="" label="DISCUSSBOT_LINK_TEXT" description="DISCUSSBOT_LINK_TEXT_DESC" />
-
 		<param name=" " type="helptext" label="" default="DISCUSSBOT_POST_SETUP_DESC"/>
 		<param name="show_posts" type="list" default="0" label="SHOW_POSTS" description="SHOW_POSTS_DESC">
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
 		<param name="post_header" type="text" size="20" default="" label="POST_HEADER" description="POST_HEADER_DESC" />
+		<param name="no_posts_msg" type="text" size="20" default="" label="NO_POSTS_MSG" description="NO_POSTS_MSG_DESC" />
 		<param name="limit_posts" type="text" size="20" default="5" label="LIMIT_POSTS" description="LIMIT_POSTS_DESC" />
 		<param name="sort_posts" type="list" default="DESC" label="SORT_POSTS" description="SORT_POSTS_DESC">
 			<option value="DESC">NEWEST_TO_OLDEST</option>
 			<option value="ASC">OLDEST_TO_NEWEST</option>
+		</param>
+		<param name="enable_quickreply" type="list" default="0" label="SHOW_QUICKREPLY" description="SHOW_QUICKREPLY_DESC">
+			<option value="1">YES</option>
+			<option value="0">NO</option>
+		</param>
+		<param name="quick_reply_header" type="text" size="20" default="" label="QUICKREPLY_HEADER" description="QUICKREPLY_HEADER_DESC" />		
+		<param name="quickreply_location" type="list" default="below" label="QUICKREPLY_LOCATION" description="QUICKREPLY_LOCATION_DESC">
+			<option value="above">ABOVE</option>
+			<option value="below">BELOW</option>
 		</param>
 		<param name="body_limit" type="text" size="20" default="" label="BODY_LIMIT" description="BODY_LIMIT_DESC" />
 		<param name="show_date" type="list" default="1" label="SHOW_DATE" description="SHOW_DATE_DESC">
@@ -75,10 +83,14 @@
 		<param name="cssClassPostHeader" type="text" size="20" default="" label="CSS_POST_HEADER" description="CSS_POST_HEADER_DESC" />
 		<param name="cssClassPostBody" type="text" size="20" default="" label="CSS_POST_BODY" description="CSS_POST_BODY_DESC" />
 		<param name="cssClassPostTitle" type="text" size="20" default="" label="CSS_POST_TITLE" description="CSS_POST_TITLE_DESC" />
+		<param name="cssClassNoPostMsg" type="text" size="20" default="" label="CSS_NO_POST_MSG" description="CSS_NO_POST_MSG_DESC" />
 		<param name="cssClassPostUser" type="text" size="20" default="" label="CSS_POST_USER" description="CSS_POST_USER_DESC" />
 		<param name="cssClassUserAvatar" type="text" size="20" default="" label="CSS_USER_AVATAR" description="CSS_USER_AVATAR_DESC" />
 		<param name="cssClassPostDate" type="text" size="20" default="" label="CSS_POST_DATE" description="CSS_POST_DATE_DESC" />
 		<param name="cssClassPostText" type="text" size="20" default="" label="CSS_POST_TEXT" description="CSS_POST_TEXT_DESC" />
+		<param name="cssClassPostText" type="text" size="20" default="" label="CSS_POST_TEXT" description="CSS_POST_TEXT_DESC" />
+		<param name="cssClasQuickReply" type="text" size="20" default="" label="CSS_QUICKREPLY" description="CSS_QUICKREPLY_DESC" />
+		<param name="cssClasQuickReplyHeader" type="text" size="20" default="" label="CSS_QUICKREPLY_HEADER" description="CSS_QUICKREPLY_HEADER_DESC" />		
 
 		<param name=" " type="helptext" label="" default="DISCUSSBOT_AUTO_DESC"/>
 		<param name="auto_create" type="list" default="0" label="AUTO_CREATE" description="AUTO_CREATE_DESC">
@@ -91,7 +103,7 @@
 		<param name="exclude_categories" type="text" size="20" default="" label="EXCLUDE_CATEGORIES" description="EXCLUDE_CATEGORIES_DESC" />
 		<param name="pair_sections" type="text" size="20" default="" label="PAIR_SECTIONS" description="PAIR_SECTIONS_DESC" />
 		<param name="pair_categories" type="text" size="20" default="" label="PAIR_CATEGORIES" description="PAIR_CATEGORIES_DESC" />
-		<param name="default_forum" type="ForumListDiscussbot" description="DEFAULT_FORUM" label="DEFAULT_FORUM" />
+		<param name="default_forum" type="ForumListDiscussionbot" description="DEFAULT_FORUM" label="DEFAULT_FORUM" />
 		<param name="default_userid" type="text" default="1" description="DEFAULT_FORUM_USERID_DESC" label="DEFAULT_FORUM_USERID" />
 		<param name="first_post" type="list" default="articleLink" label="" description="FIRST_POST">
 			<option value="articleLink">FIRST_POST_LINK</option>

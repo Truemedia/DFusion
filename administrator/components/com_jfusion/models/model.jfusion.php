@@ -57,22 +57,37 @@ class JFusionFunction{
     }
 
     /**
-* Returns the JFusion plugin name of the software that is currently the slave of user management, minus the joomla_int plugin
+* By default, returns the JFusion plugin of the software that is currently the slave of user management, minus the joomla_int plugin.  
+* If activity, search, or discussion is passed in, returns the plugins with that feature enabled
 * @param array $jname Array list of slave JFusion plugin names
 */
 
-    function getPlugins()
+    function getPlugins($criteria = 'slaves')
     {
-        static $jfusion_plugins;
-        if (!isset($jfusion_plugins )) {
-	        $db = & JFactory::getDBO();
-    	    $query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
-	        $db->setQuery($query );
-    	    $jfusion_plugins = $db->loadObjectList();
-        }
-        return $jfusion_plugins;
+    	if($criteria = 'slaves') {
+	        static $jfusion_plugins;
+	        if (!isset($jfusion_plugins )) {
+		        $db = & JFactory::getDBO();
+	    	    $query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
+		        $db->setQuery($query );
+	    	    $jfusion_plugins = $db->loadObjectList();
+	        }
+	        return $jfusion_plugins;
+    	} else {
+    		if( $criteria = 'activity') {
+   				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND activity = 1 AND name NOT LIKE \'joomla_int\')';
+	    	} elseif( $criteria = 'search') {
+	    		$query = 'SELECT * from #__jfusion WHERE (status = 1 AND search = 1 AND name NOT LIKE \'joomla_int\')';
+	    	} elseif( $criteria = 'discussion') {
+				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND discussion = 1 AND name NOT LIKE \'joomla_int\')';
+	    	}
+	    	
+			$db = & JFactory::getDBO();
+			$db->setQuery($query );
+			$jfusion_plugins = $db->loadObjectList();
+    	}
     }
-
+    
     /**
 * Returns the parameters of a specific JFusion integration
 * @param string $jname name of the JFusion plugin used
@@ -465,6 +480,13 @@ class JFusionFunction{
 
     }
 
+    /**
+     * Updates the forum lookup table
+     * @param $contentid
+     * @param $threadid
+     * @param $postid
+     * @param $jname
+     */
     function updateForumLookup($contentid, $threadid, $postid, $jname)
     {
         $db =& JFactory::getDBO();
@@ -496,6 +518,12 @@ class JFusionFunction{
 	    }
     }
 
+    /**
+     * Creates the URL of a Joomla article
+     * @param $contentitem
+     * @param $text string to place as the link
+     * @return link
+     */
     function createJoomlaArticleURL(&$contentitem,$text)
     {
     	//jimport('joomla.application.component.controller');
@@ -505,9 +533,14 @@ class JFusionFunction{
 		return $link;
     }
     
+    /**
+     * Pasrses text from bbcode to html or html to bbcode using cbparser
+     * @param $to string with what to conver the text to; bbcode or html
+     * @param $text
+     * @return string with converted text
+     */
     function parseCode($to='bbcode',$text)
-    {
-    	
+    {    	
     	global $smiley_folder, $cb_guide_path, $use_pajamas, $prevent_spam, $spammer_strings, $spammer_agents,  $prevent_xss, $cb_ref_title;
     	include_once('cbparser/cbparser.php');
     	if($to=="bbcode") {

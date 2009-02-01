@@ -8,7 +8,7 @@
 	<authorUrl>http://www.jfusion.org</authorUrl>
 	<copyright>Copyright (C) 2008 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<version>1.1.0</version>
+	<version>1.1.2</version>
 	<description>Search content of jFusion plugins.</description>
 	<files folder="plugins/search">
 		<filename plugin="jfusion">jfusion.php</filename>
@@ -19,12 +19,11 @@
 	</languages>
 	
 	<params addpath="/administrator/components/com_jfusion/elements">
-		<param name="link_mode" type="list" default="direct" label="LINK_MODE" description="LINK_MODE_DESC">
-			<option value="LINK_MODE_0">Display in wrapper</option>
-			<option value="LINK_MODE_1">Display as direct link</option>
-			<option value="LINK_MODE_2">Display directly inside Joomla</option>
-		</param>
-   		<param name=" " type="helptext" default="ITEMID_DESC"/>
-		<param name="itemid" label="ITEMID" type="text" size="5" default="" description="ITEMID" />		
+		<param name="JFusionPluginParam" type="JFusionAdvancedParam" default=""
+			label="JFUSION_PLUGIN" configfile="3" multiselect="true"
+			description="JFUSION_PLUGIN_DESCR" />
+		<param name="JFusionSearchParam" type="JFusionSearchParams" default=""
+			label="SEARCH_PARAMS"
+			description="SEARCH_PARAMS_DESC" />					
 	</params>
 </install>

@@ -1533,89 +1533,60 @@ $hidden_value = func_get_arg(7);
 $form_id = func_get_arg(8);
 $do_pre_butt = func_get_arg(9);
 $do_pub_butt = func_get_arg(10);
-
+$html = "";
 // optional switches..
 if (func_num_args() > 11) { $nested = func_get_arg(11); } else { $nested = false; }
 if (empty($form_id)) { $form_id = 'cbform'; }
 
 	if (!$nested) {
-		echo '
-<form class="cbform" id="',$form_id,'" method="post" action="">';
+		$html .=  '<form class="cbform" id="'.$form_id.'" method="post" action="">';
 	}
-	if (!empty($html_preview)) { echo $html_preview; }
+	if (!empty($html_preview)) { $html .=  $html_preview; }
 
-	echo '
-<div class="fill" id="',$form_id,'-infoinputs">';
+	$html .=  '<div class="fill" id="'.$form_id.'-infoinputs">';
 	if ($do_title) {
-		echo '
-	<div class="left">
-		<strong>title here..</strong><br />
-		<input type="text" name="blogtitle" size="24" value="',$title,'"
-		title="your browser should re-insert this, if not, I will try to." />
-	</div>';
+		$html .=  '<div class="left"><strong>title here..</strong><br /><input type="text" name="blogtitle" size="24" value="'.$title.'"title="your browser should re-insert this, if not, I will try to." /></div>';
 	}
 
 	if ($do_pass) {
-			echo '
-	<div class="right">';
+			$html .=  '<div class="right">';
 
 		if ($use_pajamas) {
 			if (!$auth->auth_user()) {
-				echo $auth->getAuthCode();
-				echo $auth->getLoginForm('simple'); // a div-less output
+				$html .=  $auth->getAuthCode();
+				$html .=  $auth->getLoginForm('simple'); // a div-less output
 			} else {
-				echo $auth->getLogoutButton(true); // either works.
-				//echo '<br /><a href="'.$auth->getSelf().'?logout=true" title="">logout</a>';//:debug
+				$html .=  $auth->getLogoutButton(true); // either works.
+				//$html .=  '<br /><a href="'.$auth->getSelf().'?logout=true" title="">logout</a>';//:debug
 			}
 		} else {
-			echo '
-		<strong>password here..</strong><br />
-		<input type="password" size="24" name="password" title="no password no blog!" />';
+			$html .=  '<strong>password here..</strong><br /><input type="password" size="24" name="password" title="no password no blog!" />';
 		}
-		echo '
-	</div>';
+		$html .=  '</div>';
 	}
 
-	echo '
-</div>
-<div class="small-space">&nbsp;</div>
-<div class="fill" id="',$form_id,'-pubbutt">
-	<div class="left" id="',$form_id,'-bottom">
-		<strong>text here..</strong>
-	</div>
-	<div class="right">';
+	$html .=  '</div><div class="small-space">&nbsp;</div><div class="fill" id="'.$form_id.'-pubbutt">	<div class="left" id="'.$form_id.'-bottom"><strong>text here..</strong>	</div>	<div class="right">';
 	if ($do_pre_butt) {
-		echo '
-		<input type="submit" name="preview" value="preview" title="preview the entry" />';
+		$html .=  '<input type="submit" name="preview" value="preview" title="preview the entry" />';
 	}
-	echo '
-		<input name="number" value="',$index,'" type="hidden" />';
+	$html .=  '<input name="number" value="'.$index.'" type="hidden" />';
 
 	if ($do_pub_butt) {
-		echo '
-		<input type="submit" name="publish" value="publish" title="make it so!" />';
+		$html .=  '<input type="submit" name="publish" value="publish" title="make it so!" />';
 	}
 	if (!empty($hidden_post)) {
 		if (isset($_POST[$hidden_post])) {
 			if (empty($hidden_value)) { // you didn't specify, so we set *something*
 				$hidden_value = 'true';
 			}
-			echo '
-		<input type="hidden" name="',$hidden_post,'" value="',$hidden_value,'" />';
+			$html .=  '<input type="hidden" name="'.$hidden_post.'" value="'.$hidden_value.'" />';
 		}
 	}
-	echo '
-	</div>';
+	$html .=  '</div>';
 
 	// textarea width is over-ridden (by css) to 100% (will stretch to fit available width)..
 	$textarea_name = $form_id.'-text';
-	echo '
-		<br />
-
-		<div class="clear">&nbsp;</div>
-
-		<textarea class="editor" id="',$textarea_name,'" name="',$textarea_name,'" rows="20" cols="60" style="width:100%;clear:both" onkeyup="storeCaret(this);" onclick="storeCaret(this);" onchange="storeCaret(this);" onselect="storeCaret(this);" >',$textarea,'</textarea>';
-		
+	$html .=  '<br /><div class="clear">&nbsp;</div><textarea class="editor" id="'.$textarea_name.'" name="'.$textarea_name.'" rows="20" cols="60" style="width:100%;clear:both" onkeyup="storeCaret(this);" onclick="storeCaret(this);" onchange="storeCaret(this);" onselect="storeCaret(this);" >'.$textarea.'</textarea>';		
 		// spell-checking options..
 		if (isset($corzblog['spell_checker']) and $corzblog['spell_checker']) { 
 			output_spell_options();
@@ -1623,13 +1594,12 @@ if (empty($form_id)) { $form_id = 'cbform'; }
 
 	//	a handy bbcode guide for the cbparser..
 	include ($GLOBALS['cb_guide_path']);
-	echo '
-		<div class="clear">&nbsp;</div>
-	</div>';
+	$html .=  '	<div class="clear">&nbsp;</div></div>';
 	if (!$nested) {
-		echo '
-</form>';
+		$html .=  '</form>';
 	}
+	
+	return $html;
 }/*
 end function do_bb_form() */
 

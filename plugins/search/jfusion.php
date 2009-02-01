@@ -27,27 +27,17 @@ function &plgSearchjfusionAreas()
 {
 	static $areas = array();
 
-	//get the softwares
-	$master = JFusionFunction::getMaster();
-	$slaves = JFusionFunction::getSlaves();
-		
-	if($master->name!="joomla_int"){
-		//make sure that search is enabled
-		$public =& JFusionFactory::getPublic($master->name);
-		$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
-		if($searchEnabled){
-			$areas[$master->name] = ucwords($master->name);
-		}
-	}
-
-	foreach($slaves as $slave)
+	//get the softwares with search enabled
+	$plugins = JFusionFunction::getPlugins('search');
+	
+	foreach($plugins as $plugin)
 	{
-		if($slave->name!="joomla_int") {
+		if($plugin->name!="joomla_int") {
 			//make sure that search is enabled
-			$public =& JFusionFactory::getPublic($slave->name);
+			$public =& JFusionFactory::getPublic($plugin->name);
 			$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
 			if($searchEnabled){
-				$areas[$slave->name] = ucwords($slave->name);
+				$areas[$plugin->name] = ucwords($plugin->name);
 			}
 		}
 	}
@@ -63,25 +53,24 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 
 	$jFusionPlugins = plgSearchjfusionAreas();
 
-	if(is_array($areas))
-	{
-		if(!array_intersect( $areas, array_keys( $jFusionPlugins)))
-		{
+	if(is_array($areas)) {
+		if(!array_intersect( $areas, array_keys( $jFusionPlugins))) {
 			return array();
 		}
 	}
 
 	//jfusion plugins to search
 	$searchPlugins = array_intersect( $areas, array_keys( $jFusionPlugins ));
-
+		
 	//get the search plugin parameters
 	$plugin =& JPluginHelper::getPlugin('search','jfusion');
-	$params = new JParameter( $plugin->params);
-	$linkMode = $params->get('link_mode','direct');
-	$itemid = $params->get('Itemid',false);
+	$params = new JParameter( $plugin->params); 
 	
 	foreach($searchPlugins AS $key => $jname)
 	{
+		$linkMode =& $params->get('link_mode_'.$jname,'direct');
+		$itemid =& $params->get('itemid_'.$jname,false);
+		
 		//initialize plugin database
 		$db = & JFusionFactory::getDatabase($jname);
 		//load jfusion plugin search functions

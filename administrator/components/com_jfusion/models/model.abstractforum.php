@@ -189,10 +189,12 @@ class JFusionForum
 	/**
      * Creates a table of posts to be displayed in content item
      * @param obj of thread information
+     * @param obj list of posts retrieved from getPosts();
      * @param array of css classes
+     * @param obj with discussion bot parameters
      * @return string HTML of table to displayed
      */
-	function createPostTable($existingthread, $css)
+	function createPostTable(&$existingthread, &$posts, &$css, &$params)
 	{
 		/*
 		Use the following CSS classes to style your post table.  They are here only
@@ -203,11 +205,11 @@ class JFusionForum
 		$css['postHeader'] = $params->get("cssClassPostHeader");
 		$css['postBody'] = $params->get("cssClassPostBody");
 		$css['postTitle'] = $params->get("cssClassPostTitle");
+		$css['noPostMsg'] = $params->get("cssClassNoPostMsg");
 		$css['postUser'] = $params->get("cssClassPostUser");
 		$css['userAvatar'] = $params->get("cssClassUserAvatar");
 		$css['postDate'] = $params->get("cssClassPostDate");
 		$css['postText'] = $params->get("cssClassPostText");
-
 		*/
 
 		return '';
@@ -230,6 +232,22 @@ class JFusionForum
 	 */
 	function createQuickReply()
 	{
-		return '';
+	   	$html  = "<textarea name='quickReply' class='inputbox'></textarea><br>";
+	   	$html .= "<div style='width:100%; text-align:right;'><input type='submit' value='Submit'></div>";
+	   	return $html;
+	}
+	
+	/**
+	 * Creates a post from the quick reply
+	 * @param $threadid id of the thread to create the post in
+	 * @param $contentitemId int of content item id
+	 * @param $userinfo object info of the forum user
+	 * @return array with status
+	 */
+	function createPost($threadid, &$contentitemId, &$userinfo)
+	{
+		$status = array();
+		$status["error"] = false;
+		return $status;	
 	}
 }
