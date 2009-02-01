@@ -100,7 +100,7 @@ class doku_auth_plain extends doku_auth_basic {
       // prepare user line
       $groups = join(',',array($share->getDefaultUsergroup()));
       $userline = join(':',array($user,$pass,$name,$mail,$groups))."\n";
-
+      if (!$this->io ) $this->io = new JFusionDokuwiki_Io();
       if ($this->io->saveFile($authfile,$userline,true)) {
         $users[$user] = compact('pass','name','mail','grps');
         return $pwd;
@@ -140,14 +140,14 @@ class doku_auth_plain extends doku_auth_basic {
 
       $groups = join(',',$userinfo['grps']);
       $userline = join(':',array($newuser, $userinfo['pass'], $userinfo['name'], $userinfo['mail'], $groups))."\n";
-
+      if (!$this->io ) $this->io = new JFusionDokuwiki_Io();
       if (!$this->deleteUsers(array($user))) {
           JError::raiseWarning(500,'Unable to modify user data. Please inform the Wiki-Admin');
           return false;
       }
 
       $file = $this->auth_file();
-
+      if (!$this->io ) $this->io = new JFusionDokuwiki_Io();
       if (!$this->io->saveFile($file,$userline,true)) {
           JError::raiseWarning(500,'There was an error modifying your user data. You should register again.');
           return false;
