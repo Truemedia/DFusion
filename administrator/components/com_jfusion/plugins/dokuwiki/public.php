@@ -77,10 +77,10 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 		if (substr($source_path, -1) == DS) {
 			$index_file = $source_path .'doku.php';
-			if ( JRequest::getVar('file') == 'detail.php' ) $index_file = $source_path.'lib/exe/detail.php';
+			if ( JRequest::getVar('file') == 'detail.php' ) $index_file = $source_path.'lib'.DS.'exe'.DS.'detail.php';
 		} else {
 			$index_file = $source_path .DS.'doku.php';
-			if ( JRequest::getVar('file') == 'detail.php' ) $index_file = $source_path.DS.'lib/exe/detail.php';
+			if ( JRequest::getVar('file') == 'detail.php' ) $index_file = $source_path.DS.'lib'.DS.'exe'.DS.'detail.php';
 		}
 
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
@@ -95,6 +95,9 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 		// Get the output
 		ob_start();
+        define('UTF8_STRLEN', true);
+		define('UTF8_CORE', true);  
+		define('UTF8_CASE', true);
 		$rs = include_once($index_file);
 		$buffer = ob_get_contents();
 		ob_end_clean();
@@ -338,7 +341,6 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 							}
 						}
 					}
-
 					$value = JRoute::_('index.php?'.$uri->getQuery());
 					$data = str_replace($links[0][$key], '<a'.$links[1][$key].'href="'.$value.'"'.$links[3][$key].'>', $data);
 				 }

@@ -3,10 +3,10 @@ defined('_JEXEC' ) or die('Restricted access' );
 
 if (substr($source_path, -1) == DS) {
 	define (DOKU_INC, $source_path);
-	require_once($source_path.'inc/events.php');
+	require_once($source_path.'inc'.DS.'events.php');
 } else {
-	define (DOKU_INC, $source_path);
-	require_once($source_path.'inc/events.php');
+	define (DOKU_INC, DS. $source_path);
+	require_once($source_path.DS.'inc'.DS.'events.php');
 }
 
 /**
