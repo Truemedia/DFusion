@@ -50,27 +50,21 @@ class JFusionAdmin_dokuwiki extends JFusionAdmin {
         }
     }
 
-    function setupFromPath($forumPath)
+    function setupFromPath($Path)
     {
         $share = Dokuwiki::getInstance();
          //try to open the file
-         if ($config = $share->getConf() === FALSE) {
-            JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). ": $myfile " . JText::_('WIZARD_MANUAL'));
+         if ($config = $share->getConf($Path) === FALSE) {
+            JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). ": $Path " . JText::_('WIZARD_MANUAL'));
             return false;
          } else {
             $params = array();
-            $params['database_host'] = 'mydb1.surf-town.net';
-            $params['database_type'] = 'mysql';
-            $params['database_name'] = 'fanno_joomla';
-            $params['database_user'] = 'fanno_fanno';
-            $params['database_password'] = 'fanno2983';
-            $params['database_prefix'] = 'jos_';
             $params['cookie_name'] = $config['cookie_name'];
 			$params['cookie_path'] = $config['cookie_path'];
 			$params['cookie_domain'] = $config['cookie_domain'];
 			$params['cookie_seed'] = $config['cookie_seed'];
 			$params['cookie_secure'] = $config['cookie_secure'];
-            $params['source_path'] = $forumPath;
+            $params['source_path'] = $Path;
             return $params;
         }
     }

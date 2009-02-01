@@ -30,8 +30,15 @@ function jfusionBuildRoute(&$query)
 	//change all other variables into SEF
 	foreach($query as $key => $value){
 		if($key != 'option' && $key != 'Itemid'){
-			$segments[] = $key .',' . $value;
-			unset($query[$key]);
+			if(is_array($value)){
+				foreach($value as $array_key => $array_value){
+					$segments[] = $key .'['.$array_key.'],' . $array_value;
+					unset($query[$key]);					
+				}
+			} else {
+				$segments[] = $key .',' . $value;
+				unset($query[$key]);				
+			}
 		}
 	}
 

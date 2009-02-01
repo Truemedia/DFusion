@@ -22,7 +22,7 @@ class JFusionAdmin_magento extends JFusionAdmin{
     }
 
     function getTablename(){
-        return 'customer_entity';
+        return 'admin_user';
     }
 
     function setupFromPath($forumPath){
