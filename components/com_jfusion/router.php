@@ -33,11 +33,11 @@ function jfusionBuildRoute(&$query)
 			if(is_array($value)){
 				foreach($value as $array_key => $array_value){
 					$segments[] = $key .'['.$array_key.'],' . $array_value;
-					unset($query[$key]);					
+					unset($query[$key]);
 				}
 			} else {
 				$segments[] = $key .',' . $value;
-				unset($query[$key]);				
+				unset($query[$key]);
 			}
 		}
 	}
@@ -63,7 +63,19 @@ function jfusionParseRoute($segments)
 			foreach ($segments as $segment){
 				$parts = explode(',', $segment);
 				if(isset($parts[1])){
-					$vars[$parts[0]] = $parts[1];
+					//check for an array
+					if(strpos($parts[0],'[')){
+						//prepare the variable
+						$array_parts = explode('[', $parts[0]);
+						$array_index = substr_replace($array_parts[1],"",-1);
+						//set the variable
+						if(empty($vars[$array_parts[0]])){
+							$vars[$array_parts[0]] = array();
+						}
+						$vars[$array_parts[0]][$array_index]=$parts[1];
+					} else {
+						$vars[$parts[0]] = $parts[1];
+					}
 				}
 			}
 		}
