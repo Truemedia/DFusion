@@ -214,7 +214,7 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
         	$query = 'SELECT config_value FROM #__config WHERE config_name = \'auth_method\'';
 	        $db->setQuery($query );
     	    $auth_method = $db->loadResult();
-        	if($auth_method != 'auth_jfusion'){
+        	if($auth_method != 'jfusion'){
 	        	$error = 1;
     	    	$reason = JText::_('MOD_NOT_ENABLED');
 	        }
@@ -282,8 +282,8 @@ return;
        	$query = 'SELECT config_value FROM #__config WHERE config_name = \'auth_method\'';
         $db->setQuery($query );
    	    $auth_method = $db->loadResult();
-       	if($auth_method != 'auth_jfusion'){
-	       	$query = 'UPDATE #__config SET config_value = \'auth_jfusion\' WHERE config_name = \'auth_method\'';
+       	if($auth_method != 'jfusion'){
+	       	$query = 'UPDATE #__config SET config_value = \'jfusion\' WHERE config_name = \'auth_method\'';
 	        $db->setQuery($query );
     	    if (!$db->query()) {
         	    //there was an error saving the parameters
