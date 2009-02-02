@@ -58,7 +58,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		}
 	}
 
-	function checkThreadExists($contentitem)
+	function checkThreadExists(&$dbparams, &$contentitem)
 	{
 	    $status = array();
         $status['debug'] = array();
@@ -70,7 +70,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			return $status;
 		}
 
-		$forumid = $this->getDefaultForum($contentitem);
+		$forumid = $this->getDefaultForum($dbparams, $contentitem);
 
 		//see if the thread exists
 		$existingthread = $this->getThread($contentitem->id);
@@ -93,7 +93,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			if($jdb->loadResult()==0)
 			{
 				//the thread no longer exists in the software!!  recreate it
-				$this->createThread($contentitem, $forumid, $status);
+				$this->createThread($dbparams, $contentitem, $forumid, $status);
             	if (empty($status['error'])) {
                 	$status['action'] = 'created';
             	}
@@ -102,7 +102,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			elseif($contentModified > $postModified)
 			{
 				//update the post if the content has been updated
-				$this->updateThread($existingthread->threadid, $existingthread->postid, $contentitem, $status);
+				$this->updateThread($dbparams, $existingthread->threadid, $existingthread->postid, $contentitem, $status);
 				if (empty($status['error'])) {
                 	$status['action'] = 'updated';
             	}
@@ -112,7 +112,7 @@ class JFusionForum_vbulletin extends JFusionForum
 	    else
 	    {
 	    	//thread does not exist; create it
-            $this->createThread($contentitem, $forumid, $status);
+            $this->createThread($dbparams, $contentitem, $forumid, $status);
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
@@ -120,20 +120,20 @@ class JFusionForum_vbulletin extends JFusionForum
         }
 	}
 
-	function getDefaultForum($contentitem)
+	function getDefaultForum(&$dbparams, &$contentitem)
 	{
 		//content section/category
-		$sectionid = $contentitem->sectionid;
-		$catid = $contentitem->catid;
+		$sectionid =& $contentitem->sectionid;
+		$catid =& $contentitem->catid;
 
 		//default forum to create post in
-		$forumid = $this->params->get("default_forum");
+		$forumid = $dbparams->get("default_forum");
 
 		//determine default forum
-		$sections = $this->params->get("pair_sections");
+		$sections = $dbparams->get("pair_sections");
 		$sectionPairs = empty($sections) ? false :  explode(";",$sections);
 
-		$categories = $this->params->get("pair_categories");
+		$categories = $dbparams->get("pair_categories");
 		$categoryPairs = empty($categories) ? false : explode(";",$categories);
 
 		if($sectionPairs)
@@ -173,28 +173,28 @@ class JFusionForum_vbulletin extends JFusionForum
         return 'vbulletin';
     }
 
-	function createThread($contentitem, $forumid, &$status)
+	function createThread(&$dbparams, &$contentitem, $forumid, &$status)
 	{
 		//initialize vb framework
 		if(!$this->vBulletinInit()) return null;
 
 		//TODO create error notices if required params are empty
 
-		$userid = $this->params->get("default_userid");
-		$firstPost = $this->params->get("first_post");
+		$userid = $dbparams->get("default_userid");
+		$firstPost = $dbparams->get("first_post");
 
 		//strip title of all html characters
 		$title = trim(strip_tags($contentitem->title));
 
 		//set what should be posted as the first post
-		if($firstPost=="articleLink")
-		{
+		if($firstPost=="articleLink") {
 			//create link
-			$forumText = $this->params->get("first_post_link_text");
-			$text = $this->prepareText(jFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
-		}
-		else
-		{
+			$forumText = $dbparams->get("first_post_link_text");
+			if(empty($forumText)){
+				$forumText = $this->prepareText($contentitem->title);
+			}
+			$text = $this->prepareText(JFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
+		} else {
 			//prepare the text for posting
 			$text = $this->prepareText($contentitem->text);
 		}
@@ -214,7 +214,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		$threaddm->set('dateline', time());
 		$threaddm->pre_save();
 		if(!empty($threaddm->errors)){
-			$status["errors"] = array_merge($status["errors"], $threaddm->errors);
+			$status["error"] = array_merge($status["error"], $threaddm->errors);
 		} else {
 			$threadid = $threaddm->save();
 			$postid = $threaddm->fetch_field('firstpostid');
@@ -224,30 +224,69 @@ class JFusionForum_vbulletin extends JFusionForum
 		}
 	}
 
-	function createPost($threadid, $contentitemId, $userinfo)
+	function createPost(&$dbparams, $ids, &$contentitem, &$userinfo)
 	{
-		
+		$text = JRequest::getVar('quickReply', false, 'POST');
+
+		if(!empty($text)) {
+			$text = $this->prepareText($text);
+			
+			$status = array();
+			$status["error"] = array();
+			
+			//initialize the vb framework
+			if(!$this->vBulletinInit()) return null;
+
+			require_once (CWD . "/includes/functions.php");
+			
+			$threadinfo = verify_id('thread', $ids["threadid"], 0, 1);
+			$foruminfo = fetch_foruminfo($threadinfo['forumid'], false);
+			$postinfo = array();
+	    	$postinfo['threadid'] = $threadinfo['threadid'];
+	    	$postinfo['ipaddress'] = $_SERVER["REMOTE_ADDR"];
+			$postinfo['dateline'] = time();
+
+			$postdm =& datamanager_init('Post', $GLOBALS["vbulletin"], ERRTYPE_SILENT, 'threadpost');
+			$postdm->set_info('forum', $foruminfo);
+			$postdm->set_info('thread', $threadinfo);
+			$userinfo = $this->convertUserData($userinfo);
+			$postdm->set_info('user',$userinfo);			
+			$postdm->setr('userid', $userinfo['userid']);
+			$postdm->setr('parentid', $ids["postid"]);
+			$postdm->setr('threadid', $ids["threadid"]);
+			$postdm->setr('pagetext', $text);
+			
+			$postdm->set('visible', 1);
+			$postdm->set('showsignature', 1);
+			$postdm->set('allowsmilie', 1);
+			
+			$postdm->pre_save();
+			if(!empty($postdm->errors)){
+				$status["error"] = array_merge($status["error"], $postdm->errors);
+			} else {
+				$id = $postdm->save();	
+			}
+
+			return $status;
+		}
 	}
 	
-	function updateThread($threadid,$postid,$contentitem,&$status)
+	function updateThread( &$dbparams, $threadid, $postid, &$contentitem, &$status)
 	{
 		//initialize the vb framework
 		if(!$this->vBulletinInit()) return null;
 
-		$firstPost = $this->params->get("first_post");
+		$firstPost = $dbparams->get("first_post");
 
 		//strip title of all html characters
 		$title = trim(strip_tags($contentitem->title));
 
 		//set what should be posted as the first post
-		if($firstPost=="articleLink")
-		{
+		if($firstPost=="articleLink") {
 			//create link
-			$forumText = $this->params->get("first_post_link_text");
+			$forumText = $dbparams->get("first_post_link_text");
 			$text = $this->prepareText(jFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
-		}
-		else
-		{
+		} else 	{
 			//prepare the text for posting
 			$text = $this->prepareText($contentitem->text);
 		}
@@ -270,7 +309,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		$postdm->setr('title',$title);
 		$postdm->pre_save();
 		if(!empty($postdm->errors)){
-			$status["errors"] = array_merge($status["errors"], $postdm->errors);
+			$status["error"] = array_merge($status["error"], $postdm->errors);
 		} else {
 			$postdm->save();
 
@@ -294,13 +333,13 @@ class JFusionForum_vbulletin extends JFusionForum
 		return $text;
 	}
 
-	function getPosts($threadid,$postid)
+	function getPosts(&$dbparams, $threadid, $postid)
 	{
 		//set the query
-		$limit_posts = $this->params->get("limit_posts");
+		$limit_posts = $dbparams->get("limit_posts");
 		$limit = empty($limit_posts) || trim($limit_posts)==0 ? "" :  "LIMIT 0,$limit_posts";
-		$sort = $this->params->get("sort_posts");
-		$body_limit = $this->params->get("body_limit");
+		$sort = $dbparams->get("sort_posts");
+		$body_limit = $dbparams->get("body_limit");
 		$bodyLimit = empty($body_limit) || trim($body_limit)==0 ? "a.pagetext" : "left(a.pagetext, $body_limit)";
 
 		$where = "WHERE a.threadid = {$threadid} AND a.postid != {$postid}";
@@ -313,21 +352,21 @@ class JFusionForum_vbulletin extends JFusionForum
 		return $posts;
 	}
 
-	function createPostTable(&$existingthread, &$posts, &$css, &$params)
+	function createPostTable(&$dbparams, &$existingthread, &$posts, &$css)
 	{
 		//get required params
 		defined('_DATE_FORMAT_LC2') or define('_DATE_FORMAT_LC2','%A, %d %B %Y %H:%M');
-		$date_format = $params->get('custom_date', _DATE_FORMAT_LC2);
-		$tz_offset = intval($params->get('tz_offset'));
-		$showdate = intval($params->get('show_date'));
-		$showuser = intval($params->get('show_user'));
-		$showavatar = $params->get("show_avatar");
-		$userlink = intval($params->get('user_link'));
-		$linkMode = $params->get("link_mode");
-		$itemid = $params->get("itemid");
+		$date_format = $dbparams->get('custom_date', _DATE_FORMAT_LC2);
+		$tz_offset = intval($dbparams->get('tz_offset'));
+		$showdate = intval($dbparams->get('show_date'));
+		$showuser = intval($dbparams->get('show_user'));
+		$showavatar = $dbparams->get("show_avatar");
+		$userlink = intval($dbparams->get('user_link'));
+		$linkMode = $dbparams->get("link_mode");
+		$itemid = $dbparams->get("itemid");
 		$jname = $this->getJname();
 		$forum = JFusionFactory::getForum($jname);
-		$header = $params->get("post_header");
+		$header = $dbparams->get("post_header");
 
 		if($showdate && $showuser) $colspan = 2;
 		else $colspan = 1;
@@ -388,7 +427,6 @@ class JFusionForum_vbulletin extends JFusionForum
     function getThreadURL($threadid)
     {
         return  'showthread.php?t=' . $threadid;
-
     }
 
     function getPostURL($threadid, $postid)
@@ -437,36 +475,112 @@ class JFusionForum_vbulletin extends JFusionForum
         }
     }
 
-        function getQuery($usedforums, $result_order, $result_limit, $display_limit)
-        {
-            if ($usedforums) {
-                $where = ' WHERE forumid IN (' . $usedforums .')';
-            } else {
-                $where = '';
-            }
-
-            $query = array(0 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";",
-            1 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";"),
-            1 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";",
-            1 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit) FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";"),
-            2 => array(0 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";",
-            1 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";")
-            );
-
-            return $query;
-        }
-
+	function getQuery($usedforums, $result_order, $result_limit, $display_limit)
+	{
+		if ($usedforums) {
+			$where = ' WHERE forumid IN (' . $usedforums .')';
+		} else {
+			$where = '';
+		}
+		
+		$query = array(0 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";",
+		1 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";"),
+		1 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";",
+		1 => "SELECT a.threadid,  b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";"),
+		2 => array(0 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid, a.forumid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";",
+		1 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid,  a.forumid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";")
+		);
+		
+		return $query;
+	}
 
     function getForumList()
     {
         //get the connection to the db
-
         $db = JFusionFactory::getDatabase($this->getJname());
         $query = 'SELECT forumid as id, title_clean as name FROM #__forum ORDER BY forumid';
         $db->setQuery($query );
-
-        //getting the results
-        return $db->loadObjectList();
+        $results = $db->loadObjectList();
+               
+        return $results;
     }
+    
+    function filterForumList(&$results, $idKey='forumid') 
+    {
+    	//get the joomla user
+    	$JoomlaUser =& JFactory::getUser();
+    	
+    	//get the vb user
+    	if(!$JoomlaUser->guest) {
+    		$user = JFusionFunction::lookupUser($this->getJname(), $JoomlaUser->id);
+    		$userid = $user->userid;
+    	} else {
+    		$userid = 0;
+    	}
+   
+    	//get the usergroup permissions
+   		$db =& JFusionFactory::getDatabase($this->getJname());
+   		if($userid!=0) {
+   			$query = "SELECT u.usergroupid AS gid, g.forumpermissions AS perms FROM #__user AS u INNER JOIN #__usergroup AS g ON u.usergroupid = g.usergroupid WHERE u.userid = '$userid'";
+   		} else {
+   			$query = "SELECT usergroupid AS gid, forumpermissions AS perms FROM #__usergroup WHERE usergroupid = '1'";
+   		}
+   		$db->setQuery($query);
+   		$groupPerms = $db->loadObject();
+    	//used to store permissions to prevent multiple calls to the db for the same result
+    	$forumPerms = array();
+    	if(is_array($results)) {
+    		foreach($results as $k => $r) {
+    			if(is_array($r)) {
+    				if(count($r)==7) {
+    					$forumid = $r[6];
+    				} else {
+    					$forumid = $r[7];
+    				}
+    			} elseif(is_object($r)) {
+    				$forumid = $r->$idKey;
+    			}
+
+    			if(!array_key_exists($forumid,$forumPerms)) {
+    				$query = "SELECT forumpermissions FROM #__forumpermission WHERE usergroupid = '{$groupPerms->gid}' AND forumid = '{$forumid}'";
+    				$db->setQuery($query);
+    				$result = $db->loadResult();
+    			} else {
+    				$result = $forumPerms[$forumid];
+    			}
+    			
+    			if($result) {
+    				//forum has set permissions so use these to compare
+    				$forumPerms[$forumid] = $result;
+    				
+    				//can this user view threads of this forum
+    				if(!($result & 524288) || !($result & 1)) {
+    					//remove the row as the usergroup does not have permission to view this specific forum
+    					unset($results[$k]);
+    				}
+    			} else {
+    				//the forum does not have set permission so default to checking the user group permissions
+    				if(!($groupPerms->perms & 524288) || !($groupPerms->perms & 1)) {
+    					//remove the row as the usergrup does not have permission to view forums
+    					unset($results[$k]);
+    				}
+    			}
+    		}   	
+    	}
+    }
+    
+    //convert the existinguser variable into something vbulletin understands
+    function convertUserData($existinguser)
+    {
+    	$userinfo = array(
+    		'userid' => $existinguser->userid,
+    		'username' => $existinguser->username,
+   			'email' => $existinguser->email,
+    		'password' => $existinguser->password
+    	);
+
+    	return $userinfo;
+    }
+    
 }
 ?>

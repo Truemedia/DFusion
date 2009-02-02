@@ -103,18 +103,29 @@ class JFusionForum
         return 0;
     }
 
-
+    /**
+     * Filter forums from a set of results sent in / useful if the plugin needs to restrict the forums visible to a user
+     * @param $results set of results from query; note that the search plugin will pass in an object list (array of objects)  
+     * where the activities module will pass in a row list (array of arrays with a numerical key which correlates with SQL in
+     * $this->getQuery())
+     * @param $idKey string name of forum id column to use if results is an object list
+     */
+ 	function filterForumList(&$results, $idKey='')
+ 	{
+ 		
+ 	} 
+ 
     /************************************************
 	 * Functions For JFusion Discussion Bot Plugin
 	 ***********************************************/
     
     /**
      * Checks to see if a thread already exists for the content item and calls the appropriate function
-     *
+     * @param object with discussion bot parameters 
      * @param object $contentitem object containing content information
      * @return array Returns status of actions with errors if any
      */
-	function checkThreadExists($contentitem)
+	function checkThreadExists(&$params, &$contentitem)
 	{
 	    $status = array();
         $status['debug'] = array();
@@ -125,11 +136,11 @@ class JFusionForum
 
     /**
      * Retrieves the default forum based on section/category stipulations or default set in the plugins config
-     *
+     * @param object with discussion bot parameters
      * @param object $contentitem object containing content information
      * @return int Returns id number of the forum
      */
-	function getDefaultForum($contentitem)
+	function getDefaultForum(&$params, &$contentitem)
 	{
 		return 0;
 	}
@@ -147,23 +158,25 @@ class JFusionForum
     
      /**
      * Creates new thread and posts first post
+     * @param object with discussion bot parameters
      * @param object $contentitem object containing content information
      * @param int Id of forum to create thread
      * @param array $status contains errors and status of actions
      */
-	function createThread($contentitem, $forumid, &$status)
+	function createThread(&$params, &$contentitem, $forumid, &$status)
 	{
 
 	}
 
 	 /**
      * Updates information in a specific thread/post
+     * @param object with discussion bot parameters
      * @param int Id of thread
      * @param int Id of the first post
      * @param object $contentitem object containing content information
      * @param array $status contains errors and status of actions
      */
-	function updateThread($threadid,$postid,$contentitem,&$status)
+	function updateThread(&$params, $threadid, $postid, &$contentitem, &$status)
 	{
 
 	}
@@ -188,13 +201,14 @@ class JFusionForum
 
 	/**
      * Creates a table of posts to be displayed in content item
+     * @param object with discussion bot parameters
      * @param obj of thread information
      * @param obj list of posts retrieved from getPosts();
      * @param array of css classes
      * @param obj with discussion bot parameters
      * @return string HTML of table to displayed
      */
-	function createPostTable(&$existingthread, &$posts, &$css, &$params)
+	function createPostTable(&$params, &$existingthread, &$posts, &$css)
 	{
 		/*
 		Use the following CSS classes to style your post table.  They are here only
@@ -217,11 +231,12 @@ class JFusionForum
 
 	/**
      * Retrieves the posts to be displayed in the content item if enabled
+     * @param object with discussion bot parameters
      * @param int Id of thread
      * @param int Id of first post which is useful if you do not want the first post to be included in results
      * @return array or object Returns retrieved posts
      */
-	function getPosts($threadid,$postid)
+	function getPosts(&$params, $threadid,$postid)
 	{
 		return array();
 	}
@@ -239,12 +254,13 @@ class JFusionForum
 	
 	/**
 	 * Creates a post from the quick reply
-	 * @param $threadid id of the thread to create the post in
-	 * @param $contentitemId int of content item id
+	 * @param object with discussion bot parameters
+	 * @param $ids array with thread id ($ids["threadid"]) and first post id ($ids["postid"]) 
+	 * @param $contentitem object of content item
 	 * @param $userinfo object info of the forum user
 	 * @return array with status
 	 */
-	function createPost($threadid, &$contentitemId, &$userinfo)
+	function createPost(&$params, $ids, &$contentitem, &$userinfo)
 	{
 		$status = array();
 		$status["error"] = false;

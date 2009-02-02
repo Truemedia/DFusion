@@ -20,7 +20,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 $mainframe->registerEvent( 'onSearch', 'plgSearchjfusion' );
 $mainframe->registerEvent( 'onSearchAreas', 'plgSearchjfusionAreas');
 
-JPlugin::loadLanguage( 'com_jfusion' );
+JPlugin::loadLanguage( 'plg_search_jfusion' );
 
 //get the name of each plugin and add to areas
 function &plgSearchjfusionAreas()
@@ -37,7 +37,7 @@ function &plgSearchjfusionAreas()
 			$public =& JFusionFactory::getPublic($plugin->name);
 			$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
 			if($searchEnabled){
-				$areas[$plugin->name] = ucwords($plugin->name);
+				$areas[$plugin->name] = $plugin->name;
 			}
 		}
 	}
@@ -51,21 +51,19 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 	//no text to search
 	if(!$text) return array();
 
-	$jFusionPlugins = plgSearchjfusionAreas();
-
+	$searchPlugins = plgSearchjfusionAreas();
 	if(is_array($areas)) {
-		if(!array_intersect( $areas, array_keys( $jFusionPlugins))) {
+		//jfusion plugins to search
+		$searchPlugins = array_intersect( $areas, array_keys( $searchPlugins ));
+		if(empty($searchPlugins)) {
 			return array();
 		}
 	}
-
-	//jfusion plugins to search
-	$searchPlugins = array_intersect( $areas, array_keys( $jFusionPlugins ));
 		
 	//get the search plugin parameters
 	$plugin =& JPluginHelper::getPlugin('search','jfusion');
 	$params = new JParameter( $plugin->params); 
-	
+
 	foreach($searchPlugins AS $key => $jname)
 	{
 		$linkMode =& $params->get('link_mode_'.$jname,'direct');
@@ -98,15 +96,23 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 
 				$where = '(' . implode ( ") $separator (", $wheres) . ')';
 			}
+			
+			//pass the where clause into the plugin in case it wants to add something
+			$searchMe->getSearchCriteria($where);
+			
 			$query .= " WHERE $where";
-
+			
 			$db->setQuery($query);
-
+			$results = $db->loadObjectList();
+			
 			//contains the rows returned from plugins
 			$rows = array();
-
+			
+			//pass results back to the plugin in case they need to be filtered
+			$searchMe->filterSearchResults($results);
+			
 			//load the results
-			if($results = $db->loadObjectList()) {
+			if(is_array($results)) {
 				foreach($results as $result) {
 					//add a link
 					$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode,$itemid);
@@ -115,6 +121,8 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 					$result->browsernav = 2;
 					//clean up the text such as removing bbcode, etc
 					$result->text = $searchMe->cleanUpSearchText($result->text);
+					$result->section = $searchMe->cleanUpSearchText($result->section);
+					$result->title = $searchMe->cleanUpSearchText($result->title);
 				}
 				$rows[] = $results;
 			} else {

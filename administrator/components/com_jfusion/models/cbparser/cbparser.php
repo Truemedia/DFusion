@@ -959,6 +959,7 @@ $html2bb = func_get_arg(0);
 	$html2bb = preg_replace_callback("/\<a title\=\"mail me\!\" href\=(.+?)\>(.+?)\<\/a\>/i",
 	"get_email", $html2bb);
 
+	$html2bb = preg_replace('#<a href=(\'|")(.*?)(\'|")>(.*?)</a>#si','[url=$2]$4[/url]',$html2bb);
 	$html2bb = str_replace('<a onclick="window.open(this.href); return false;" href=','[eurl=', $html2bb);
 	$html2bb = str_replace('<a class="eurl" onclick="window.open(this.href); return false;" href=','[eurl=', $html2bb);
 	$html2bb = str_replace('<a class="turl" title=','[turl=', $html2bb);

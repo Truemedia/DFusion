@@ -525,10 +525,19 @@ class JFusionFunction{
      * @return link
      */
     function createJoomlaArticleURL(&$contentitem,$text)
-    {
-    	//jimport('joomla.application.component.controller');
-    	$itemid = ContentHelper::getItemid($contentitem->id, $contentitem->catid, $contentitem->sectionid);
-		$link = JRoute::_('index.php?option=com_content&view=article&id=' . $contentid.'&Itemid='.$itemid);
+    {    
+    	require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
+		$needles = array(
+			'article'  => (int) $contentitem->id,
+			'category' => (int) $contentitem->catid,
+			'section'  => (int) $contentitem->sectionid
+		);
+		
+    	if($item = ContentHelperRoute::_findItem($needles)) {
+			$itemid = $item->id;
+		};	
+    	
+		$link = JRoute::_(JURI::base().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid);
 		$link = "<a href='$link'>$text</a>";
 		return $link;
     }

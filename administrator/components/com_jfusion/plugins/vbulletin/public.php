@@ -1,11 +1,11 @@
 <?php
 
 /**
-* @package JFusion_vBulletin
-* @author JFusion development team
-* @copyright Copyright (C) 2008 JFusion. All rights reserved.
-* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
-*/
+ * @package JFusion_vBulletin
+ * @author JFusion development team
+ * @copyright Copyright (C) 2008 JFusion. All rights reserved.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+ */
 
 // no direct access
 defined('_JEXEC' ) or die('Restricted access' );
@@ -17,35 +17,35 @@ defined('_JEXEC' ) or die('Restricted access' );
  */
 class JFusionPublic_vbulletin extends JFusionPublic{
 
-    function getJname()
-    {
-        return 'vbulletin';
-    }
+	function getJname()
+	{
+		return 'vbulletin';
+	}
 
-    function getRegistrationURL()
-    {
-        return 'register.php';
-    }
+	function getRegistrationURL()
+	{
+		return 'register.php';
+	}
 
-    function getLostPasswordURL()
-    {
-        return 'login.php?do=lostpw';
-    }
+	function getLostPasswordURL()
+	{
+		return 'login.php?do=lostpw';
+	}
 
-    function getLostUsernameURL()
-    {
-        return 'login.php?do=lostpw';
-    }
+	function getLostUsernameURL()
+	{
+		return 'login.php?do=lostpw';
+	}
 
 	function & getBuffer($jPluginParam)
 	{
 		// Get the path
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_path = $params->get('source_path');
-        $source_url = $params->get('source_url');
+		$params = JFusionFactory::getParams($this->getJname());
+		$source_path = $params->get('source_path');
+		$source_url = $params->get('source_url');
 
-	    //get the filename
-        $jfile = JRequest::getVar('jfile');
+		//get the filename
+		$jfile = JRequest::getVar('jfile');
 
 		if(!$jfile) {
 			//use the default index.php
@@ -53,14 +53,14 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		}
 
 		//combine the path and filename
-        if (substr($source_path, -1) == DS) {
-            $index_file = $source_path . $jfile;
-        } else {
-            $index_file = $source_path . DS . $jfile;
-        }
+		if (substr($source_path, -1) == DS) {
+			$index_file = $source_path . $jfile;
+		} else {
+			$index_file = $source_path . DS . $jfile;
+		}
 
 		if ( ! is_file($index_file) ) {
-            JError::raiseWarning(500, 'The path to the requested does not exist');
+			JError::raiseWarning(500, 'The path to the requested does not exist');
 			return null;
 		}
 
@@ -71,10 +71,10 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		$joomla_globals = $GLOBALS;
 
 		// Get the output
-        ob_start();
+		ob_start();
 
-        //aaaahhh; basically everything global in vbulletin must be declared here for it to work  ;-{
-        //did not include specific globals in admincp
+		//aaaahhh; basically everything global in vbulletin must be declared here for it to work  ;-{
+		//did not include specific globals in admincp
 		$vbGlobals = array(
 			'_CALENDARHOLIDAYS'
 			,'_CALENDAROPTIONS'
@@ -269,42 +269,42 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			,'wol_thread'
 			,'wol_user'
 			,'year'
-		);
+			);
 
-		foreach($vbGlobals as $g)
-		{
-			//global the variable
-			global $$g;
-		}
+			foreach($vbGlobals as $g)
+			{
+				//global the variable
+				global $$g;
+			}
 
-		//constants needed in vbulletin hooks
-		define('_JFUSION_JNAME', $this->getJname());
-		define('_JFUSION_SOURCE_PATH', $source_path);
-		define('_JFUSION_SOURCE_URL', $source_url);
-		//define('_JFUSION_DEBUG',1);
+			//constants needed in vbulletin hooks
+			define('_JFUSION_JNAME', $this->getJname());
+			define('_JFUSION_SOURCE_PATH', $source_path);
+			define('_JFUSION_SOURCE_URL', $source_url);
+			//define('_JFUSION_DEBUG',1);
 
-		if(defined('_JFUSION_DEBUG')) {
-        	$_SESSION["jfvbdebug"] = array();
-        }
+			if(defined('_JFUSION_DEBUG')) {
+				$_SESSION["jfvbdebug"] = array();
+			}
 
-		try {
-            include_once($index_file);
-        }
-        catch(Exception $e) {
-            $buffer = ob_get_contents() ;
-            ob_end_clean();
-        }
+			try {
+				include_once($index_file);
+			}
+			catch(Exception $e) {
+				$buffer = ob_get_contents() ;
+				ob_end_clean();
+			}
 
-		global $mainframe;
-		$mainframe->setPageTitle('');
+			global $mainframe;
+			$mainframe->setPageTitle('');
 
-		//change the current directory back to Joomla.
-		chdir(JPATH_SITE);
+			//change the current directory back to Joomla.
+			chdir(JPATH_SITE);
 
-		//restore joomla globals
-		$GLOBALS = $joomla_globals;
+			//restore joomla globals
+			$GLOBALS = $joomla_globals;
 
-		return $buffer;
+			return $buffer;
 	}
 
 	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
@@ -312,30 +312,30 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		//fix for form actions
 		//cannot use preg_replace here because it adds unneeded slashes which messes up JS
 		$action_search	= '#action="(.*?)"(.*?)>#mS';
-        $buffer = preg_replace_callback($action_search,'fixAction',$buffer);
-
-        //fix for the rest of the urls
-        $url_search = '#href="(.*?)"(.*?)>#mS';
-        $buffer = preg_replace_callback($url_search,'fixURL',$buffer);
+		$buffer = preg_replace_callback($action_search,'fixAction',$buffer);
 
 		//fix for the rest of the urls
-        $url_search = '#<href="(.*?)"(.*?)>#mS';
-        $buffer = preg_replace_callback($url_search,'fixURL',$buffer);
+		$url_search = '#href="(.*?)"(.*?)>#mS';
+		$buffer = preg_replace_callback($url_search,'fixURL',$buffer);
 
-        //convert relative links from images and js files into absolute links
-        $include_search = '#(src="|background="|url\(\'|window.open\(\'?)(?!http)(.*?)("|\'?\)|\')#mS';
-	    $buffer = preg_replace_callback($include_search, 'fixInclude', $buffer);
+		//fix for the rest of the urls
+		$url_search = '#<href="(.*?)"(.*?)>#mS';
+		$buffer = preg_replace_callback($url_search,'fixURL',$buffer);
 
-        //we need to fix the cron.php file
+		//convert relative links from images and js files into absolute links
+		$include_search = '#(src="|background="|url\(\'|window.open\(\'?)(?!http)(.*?)("|\'?\)|\')#mS';
+		$buffer = preg_replace_callback($include_search, 'fixInclude', $buffer);
+
+		//we need to fix the cron.php file
 		$buffer = preg_replace('#src="(.*)cron.php(.*)>#mS','src="'.$integratedURL.'cron.php$2>',$buffer);
 
-        //we need to wrap the body in a div to prevent some CSS clashes
-        $buffer = "<div id = 'framelessVb'>\n$buffer\n</div>";
+		//we need to wrap the body in a div to prevent some CSS clashes
+		$buffer = "<div id = 'framelessVb'>\n$buffer\n</div>";
 
-        if(defined('_JFUSION_DEBUG')) {
-        	$buffer .= "<pre><code>" . htmlentities(print_r($_SESSION["jfvbdebug"],true) ). "</code></pre>";
-        	$buffer .= "<pre><code>" . htmlentities(print_r($GLOBALS['vbulletin'],true) ). "</code></pre>";
-        }
+		if(defined('_JFUSION_DEBUG')) {
+			$buffer .= "<pre><code>" . htmlentities(print_r($_SESSION["jfvbdebug"],true) ). "</code></pre>";
+			$buffer .= "<pre><code>" . htmlentities(print_r($GLOBALS['vbulletin'],true) ). "</code></pre>";
+		}
 	}
 
 	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
@@ -345,22 +345,22 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		$yuiURL = JURI::base() . 'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname();
 		$buffer = preg_replace('#\<script type="text\/javascript" src="(.*?)(connection-min.js|connection.js)\?v=(.*?)"\>#mS',"<script type=\"text/javascript\">var vbSourceURL = '$integratedURL'; </script> <script type=\"text/javascript\" src=\"$yuiURL/yui/connection/connection-min.js?v=$3\">",$buffer);
 
-        //convert relative links into absolute links
-        $url_search = '#(src="|background="|href="|url\("|url\(\'?)(?!http)(.*?)("\)|\'?\)|")#mS';
-	    $buffer = preg_replace_callback($url_search, 'fixInclude', $buffer);
+		//convert relative links into absolute links
+		$url_search = '#(src="|background="|href="|url\("|url\(\'?)(?!http)(.*?)("\)|\'?\)|")#mS';
+		$buffer = preg_replace_callback($url_search, 'fixInclude', $buffer);
 
-	    $start = '<style type="text/css" id="vbulletin_css">';
-	    $end = '</style>';
+		$start = '<style type="text/css" id="vbulletin_css">';
+		$end = '</style>';
 
-	    $buffer = " ".$buffer;
-        $ini = strpos($buffer,$start);
-        if ($ini !== false) {
-        	$ini += strlen($start);
-        	$len = strpos($buffer,$end,$ini) - $ini;
-        	$css = substr($buffer,$ini,$len);
-        	$newCss = fixCSS($css);
-        	$buffer = str_replace($css,$newCss,$buffer);
-        }
+		$buffer = " ".$buffer;
+		$ini = strpos($buffer,$start);
+		if ($ini !== false) {
+			$ini += strlen($start);
+			$len = strpos($buffer,$end,$ini) - $ini;
+			$css = substr($buffer,$ini,$len);
+			$newCss = fixCSS($css);
+			$buffer = str_replace($css,$newCss,$buffer);
+		}
 	}
 
 
@@ -385,21 +385,26 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 	function getSearchQuery()
 	{
 		//need to return threadid, postid, title, text, created
-		$query = 'SELECT p.threadid, p.postid, CASE WHEN p.title = "" THEN t.title ELSE p.title END AS title, p.pagetext AS text,
+		$query = 'SELECT p.threadid, p.postid, f.forumid, CASE WHEN p.title = "" THEN t.title ELSE p.title END AS title, p.pagetext AS text,
 					FROM_UNIXTIME(p.dateline, "%Y-%m-%d %h:%i:%s") AS created,
-					CONCAT_WS( "/", f.title, t.title ) AS section
+					CONCAT_WS( "/", f.title_clean, t.title ) AS section
 					FROM #__post AS p
 					INNER JOIN #__thread AS t ON p.threadid = t.threadid
 					INNER JOIN #__forum AS f on f.forumid = t.forumid';
 		return $query;
 	}
-
+	
+	function filterSearchResults(&$results)
+	{
+		$plugin =& JFusionFactory::getForum($this->getJname());
+		$plugin->filterForumList($results, 'forumid'); 
+	}
+	
 	function getSearchResultLink($post)
 	{
 		$forum = JFusionFactory::getForum($this->getJname());
 		return $forum->getPostURL($post->threadid,$post->postid);
 	}
-
 }
 
 function fixAction($matches)
@@ -454,7 +459,7 @@ function fixAction($matches)
 
 	//add any other variables
 	foreach ($url_variables as $key => $value){
-	$replacement .=  '<input type="hidden" name="'. $key .'" value="'.$value . '">';
+		$replacement .=  '<input type="hidden" name="'. $key .'" value="'.$value . '">';
 	}
 
 	if(defined('_JFUSION_DEBUG')) {
@@ -485,16 +490,16 @@ function fixURL($matches)
 	//we need to make some exceptions
 
 	/*
-	//url is already parsed
-	if(strpos($url, 'jfile=')!==false) {
+	 //url is already parsed
+	 if(strpos($url, 'jfile=')!==false) {
 		$url = preg_replace('#.*jfile=(.*?\.php).*#mS', '$1', $url);
 		$replacement = 'href="'.$url . '"' . $extra . '>';
 		if(defined('_JFUSION_DEBUG')) {
-			$debug['parsed'] = $replacement;
+		$debug['parsed'] = $replacement;
 		}
-        return $replacement;
-	}
-	*/
+		return $replacement;
+		}
+		*/
 
 	//absolute url
 	if(strpos($url,'http')!==false) {
@@ -515,16 +520,16 @@ function fixURL($matches)
 	}
 
 	//admincp, mocp, archive, or printthread
-    if (strpos($url,'admincp')!==false || strpos($url,'modcp')!==false || strpos($url,'archive')!==false || strpos($url,'printthread.php')!==false) {
+	if (strpos($url,'admincp')!==false || strpos($url,'modcp')!==false || strpos($url,'archive')!==false || strpos($url,'printthread.php')!==false) {
 		$replacement = 'href="' . _JFUSION_SOURCE_URL . $url . "\" $extra>";
-    	if(defined('_JFUSION_DEBUG')) {
+		if(defined('_JFUSION_DEBUG')) {
 			$debug['parsed'] = $replacement;
 		}
 		return $replacement;
-    }
+	}
 
-    //if the plugin is set as a slave, find the master and replace register/lost password urls
-    if (strpos($url,'register.php')!==false) {
+	//if the plugin is set as a slave, find the master and replace register/lost password urls
+	if (strpos($url,'register.php')!==false) {
 		$master = JFusionFunction::getMaster();
 		if($master->name!=_JFUSION_JNAME) {
 			$master =& JFusionFactory::getPublic($master->name);
@@ -535,10 +540,10 @@ function fixURL($matches)
 			}
 			return $replacement;
 		}
-    }
+	}
 
-    if (strpos($url,'login.php?do=lostpw')!==false) {
-    	$master = JFusionFunction::getMaster();
+	if (strpos($url,'login.php?do=lostpw')!==false) {
+		$master = JFusionFunction::getMaster();
 		if($master->name!=_JFUSION_JNAME) {
 			$master =& JFusionFactory::getPublic($master->name);
 			$url =  $master->getLostPasswordURL();
@@ -548,9 +553,9 @@ function fixURL($matches)
 			}
 			return $replacement;
 		}
-    }
+	}
 
-    //is this only an anchor?
+	//is this only an anchor?
 	if(strpos($url, '#') === 0) {
 		//reconstruct the URL using current query
 		$url = $_SERVER['REQUEST_URI'].$url;
@@ -623,7 +628,7 @@ function fixRedirect($matches)
 {
 	$url = $matches[1];
 
-    //split up the timeout from url
+	//split up the timeout from url
 	$parts = explode(';url=', $url);
 
 	if(defined('_JFUSION_DEBUG')) {
@@ -634,33 +639,33 @@ function fixRedirect($matches)
 		$debug['function'] = 'fixRedirect';
 	}
 
-    //get the correct URL to joomla
-    $params = JFusionFactory::getParams('joomla_int');
+	//get the correct URL to joomla
+	$params = JFusionFactory::getParams('joomla_int');
 	$source_url = $params->get('source_url');
 
-      //check to see if the URL is in SEF
+	//check to see if the URL is in SEF
 	if (strpos($parts[1],'index.php/')){
-          //fix inaccuracies in the phpBB3 SEF url generation code
-          $parts[1] = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $parts[1]);
-	    $query = explode('index.php/', $parts[1]);
-    	$redirect_url = $source_url . 'index.php/' . $query[1];
-    } else {
+		//fix inaccuracies in the phpBB3 SEF url generation code
+		$parts[1] = preg_replace('#(/&amp\;|/\?|&amp;)(.*?)\=#mS', '/$2,', $parts[1]);
+		$query = explode('index.php/', $parts[1]);
+		$redirect_url = $source_url . 'index.php/' . $query[1];
+	} else {
 		//parse the non-SEF URL
 		$uri = new JURI($parts[1]);
-    	//set the URL with the jFusion params to correct any domain mistakes
+		//set the URL with the jFusion params to correct any domain mistakes
 		//set the jfusion references for Joomla
-        $Itemid = JRequest::getVar('Itemid');
-        if ($Itemid){
+		$Itemid = JRequest::getVar('Itemid');
+		if ($Itemid){
 			$uri->setVar('Itemid', $Itemid);
-        }
+		}
 		$uri->setVar('option', 'com_jfusion');
 
 		//set the URL with the jFusion params to correct any domain mistakes
 		$redirect_url = $source_url . 'index.php?' . $uri->getQuery();
-    }
+	}
 
-      //reconstruct the redirect meta tag
-       $replacement = '<meta http-equiv="refresh" content="'.$parts[0] . ';url=' . $redirect_url .'">';
+	//reconstruct the redirect meta tag
+	$replacement = '<meta http-equiv="refresh" content="'.$parts[0] . ';url=' . $redirect_url .'">';
 	if(defined('_JFUSION_DEBUG')) {
 		$debug['parsed'] = $replacement;
 		$_SESSION["jfvbdebug"][] = $debug;
@@ -680,8 +685,8 @@ function fixCSS($css)
 	//remove comments
 	//trim off top to the body selector
 	$ini = strpos($css,'body');
-    $len = strlen($css);
-    $css = substr($css,$ini,$len);
+	$len = strlen($css);
+	$css = substr($css,$ini,$len);
 
 	$css = preg_replace('#\/\*(.*?)\*\/#mS','',$css);
 

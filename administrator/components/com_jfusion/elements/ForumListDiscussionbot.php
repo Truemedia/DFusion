@@ -42,8 +42,8 @@ class JElementForumListDiscussionbot extends JElement
 	            if (method_exists($JFusionPlugin,'getForumList')){
 		            $forumlist = $JFusionPlugin->getForumList();
 	    	        if (!empty($forumlist)) {
-	    	        	$selectedValue = $jPluginParam->get($name.'_'.$jname);
-	        	        $output .= JHTML::_('select.genericlist', $forumlist, $control_name.'['.$name.'_'.$jname.'][]', 'class="inputbox"',
+	    	        	$selectedValue = $jPluginParam->get($name);
+	        	        $output .= JHTML::_('select.genericlist', $forumlist, $control_name.'['.$name.'][]', 'class="inputbox"',
 	            	    'id', 'name', $selectedValue);
 		            } else {
 	    	            $output .= $jname . ': ' . JText::_('NO_LIST');

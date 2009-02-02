@@ -56,22 +56,24 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	  dual_login tinyint(4) NOT NULL,
 	  check_encryption tinyint(4) NOT NULL,
 	  activity tinyint(4) NOT NULL,
+	  search tinyint(4) NOT NULL DEFAULT 0,
+	  discussion tinyint(4) NOT NULL DEFAULT 0,
 	  plugin_files LONGBLOB,
 	  original_name varchar(50) NULL,
 	  PRIMARY KEY  (id)
 	);
 
-	INSERT INTO #__jfusion  (name , params,  slave, dual_login, status, check_encryption, activity) VALUES
-	('joomla_int', 0, 0, 0, 3, 0, 0),
-	('joomla_ext', 0, 3, 3, 0, 0, 0),
-	('vbulletin',  0, 0, 0, 0, 0, 1),
-	('phpbb3', 0, 0, 0, 0, 0, 1),
-	('dokuwiki', 0, 0, 0, 0, 0, 1),
-	('smf', 0, 0, 0, 0, 0, 1),
-	('mybb', 0, 0, 0, 0, 0, 1),
-	('magento', 0, 0, 0, 0, 0, 3),
-	('moodle', 0, 0, 0, 0, 0, 3),
-	('gallery2', 0, 0, 0, 0, 0, 1);
+	INSERT INTO #__jfusion  (name , params,  slave, dual_login, status, check_encryption, activity, search, discussion) VALUES
+	('joomla_int', 0, 0, 0, 3, 0, 0, 0, 0),
+	('joomla_ext', 0, 3, 3, 0, 0, 0, 0, 0),
+	('vbulletin',  0, 0, 0, 0, 0, 1, 1, 1),
+	('phpbb3', 0, 0, 0, 0, 0, 1, 1, 1),
+	('dokuwiki', 0, 0, 0, 0, 0, 1, 0, 0),
+	('smf', 0, 0, 0, 0, 0, 1, 0, 0),
+	('mybb', 0, 0, 0, 0, 0, 1, 0, 0),
+	('magento', 0, 0, 0, 0, 0, 3, 0, 0),
+	('moodle', 0, 0, 0, 0, 0, 3, 0, 0),
+	('gallery2', 0, 0, 0, 0, 0, 1, 0, 0);
 	";
 	$db->setQuery($batch_query);
 	if (!$db->queryBatch()){
@@ -89,31 +91,31 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	foreach($defaultPlugins as $plugin){
 		if(!in_array($plugin,$installedPlugins)){
 			if($plugin=='joomla_int') {
-				$pluginSql[] = "('joomla_int', 0, 0,  0, 3,  0, 0)";
+				$pluginSql[] = "('joomla_int', 0, 0,  0, 3,  0, 0, 0, 0)";
 			} elseif ($plugin=='joomla_ext') {
-				$pluginSql[] = "('joomla_ext',  0, 3, 3, 0,  0, 0)";
+				$pluginSql[] = "('joomla_ext',  0, 3, 3, 0,  0, 0, 0, 0)";
 			} elseif ($plugin=='vbulletin') {
-				$pluginSql[] = "('vbulletin',  0,  0, 0, 0,  0, 1)";
+				$pluginSql[] = "('vbulletin',  0,  0, 0, 0,  0, 1, 1, 1)";
 			} elseif ($plugin=='phpbb3') {
-				$pluginSql[] = "('phpbb3', 0, 0, 0, 0, 0, 1)";
+				$pluginSql[] = "('phpbb3', 0, 0, 0, 0, 0, 1, 1, 1)";
 			} elseif ($plugin=='smf') {
-				$pluginSql[] = "('smf', 0, 0, 0, 0,  0, 1)";
+				$pluginSql[] = "('smf', 0, 0, 0, 0,  0, 1, 0, 0)";
 			} elseif ($plugin=='mybb') {
-				$pluginSql[] = "('mybb', 0,  0, 0, 0,  0, 1)";
+				$pluginSql[] = "('mybb', 0,  0, 0, 0,  0, 1, 0, 0)";
 			} elseif ($plugin=='magento') {
-				$pluginSql[] = "('magento', 0, 0, 0, 0,  0, 3)";
+				$pluginSql[] = "('magento', 0, 0, 0, 0,  0, 3, 0, 0)";
 			} elseif ($plugin=='moodle') {
-				$pluginSql[] = "('moodle', 0,  0, 0, 0,  0, 3)";
+				$pluginSql[] = "('moodle', 0,  0, 0, 0,  0, 3, 0, 0)";
 			} elseif ($plugin=='gallery2') {
-				$pluginSql[] = "('gallery2', 0, 0, 0, 0, 0, 1)";
+				$pluginSql[] = "('gallery2', 0, 0, 0, 0, 0, 1, 0, 0)";
 			} elseif ($plugin=='dokuwiki') {
-				$pluginSql[] = "('dokuwiki', 0, 0, 0, 0, 0, 1)";
+				$pluginSql[] = "('dokuwiki', 0, 0, 0, 0, 0, 1, 0, 0)";
 			}
 		}
 	}
 
 	if(count($pluginSql)>0){
-		$query = "INSERT INTO #__jfusion  (name, params,  slave, dual_login, status,  check_encryption, activity) VALUES " . implode(', ',$pluginSql);
+		$query = "INSERT INTO #__jfusion  (name, params,  slave, dual_login, status,  check_encryption, activity, search, discussion) VALUES " . implode(', ',$pluginSql);
 		$db->setQuery($query);
 		if(!$db->query()) {
 			echo $db->stderr() . '<br/>';
@@ -146,13 +148,24 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	//add the plugin_files and original columns if it does not exist
 	if(!in_array('plugin_files',$columns)){
 		//add the column
-		$query = "ALTER TABLE #__jfusion ADD COLUMN plugin_files LONGBLOB, ADD COLUMN original_name varchar(50) NULL";
+		$query = "ALTER TABLE #__jfusion 
+					ADD COLUMN plugin_files LONGBLOB, 
+					ADD COLUMN original_name varchar(50) NULL,
+					ADD COLUMN search tinyint(4) NOT NULL DEFAULT 0,
+	  				ADD COLUMN discussion tinyint(4) NOT NULL DEFAULT 0";
 		$db->setQuery($query);
 		if(!$db->query()) {
 			echo $db->stderr() . '<br/>';
 		}
 	}
 
+	//update plugins with search and discuss bot capabilities
+	$query = "UPDATE #__jfusion SET search = 1, discussion = 1 WHERE name IN ('vbulletin','phpbb3')";
+	$db->setQuery($query);
+	if(!$db->query()) {
+		echo $db->stderr() . '<br/>';
+	}
+	
 	//restore deleted plugins if possible and applicable
 
 	//get a list of installed plugins
@@ -349,7 +362,3 @@ if ($db->loadResult()) {
 	$query = 'UPDATE #__jfusion SET status = 1 WHERE status = 3';
 	$db->Execute($query);
 }
-
-
-
-
