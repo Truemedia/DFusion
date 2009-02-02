@@ -153,7 +153,11 @@ class JFusionForum
      */
     function &getThread($contentid)
     {
-		return new stdClass();
+		$db =& JFactory::getDBO();
+        $query = 'SELECT threadid,postid,modified FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentid;
+        $db->setQuery($query);
+        $result = $db->loadObject();
+        return $result;
     }
     
      /**

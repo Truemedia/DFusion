@@ -384,7 +384,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function getSearchQuery()
 	{
-		//need to return threadid, postid, title, text, created
+		//need to return threadid, postid, title, text, created, section
 		$query = 'SELECT p.threadid, p.postid, f.forumid, CASE WHEN p.title = "" THEN t.title ELSE p.title END AS title, p.pagetext AS text,
 					FROM_UNIXTIME(p.dateline, "%Y-%m-%d %h:%i:%s") AS created,
 					CONCAT_WS( "/", f.title_clean, t.title ) AS section
