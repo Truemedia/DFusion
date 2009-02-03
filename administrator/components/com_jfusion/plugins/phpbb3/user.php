@@ -145,6 +145,12 @@ class JFusionUser_phpbb3 extends JFusionUser{
             //if no inactive reason is set clear the activation code
             if(empty($result->reason)){
             	$result->activation = '';
+            } else {
+            	if(empty($result->activation)){
+            		//user not active generate a random code
+			        jimport('joomla.user.helper');
+        			$result->activation = JUserHelper::genRandomPassword(13);
+            	}
             }
 
         }

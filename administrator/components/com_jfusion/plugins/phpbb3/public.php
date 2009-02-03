@@ -231,8 +231,8 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
 	        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
-	        $regex_body[]	= '#href="(.*?)jfile(.*?)"(.*?)>#me';
-            $replace_body[]	= '$this->fixURL("$1jfile$2","$3")';
+	        $regex_body[]	= '#href="(*?)'.JURI::base().'(*?)"(*?)>#me';
+            $replace_body[]	= '$this->fixURL("$1" . "'.JURI::base().'"."$2","$3")';
 
 			//fix for form actions
 	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
@@ -246,7 +246,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
     function fixURL($url, $extra){
   		//check to see if the URL is in SEF
-		if (strpos($url,'option,com_jfusion')){
+		if (strpos($url,',')){
 			//else do a regex to fix the SEF url
         	$url = preg_replace('#(/&amp\;|/\?\|?|&amp;)(.*?)\=#mS', '/$2,', $url);
         	$url = preg_replace('#(\?)(.*?)\=#mS', '/$2,', $url);
@@ -261,7 +261,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	$url = htmlspecialchars_decode($url);
 
       	//check to see if the URL is in SEF
-      	if(preg_match("/option\,com_jfusion|index\.php\//",$url)) {
+      	if(preg_match("/\,/",$url)) {
 			$parts = preg_split('/\/\&|\/|&/', $url);
 			foreach ($parts as $part){
 				$vars =preg_split('/,|=/', $part);
@@ -279,14 +279,14 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 		$replacement = 'action="'.$baseURL . '"' . $extra . '>';
 
 		//add which file is being referred to
-		if ($url_variables['jfile']){
+		if (!empty($url_variables['jfile'])){
         	//use the action file that was in jfile variable
         	$jfile = $url_variables['jfile'];
         	unset($url_variables['jfile']);
 		} else {
 			//get the filename
         	$jfile = JRequest::getVar('jfile');
-        	if(!$jfile){
+        	if(!empty($jfile)){
 				//use the action file from the action URL itself
     	     	$jfile = basename($url_details['path']);
         	}
@@ -396,7 +396,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
        //let's do a test to see if the url exists as some redirects are corrupted by phpBB when using SEF
 	   //if it does not, then reconstruct the url for the main page of the board
-      	$exists = (($ftest = @fopen($redirect_url, ‘r’)) === false) ? false : @fclose($ftest);
+      	$exists = (($ftest = @fopen($redirect_url, 'r')) === false) ? false : @fclose($ftest);
 
 		if(!$exists)
 		{

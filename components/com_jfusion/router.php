@@ -52,7 +52,7 @@ function jfusionParseRoute($segments)
 		if(strpos($segments[0],'.')){
 	    	$vars['jfile'] 		= $segments[0];
 	    	unset($segments[0]);
-		} else {
+		} elseif (!empty($segments[2])) {
 		    $vars['jname'] 		= $segments[0];
 		    $vars['view'] 		= $segments[1];
 	    	$vars['jfile'] 		= $segments[2];
