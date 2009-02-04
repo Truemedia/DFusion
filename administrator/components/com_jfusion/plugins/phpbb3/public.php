@@ -231,7 +231,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
 	        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
-	        $regex_body[]	= '#href="(*?)'.JURI::base().'(*?)"(*?)>#me';
+	        $regex_body[]	= '#href="(.*?)'.JURI::base().'(.*?)"(.*?)>#me';
             $replace_body[]	= '$this->fixURL("$1" . "'.JURI::base().'"."$2","$3")';
 
 			//fix for form actions
@@ -427,5 +427,47 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	//reconstruct the redirect meta tag
         return '<meta http-equiv="refresh" content="'.$parts[0].';url=' . $redirect_url .'">';
       }
+      
+
+	/************************************************
+	 * For JFusion Search Plugin
+	 ***********************************************/
+
+	function cleanUpSearchText($text)
+	{
+		$text = JFusionFunction::parseCode("html",$text);
+		return $text;
+	}
+
+	function getSearchQueryColumns()
+	{
+		$columns = new stdClass();
+		$columns->title = "p.post_subject";
+		$columns->text = "p.post_text";
+		return $columns;
+	}
+
+	function getSearchQuery()
+	{
+		//need to return threadid, postid, title, text, created, section
+		$query = 'SELECT p.topic_id, p.post_id, p.forum_id, p.post_subject AS title, p.post_text AS text,
+					FROM_UNIXTIME(p.post_time, "%Y-%m-%d %h:%i:%s") AS created,
+					CONCAT_WS( "/", f.forum_name, t.topic_title ) AS section
+					FROM #__posts AS p
+					INNER JOIN #__topics AS t ON t.topic_id = p.topic_id
+					INNER JOIN #__forums AS f on f.forum_id = p.forum_id';
+		return $query;
+	}
+	
+	function filterSearchResults(&$results)
+	{
+
+	}
+	
+	function getSearchResultLink($post)
+	{
+		$forum = JFusionFactory::getForum($this->getJname());
+		return $forum->getPostURL($post->topic_id,$post->post_id);
+	}      
 }
 
