@@ -29,15 +29,21 @@ function &plgSearchjfusionAreas()
 
 	//get the softwares with search enabled
 	$plugins = JFusionFunction::getPlugins('search');
+	$searchplugin =& JPluginHelper::getPlugin('search','jfusion');
+	$params = new JParameter( $searchplugin->params);
+	$enabledPlugins = unserialize(base64_decode($params->get('JFusionPluginParam')));
 	
 	foreach($plugins as $plugin)
 	{
-		if($plugin->name!="joomla_int") {
-			//make sure that search is enabled
-			$public =& JFusionFactory::getPublic($plugin->name);
-			$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
-			if($searchEnabled){
-				$areas[$plugin->name] = $plugin->name;
+		if(array_key_exists($plugin->name,$enabledPlugins)) {
+			if($plugin->name!="joomla_int") {
+				//make sure that search is enabled
+				$public =& JFusionFactory::getPublic($plugin->name);
+				$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
+					
+				if($searchEnabled){
+					$areas[$plugin->name] = $plugin->name;
+				}
 			}
 		}
 	}
