@@ -31,6 +31,10 @@ class modjfusionActivityHelper {
 	            $db->setQuery($query[$config['mode']][$config['lxt_type']]);
 	            $result = $db->loadRowList();
 	
+	            $forum->filterForumList($result);
+	            //reorder the keys for the for loop
+	            $result = array_values($result);
+	            
 	            if ($config['debug']) {
 	                $debug = "Query mode:" . $mode . '<br><br>SQL Query:' . $query[$mode][$lxt_type] .'<br><br>Results:<br>' ;
 	                for ($i=0; $i<count($result); $i++) {
@@ -59,7 +63,16 @@ class modjfusionActivityHelper {
 				            //process user info
 	                        if ($config['showuser']) {
 	                            if ($config['userlink']) {
-									$user_url = JFusionfunction::createURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $jname, $config['view'], $config['itemid']);
+	                            	if($config['userlink_software']!='' && $config['userlink_software'] != 'jfusion') {
+	                            		$user_url = $forum->getAltProfileURL($config['userlink_software'],$result[$i][1]);
+	                            	} else {
+	                            		$user_url = false;
+	                            	}
+	                            	
+	                            	if($user_url === false) {
+	                            		$user_url = JFusionFunction::createURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $jname, $config['view'], $config['itemid']);
+	                            	}
+	                            	
 									$user = '<a href="'. $user_url . '" target="' . $config['new_window'] . '">'.$result[$i][1].'</a>';
 	                            } else {
 									$user = $result[$i][1];
@@ -85,10 +98,10 @@ class modjfusionActivityHelper {
 	
 	                        //combine all info into an urlstring
 	                        if ($config['linktype'] == LINKPOST) {
-					$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($result[$i][6], $result[$i][0]), $jname, $config['view'], $config['itemid']);
+								$urlstring_pre = JFusionFunction::createURL($forum->getPostURL($result[$i][6], $result[$i][0]), $jname, $config['view'], $config['itemid']);
 	    	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $config['new_window'] . '">'. $subject.'</a>';
 	                        } else {
-	                        	$urlstring_pre = JFusionfunction::createURL($forum->getThreadURL($result[$i][0]), $jname, $config['view'], $config['itemid']);
+	                        	$urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($result[$i][0]), $jname, $config['view'], $config['itemid']);
 	                        	$urlstring = '<a href="'. $urlstring_pre . '" target="' . $config['new_window'] . '">' .$subject.'</a>';
 	                        }
 	

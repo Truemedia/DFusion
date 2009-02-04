@@ -101,6 +101,15 @@
 			<option value="0">HIDE</option>
 			<option value="1">SHOW</option>
 		</param>
+		<param name="avatar_software" type='list' default='jfusion'
+			label="AVATAR_SOFTWARE"
+			description="AVATAR_SOFTWARE_DESC">
+				<option value='cb'>Community Builder</option>
+				<option value='gravatar'>Gravatar</option>
+				<option value='jfusion'>JFusion</option>				
+				<option value='jomsocial'>JomSocial</option>
+				<option value='joomunity'>Joomunity</option>				
+		</param>		
 		<param name="pmcount" type="radio" default="1"
 			label="PM_COUNT"
 			description="PM_COUNT_DESCR">

@@ -196,17 +196,18 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
         	$reason = JText::_('NO_FILE_FOUND');
 		}
 
-		//get the joomla path from the file
-		jimport('joomla.filesystem.file');
-		$file_data = JFile::read($auth_file);
-      	preg_match_all('/define\(\'JPATH_BASE\'\,(.*)\)/',$file_data,$matches);
-
-		//compare it with our joomla path
-		if($matches[1][0] != '\''. JPATH_SITE.'\''){
-        	$error = 1;
-        	$reason = JText::_('PATH') . ' ' . JText::_('INVALID');
+		if($error == 0) {
+			//get the joomla path from the file
+			jimport('joomla.filesystem.file');
+			$file_data = JFile::read($auth_file);
+	      	preg_match_all('/define\(\'JPATH_BASE\'\,(.*)\)/',$file_data,$matches);
+	
+			//compare it with our joomla path
+			if($matches[1][0] != '\''. JPATH_SITE.'\''){
+	        	$error = 1;
+	        	$reason = JText::_('PATH') . ' ' . JText::_('INVALID');
+			}
 		}
-
 
 		if ($error == 0){
 			//check to see if the mod is enabled
@@ -239,11 +240,11 @@ return;
 		if ($error == 0){
 			//return success
 			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('ENABLED');
-			$output .= '<a href="javascript:void(0);" onclick="return auth_mod(\'disable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_DISABLE') . '</a>';
+			$output .= ' <a href="javascript:void(0);" onclick="return auth_mod(\'disable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_DISABLE') . '</a>';
 			return $output;
 		} else {
        		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('DISABLED') .': ' . $reason;
-			$output .= '<a href="javascript:void(0);" onclick="return auth_mod(\'enable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_ENABLE') . '</a>';
+			$output .= ' <a href="javascript:void(0);" onclick="return auth_mod(\'enable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_ENABLE') . '</a>';
 			return $output;
 		}
     }

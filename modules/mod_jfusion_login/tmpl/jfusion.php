@@ -9,11 +9,20 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access'); ?>
-
+die($avatar);
 <?php if($type == 'logout') : ?>
 <form action="index.php" method="post" name="login" id="form-login">
-<?php if ($params->get('avatar') && $avatar) : ?>
-	<div align="center"><img src="<?php echo $avatar; ?>" alt="<?php echo $user->get('name'); ?>" /></div>
+<?php if ($params->get('avatar') && $avatar) :
+	$size = getimagesize($avatar);
+	$w = $size[0];
+	$h = $size[1];
+	if($size[0]>60) {
+		$scale = min(60/$w, 80/$h);
+		$w = floor($scale*$w);
+		$h = floor($scale*$h);
+	}
+?>
+	<div align="center"><img src="<?php echo $avatar; ?>" height="<?php echo $h; ?>" width="<?php echo $w; ?>" alt="<?php echo $user->get('name'); ?>" /></div>
 <?php endif; ?>
 <?php if ($params->get('greeting')) : ?>
 	<div align="center">

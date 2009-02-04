@@ -139,6 +139,16 @@
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</param>
+		
+		<param name="userlink_software" type='list' default='jfusion'
+			label="USERLINK_SOFTWARE"
+			description="USERLINK_SOFTWARE_DESC">
+				<option value='cb'>Community Builder</option>
+				<option value='jfusion'>JFusion</option>				
+				<option value='jomsocial'>JomSocial</option>
+				<option value='joomunity'>Joomunity</option>				
+		</param>
+		
 		<param name="debug" type="list" default=""
 			label="DEBUG"
 			description="DEBUG_DESCR">

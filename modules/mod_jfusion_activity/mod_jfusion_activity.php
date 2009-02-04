@@ -45,6 +45,7 @@ $config['result_order'] = (intval($params->get('result_order'))) ? "DESC" : "ASC
 $config['showdate'] = intval($params->get('showdate'));
 $config['showuser'] = intval($params->get('showuser'));
 $config['userlink'] = intval($params->get('userlink'));
+$config['userlink_software'] = $params->get('userlink_software');
 $config['view'] = $params->get('link_mode');
 $config['debug'] = $params->get('debug');
 $config['itemid'] = $params->get('itemid');

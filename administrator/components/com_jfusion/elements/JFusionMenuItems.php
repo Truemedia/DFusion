@@ -29,6 +29,10 @@ class JElementJFusionMenuItems extends JElement
         $rows = $db->loadObjectList();
         
         if(!empty($rows)) {
+        	$row = new stdClass();
+        	$row->id = '';
+        	$row->name = '';
+        	array_unshift($rows,$row);  
 			return JHTML::_('select.genericlist', $rows, $control_name.'['.$name.']', '','id', 'name', $value);
         } else {
            return JText::_('NO_MENU_ITEMS');

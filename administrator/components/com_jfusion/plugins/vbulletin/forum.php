@@ -385,7 +385,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			$table .= $avatar;
 
 			//post title
-			$urlstring_pre = JFusionfunction::createURL($forum->getPostURL($p->threadid,$p->postid), $jname, $linkMode, $itemid);
+			$urlstring_pre = JFusionFunction::createURL($forum->getPostURL($p->threadid,$p->postid), $jname, $linkMode, $itemid);
 			$title = '<a href="'. $urlstring_pre . '">'. $p->title .'</a>';
 			$table .= "<div class = '{$css["postTitle"]}'>{$title}</div>\n";
 
@@ -393,7 +393,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			if ($showuser)
 			{
 				if ($userlink) {
-					$user_url = JFusionfunction::createURL($forum->getProfileURL($p->userid), $jname, $linkMode);
+					$user_url = JFusionFunction::createURL($forum->getProfileURL($p->userid), $jname, $linkMode);
 					$user = '<a href="'. $user_url . '">'.$p->username.'</a>';
 				} else {
 					$user = $p->username;

@@ -37,6 +37,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
     //Get the forum integration object
     $jname = JFusionFunction::getMaster();
     if ($jname->status == 1 ) {
+    	
         $MasterPlugin = JFusionFactory::getPublic($jname->name);
         $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view, $itemid);
         $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view, $itemid);
@@ -47,48 +48,74 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 		if ($PluginName != 'joomla_int'){
 			$JFusionPlugin = JFusionFactory::getForum($PluginName);
         	$userlookup = JFusionFunction::lookupUser($PluginName, $user->get('id'));
-
+			
 			//check to see if we found a user
 	        if ($userlookup) {
 	            if ($params->get('avatar')) {
     	            // retrieve avatar
-					$avatar = $JFusionPlugin->getAvatar($userlookup->userid);
+    	            $avatarSrc = $params->get('avatar_software');
+    	            if($avatarSrc=='' || $avatarSrc=='jfusion') {
+						$avatar = $JFusionPlugin->getAvatar($userlookup->userid);
+    	            } else {
+    	            	$avatar = $JFusionPlugin->getAltAvatar($avatarSrc, $user->get('id'));
+    	            }
             	}
 
             	if ($params->get('pmcount')) {
                 	$pmcount = $JFusionPlugin->getPrivateMessageCounts($userlookup->userid);
-                	$url_pm = JFusionfunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $view2,  $itemid2);
+                	$url_pm = JFusionFunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $view2,  $itemid2);
             	}
 
             	if ($params->get('viewnewmessages')) {
-                	$url_viewnewmessages = JFusionfunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $view2, $itemid2);
+                	$url_viewnewmessages = JFusionFunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $view2, $itemid2);
             	}
     			//output the login module
     			require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));
 	        } else {
     			require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
 	        }
-
         } else {
- /*
- THIS CANNOT BE CORRECT. WHEN WE ARE HERE, THE MASTER IS NOT JOOMLA_INT SO WE SHOULD NOT RESET THE URL's BELOW I COMMENTED THESE OUT AS A STOP GAP MEASURE. 
-HENK 19-1-2009 	        
+     	    //show the avatar if it is not set to JFusion
+            if ($params->get('avatar')) {
+				//retrieve avatar
+				$avatarSrc = $params->get('avatar_software');
+				if($avatarSrc!='jfusion') {
+					$avatar = JFusionForum::getAltAvatar($avatarSrc, $user->get('id'));
+				} else {
+					$avatar = false;
+				}
+			} else {
+				$avatar = false;
+			}
+        	
  	        //use the Joomla default urls
     	    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
         	$url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
 	        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
-*/	        
+	        
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
 
     } else {
+    	//show the avatar if it is not set to JFusion
+        if ($params->get('avatar')) {
+			//retrieve avatar
+			$avatarSrc = $params->get('avatar_software');
+			if($avatarSrc!='jfusion') {
+				$avatar = JFusionForum::getAltAvatar($avatarSrc, $user->get('id'));
+			} else {
+				$avatar = false;
+			}
+		} else {
+			$avatar = false;
+		}
+		    	
         //use the Joomla default urls
         $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
         $url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
         $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
     	require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
     }
-
 } else {
     //use the Joomla default urls
     $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );

@@ -39,6 +39,16 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function & getBuffer($jPluginParam)
 	{
+		//check to make sure the frameless hook is installed
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT active FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin'";
+		$db->setQuery($query);
+		$active = $db->loadResult();
+		if($active!='1') {
+			JError::raiseWarning(500, JText::_('VB_FRAMELESS_HOOK_NOT_INSTALLED'));
+			return null;
+		}
+		
 		// Get the path
 		$params = JFusionFactory::getParams($this->getJname());
 		$source_path = $params->get('source_path');

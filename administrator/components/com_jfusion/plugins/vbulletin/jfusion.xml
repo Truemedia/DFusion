@@ -52,5 +52,11 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="VB_HOOKS_DESC"/>
+		<param name="installFramelessHook" default="installFramelessHook" type="JFusionCustomParam" label='VB_FRAMELESS_HOOK' description="VB_FRAMELESS_HOOK_DESC"/>
+		<param name="installDualLoginHook" default="installDualLoginHook" type="JFusionCustomParam" label='VB_DUALLOGIN_HOOK' description="VB_DUALLOGIN_HOOK_DESC"/>
+		<param name="itemid_redirect" default='' type="JFusionMenuItems" label="VB_REDIRECT_ITEMID" description='VB_REDIRECT_ITEMID_DESC' />
+		<param name="installRedirectHook" default="installRedirectHook" type="JFusionCustomParam" label='VB_REDIRECT_HOOK' description="VB_DUALLOGIN_HOOK_DESC"/>
   	</params>
 </install>
