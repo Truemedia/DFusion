@@ -136,8 +136,8 @@ if ($error_type != 'Error'){ ?>
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')?></option>
 <option value="2"><?php echo JText::_('UPDATE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')?></option>
-<option value="3"><?php echo JText::_('DELETE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')</option>
-<option value="4"><?php echo JText::_('DELETE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')</option>
+<option value="3"><?php echo JText::_('DELETE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')?></option>
+<option value="4"><?php echo JText::_('DELETE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')?></option>
 ?>
 </select>
 <?php }
