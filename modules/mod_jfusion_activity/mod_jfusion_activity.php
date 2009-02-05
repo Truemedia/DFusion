@@ -23,11 +23,11 @@ require_once($model_file);
 require_once($factory_file);
 
 defined('_DATE_FORMAT_LC2') or define('_DATE_FORMAT_LC2','%A, %d %B %Y %H:%M');
-define('LAT', 0);
-define('LCT', 1);
-define('LCP', 2);
-define('LINKTHREAD', 0);
-define('LINKPOST', 1);
+defined('LAT') or define('LAT', 0);
+defined('LCT') or define('LCT', 1);
+defined('LCP') or define('LCP', 2);
+defined('LINKTHREAD') or define('LINKTHREAD', 0);
+defined('LINKPOST') or define('LINKPOST', 1);
 
 // configuration
 $config['mode'] = intval($params->get('mode'));
