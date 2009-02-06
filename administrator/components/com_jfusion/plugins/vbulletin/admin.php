@@ -277,7 +277,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$check = ($db->loadResult() > 0) ? true : false;
 
 		//make sure the vb auth plugin is installed and published
-		if($check) {
+		if($check===true) {
 			$check = (JPluginHelper::getPlugin('authentication','jfusionvbulletin')) ? true : false;	
 		} 
 			
