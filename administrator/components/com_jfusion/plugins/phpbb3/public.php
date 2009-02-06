@@ -240,7 +240,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 			$indexURL	= JURI::base() .'index.php';
             $replace_body[]	= '$this->fixAction("$1","$2","' . $indexURL .'")';
         }
-
+        
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
     }
 
@@ -457,6 +457,11 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 					INNER JOIN #__topics AS t ON t.topic_id = p.topic_id
 					INNER JOIN #__forums AS f on f.forum_id = p.forum_id';
 		return $query;
+	}
+
+	function getSearchCriteria(&$where)
+	{
+		$where .= " AND p.post_approved = 1";
 	}
 	
 	function filterSearchResults(&$results)

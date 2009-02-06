@@ -340,16 +340,18 @@ class JFusionFunction{
     }
 
     /**
-* Returns the userinfo data for JFusion plugin based on the Joomla userid
+* Returns the userinfo data for JFusion plugin based on the userid
 * @param string $jname name of the JFusion plugin used
-* @param string $userid The Joomla ID of the user
+* @param string $userid The ID of the user
+* @param boolean $isJoomlaId if true, returns the userinfo data based on Joomla, otherwise the plugin
 * @return object database Returns the userinfo as a Joomla database object
 **/
 
-    function lookupUser($jname, $userid)
+    function lookupUser($jname, $userid, $isJoomlaId = true)
     {
+    	$column = ($isJoomlaId) ? 'id' : 'userid';
         $db =& JFactory::getDBO();
-        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE id =' . $userid . ' AND jname = ' . $db->Quote($jname);
+        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE '.$column.' = ' . $userid . ' AND jname = ' . $db->Quote($jname);
         $db->setQuery($query);
         $result = $db->loadObject();
         return $result;
@@ -487,7 +489,7 @@ class JFusionFunction{
      * @param $postid
      * @param $jname
      */
-    function updateForumLookup($contentid, $threadid, $postid, $jname)
+    function updateForumLookup($contentid, $forumid, $threadid, $postid, $jname)
     {
         $db =& JFactory::getDBO();
 		$modified = time();
@@ -495,12 +497,12 @@ class JFusionFunction{
 		//check to see if content item has already been created in forum software
         $query = 'SELECT COUNT(*) FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentid . ' AND jname = ' . $db->Quote($jname);
         $db->setQuery($query);
-	    if($db->loadResult() == 0)
-	    {
+	    if($db->loadResult() == 0) {
 	    	//content item has not been created
 	        //prepare the variables
 	        $lookup = new stdClass;
 	        $lookup->contentid = $contentid;
+	        $lookup->forumid = $forumid;
 	        $lookup->threadid = $threadid;
 	        $lookup->postid = $postid;
 	        $lookup->modified = $modified;
@@ -508,11 +510,9 @@ class JFusionFunction{
 
 	        //insert the entry into the lookup table
 	        $db->insertObject('#__jfusion_forum_plugin', $lookup);
-	    }
-	    else
-	    {
+	    } else {
 	    	//content itmem has been created so updated variables to prevent duplicate threads
-	    	$query = "UPDATE #__jfusion_forum_plugin SET threadid = {$threadid}, postid = {$postid}, modified = {$modified} WHERE contentid = {$contentid} AND jname = {$db->Quote($jname)}";
+	    	$query = "UPDATE #__jfusion_forum_plugin SET forumid = {$forumid}, threadid = {$threadid}, postid = {$postid}, modified = {$modified} WHERE contentid = {$contentid} AND jname = {$db->Quote($jname)}";
 	    	$db->setQuery($query);
 	    	$db->query();
 	    }
@@ -544,26 +544,77 @@ class JFusionFunction{
     
     /**
      * Pasrses text from bbcode to html or html to bbcode using cbparser
+     * @param $text 
      * @param $to string with what to conver the text to; bbcode or html
-     * @param $text
+     * @param $stripAllHtml boolean  if $to==bbcode, strips all unsupported html from text 
      * @return string with converted text
      */
-    function parseCode($to='bbcode',$text)
+    function parseCode($text, $to, $stripAllHtml = false)
     {    	
-    	global $smiley_folder, $cb_guide_path, $use_pajamas, $prevent_spam, $spammer_strings, $spammer_agents,  $prevent_xss, $cb_ref_title;
-    	include_once('cbparser/cbparser.php');
-    	if($to=="bbcode") {
-   			$converted = html2bb($text);
-	
-    	} elseif($to=="html") {
-    		$converted = bb2html($text);
-    	}
-    	
-		if ($converted == ''){
-			JError::raiseWarning(500, JText::_('CODE_PARSE_ERROR'));
-			$converted = $text;
-		}
+    	if($to=='html') {
+   			require_once("parsers/nbbc.php"); 
+   			$bbcode = new BBCode_Parser; 
+   			$text = $bbcode->Parse($text); 	
+    	} elseif($to=='bbcode') {
+ 			static $search, $replace;
+ 			if(!is_array($search)) {
+ 				$search = $replace = array();
+ 							
+ 				//convert anything between code, html, or php tags to html entities to prevent conversion
+ 				$search[] = "#\<(code|pre)(.*?)\>(.*?)\<\/(code|pre)\>#sie";
+ 				$replace[] = "'[code]'.htmlspecialchars($3, ENT_QUOTES, UTF-8).'[/code]'";
+ 			
+ 				$search[] = "#\<(blockquote|cite)(.*?)\>(.*?)\<\/(blockquote|cite)\>#si";
+ 				$replace[] = "[quote]$3[/quote]";
 
-		return $converted;
+ 				$search[] = "#\<\ol(.*?)>(.*?)\<\/ol\>#si";
+ 				$replace[] = "[list=1]$2[/list]";
+ 				
+				$search[] = "#\<ul(.*?)\>(.*?)\<\/ul\>#si";
+ 				$replace[] = "[list]$2[/list]";
+ 				
+ 				$search[] = "#\<li(.*?)>(.*?)\<\/li\>#si";
+ 				$replace[] = "[*]$2";
+ 				
+ 				$search[] = "#\<img (.*?) src=('|\")(.*?)('|\")\>(.*?)\<\/img\>#si";
+ 				$replace[] = "[img]$3[/img]";
+ 				
+ 				$search[] = "#\<a (.*?) href=('|\")mailto:(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
+ 				$replace[] = "[email=$3]$6[/email]";
+ 				 				
+ 				$search[] = "#\<a (.*?) href=('|\")(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
+ 				$replace[] = "[url=$3]$6[/url]";
+ 				
+ 				$search[] = "#\<([biu])\>(.*?)\<\/([biu])\>#si";
+ 				$replace[] = "[$1]$2[/$3]"; 				
+		
+ 				$search[] = "#\<(.*?)style=(.*?)color:(.*?);(.*?)\>(.*?)\<\/(.*?)\>#si";
+ 				$replace[] = "[color=$3]$5</font>";
+ 				
+ 				$search[] = "#\<font color=('|\")(.*?)('|\")(.*?)\>(.*?)\<\/font\>#si";
+ 				$replace[] = "[color=$2]$5[/color]";				
+ 				
+				$search[] = "#\<tr(.*?)\>(.*?)\<\/tr\>#si";
+ 				$replace[] = "$2\n";
+ 				
+				$search[] = "#\<td(.*?)\>(.*?)\<\/td\>#si";
+ 				$replace[] = " $2 "; 				
+
+ 				$search[] = "#\<p\>\<\/p>#si";
+ 				$replace[] = "\n\n";
+ 				
+ 				//decode html entities that we converted for code and pre tags
+ 				$search[] = "#\[code\](.*?)\[\/code\]#sie";
+ 				$replace[] = "'[code]'.htmlspecialchars_decode($1,ENT_QUOTES).'[/code]'";
+ 				
+ 			}
+ 			
+ 			$text = str_ireplace(array("<br />","<br>","<br/>"), "\n", $text);
+ 			$text = preg_replace($search,$replace,$text);
+ 			 $text = preg_replace( '/\p{Z}/u', ' ', $text );
+ 			if($stripAllHtml) { $text = strip_tags($text); } 			
+    	}
+
+    	return $text;
     }
 }

@@ -315,7 +315,21 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$db->setQuery($query);
 		if (!$db->query()) {
 			JError::raiseWarning(500,$db->stderr());
-		}   	    	
+		}  
+
+		jimport('joomla.installer.helper');
+		jimport('joomla.installer.installer');
+		$url = 'http://jfusion.googlecode.com/svn/trunk/side_projects/vbulletin/plg_auth_jfusionvbulletin.zip';
+		$filename = JInstallerHelper::downloadPackage($url);			
+		$package = JInstallerHelper::unpack($filename);
+		$tmpInstaller = new JInstaller();
+		if(!$tmpInstaller->install($package)) {
+			JError::raiseWarning(550,JText::_('VB_AUTH_PLUGIN_INSTALL_FAILED'));
+		} else {
+			$query = "UPDATE #__plugins SET published = 1 WHERE folder = 'authentication' AND element = ' jfusionvbulletin'";
+			$db->Execute($query);
+		}
+		unset ($package, $tmpInstaller,$filename);
     }
     		
     function disable_duallogin()

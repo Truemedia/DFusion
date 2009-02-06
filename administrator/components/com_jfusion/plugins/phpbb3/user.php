@@ -766,9 +766,6 @@ class JFusionUser_phpbb3 extends JFusionUser{
 			}
 		}
 
-		//TODO clear moderator cache table
-		//$cache->destroy('sql', MODERATOR_CACHE_TABLE);
-
 		// Remove any undelivered mails...
 		$query = 'SELECT msg_id, user_id
 			FROM #__privmsgs_to
@@ -864,20 +861,6 @@ class JFusionUser_phpbb3 extends JFusionUser{
 				$status["debug"][] = "Updated the the number of PMs for user $_user_id since user $user_id was deleted.";
 			}
 		}
-
-		//TODO update newest user id
-		// Reset newest user info if appropriate
-		//if ($config['newest_user_id'] == $user_id)
-		//{
-		//	update_last_username();
-		//}
-
-		// TODO Decrement number of users if this user is active
-		/*if ($user_type != 1 && $user_type != 2)
-		{
-			set_config('num_users', $config['num_users'] - 1, true);
-		}
-		*/
 
 		return $status;
     }

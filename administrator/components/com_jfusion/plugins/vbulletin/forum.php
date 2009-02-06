@@ -16,6 +16,8 @@ defined('_JEXEC' ) or die('Restricted access' );
  */
 class JFusionForum_vbulletin extends JFusionForum
 {
+	var $joomla_globals;
+		
 	function JFusionForum_vbulletin()
 	{
 		//get the params object
@@ -58,6 +60,11 @@ class JFusionForum_vbulletin extends JFusionForum
 		}
 	}
 
+    function getJname()
+    {
+        return 'vbulletin';
+    }
+
 	function checkThreadExists(&$dbparams, &$contentitem)
 	{
 	    $status = array();
@@ -84,11 +91,14 @@ class JFusionForum_vbulletin extends JFusionForum
 		//datetime content was last updated
 		$contentModified = strtotime($contentitem->modified);
 
+		//backup Joomla's global scope
+		$this->backupGlobals();
+		
 		if(!empty($existingthread))
-		{
+		{			
 			//check to make sure the thread still exists in the software
 			$jdb = & JFusionFactory::getDatabase($this->getJname());
-			$query = "SELECT COUNT(*) FROM #__thread WHERE threadid = {$existingthread->threadid} AND firstpostid = {$existingthread->postid}";
+			$query = "SELECT COUNT(*) FROM #__thread WHERE forumid = {$existingthread->forumid} AND threadid = {$existingthread->threadid} AND firstpostid = {$existingthread->postid}";
 			$jdb->setQuery($query);
 			if($jdb->loadResult()==0)
 			{
@@ -97,15 +107,23 @@ class JFusionForum_vbulletin extends JFusionForum
             	if (empty($status['error'])) {
                 	$status['action'] = 'created';
             	}
+            	
+                //restore Joomla's global scope
+				$this->restoreGlobals();
+				            	
             	return $status;
 			}
 			elseif($contentModified > $postModified)
 			{
 				//update the post if the content has been updated
-				$this->updateThread($dbparams, $existingthread->threadid, $existingthread->postid, $contentitem, $status);
+				$this->updateThread($dbparams, $existingthread, $contentitem, $status);
 				if (empty($status['error'])) {
                 	$status['action'] = 'updated';
             	}
+            	
+                //restore Joomla's global scope
+				$this->restoreGlobals();
+				            	
             	return $status;
 			}
 		}
@@ -116,54 +134,14 @@ class JFusionForum_vbulletin extends JFusionForum
             if (empty($status['error'])) {
                 $status['action'] = 'created';
             }
+            
+			//restore Joomla's global scope
+			$this->restoreGlobals();
+			            
             return $status;
         }
 	}
-
-	function getDefaultForum(&$dbparams, &$contentitem)
-	{
-		//content section/category
-		$sectionid =& $contentitem->sectionid;
-		$catid =& $contentitem->catid;
-
-		//default forum to create post in
-		$forumid = $dbparams->get("default_forum");
-
-		//determine default forum
-		$sections = $dbparams->get("pair_sections");
-		$sectionPairs = empty($sections) ? false :  explode(";",$sections);
-
-		$categories = $dbparams->get("pair_categories");
-		$categoryPairs = empty($categories) ? false : explode(";",$categories);
-
-		if($sectionPairs)
-		{
-			foreach($sectionPairs as $pairs)
-			{
-				$pair = explode(",",$pairs);
-				//check to see if this section matches the articles
-				if($pair[0]==$sectionid) $forumid = $pair[1];
-			}
-		}
-
-		if($categoryPairs)
-		{
-			foreach($categoryPairs as $pairs)
-			{
-				$pair = explode(",",$pairs);
-				//check to see if this category matches the articles
-				if($pair[0]==$catid) $forumid = $pair[1];
-			}
-		}
-
-		return $forumid;
-	}
-
-    function getJname()
-    {
-        return 'vbulletin';
-    }
-
+	
 	function createThread(&$dbparams, &$contentitem, $forumid, &$status)
 	{
 		//initialize vb framework
@@ -198,7 +176,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		$threaddm->set('forumid', $foruminfo['forumid']);
 		$threaddm->set('userid', $userid);
 		$threaddm->set('title', $title);
-		$threaddm->set('pagetext',$text);
+		$threaddm->set('pagetext',trim($text));
 		$threaddm->set('allowsmilie', 1);
 		$threaddm->set('ipaddress', $_SERVER["REMOTE_ADDR"]);
 		$threaddm->set('visible', 1);
@@ -211,15 +189,18 @@ class JFusionForum_vbulletin extends JFusionForum
 			$postid = $threaddm->fetch_field('firstpostid');
 
 			//save the threadid to the lookup table
-			JFusionFunction::updateForumLookup($contentitem->id, $threadid, $postid, $this->getJname());
+			JFusionFunction::updateForumLookup($contentitem->id, $forumid, $threadid, $postid, $this->getJname());
 		}
 	}
 
-	function createPost(&$dbparams, $ids, &$contentitem, &$userinfo)
+	function createPost(&$dbparams, &$ids, &$contentitem, &$userinfo)
 	{
 		$text = JRequest::getVar('quickReply', false, 'POST');
 
 		if(!empty($text)) {
+			//backup Joomla's global scope
+			$this->backupGlobals();			
+			
 			$text = $this->prepareText($text);
 			
 			$status = array();
@@ -248,7 +229,6 @@ class JFusionForum_vbulletin extends JFusionForum
 			$postdm->setr('pagetext', $text);
 			
 			$postdm->set('visible', 1);
-			$postdm->set('showsignature', 1);
 			$postdm->set('allowsmilie', 1);
 			
 			$postdm->pre_save();
@@ -258,15 +238,22 @@ class JFusionForum_vbulletin extends JFusionForum
 				$id = $postdm->save();	
 			}
 
+			//restore Joomla's global scope
+			$this->restoreGlobals();
+			
 			return $status;
 		}
 	}
 	
-	function updateThread( &$dbparams, $threadid, $postid, &$contentitem, &$status)
+	function updateThread( &$dbparams, &$existingthread, &$contentitem, &$status)
 	{
 		//initialize the vb framework
 		if(!$this->vBulletinInit()) return null;
 
+		$forumid =& $existingthread->forumid;
+		$threadid =& $existingthread->threadid;
+		$postid =& $existingthread->postid;
+		
 		$firstPost = $dbparams->get("first_post");
 
 		//strip title of all html characters
@@ -305,27 +292,34 @@ class JFusionForum_vbulletin extends JFusionForum
 			$postdm->save();
 
 			//update the lookup table
-			JFusionFunction::updateForumLookup($contentitem->id, $threadid, $postid, $this->getJname());
+			JFusionFunction::updateForumLookup($contentitem->id, $forumid, $threadid, $postid, $this->getJname());
 		}
 	}
 
-	function prepareText($text)
+	function prepareText($text,$prepareForJoomla=false)
 	{
-		//first thing is to remove all joomla plugins
-		preg_match_all('/\{(.*)\}/U',$text,$matches);
-
-		//find each thread by the id
-		foreach($matches[1] AS $plugin) {
-			//replace plugin with nothing
-			$text = str_replace('{'.$plugin.'}',"",$text);
+		if($prepareForJoomla===false) {
+			//first thing is to remove all joomla plugins
+			preg_match_all('/\{(.*)\}/U',$text,$matches);
+	
+			//find each thread by the id
+			foreach($matches[1] AS $plugin) {
+				//replace plugin with nothing
+				$text = str_replace('{'.$plugin.'}',"",$text);
+			}
+			
+			$text = JFusionFunction::parseCode($text,'bbcode',true);
+		} else {
+			$text = JFusionFunction::parseCode($text,'html');
 		}
-
-		$text = JFusionFunction::parseCode("bbcode",$text);
-		return $text;
+		return $text;			
 	}
 
-	function getPosts(&$dbparams, $threadid, $postid)
+	function getPosts(&$dbparams, &$existingthread)
 	{
+		$threadid =& $existingthread->threadid;
+		$postid =& $existingthread->postid;
+		
 		//set the query
 		$limit_posts = $dbparams->get("limit_posts");
 		$limit = empty($limit_posts) || trim($limit_posts)==0 ? "" :  "LIMIT 0,$limit_posts";
@@ -333,13 +327,12 @@ class JFusionForum_vbulletin extends JFusionForum
 		$body_limit = $dbparams->get("body_limit");
 		$bodyLimit = empty($body_limit) || trim($body_limit)==0 ? "a.pagetext" : "left(a.pagetext, $body_limit)";
 
-		$where = "WHERE a.threadid = {$threadid} AND a.postid != {$postid}";
+		$where = "WHERE a.threadid = {$threadid} AND a.postid != {$postid} AND a.visible = 1";
 		$query = "SELECT a.postid , a.username, a.userid, a.title, a.dateline, $bodyLimit, a.threadid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid $where ORDER BY a.dateline $sort $limit";
 
 		$jdb = & JFusionFactory::getDatabase($this->getJname());
 		$jdb->setQuery($query);
 		$posts = $jdb->loadObjectList();
-
 		return $posts;
 	}
 
@@ -352,11 +345,13 @@ class JFusionForum_vbulletin extends JFusionForum
 		$showdate = intval($dbparams->get('show_date'));
 		$showuser = intval($dbparams->get('show_user'));
 		$showavatar = $dbparams->get("show_avatar");
+		$avatar_software = $dbparams->get("avatar_software",false);
 		$userlink = intval($dbparams->get('user_link'));
+		$link_software = $dbparams->get('userlink_software',false);
+		$userlink_custom = $dbparams->get('userlink_custom',false);
 		$linkMode = $dbparams->get("link_mode");
 		$itemid = $dbparams->get("itemid");
 		$jname = $this->getJname();
-		$forum = JFusionFactory::getForum($jname);
 		$header = $dbparams->get("post_header");
 
 		if($showdate && $showuser) $colspan = 2;
@@ -373,9 +368,23 @@ class JFusionForum_vbulletin extends JFusionForum
 
 			//avatar
 			if($showavatar){
-				$avatarSrc = $this->getAvatar($p->userid);
+				if(empty($avatar_software) || $avatar_software=='jfusion') {
+					$avatarSrc = $this->getAvatar($p->userid);
+				} else {
+    	         	$avatarSrc = $this->getAltAvatar($avatar_software,$p->userid,true);
+				}
+				
 				if($avatarSrc) {
-					$avatar = "<div class='{$css["userAvatar"]}'><img src='$avatarSrc'></div>";
+					$size = getimagesize($avatar);
+					$w = $size[0];
+					$h = $size[1];
+					if($size[0]>60) {
+						$scale = min(60/$w, 80/$h);
+						$w = floor($scale*$w);
+						$h = floor($scale*$h);
+					}
+					
+					$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";
 				} else {
 					$avatar = "";
 				}
@@ -385,7 +394,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			$table .= $avatar;
 
 			//post title
-			$urlstring_pre = JFusionFunction::createURL($forum->getPostURL($p->threadid,$p->postid), $jname, $linkMode, $itemid);
+			$urlstring_pre = JFusionFunction::createURL($this->getPostURL($p->threadid,$p->postid), $jname, $linkMode, $itemid);
 			$title = '<a href="'. $urlstring_pre . '">'. $p->title .'</a>';
 			$table .= "<div class = '{$css["postTitle"]}'>{$title}</div>\n";
 
@@ -393,7 +402,18 @@ class JFusionForum_vbulletin extends JFusionForum
 			if ($showuser)
 			{
 				if ($userlink) {
-					$user_url = JFusionFunction::createURL($forum->getProfileURL($p->userid), $jname, $linkMode);
+					if(!empty($link_software) && $link_software != 'jfusion' && $link_software!='custom') {
+						$user_url = $this->getAltProfileURL($link_software,$p->username);
+					} elseif ($link_software=='custom' && !empty($userlink_custom)) {
+						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->userid,false);
+						$user_url =  $userlink_custom.$userlookup->id;
+					} else {
+						$user_url = false;
+					}
+					
+					if($user_url === false) {
+						$user_url = JFusionFunction::createURL($this->getProfileURL($p->userid), $jname, $linkMode, $itemid);
+					}
 					$user = '<a href="'. $user_url . '">'.$p->username.'</a>';
 				} else {
 					$user = $p->username;
@@ -406,7 +426,8 @@ class JFusionForum_vbulletin extends JFusionForum
 			if($showdate) $table .= "<div class='{$css["postDate"]}'>".strftime($date_format, $tz_offset * 3600 + ($p->dateline)) . "</div>";
 
 			//post body
-			$table .= "<div class='{$css["postText"]}'>{$p->pagetext}</div> \n";
+			$text = $this->prepareText($p->pagetext,true);
+			$table .= "<div class='{$css["postText"]}'>{$text}</div> \n";
 			$table .= "</div>";
 		}
 
@@ -573,5 +594,19 @@ class JFusionForum_vbulletin extends JFusionForum
     	return $userinfo;
     }
     
+   //backs up joomla's global scope
+    function backupGlobals()
+    {
+    	$this->joomla_globals = $GLOBALS;
+    }
+
+    //restore joomla's global scope
+    function restoreGlobals()
+    {
+    	if(is_array($this->joomla_globals)) {
+    		$GLOBALS = $this->joomla_globals;
+    		$this->joomla_globals = "";
+    	}
+    }
 }
 ?>

@@ -403,6 +403,11 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 					INNER JOIN #__forum AS f on f.forumid = t.forumid';
 		return $query;
 	}
+
+	function getSearchCriteria(&$where)
+	{
+		$where .= " AND p.visible = 1";
+	}
 	
 	function filterSearchResults(&$results)
 	{

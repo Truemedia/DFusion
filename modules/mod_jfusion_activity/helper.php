@@ -63,9 +63,12 @@ class modjfusionActivityHelper {
 				            //process user info
 	                        if ($config['showuser']) {
 	                            if ($config['userlink']) {
-	                            	if($config['userlink_software']!='' && $config['userlink_software'] != 'jfusion') {
+	                            	if($config['userlink_software']!='' && $config['userlink_software'] != 'jfusion' && $config["userlink_software"]!='custom') {
 	                            		$user_url = $forum->getAltProfileURL($config['userlink_software'],$result[$i][1]);
-	                            	} else {
+	                            	} elseif ($config['userlink_software']=='custom' && !empty($config['userlink_custom'])) {
+										$userlookup = JFusionFunction::lookupUser($jname,$result[$i][2],false);
+										$user_url = $config['userlink_custom'].$userlookup->id;
+									} else {
 	                            		$user_url = false;
 	                            	}
 	                            	

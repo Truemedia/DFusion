@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="1.5" type="plugin" group="authentication">
+	<name>Authentication - JFusion vBulletin Dual Login</name>
+	<author>JFusion Development Team</author>
+	<creationDate>February 2009</creationDate>
+	<author>JFusion Development Team</author>
+	<authorEmail>webmaster@jfusion.org</authorEmail>
+	<authorUrl>http://www.jfusion.org</authorUrl>
+	<copyright>Copyright (C) 2009 JFusion. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<version>1.1.2</version>
+	<description>
+		This plugin allows for dual login from vBulletin to Joomla allowing a user to log into vBulletin and automatically be logged into Joomla A vBulletin plugin must be installed before this plugin will work.  Install the vB plugin via JFusion's configuration page for vBulletin.
+	</description>
+	<files folder="plugins/authentication">
+		<filename plugin="jfusionvbulletin">jfusionvbulletin.php</filename>
+	</files>
+</install>

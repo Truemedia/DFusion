@@ -111,11 +111,20 @@ class JFusionForum
      * Retrieves the source of the avatar for a Joomla supported component
      * @param $software
      * @param $uid
+     * @param $isPluginUid boolean if true, look up the Joomla id in the look up table
      * @return unknown_type
      */
-    function getAltAvatar($software,$uid)
+    function getAltAvatar($software,$uid,$isPluginUid = false)
     {
     	$db = & JFactory::getDBO();
+    	
+    	if($isPluginUid) {
+    		$jname = $this->getJname();
+    		$query = "SELECT id FROM #__jfusion_users_plugin WHERE jname = '$jname' AND userid = '$uid'";
+    		$db->setQuery($query);
+    		$uid = $db->loadResult();
+    	}
+    	
         if($software=="cb") {
        		$query = "SELECT avatar FROM #__comprofiler WHERE user_id = '$uid'";
     		$db->setQuery($query);
@@ -233,9 +242,43 @@ class JFusionForum
      * @param object $contentitem object containing content information
      * @return int Returns id number of the forum
      */
-	function getDefaultForum(&$params, &$contentitem)
+	function getDefaultForum(&$dbparams, &$contentitem)
 	{
-		return 0;
+		//content section/category
+		$sectionid =& $contentitem->sectionid;
+		$catid =& $contentitem->catid;
+
+		//default forum to create post in
+		$forumid = $dbparams->get("default_forum");
+
+		//determine default forum
+		$sections = $dbparams->get("pair_sections");
+		$sectionPairs = empty($sections) ? false :  explode(";",$sections);
+
+		$categories = $dbparams->get("pair_categories");
+		$categoryPairs = empty($categories) ? false : explode(";",$categories);
+
+		if($sectionPairs)
+		{
+			foreach($sectionPairs as $pairs)
+			{
+				$pair = explode(",",$pairs);
+				//check to see if this section matches the articles
+				if($pair[0]==$sectionid) $forumid = $pair[1];
+			}
+		}
+
+		if($categoryPairs)
+		{
+			foreach($categoryPairs as $pairs)
+			{
+				$pair = explode(",",$pairs);
+				//check to see if this category matches the articles
+				if($pair[0]==$catid) $forumid = $pair[1];
+			}
+		}
+
+		return $forumid;
 	}
 
     /**
@@ -247,7 +290,7 @@ class JFusionForum
     function &getThread($contentid)
     {
 		$db =& JFactory::getDBO();
-        $query = 'SELECT threadid,postid,modified FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentid;
+        $query = "SELECT * FROM #__jfusion_forum_plugin WHERE contentid = '$contentid' AND jname = '".$this->getJname()."'";
         $db->setQuery($query);
         $result = $db->loadObject();
         return $result;
@@ -268,31 +311,34 @@ class JFusionForum
 	 /**
      * Updates information in a specific thread/post
      * @param object with discussion bot parameters
-     * @param int Id of thread
-     * @param int Id of the first post
+     * @param $existingthread object with existin thread info
      * @param object $contentitem object containing content information
      * @param array $status contains errors and status of actions
      */
-	function updateThread(&$params, $threadid, $postid, &$contentitem, &$status)
+	function updateThread(&$params, &$existingthread, &$contentitem, &$status)
 	{
 
 	}
 
 	/**
-     * Prepares text before saving to db
+     * Prepares text before saving to db or presentint to joomla article
      * @param string Text to be modified
+     * @param $prepareForJoomla boolean to indicate if the text is to be saved to software's db or presented in joomla article
      * @return string Modified text
      */
-	function prepareText($text)
+	function prepareText($text, $prepareForJoomla = false)
 	{
-		//first thing is to remove all joomla plugins
-		preg_match_all('/\{(.*)\}/U',$text,$matches);
-
-		//find each thread by the id
-		foreach($matches[1] AS $plugin) {
-			//replace plugin with nothing
-			$text = str_replace('{'.$plugin.'}',"",$text);
+		if($prepareForJoomla===false) {
+			//first thing is to remove all joomla plugins
+			preg_match_all('/\{(.*)\}/U',$text,$matches);
+	
+			//find each thread by the id
+			foreach($matches[1] AS $plugin) {
+				//replace plugin with nothing
+				$text = str_replace('{'.$plugin.'}',"",$text);
+			}
 		}
+		
 		return $text;
 	}
 
@@ -329,11 +375,10 @@ class JFusionForum
 	/**
      * Retrieves the posts to be displayed in the content item if enabled
      * @param object with discussion bot parameters
-     * @param int Id of thread
-     * @param int Id of first post which is useful if you do not want the first post to be included in results
+     * @param object with forumid, threadid, and postid (first post in thread)
      * @return array or object Returns retrieved posts
      */
-	function getPosts(&$params, $threadid,$postid)
+	function getPosts(&$params, &$existingthread)
 	{
 		return array();
 	}
@@ -352,12 +397,12 @@ class JFusionForum
 	/**
 	 * Creates a post from the quick reply
 	 * @param object with discussion bot parameters
-	 * @param $ids array with thread id ($ids["threadid"]) and first post id ($ids["postid"]) 
+	 * @param $ids array with forum id ($ids["forumid"], thread id ($ids["threadid"]) and first post id ($ids["postid"]) 
 	 * @param $contentitem object of content item
 	 * @param $userinfo object info of the forum user
 	 * @return array with status
 	 */
-	function createPost(&$params, $ids, &$contentitem, &$userinfo)
+	function createPost(&$params, &$ids, &$contentitem, &$userinfo)
 	{
 		$status = array();
 		$status["error"] = false;

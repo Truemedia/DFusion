@@ -78,6 +78,15 @@ case $1 in
 		$0 create_main
 
 		;;
+	create_vb)
+		cd $FULLPATH
+		rm side_projects/vbulletin/*.zip
+		cd $FULLPATH/side_projects/vbulletin
+		zip -r $FULLPATH/side_projects/vbulletin/plg_auth_jfusionvbulletin.zip plugins/authentication/ -x *.svn* > /dev/null
+		cd $FULLPATH/side_projects/vbulletin/plugins/authentication
+		zip -gr $FULLPATH/side_projects/vbulletin/plg_auth_jfusionvbulletin.zip jfusionvbulletin.xml -x *.svn* > /dev/null
+		
+		;;
 	*)
 		echo "Usage $FULLPATH/create_package.sh {clear_packages|clear_main|clear|create_main|create_packages|create}"
 		;;

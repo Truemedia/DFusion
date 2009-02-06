@@ -287,6 +287,7 @@ if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 if (array_search($table_prefix . '#__jfusion_forum_plugin',$table_list) == false) {
 	$query = 'CREATE TABLE IF NOT EXISTS #__jfusion_forum_plugin (
   contentid int(11) NOT NULL,
+  forumid int(11) NOT NULL,
   threadid int(11) NOT NULL,
   postid int(11) NOT NULL,
   jname varchar(255) NOT NULL,
@@ -295,6 +296,19 @@ if (array_search($table_prefix . '#__jfusion_forum_plugin',$table_list) == false
 	$db->setQuery($query);
 	if (!$db->query()){
 		echo $db->stderr() . '<br/>';
+	}
+} else {
+	//add the forum id column
+	$query = "SHOW COLUMNS FROM #__jfusion_forum_plugin";
+	$db->setQuery($query);
+	$columns = $db->loadResultArray();
+	
+	if(!in_array('forumid',$columns)) {
+		$query = "ALTER TABLE #__jfusion_forum_plugin ADD COLUMN forumid int(11) NOT NULL";
+		$db->setQuery($query);
+		if (!$db->query()){
+			echo $db->stderr() . '<br/>';
+		}
 	}
 }
 

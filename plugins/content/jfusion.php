@@ -56,7 +56,7 @@ class plgContentJfusion extends JPlugin
 			if(!$JoomlaUser->guest && JRequest::getVar('jfusionForm'.$contentitem->id, false, 'POST')!==false && $params->get("enable_quickreply",false))	{
 				//get the threadid from the lookup table
 				$db =& JFactory::getDBO();
-				$query = 'SELECT threadid, postid FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentitem->id . ' AND jname = ' . $db->Quote($jname);
+				$query = 'SELECT forumid, threadid, postid FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentitem->id . ' AND jname = ' . $db->Quote($jname);
 				$db->setQuery($query);
 				$ids  = $db->loadAssoc();
 				$threadid = $ids["threadid"];
@@ -82,6 +82,7 @@ class plgContentJfusion extends JPlugin
 			$itemid =& $params->get("itemid",false);
 			$auto =& $params->get("auto_create");
 			$noPostMsg =& $params->get("noPostMsg");
+			$userid =& $params->get("default_userid");
 			$css = array();
 			$css['threadLink'] = $params->get("cssClassThreadLink");
 			$css['postArea'] = $params->get("cssClassPostArea");
@@ -97,8 +98,8 @@ class plgContentJfusion extends JPlugin
 			$css['quickReplyHeader'] = $params->get("cssClassQuickReplyHeader");
 			$this->loadDbCss($css);
 			
-			//create the thread if set to auto generate but only if the content is published
-			if($auto && $contentitem->state) {
+			//create the thread if set to auto generate but only if the content is published and a user has been set
+			if($auto && $contentitem->state && !empty($userid)) {
 				//generate the thread/post if article meets criteria
 				$generate = $this->checkIfForumSet($params, $contentitem);
 				if($generate) {
@@ -136,7 +137,7 @@ class plgContentJfusion extends JPlugin
 				}
 			
 				//get the posts
-				$posts = $JFusionPlugin->getPosts($params, $existingthread->threadid,$existingthread->postid);
+				$posts = $JFusionPlugin->getPosts($params, $existingthread);
 				if(!empty($posts)){			
 					$tableOfPosts .= $JFusionPlugin->createPostTable($params, $existingthread, $posts, $css);
 				} elseif(!empty($noPostMsg)) {
