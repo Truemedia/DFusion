@@ -35,7 +35,8 @@ class JElementJFusionMenuItems extends JElement
         	array_unshift($rows,$row);  
 			return JHTML::_('select.genericlist', $rows, $control_name.'['.$name.']', '','id', 'name', $value);
         } else {
-           return JText::_('NO_MENU_ITEMS');
+        	$return = "<input type=hidden id = '{$control_name}{$name}' name='{$control_name}[{$name}]' value=''>" . JText::_('NO_MENU_ITEMS');
+			return $return; 
         }
     }
 }

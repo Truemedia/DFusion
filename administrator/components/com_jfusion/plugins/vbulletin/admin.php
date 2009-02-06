@@ -275,7 +275,12 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Dual Login Plugin' AND active = 1";
 		$db->setQuery($query);
 		$check = ($db->loadResult() > 0) ? true : false;
-		    	
+
+		//make sure the vb auth plugin is installed and published
+		if($check) {
+			$check = (JPluginHelper::getPlugin('authentication','jfusionvbulletin')) ? true : false;	
+		} 
+			
         if ($check){
 			//return success
 			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_DUALLOGIN_HOOK') . ' ' . JText::_('ENABLED');
@@ -319,15 +324,18 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 
 		jimport('joomla.installer.helper');
 		jimport('joomla.installer.installer');
+    	$config =& JFactory::getConfig();
 		$url = 'http://jfusion.googlecode.com/svn/trunk/side_projects/vbulletin/plg_auth_jfusionvbulletin.zip';
 		$filename = JInstallerHelper::downloadPackage($url);			
+		$filename = $config->getValue('config.tmp_path').DS.$filename;
 		$package = JInstallerHelper::unpack($filename);
 		$tmpInstaller = new JInstaller();
-		if(!$tmpInstaller->install($package)) {
+		if(!$tmpInstaller->install($package['dir'])) {
 			JError::raiseWarning(550,JText::_('VB_AUTH_PLUGIN_INSTALL_FAILED'));
 		} else {
+			$jdb =& JFactory::getDBO();
 			$query = "UPDATE #__plugins SET published = 1 WHERE folder = 'authentication' AND element = ' jfusionvbulletin'";
-			$db->Execute($query);
+			$jdb->Execute($query);
 		}
 		unset ($package, $tmpInstaller,$filename);
     }
@@ -348,7 +356,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Redirect Plugin' AND active = 1";
 		$db->setQuery($query);
 		$check = ($db->loadResult() > 0) ? true : false;
-        
+
 		if ($check){
 			//return success
 			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_REDIRECT_HOOK') . ' ' . JText::_('ENABLED');
