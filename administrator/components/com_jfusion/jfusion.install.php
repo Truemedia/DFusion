@@ -150,7 +150,16 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		//add the column
 		$query = "ALTER TABLE #__jfusion 
 					ADD COLUMN plugin_files LONGBLOB, 
-					ADD COLUMN original_name varchar(50) NULL,
+					ADD COLUMN original_name varchar(50) NULL";
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
+	}
+
+	//add the search and discussion columns if upgrading from 1.1.1 Beta or earlier
+	if(!in_array('search',$columns)) {
+		$query = "ALTER TABLE #__jfusion
 					ADD COLUMN search tinyint(4) NOT NULL DEFAULT 0,
 	  				ADD COLUMN discussion tinyint(4) NOT NULL DEFAULT 0";
 		$db->setQuery($query);
@@ -158,7 +167,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 			echo $db->stderr() . '<br/>';
 		}
 	}
-
+		
 	//update plugins with search and discuss bot capabilities
 	$query = "UPDATE #__jfusion SET search = 1, discussion = 1 WHERE name IN ('vbulletin','phpbb3')";
 	$db->setQuery($query);
