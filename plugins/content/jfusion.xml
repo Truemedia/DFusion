@@ -8,7 +8,7 @@
 	<authorUrl>http://www.jfusion.org</authorUrl>
 	<copyright>Copyright (C) 2009 JFusion. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-	<version>1.1.2</version>
+	<version>1.1.2-001</version>
 	<description>
 		This is a discussion bot plugin for JFusion. Compatible plugins will have discussion bot settings available in their
 		configuration page.  To use for a single article place {jfusion_discuss id#} where id# is the id

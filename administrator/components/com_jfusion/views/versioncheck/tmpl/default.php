@@ -122,6 +122,8 @@ if($server_compatible){
 $component_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'com_jfusion.xml';
 $auth_xml = JPATH_SITE .DS.'plugins'.DS.'authentication'.DS.'jfusion.xml';
 $user_xml = JPATH_SITE .DS.'plugins'.DS.'user'.DS.'jfusion.xml';
+$search_xml = JPATH_SITE .DS.'plugins'.DS.'search'.DS.'jfusion.xml';
+$discussion_xml = JPATH_SITE .DS.'plugins'.DS.'content'.DS.'jfusion.xml';
 $activity_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_activity'.DS.'mod_jfusion_activity.xml';
 $login_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_login'.DS.'mod_jfusion_login.xml';
 $row_count = 0;
@@ -179,6 +181,44 @@ if (file_exists($user_xml)) {
 	<td>JFusion User Plugin</td>
 	<td><?php echo $xml->version;?></td>
 	<td><?php echo $this->JFusionVersion->user[0]->data();?></td></tr><?php
+	unset($xml);
+	if ($row_count == 1){
+		$row_count = 0;
+	}	else {
+		$row_count = 1;
+	}
+}
+if (file_exists($search_xml)) {
+	//get the version number
+	$xml = simplexml_load_file($search_xml);
+	if (version_compare($xml->version, $this->JFusionVersion->user[0]->data()) == -1){
+		echo '<tr class = "bad'.$row_count.'">';
+		$up2date = false;
+	} else {
+		echo '<tr class = "good'.$row_count.'">';
+	}	?>
+	<td>JFusion Search Plugin</td>
+	<td><?php echo $xml->version;?></td>
+	<td><?php echo $this->JFusionVersion->search[0]->data();?></td></tr><?php
+	unset($xml);
+	if ($row_count == 1){
+		$row_count = 0;
+	}	else {
+		$row_count = 1;
+	}
+}
+if (file_exists($discussion_xml)) {
+	//get the version number
+	$xml = simplexml_load_file($discussion_xml);
+	if (version_compare($xml->version, $this->JFusionVersion->user[0]->data()) == -1){
+		echo '<tr class = "bad'.$row_count.'">';
+		$up2date = false;
+	} else {
+		echo '<tr class = "good'.$row_count.'">';
+	}	?>
+	<td>JFusion Discussion Bot Plugin</td>
+	<td><?php echo $xml->version;?></td>
+	<td><?php echo $this->JFusionVersion->discussion[0]->data();?></td></tr><?php
 	unset($xml);
 	if ($row_count == 1){
 		$row_count = 0;
