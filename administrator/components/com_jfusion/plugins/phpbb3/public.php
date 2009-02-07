@@ -435,7 +435,9 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
 	function cleanUpSearchText($text)
 	{
-		$text = JFusionFunction::parseCode("html",$text);
+		//remove phpbb's bbcode uids
+		$text = preg_replace("#\[(.*?):(.*?)]#si","[$1]",$text);
+		$text = JFusionFunction::parseCode($text,'html');
 		return $text;
 	}
 
@@ -450,7 +452,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	function getSearchQuery()
 	{
 		//need to return threadid, postid, title, text, created, section
-		$query = 'SELECT p.topic_id, p.post_id, p.forum_id, p.post_subject AS title, p.post_text AS text,
+		$query = 'SELECT p.topic_id, p.post_id, p.forum_id, CASE WHEN p.post_subject = "" THEN CONCAT("Re: ",t.topic_title) ELSE p.post_subject END AS title, p.post_text AS text,
 					FROM_UNIXTIME(p.post_time, "%Y-%m-%d %h:%i:%s") AS created,
 					CONCAT_WS( "/", f.forum_name, t.topic_title ) AS section
 					FROM #__posts AS p

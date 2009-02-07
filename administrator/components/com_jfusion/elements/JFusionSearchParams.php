@@ -51,9 +51,9 @@ class JElementJFusionSearchParams extends JElement
 		
 				$jPluginParam->loadArray($value);
 				$jname = $jPluginParam->get('jfusionplugin');
-		
+				$title = $jPluginParam->get('title',$jname);
 				if (JFusionFunction::validPlugin($jname)) {
-					$output .= "<b>".$jname . "</b><br />\n";
+					$output .= "<b>" . $title . "</b><br />\n";
 					
 					//link mode
 					$output .= JText::_("LINK_MODE")."<br />";

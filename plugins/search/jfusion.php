@@ -42,7 +42,7 @@ function &plgSearchjfusionAreas()
 				$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
 					
 				if($searchEnabled){
-					$areas[$plugin->name] = $plugin->name;
+					$areas[$plugin->name] = $enabledPlugins[$plugin->name]['title'];
 				}
 			}
 		}
@@ -69,100 +69,48 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 	//get the search plugin parameters
 	$plugin =& JPluginHelper::getPlugin('search','jfusion');
 	$params = new JParameter( $plugin->params); 
-
+	//To hold all the search results
+	$searchResults = array();
+	
 	foreach($searchPlugins AS $key => $jname)
 	{
 		$linkMode =& $params->get('link_mode_'.$jname,'direct');
 		$itemid =& $params->get('itemid_'.$jname,false);
-		
-		//initialize plugin database
-		$db = & JFusionFactory::getDatabase($jname);
-		//load jfusion plugin search functions
 		$searchMe =& JFusionFactory::getPublic($jname);
-		//get the query used to search
-		$query = $searchMe->getSearchQuery();
-
-		//only search if the query is not empty
-		if($query!="") {
-			//assign specific table colums to title and text
-			$columns = $searchMe->getSearchQueryColumns();
-
-			//build the query
-			if($phrase == 'exact') {
-				$where = "(LOWER({$columns->title}) LIKE '%$text%') OR (LOWER({$columns->text}) like '%$text%')";
-			} else {
-				$words = explode (' ', $text);
-				$wheres = array();
-				foreach($words as $word) {
-					$wheres[] = "(LOWER({$columns->title}) LIKE '%$word%') OR (LOWER({$columns->text}) like '%$word%')";
-				}
-
-				if($phrase == 'all') $separator = "AND";
-				else $separator = "OR";
-
-				$where = '(' . implode ( ") $separator (", $wheres) . ')';
+		$results = $searchMe->getSearchResults($text,$phrase);
+		
+		//load the results
+		if(is_array($results)) {	
+			foreach($results as $result) {
+				//add a link
+				$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode,$itemid);
+				$result->href = $href;
+				//open link in same window
+				$result->browsernav = 2;
+				//clean up the text such as removing bbcode, etc
+				$result->text = $searchMe->cleanUpSearchText($result->text);
+				$result->title = $searchMe->cleanUpSearchText($result->title);
+				$result->section = $searchMe->cleanUpSearchText($result->section);
 			}
-			
-			//pass the where clause into the plugin in case it wants to add something
-			$searchMe->getSearchCriteria($where);
-			
-			$query .= " WHERE $where";
-			
-			$db->setQuery($query);
-			$results = $db->loadObjectList();
-			
-			//contains the rows returned from plugins
-			$rows = array();
-			
-			//pass results back to the plugin in case they need to be filtered
-			$searchMe->filterSearchResults($results);
-			
-			//load the results
-			if(is_array($results)) {
-				foreach($results as $result) {
-					//add a link
-					$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode,$itemid);
-					$result->href = $href;
-					//open link in same window
-					$result->browsernav = 2;
-					//clean up the text such as removing bbcode, etc
-					$result->text = $searchMe->cleanUpSearchText($result->text);
-					$result->section = $searchMe->cleanUpSearchText($result->section);
-					$result->title = $searchMe->cleanUpSearchText($result->title);
-				}
-				$rows[] = $results;
-			} else {
-				JError::raiseWarning(500, $db->stderr());
-				return null;
-			}
+
+			$searchResults = array_merge($searchResults,$results);			
 		}
 	}
+	
+	//sort the results
+	jimport('joomla.utilities.array');
 
-	//To hold all the search results
-	$searchResults = array();
-
-	//do we have any rows?
-	if(count($rows)>0) {
-		//merge all the rows into one array
-		foreach($rows AS $r) {
-			$searchResults = array_merge($searchResults,$r);
-		}
-
-		//sort the results
-		jimport('joomla.utilities.array');
-
-		switch ($ordering){
-			case 'oldest':
-				JArrayHelper::sortObjects($searchResults, 'created');
-				break;
-			case 'alpha':
-				JArrayHelper::sortObjects($searchResults, 'title');
-				break;
-			case 'newest':
-			default:
-				JArrayHelper::sortObjects($searchResults, 'created', -1);
-				break;
-		}
+	switch ($ordering){
+		case 'oldest':
+			JArrayHelper::sortObjects($searchResults, 'created');
+			break;
+		case 'alpha':
+			JArrayHelper::sortObjects($searchResults, 'title');
+			break;
+		case 'newest':
+		default:
+			JArrayHelper::sortObjects($searchResults, 'created', -1);
+			break;
 	}
 
 	return $searchResults;

@@ -227,6 +227,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			$postdm->setr('parentid', $ids["postid"]);
 			$postdm->setr('threadid', $ids["threadid"]);
 			$postdm->setr('pagetext', $text);
+			$postdm->set('title', "Re: {$threadinfo['title']}");
 			
 			$postdm->set('visible', 1);
 			$postdm->set('allowsmilie', 1);

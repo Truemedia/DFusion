@@ -543,7 +543,7 @@ class JFusionFunction{
     }
     
     /**
-     * Pasrses text from bbcode to html or html to bbcode using cbparser
+     * Pasrses text from bbcode to html or html to bbcode
      * @param $text 
      * @param $to string with what to conver the text to; bbcode or html
      * @param $stripAllHtml boolean  if $to==bbcode, strips all unsupported html from text 
@@ -552,10 +552,15 @@ class JFusionFunction{
     function parseCode($text, $to, $stripAllHtml = false)
     {    	
     	if($to=='html') {
+    		//entities must be decoded to prevent encoding already encoded entities
+			$text = html_entity_decode($text);
    			require_once("parsers/nbbc.php"); 
    			$bbcode = new BBCode_Parser; 
-   			$text = $bbcode->Parse($text); 	
-    	} elseif($to=='bbcode') {
+   			$text = $bbcode->Parse($text);
+   			//must decode again to display entities properly
+   			$text = html_entity_decode($text);
+   			
+    	} elseif($to=='bbcode') { 		
  			static $search, $replace;
  			if(!is_array($search)) {
  				$search = $replace = array();

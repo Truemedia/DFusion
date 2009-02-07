@@ -449,7 +449,11 @@ class JFusionForum_phpbb3 extends JFusionForum
 	
 			$message_parser = '';
 			$this->phpbbInit($text, $message_parser);	
-	
+
+			//get some topic information
+			$query = "SELECT topic_title, topic_replies,	topic_replies_real FROM #__topics WHERE topic_id = {$ids['threadid']}";
+			$jdb->setQuery($query);
+			$topic = $jdb->loadObject();			
 			//the user information
 			$query = "SELECT user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
 			$jdb->setQuery($query);		
@@ -470,7 +474,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$post_row->enable_magic_url	= 1;
 			$post_row->enable_sig		= 1;
 			$post_row->post_username	= $phpbbUser->username;
-			$post_row->post_subject		= '';
+			$post_row->post_subject		= "Re: {$topic->topic_title}";
 			$post_row->post_text		= $message_parser->message;
 			$post_row->post_checksum	= md5($message_parser->message);
 			$post_row->post_attachment	= 0;
@@ -485,10 +489,6 @@ class JFusionForum_phpbb3 extends JFusionForum
 				return $status;
 			}
 			$postid = $jdb->insertid();			
-		
-			$query = "SELECT topic_replies,	topic_replies_real FROM #__topics WHERE topic_id = {$ids['threadid']}";
-			$jdb->setQuery($query);
-			$num = $jdb->loadObject();
 			
 			$topic_row = new stdClass();
 			$topic_row->topic_last_post_id			= $postid;
@@ -497,8 +497,8 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$topic_row->topic_last_poster_name		= $userinfo->username;
 			$topic_row->topic_last_poster_colour	= $phpbbUser->user_colour;
 			$topic_row->topic_last_post_subject		= '';
-			$topic_row->topic_replies				= $num->topic_replies + 1;
-			$topic_row->topic_replies_real 			= $num->topic_replies_real + 1;
+			$topic_row->topic_replies				= $topic->topic_replies + 1;
+			$topic_row->topic_replies_real 			= $topic->topic_replies_real + 1;
 			$topic_row->topic_id					= $ids['threadid'];
 			if(!$jdb->updateObject('#__topics', $topic_row, 'topic_id' )) {
 				$status['error'] = $jdb->stderr();

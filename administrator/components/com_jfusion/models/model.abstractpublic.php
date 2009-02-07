@@ -88,7 +88,57 @@ class JFusionPublic{
 	/************************************************
 	 * Functions For JFusion Search Plugin
 	 ***********************************************/
-	   
+    
+    /**
+     * Retrieves the search results to be displayed.  Placed here so that plugins that do not use the database can retrieve and return results
+     * @param $text string text to be searched
+     * @param $phrase string how the search should be performed exact, all, or any
+     * @return array of results as objects
+     * Each result should include:
+     * $result->title = title of the post/article
+     * $result->section = section of  the post/article (shows underneath the title; example is Forum Name / Thread Name)
+     * $result->text = text body of the post/article
+     * $result->?? = whatever else you need to create the link in getSearchResultLink()
+     */
+	function getSearchResults(&$text, &$phrase)
+	{
+		//initialize plugin database
+		$db = & JFusionFactory::getDatabase($this->getJname());
+		//get the query used to search
+		$query = $this->getSearchQuery();
+
+		//assign specific table colums to title and text
+		$columns = $this->getSearchQueryColumns();
+
+		//build the query
+		if($phrase == 'exact') {
+			$where = "(LOWER({$columns->title}) LIKE '%$text%') OR (LOWER({$columns->text}) like '%$text%')";
+		} else {
+			$words = explode (' ', $text);
+			$wheres = array();
+			foreach($words as $word) {
+				$wheres[] = "(LOWER({$columns->title}) LIKE '%$word%') OR (LOWER({$columns->text}) like '%$word%')";
+			}
+
+			if($phrase == 'all') $separator = "AND";
+			else $separator = "OR";
+
+			$where = '(' . implode ( ") $separator (", $wheres) . ')';
+		}
+		
+		//pass the where clause into the plugin in case it wants to add something
+		$this->getSearchCriteria($where);
+		
+		$query .= " WHERE $where";
+		
+		$db->setQuery($query);
+		$results = $db->loadObjectList();
+		
+		//pass results back to the plugin in case they need to be filtered
+		$this->filterSearchResults($results);
+		return $results;
+	}   
+    
      /**
      * Assigns specific db columns to title and text of content retrieved
      * @return object Db columns assigned to title and text of content retrieved
