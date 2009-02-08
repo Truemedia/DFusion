@@ -13,10 +13,10 @@ defined('_JEXEC') or die('Restricted access');
 //display the paypal donation button
 JFusionFunction::displayDonate();
 
-?>
-<script type="text/javascript" src="<?php echo 'components/com_jfusion/js/moodalbox.js'; ?>"></script>
-<link rel="stylesheet" href="<?php echo 'components/com_jfusion/css/moodalbox.css'; ?>" type="text/css" media="screen" />
+//allow for AJAX popups
+JHTML::_('behavior.modal', 'a.modal');
 
+?>
 <script language="javascript" type="text/javascript">
 <!--
 checked=false;
@@ -169,7 +169,7 @@ if(is_array($syncdata['slave_data'])){
 echo '<td>' . $total_error . '</td>';?>
 
 
-<td><a href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>" rel="moodalbox"><?php echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a></td>
+<td><a class="modal" rel="{handler: 'iframe', size: {x: 650, y: 375}}" href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>"><?php echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a></td>
 </tr>
 
 
