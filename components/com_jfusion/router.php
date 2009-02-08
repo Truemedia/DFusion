@@ -28,6 +28,8 @@ function jfusionBuildRoute(&$query)
 		}
 	}
 	//change all other variables into SEF
+	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 	$params = JFusionFactory::getParams('joomla_int');
 	$sefmode = $params->get('sefmode');
 	if($sefmode == 1){
