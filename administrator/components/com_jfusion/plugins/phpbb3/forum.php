@@ -151,10 +151,10 @@ class JFusionForum_phpbb3 extends JFusionForum
     /************************************************
 	 * Functions For JFusion Discussion Bot Plugin
 	 ***********************************************/
-    
+
     /**
      * Checks to see if a thread already exists for the content item and calls the appropriate function
-     * @param object with discussion bot parameters 
+     * @param object with discussion bot parameters
      * @param object $contentitem object containing content information
      * @return array Returns status of actions with errors if any
      */
@@ -219,7 +219,7 @@ class JFusionForum_phpbb3 extends JFusionForum
             return $status;
         }
 	}
-    
+
      /**
      * Creates new thread and posts first post
      * @param object with discussion bot parameters
@@ -231,13 +231,13 @@ class JFusionForum_phpbb3 extends JFusionForum
 	{
 		//backup Joomla's globals
 		$joomlaGlobals = $_GLOBALS;
-		
+
 		//setup some variables
 		$userid = $dbparams->get("default_userid");
 		$firstPost = $dbparams->get("first_post");
-		$jdb =& JFusionFactory::getDatabase($this->getJname()); 
+		$jdb =& JFusionFactory::getDatabase($this->getJname());
 		$subject = trim(strip_tags($contentitem->title));
-		
+
 		//set what should be posted as the first post
 		if($firstPost=="articleLink") {
 			//create link
@@ -250,17 +250,17 @@ class JFusionForum_phpbb3 extends JFusionForum
 			//prepare the text for posting
 			$text = $this->prepareText($contentitem->text);
 		}
-		
+
 		$message_parser = '';
-		$this->phpbbInit($text, $message_parser);	
+		$this->phpbbInit($text, $message_parser);
 
 		//the user information
 		$query = "SELECT username_clean, user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
-		$jdb->setQuery($query);		
+		$jdb->setQuery($query);
 		$phpbbUser = $jdb->loadObject();
-		
+
 		$current_time = time();
-	
+
 		$topic_row = new stdClass();
 		$topic_row->topic_poster = $userid;
 		$topic_row->topic_time = $current_time;
@@ -272,15 +272,15 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$topic_row->topic_first_poster_colour = $phpbbUser->user_permissions;
 		$topic_row->topic_type = 0;
 		$topic_row->topic_time_limit = 0;
-		$topic_row->topic_attachment = 0;	
-		
+		$topic_row->topic_attachment = 0;
+
 		if(!$jdb->insertObject('#__topics', $topic_row, 'topic_id' )){
 			$status['error'] = $jdb->stderr();
 			$_GLOBALS = $joomlaGlobals;
 			return;
 		}
 		$topicid = $jdb->insertid();
-		
+
 		$post_row = new stdClass();
 		$post_row->forum_id			= $forumid;
 		$post_row->topic_id 		= $topicid;
@@ -302,14 +302,14 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$post_row->bbcode_uid		= $message_parser->bbcode_uid;
 		$post_row->post_postcount	= 1;
 		$post_row->post_edit_locked	= 0;
-					
+
 		if(!$jdb->insertObject('#__posts', $post_row, 'post_id')) {
 			$status['error'] = $jdb->stderr();
 			$_GLOBALS = $joomlaGlobals;
 			return;
 		}
-		$postid = $jdb->insertid();			
-	
+		$postid = $jdb->insertid();
+
 		$topic_row = new stdClass();
 		$topic_row->topic_first_post_id			= $postid;
 		$topic_row->topic_last_post_id			= $postid;
@@ -324,7 +324,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$_GLOBALS = $joomlaGlobals;
 			return;
 		}
-		
+
 		$forum_stats = new stdClass();
 		$forum_stats->forum_last_post_id 		=  $postid;
 		$forum_stats->forum_last_post_subject	= $jdb->Quote($subject);
@@ -344,11 +344,11 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$_GLOBALS = $joomlaGlobals;
 			return;
 		}
-		
+
 		if(!empty($topicid) && !empty($postid)) {
 			//save the threadid to the lookup table
 			JFusionFunction::updateForumLookup($contentitem->id, $forumid, $topicid, $postid, $this->getJname());
-		}	
+		}
 
 		//restore Joomla's globals
 		$_GLOBALS = $joomlaGlobals;
@@ -369,12 +369,12 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$threadid =& $existingthread->threadid;
 		$forumid =& $existingthread->forumid;
 		$postid =& $existingthread->postid;
-		
+
 		//setup some variables
 		$firstPost = $dbparams->get("first_post");
-		$jdb =& JFusionFactory::getDatabase($this->getJname()); 
+		$jdb =& JFusionFactory::getDatabase($this->getJname());
 		$subject = trim(strip_tags($contentitem->title));
-		
+
 		//set what should be posted as the first post
 		if($firstPost=="articleLink") {
 			//create link
@@ -387,20 +387,20 @@ class JFusionForum_phpbb3 extends JFusionForum
 			//prepare the text for posting
 			$text = $this->prepareText($contentitem->text);
 		}
-		
+
 		$message_parser = '';
-		$this->phpbbInit($text, $message_parser);	
+		$this->phpbbInit($text, $message_parser);
 
 		$message_parser->bbcode_bitfield = $message_parser->bbcode_bitfield;
 		$message_parser->bbcode_uid = $message_parser->bbcode_uid;
 		$message_parser->message = $message_parser->message;
 		$current_time = time();
 		$userid = $dbparams->get('default_user');
-		
+
 		$query = "SELECT post_edit_count FROM #__posts WHERE post_id = $postid";
 		$jdb->setQuery($query);
 		$count = $jdb->loadResult();
-		
+
 		$post_row = new stdClass();
 		$post_row->post_subject		= $subject;
 		$post_row->post_text		= $message_parser->message;
@@ -414,11 +414,11 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$post_row->post_id 			= $postid;
 		if(!$jdb->updateObject('#__posts', $post_row, 'post_id')) {
 			$status['error'] = $jdb->stderr();
-		} else {		
+		} else {
 			//update the lookup table
 			JFusionFunction::updateForumLookup($contentitem->id, $forumid, $threadid, $postid, $this->getJname());
 		}
-		
+
 		//restore Joomla's globals
 		$_GLOBALS = $joomlaGlobals;
 	}
@@ -426,7 +426,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 	/**
 	 * Creates a post from the quick reply
 	 * @param object with discussion bot parameters
-	 * @param $ids array with thread id ($ids["threadid"]) and first post id ($ids["postid"]) 
+	 * @param $ids array with thread id ($ids["threadid"]) and first post id ($ids["postid"])
 	 * @param $contentitem object of content item
 	 * @param $userinfo object info of the forum user
 	 * @return array with status
@@ -438,27 +438,27 @@ class JFusionForum_phpbb3 extends JFusionForum
 
 		//backup Joomla's globals
 		$joomlaGlobals = $_GLOBALS;
-		
+
 		//setup some variables
 		$userid = $userinfo->userid;
-		$jdb =& JFusionFactory::getDatabase($this->getJname()); 
+		$jdb =& JFusionFactory::getDatabase($this->getJname());
 		$text = JRequest::getVar('quickReply', false, 'POST');
-		
+
 		if(!empty($text)) {
 			$text = $this->prepareText($text);
-	
+
 			$message_parser = '';
-			$this->phpbbInit($text, $message_parser);	
+			$this->phpbbInit($text, $message_parser);
 
 			//get some topic information
 			$query = "SELECT topic_title, topic_replies,	topic_replies_real FROM #__topics WHERE topic_id = {$ids['threadid']}";
 			$jdb->setQuery($query);
-			$topic = $jdb->loadObject();			
+			$topic = $jdb->loadObject();
 			//the user information
 			$query = "SELECT user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
-			$jdb->setQuery($query);		
+			$jdb->setQuery($query);
 			$phpbbUser = $jdb->loadObject();
-			
+
 			$current_time = time();
 
 			$post_row = new stdClass();
@@ -482,14 +482,14 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$post_row->bbcode_uid		= $mssage_parser->bbcode_uid;
 			$post_row->post_postcount	= 1;
 			$post_row->post_edit_locked	= 0;
-						
+
 			if(!$jdb->insertObject('#__posts', $post_row, 'post_id')) {
 				$status['error'] = $jdb->stderr();
 				$_GLOBALS = $joomlaGlobals;
 				return $status;
 			}
-			$postid = $jdb->insertid();			
-			
+			$postid = $jdb->insertid();
+
 			$topic_row = new stdClass();
 			$topic_row->topic_last_post_id			= $postid;
 			$topic_row->topic_last_post_time		= $current_time;
@@ -509,7 +509,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$query = "SELECT forum_posts FROM #__forums WHERE forum_id = {$ids['forumid']}";
 			$jdb->setQuery($query);
 			$num = $jdb->loadObject();
-			
+
 			$forum_stats = new stdClass();
 			$forum_stats->forum_last_post_id 		=  $postid;
 			$forum_stats->forum_last_post_subject	= '';
@@ -529,12 +529,12 @@ class JFusionForum_phpbb3 extends JFusionForum
 				$status['error'] = $jdb->stderr();
 				$_GLOBALS = $joomlaGlobals;
 				return $status;
-			}		
+			}
 		}
 		$_GLOBALS = $joomlaGlobals;
-		return $status;	
-	}	
-	
+		return $status;
+	}
+
 	/**
      * Prepares text before saving to db or presentint to joomla article
      * @param string Text to be modified
@@ -546,14 +546,14 @@ class JFusionForum_phpbb3 extends JFusionForum
 		if($prepareForJoomla===false) {
 			//first thing is to remove all joomla plugins
 			preg_match_all('/\{(.*)\}/U',$text,$matches);
-	
+
 			//find each thread by the id
 			foreach($matches[1] AS $plugin) {
 				//replace plugin with nothing
 				$text = str_replace('{'.$plugin.'}',"",$text);
 			}
-		
-			$text = JFusionFunction::parseCode($text,'bbcode');	
+
+			$text = JFusionFunction::parseCode($text,'bbcode');
 		} else {
 			//remove phpbb's bbcode uids
 			$text = preg_replace("#\[(.*?):(.*?)]#si","[$1]",$text);
@@ -611,7 +611,7 @@ class JFusionForum_phpbb3 extends JFusionForum
                 } else {
                 	$avatarSrc = $this->getAltAvatar($avatar_software,$p->user_id,true);
                 }
-    	            
+
 				if($avatarSrc) {
 					$size = getimagesize($avatar);
 					$w = $size[0];
@@ -643,11 +643,11 @@ class JFusionForum_phpbb3 extends JFusionForum
 					} elseif ($link_software=='custom' && !empty($userlink_custom)) {
 						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->user_id,false);
 						$user_url = $userlink_custom.$userlookup->id;
-						
+
 					} else {
 						$user_url = false;
 					}
-					
+
 					if($user_url === false) {
 						$user_url = JFusionFunction::createURL($this->getProfileURL($p->user_id), $jname, $linkMode, $itemid);
 					}
@@ -655,7 +655,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 				} else {
 					$user = $p->username;
 				}
-				
+
 				$table .= "<div class='{$css["postUser"]}'> by $user</div>";
 			}
 
@@ -683,7 +683,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 	{
 		$threadid =& $existingthread->threadid;
 		$postid =& $existingthread->postid;
-		
+
 		//set the query
 		$limit_posts = $dbparams->get("limit_posts");
 		$limit = empty($limit_posts) || trim($limit_posts)==0 ? "" :  "LIMIT 0,$limit_posts";
@@ -700,7 +700,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 
 		return $posts;
 	}
-	
+
 	//needed to parse the bbcode for phpbb
 	function phpbbInit(&$text, &$message_parser)
 	{
@@ -728,8 +728,11 @@ class JFusionForum_phpbb3 extends JFusionForum
 	}
 }
 
+//This function had to be commented out, as it stuffs up the frameless integrations:
+//maybe it can be moved to inside one of the parsers functions?
+//Fatal error: Cannot redeclare utf8_clean_string() (previously declared in /public_html/demo/phpbb3/includes/utf/utf_tools.php:1817) in /public_html/docs/administrator/components/com_jfusion/plugins/phpbb3/forum.php on line 735
 //functions needed to make phpBB's message parser work
-function utf8_clean_string($text)
-{
-	return trim($text);
-}
+//function utf8_clean_string($text)
+//{
+	//return trim($text);
+//}

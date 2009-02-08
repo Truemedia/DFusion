@@ -28,16 +28,20 @@ function jfusionBuildRoute(&$query)
 		}
 	}
 	//change all other variables into SEF
-	foreach($query as $key => $value){
-		if($key != 'option' && $key != 'Itemid'){
-			if(is_array($value)){
-				foreach($value as $array_key => $array_value){
-					$segments[] = $key .'['.$array_key.'],' . $array_value;
+	$params = JFusionFactory::getParams('joomla_int');
+	$sefmode = $params->get('sefmode');
+	if($sefmode == 1){
+		foreach($query as $key => $value){
+			if($key != 'option' && $key != 'Itemid'){
+				if(is_array($value)){
+					foreach($value as $array_key => $array_value){
+						$segments[] = $key .'['.$array_key.'],' . $array_value;
+						unset($query[$key]);
+					}
+				} else {
+					$segments[] = $key .',' . $value;
 					unset($query[$key]);
 				}
-			} else {
-				$segments[] = $key .',' . $value;
-				unset($query[$key]);
 			}
 		}
 	}
