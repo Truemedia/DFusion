@@ -94,13 +94,13 @@ class JFusionUser_moodle extends JFusionUser{
 		$login_identifier = $params->get('login_identifier');
         if ($login_identifier == 1){
             $identifier_type = 'username';
-            $identifier = $this->filterUsername($identifier);
+//            $identifier = $this->filterUsername($identifier);
         } elseif ($login_identifier == 3){
            if(strpos($identifier, '@')) {
                $identifier_type = 'email';
            } else {
                $identifier_type = 'username';
-    	       $identifier = $this->filterUsername($identifier);
+//    	       $identifier = $this->filterUsername($identifier);
            }
         } else {
             $identifier_type = 'email';

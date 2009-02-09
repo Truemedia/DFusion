@@ -360,9 +360,10 @@ class JFusionCurl{
                 $cinfo = explode( '=', $data );
                 $cinfo[0] = trim( $cinfo[0] );
                 if (!isset($cinfo[1])) {$cinfo[1]='';}
-                if( $cinfo[0] == 'expires' ) $cinfo[1] = strtotime( $cinfo[1] );
-                if( $cinfo[0] == 'secure' ) $cinfo[1] = "true";
-                if( in_array( $cinfo[0], array( 'domain', 'expires', 'path', 'secure', 'comment' ) ) ) {
+                if (strcasecmp($cinfo[0],'expires')== 0)  $cinfo[1] = strtotime( $cinfo[1]);
+                if (strcasecmp($cinfo[0],'secure')== 0)   $cinfo[1] = "true";
+                if (strcasecmp($cinfo[0],'httponly')== 0) $cinfo[1] = "true";
+                if (in_array( strtolower($cinfo[0]), array( 'domain', 'expires', 'path', 'secure', 'comment', 'httponly'))) {
                     $cdata[trim( $cinfo[0] )] = $cinfo[1];
                 }
                 else {
