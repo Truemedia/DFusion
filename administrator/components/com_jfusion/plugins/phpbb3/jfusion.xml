@@ -75,6 +75,12 @@
 			<option value="1">YES</option>
 			<option value="0">NO</option>
 		</param>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="AUTHENTICATION_MOD_DESCR"/>
 		<param name="show_auth_mod" default="show_auth_mod" type="JFusionCustomParam" description="AUTHENTICATION_MOD"/>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="REDIRECT_MOD_DESCR"/>
+		<param name="redirect_itemid" type="text" size="10" default="" description="REDIRECT_ITEMID" />
+		<param name="show_redirect_mod" default="show_redirect_mod" type="JFusionCustomParam" description="AUTHENTICATION_MOD"/>
 	</params>
 </install>
