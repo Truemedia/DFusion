@@ -57,7 +57,7 @@ class JFusionFunction{
     }
 
     /**
-* By default, returns the JFusion plugin of the software that is currently the slave of user management, minus the joomla_int plugin.  
+* By default, returns the JFusion plugin of the software that is currently the slave of user management, minus the joomla_int plugin.
 * If activity, search, or discussion is passed in, returns the plugins with that feature enabled
 * @param array $jname Array list of slave JFusion plugin names
 */
@@ -81,49 +81,19 @@ class JFusionFunction{
 	    	} elseif( $criteria = 'discussion') {
 				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND discussion = 1 AND name NOT LIKE \'joomla_int\')';
 	    	}
-	    	
+
 			$db = & JFactory::getDBO();
 			$db->setQuery($query );
 			$jfusion_plugins = $db->loadObjectList();
     	}
     }
-    
+
     /**
 * Returns the parameters of a specific JFusion integration
 * @param string $jname name of the JFusion plugin used
 * @return object Joomla parameters object
 */
 
-    function &getParameters($jname)
-    {
-        //get the current parameters from the jfusion table
-        $db = & JFactory::getDBO();
-        $query = 'SELECT params from #__jfusion WHERE name = ' . $db->Quote($jname);
-        $db->setQuery($query );
-        $serialized = $db->loadResult();
-
-        //get the parameters from the XML file
-        $file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname . DS.'jfusion.xml';
-
-        $parametersInstance = new JParameter('', $file );
-
-        //apply the stored valued
-        if ($serialized) {
-            $params = unserialize(base64_decode($serialized));
-
-            if (is_array($params)) {
-                foreach($params as $key => $value) {
-                    $parametersInstance->set($key, $value );
-                }
-            }
-        }
-
-        if (!is_object($parametersInstance)) {
-            JError::raiseError(500, JText::_('NO_FORUM_PARAMETERS'));
-        }
-
-        return $parametersInstance;
-    }
 
     /**
 * Saves the posted JFusion component variables
@@ -134,7 +104,7 @@ class JFusionFunction{
 
     function saveParameters($jname, $post)
     {
-        $mergedpost = array_merge((array) JFusionFunction::getparameters($jname)->_registry['_default']['data'],$post);
+        $mergedpost = array_merge((array) JFusionFactory::getParams($jname)->_registry['_default']['data'],$post);
         //serialize the $post to allow storage in a SQL field
         $serialized = base64_encode(serialize($mergedpost));
 
@@ -215,66 +185,6 @@ class JFusionFunction{
         }
     }
 
-    /**
-* Acquires a database connection to the database of the software integrated by JFusion
-* @param string $jname name of the JFusion plugin used
-* @return object JDatabase
-*/
-    function &getDatabase($jname)
-    {
-		//check to see if joomla DB is requested
-		if ($jname == 'joomla_int'){
-        	$db = & JFactory::getDBO();
-        	return $db;
-		}
-
-        //get the debug configuration setting
-        $conf =& JFactory::getConfig();
-        $debug = $conf->getValue('config.debug');
-
-        //TODO see if we can delete these jimports below
-        jimport('joomla.database.database');
-        jimport('joomla.database.table' );
-
-        //get config values
-        $conf =& JFactory::getConfig();
-        $params = JFusionFactory::getParams($jname);
-
-        //prepare the data for creating a database connection
-        $host = $params->get('database_host');
-        $user = $params->get('database_user');
-        $password = $params->get('database_password');
-        $database = $params->get('database_name');
-        $prefix = $params->get('database_prefix');
-        $driver = $params->get('database_type');
-        $debug = $conf->getValue('config.debug');
-
-		//added extra code to prevent error when $driver is incorrect
-		if ($driver != 'mysql' && $driver != 'mysqli') {
-			//invalid driver
-            JError::raiseWarning(0, JText::_('INVALID_DRIVER'));
-            $result = false;
-            return $result;
-		}
-
-        //create an options variable that contains all database connection variables
-        $options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix );
-
-        //create the actual connection
-        $jfusion_database =& JDatabase::getInstance($options );
-        if (!method_exists($jfusion_database,'Execute')){
-            JError::raiseWarning(0, JText::_('NO_DATABASE'));
-            $result = false;
-            return $result;
-        } else {
-	        //add support for UTF8
-    	    $jfusion_database->Execute('SET names \'utf8\'');
-    	    //support debugging
-			$jfusion_database->debug($debug);
-	        return $jfusion_database;
-        }
-
-    }
 
     /**
 * Returns either the Joomla wrapper URL or the full URL directly to the forum
@@ -525,99 +435,99 @@ class JFusionFunction{
      * @return link
      */
     function createJoomlaArticleURL(&$contentitem,$text)
-    {    
+    {
     	require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
 		$needles = array(
 			'article'  => (int) $contentitem->id,
 			'category' => (int) $contentitem->catid,
 			'section'  => (int) $contentitem->sectionid
 		);
-		
+
     	if($item = ContentHelperRoute::_findItem($needles)) {
 			$itemid = $item->id;
-		};	
-    	
+		};
+
 		$link = JRoute::_(JURI::base().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid);
 		$link = "<a href='$link'>$text</a>";
 		return $link;
     }
-    
+
     /**
      * Pasrses text from bbcode to html or html to bbcode
-     * @param $text 
+     * @param $text
      * @param $to string with what to conver the text to; bbcode or html
-     * @param $stripAllHtml boolean  if $to==bbcode, strips all unsupported html from text 
+     * @param $stripAllHtml boolean  if $to==bbcode, strips all unsupported html from text
      * @return string with converted text
      */
     function parseCode($text, $to, $stripAllHtml = false)
-    {    	
+    {
     	if($to=='html') {
     		//entities must be decoded to prevent encoding already encoded entities
 			$text = html_entity_decode($text);
-   			require_once("parsers/nbbc.php"); 
-   			$bbcode = new BBCode_Parser; 
+   			require_once("parsers/nbbc.php");
+   			$bbcode = new BBCode_Parser;
    			$text = $bbcode->Parse($text);
    			//must decode again to display entities properly
    			$text = html_entity_decode($text);
-   			
-    	} elseif($to=='bbcode') { 		
+
+    	} elseif($to=='bbcode') {
  			static $search, $replace;
  			if(!is_array($search)) {
  				$search = $replace = array();
- 							
+
  				//convert anything between code, html, or php tags to html entities to prevent conversion
  				$search[] = "#\<(code|pre)(.*?)\>(.*?)\<\/(code|pre)\>#sie";
  				$replace[] = "'[code]'.htmlspecialchars($3, ENT_QUOTES, UTF-8).'[/code]'";
- 			
+
  				$search[] = "#\<(blockquote|cite)(.*?)\>(.*?)\<\/(blockquote|cite)\>#si";
  				$replace[] = "[quote]$3[/quote]";
 
  				$search[] = "#\<\ol(.*?)>(.*?)\<\/ol\>#si";
  				$replace[] = "[list=1]$2[/list]";
- 				
+
 				$search[] = "#\<ul(.*?)\>(.*?)\<\/ul\>#si";
  				$replace[] = "[list]$2[/list]";
- 				
+
  				$search[] = "#\<li(.*?)>(.*?)\<\/li\>#si";
  				$replace[] = "[*]$2";
- 				
+
  				$search[] = "#\<img (.*?) src=('|\")(.*?)('|\")\>(.*?)\<\/img\>#si";
  				$replace[] = "[img]$3[/img]";
- 				
+
  				$search[] = "#\<a (.*?) href=('|\")mailto:(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
  				$replace[] = "[email=$3]$6[/email]";
- 				 				
+
  				$search[] = "#\<a (.*?) href=('|\")(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
  				$replace[] = "[url=$3]$6[/url]";
- 				
+
  				$search[] = "#\<([biu])\>(.*?)\<\/([biu])\>#si";
- 				$replace[] = "[$1]$2[/$3]"; 				
-		
+ 				$replace[] = "[$1]$2[/$3]";
+
  				$search[] = "#\<(.*?)style=(.*?)color:(.*?);(.*?)\>(.*?)\<\/(.*?)\>#si";
  				$replace[] = "[color=$3]$5</font>";
- 				
+
  				$search[] = "#\<font color=('|\")(.*?)('|\")(.*?)\>(.*?)\<\/font\>#si";
- 				$replace[] = "[color=$2]$5[/color]";				
- 				
+ 				$replace[] = "[color=$2]$5[/color]";
+
 				$search[] = "#\<tr(.*?)\>(.*?)\<\/tr\>#si";
  				$replace[] = "$2\n";
- 				
+
 				$search[] = "#\<td(.*?)\>(.*?)\<\/td\>#si";
- 				$replace[] = " $2 "; 				
+ 				$replace[] = " $2 ";
 
  				$search[] = "#\<p\>\<\/p>#si";
  				$replace[] = "\n\n";
- 				
+
  				//decode html entities that we converted for code and pre tags
  				$search[] = "#\[code\](.*?)\[\/code\]#sie";
  				$replace[] = "'[code]'.htmlspecialchars_decode($1,ENT_QUOTES).'[/code]'";
- 				
+
  			}
- 			
+
  			$text = str_ireplace(array("<br />","<br>","<br/>"), "\n", $text);
  			$text = preg_replace($search,$replace,$text);
  			 $text = preg_replace( '/\p{Z}/u', ' ', $text );
- 			if($stripAllHtml) { $text = strip_tags($text); } 			
+ 			if($stripAllHtml) { $text = strip_tags($text); }
     	}
 
     	return $text;

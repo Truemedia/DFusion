@@ -12,12 +12,6 @@
 defined('_JEXEC' ) or die('Restricted access' );
 
 /**
- * load the JFusion framework
- */
-require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
-
-
-/**
 * Singleton static only class that creates instances for each specific JFusion plugin.
 * @package JFusion
 */
@@ -198,7 +192,7 @@ class JFusionFactory{
 
         //only create a new database instance if it has not been created before
         if (!isset($database_instances[$jname] )) {
-            $database_instances[$jname]= JFusionFunction::getDatabase($jname);
+            $database_instances[$jname]= JFusionFactory::createDatabase($jname);
             return $database_instances[$jname];
         } else {
             return $database_instances[$jname];
@@ -219,10 +213,102 @@ class JFusionFactory{
 
         //only create a new database instance if it has not been created before
         if (!isset($params_instances[$jname] )) {
-            $params_instances[$jname] = JFusionFunction::getParameters($jname);
+            $params_instances[$jname] = JFusionFactory::createParams($jname);
             return $params_instances[$jname];
         } else {
             return $params_instances[$jname];
+        }
+    }
+
+
+
+function &createParams($jname)
+    {
+        //get the current parameters from the jfusion table
+        $db = & JFactory::getDBO();
+        $query = 'SELECT params from #__jfusion WHERE name = ' . $db->Quote($jname);
+        $db->setQuery($query );
+        $serialized = $db->loadResult();
+
+        //get the parameters from the XML file
+        $file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS. $jname . DS.'jfusion.xml';
+        $parametersInstance = new JParameter('', $file );
+
+        //apply the stored valued
+        if ($serialized) {
+            $params = unserialize(base64_decode($serialized));
+
+            if (is_array($params)) {
+                foreach($params as $key => $value) {
+                    $parametersInstance->set($key, $value );
+                }
+            }
+        }
+
+        if (!is_object($parametersInstance)) {
+            JError::raiseError(500, JText::_('NO_FORUM_PARAMETERS'));
+        }
+
+        return $parametersInstance;
+    }
+
+    /**
+* Acquires a database connection to the database of the software integrated by JFusion
+* @param string $jname name of the JFusion plugin used
+* @return object JDatabase
+*/
+    function &createDatabase($jname)
+    {
+		//check to see if joomla DB is requested
+		if ($jname == 'joomla_int'){
+        	$db = & JFactory::getDBO();
+        	return $db;
+		}
+
+        //get the debug configuration setting
+        $conf =& JFactory::getConfig();
+        $debug = $conf->getValue('config.debug');
+
+        //make sure the database model is loaded
+        jimport('joomla.database.database');
+        jimport('joomla.database.table' );
+
+        //get config values
+        $conf =& JFactory::getConfig();
+        $params = JFusionFactory::getParams($jname);
+
+        //prepare the data for creating a database connection
+        $host = $params->get('database_host');
+        $user = $params->get('database_user');
+        $password = $params->get('database_password');
+        $database = $params->get('database_name');
+        $prefix = $params->get('database_prefix');
+        $driver = $params->get('database_type');
+        $debug = $conf->getValue('config.debug');
+
+		//added extra code to prevent error when $driver is incorrect
+		if ($driver != 'mysql' && $driver != 'mysqli') {
+			//invalid driver
+            JError::raiseWarning(0, JText::_('INVALID_DRIVER'));
+            $result = false;
+            return $result;
+		}
+
+        //create an options variable that contains all database connection variables
+        $options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix );
+
+        //create the actual connection
+        $jfusion_database =& JDatabase::getInstance($options );
+        if (!method_exists($jfusion_database,'Execute')){
+            JError::raiseWarning(0, JText::_('NO_DATABASE'));
+            $result = false;
+            return $result;
+        } else {
+	        //add support for UTF8
+    	    $jfusion_database->Execute('SET names \'utf8\'');
+    	    //support debugging
+			$jfusion_database->debug($debug);
+	        return $jfusion_database;
         }
     }
 }
