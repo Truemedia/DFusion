@@ -230,9 +230,14 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	        $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
-	        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
-	        $regex_body[]	= '#href="(.*?)'.JURI::base().'(.*?)"(.*?)>#me';
-            $replace_body[]	= '$this->fixURL("$1" . "'.JURI::base().'"."$2","$3")';
+			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+			$params = JFusionFactory::getParams('joomla_int');
+			$sefmode = $params->get('sefmode');
+			if($sefmode == 1){
+		        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
+		        $regex_body[]	= '#href="(.*?)'.JURI::base().'(.*?)"(.*?)>#me';
+        	    $replace_body[]	= '$this->fixURL("$1" . "'.JURI::base().'"."$2","$3")';
+			}
 
 			//fix for form actions
 	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
@@ -240,7 +245,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 			$indexURL	= JURI::base() .'index.php';
             $replace_body[]	= '$this->fixAction("$1","$2","' . $indexURL .'")';
         }
-        
+
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
     }
 
@@ -259,9 +264,11 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
       function fixAction($url, $extra, $baseURL){
       	$url = htmlspecialchars_decode($url);
-
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+		$params = JFusionFactory::getParams('joomla_int');
+		$sefmode = $params->get('sefmode');
       	//check to see if the URL is in SEF
-      	if(preg_match("/\,/",$url)) {
+      	if(preg_match("/\,/",$url && $sefmode == 1)) {
 			$parts = preg_split('/\/\&|\/|&/', $url);
 			foreach ($parts as $part){
 				$vars =preg_split('/,|=/', $part);
@@ -427,7 +434,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	//reconstruct the redirect meta tag
         return '<meta http-equiv="refresh" content="'.$parts[0].';url=' . $redirect_url .'">';
       }
-      
+
 
 	/************************************************
 	 * For JFusion Search Plugin
@@ -465,16 +472,16 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	{
 		$where .= " AND p.post_approved = 1";
 	}
-	
+
 	function filterSearchResults(&$results)
 	{
 
 	}
-	
+
 	function getSearchResultLink($post)
 	{
 		$forum = JFusionFactory::getForum($this->getJname());
 		return $forum->getPostURL($post->topic_id,$post->post_id);
-	}      
+	}
 }
 
