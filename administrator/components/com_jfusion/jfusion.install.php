@@ -114,14 +114,6 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		}
 	}
 
-	if(count($pluginSql)>0){
-		$query = "INSERT INTO #__jfusion  (name, params,  slave, dual_login, status,  check_encryption, activity, search, discussion) VALUES " . implode(', ',$pluginSql);
-		$db->setQuery($query);
-		if(!$db->query()) {
-			echo $db->stderr() . '<br/>';
-		}
-	}
-
 	//make sure that the slave capabilties of the joomla_ext plugin is enabled
 	$query = 'SELECT slave FROM #__jfusion WHERE name = \'joomla_ext\'';
 	$db->setQuery($query);
@@ -162,6 +154,16 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		$query = "ALTER TABLE #__jfusion
 					ADD COLUMN search tinyint(4) NOT NULL DEFAULT 0,
 	  				ADD COLUMN discussion tinyint(4) NOT NULL DEFAULT 0";
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
+	}
+
+	//insert of missing plugins
+	//#chris: moved after table modification to prevent errors
+	if(count($pluginSql)>0){
+		$query = "INSERT INTO #__jfusion  (name, params,  slave, dual_login, status,  check_encryption, activity, search, discussion) VALUES " . implode(', ',$pluginSql);
 		$db->setQuery($query);
 		if(!$db->query()) {
 			echo $db->stderr() . '<br/>';
