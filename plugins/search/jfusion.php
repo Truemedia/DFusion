@@ -38,8 +38,9 @@ function &plgSearchjfusionAreas()
 		if(array_key_exists($plugin->name,$enabledPlugins)) {
 			if($plugin->name!="joomla_int") {
 				//make sure that search is enabled
-				$public =& JFusionFactory::getPublic($plugin->name);			
-				$areas[$plugin->name] = $enabledPlugins[$plugin->name]['title'];
+				$public =& JFusionFactory::getPublic($plugin->name);		
+				$title = (!empty($enabledPlugins[$plugin->name]['title'])) ? $enabledPlugins[$plugin->name]['title'] : $plugin->name; 
+				$areas[$plugin->name] = $title;
 			}
 		}
 	}
@@ -83,24 +84,9 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 			$pluginParam = '';
 		}
 		
-		$results = $searchMe->getSearchResults($text,$phrase,$pluginParam);
-		
-		//load the results
-		if(is_array($results)) {	
-			foreach($results as $result) {
-				//add a link
-				$href = JFusionFunction::createURL($searchMe->getSearchResultLink($result), $jname, $linkMode,$itemid);
-				$result->href = $href;
-				//open link in same window
-				$result->browsernav = 2;
-				//clean up the text such as removing bbcode, etc
-				$result->text = $searchMe->cleanUpSearchText($result->text);
-				$result->title = $searchMe->cleanUpSearchText($result->title);
-				$result->section = $searchMe->cleanUpSearchText($result->section);
-			}
+		$results = $searchMe->getSearchResults($text,$phrase,$pluginParam, $linkMode, $itemid);
 
-			$searchResults = array_merge($searchResults,$results);			
-		}
+		$searchResults = array_merge($searchResults,$results);	
 	}
 	
 	//sort the results

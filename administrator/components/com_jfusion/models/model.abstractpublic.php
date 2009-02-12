@@ -94,6 +94,8 @@ class JFusionPublic{
      * @param $text string text to be searched
      * @param $phrase string how the search should be performed exact, all, or any
      * @param $pluginParam custom plugin parameters in search.xml
+     * @param $linkMode what mode to use when creating the URL
+     * @param $itemid what menu item to use when creating the URL
      * @return array of results as objects
      * Each result should include:
      * $result->title = title of the post/article
@@ -101,7 +103,7 @@ class JFusionPublic{
      * $result->text = text body of the post/article
      * $result->?? = whatever else you need to create the link in getSearchResultLink()
      */
-	function getSearchResults(&$text, &$phrase, &$pluginParam)
+	function getSearchResults(&$text, &$phrase, &$pluginParam, $linkMode, $itemid)
 	{
 		//initialize plugin database
 		$db = & JFusionFactory::getDatabase($this->getJname());
@@ -137,6 +139,22 @@ class JFusionPublic{
 		
 		//pass results back to the plugin in case they need to be filtered
 		$this->filterSearchResults($results);
+		
+		//load the results
+		if(is_array($results)) {	
+			foreach($results as $result) {
+				//add a link
+				$href = JFusionFunction::createURL($this->getSearchResultLink($result), $jname, $linkMode,$itemid);
+				$result->href = $href;
+				//open link in same window
+				$result->browsernav = 2;
+				//clean up the text such as removing bbcode, etc
+				$result->text = $this->cleanUpSearchText($result->text);
+				$result->title = $this->cleanUpSearchText($result->title);
+				$result->section = $this->cleanUpSearchText($result->section);
+			}
+		}
+		
 		return $results;
 	}   
     
