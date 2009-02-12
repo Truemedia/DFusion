@@ -87,12 +87,15 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 			} else {
 				$avatar = false;
 			}
-        	
- 	        //use the Joomla default urls
-    	    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
-        	$url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
-	        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
-	        
+
+			//only rewrite the URLs if the master plugin is joomla_int
+			if($jname->name=='joomla_int') {
+	 	        //use the Joomla default urls
+	    	    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
+	        	$url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
+		        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
+			}
+				        
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
 
