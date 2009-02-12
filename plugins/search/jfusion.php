@@ -38,12 +38,8 @@ function &plgSearchjfusionAreas()
 		if(array_key_exists($plugin->name,$enabledPlugins)) {
 			if($plugin->name!="joomla_int") {
 				//make sure that search is enabled
-				$public =& JFusionFactory::getPublic($plugin->name);
-				$searchEnabled = ($public->getSearchQuery() == '') ? false : true;
-					
-				if($searchEnabled){
-					$areas[$plugin->name] = $enabledPlugins[$plugin->name]['title'];
-				}
+				$public =& JFusionFactory::getPublic($plugin->name);			
+				$areas[$plugin->name] = $enabledPlugins[$plugin->name]['title'];
 			}
 		}
 	}
@@ -69,6 +65,9 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 	//get the search plugin parameters
 	$plugin =& JPluginHelper::getPlugin('search','jfusion');
 	$params = new JParameter( $plugin->params); 
+	$pluginParamValue = $params->get('JFusionPluginParam');
+	$pluginParamValue = unserialize(base64_decode($pluginParamValue));
+		
 	//To hold all the search results
 	$searchResults = array();
 	
@@ -77,7 +76,14 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 		$linkMode =& $params->get('link_mode_'.$jname,'direct');
 		$itemid =& $params->get('itemid_'.$jname,false);
 		$searchMe =& JFusionFactory::getPublic($jname);
-		$results = $searchMe->getSearchResults($text,$phrase);
+		if(is_array($pluginParamValue)){
+			$pluginParam = new JParameter('');
+			$pluginParam->loadArray($pluginParamValue[$jname]);
+		} else {
+			$pluginParam = '';
+		}
+		
+		$results = $searchMe->getSearchResults($text,$phrase,$pluginParam);
 		
 		//load the results
 		if(is_array($results)) {	

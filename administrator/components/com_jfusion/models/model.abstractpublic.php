@@ -93,6 +93,7 @@ class JFusionPublic{
      * Retrieves the search results to be displayed.  Placed here so that plugins that do not use the database can retrieve and return results
      * @param $text string text to be searched
      * @param $phrase string how the search should be performed exact, all, or any
+     * @param $pluginParam custom plugin parameters in search.xml
      * @return array of results as objects
      * Each result should include:
      * $result->title = title of the post/article
@@ -100,7 +101,7 @@ class JFusionPublic{
      * $result->text = text body of the post/article
      * $result->?? = whatever else you need to create the link in getSearchResultLink()
      */
-	function getSearchResults(&$text, &$phrase)
+	function getSearchResults(&$text, &$phrase, &$pluginParam)
 	{
 		//initialize plugin database
 		$db = & JFusionFactory::getDatabase($this->getJname());
