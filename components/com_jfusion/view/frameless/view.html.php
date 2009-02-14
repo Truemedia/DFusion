@@ -62,12 +62,16 @@ class jfusionViewframeless extends JView {
             return $result;
         }
 
+		//we set the backtrack_limit to twice the buffer length just in case!
+		$backtrack_limit = ini_get('pcre.backtrack_limit');
+		ini_set('pcre.backtrack_limit',strlen($buffer)*2);
+
         $pattern	= '#<head>(.*?)</head>\s*<body>(.*)</body>#';
         $pattern	= '#<head[^>]*>(.*)<\/head>\s*<body[^>]*>(.*)<\/body>#si';
         preg_match_all($pattern, $buffer, $data);
 
         // Check if we found something
-        if (count($data) < 3 ) {
+        if (count($data) < 3 || !strlen($data[1][0]) || !strlen($data[2][0])) {
             JError::raiseWarning(500, JText::_('NO_HTML'));
         } else {
 			// Add the header information
@@ -124,6 +128,7 @@ class jfusionViewframeless extends JView {
                 $JFusionPlugin->parseBody($data[2][0], $baseURL, $fullURL, $integratedURL);
                 echo $data[2][0];
             }
+			ini_set('pcre.backtrack_limit',$backtrack_limit);
         }
     }
 }
