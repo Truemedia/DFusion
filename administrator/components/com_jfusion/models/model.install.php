@@ -496,12 +496,12 @@ class JFusionPluginInstaller extends JObject {
 		$tmpDir =& $config->getValue('config.tmp_path');
 
 		//compress the files
-		$filename = $tmpDir.DS."$jname.zip";
+		$filename = $tmpDir.DS."$jname.gz";
 		//retrieve a list of files within the plugin directory
 		$files = JFolder::files(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname,null,false,true);
 
 		//compress the plugin
-		JArchive::create($filename, $files, 'zip');
+		JArchive::create($filename, $files, 'gz');
 
 		//now get the contents of the compressed file to return
 		$data = addslashes(file_get_contents($filename));

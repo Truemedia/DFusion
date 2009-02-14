@@ -140,8 +140,8 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	//add the plugin_files and original columns if it does not exist
 	if(!in_array('plugin_files',$columns)){
 		//add the column
-		$query = "ALTER TABLE #__jfusion 
-					ADD COLUMN plugin_files LONGBLOB, 
+		$query = "ALTER TABLE #__jfusion
+					ADD COLUMN plugin_files LONGBLOB,
 					ADD COLUMN original_name varchar(50) NULL";
 		$db->setQuery($query);
 		if(!$db->query()) {
@@ -169,14 +169,14 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 			echo $db->stderr() . '<br/>';
 		}
 	}
-		
+
 	//update plugins with search and discuss bot capabilities
 	$query = "UPDATE #__jfusion SET search = 1, discussion = 1 WHERE name IN ('vbulletin','phpbb3')";
 	$db->setQuery($query);
 	if(!$db->query()) {
 		echo $db->stderr() . '<br/>';
 	}
-	
+
 	//restore deleted plugins if possible and applicable
 
 	//get a list of installed plugins
@@ -213,7 +213,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 				}
 			} elseif(!empty($plugin->plugin_files)) {
 				//save the compressed file to the tmp dir
-				$file = $tmpDir.DS.$plugin->name.'.zip';
+				$file = $tmpDir.DS.$plugin->name.'.gz';
 				if(JFile::write($file,$plugin->plugin_files)){
 					//decompress the file
 					if (!JArchive::extract($file, $pluginDir)) {
@@ -313,7 +313,7 @@ if (array_search($table_prefix . '#__jfusion_forum_plugin',$table_list) == false
 	$query = "SHOW COLUMNS FROM #__jfusion_forum_plugin";
 	$db->setQuery($query);
 	$columns = $db->loadResultArray();
-	
+
 	if(!in_array('forumid',$columns)) {
 		$query = "ALTER TABLE #__jfusion_forum_plugin ADD COLUMN forumid int(11) NOT NULL";
 		$db->setQuery($query);
