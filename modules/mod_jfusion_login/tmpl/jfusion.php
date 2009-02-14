@@ -9,7 +9,7 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access'); ?>
-die($avatar);
+
 <?php if($type == 'logout') : ?>
 <form action="index.php" method="post" name="login" id="form-login">
 <?php if ($params->get('avatar') && $avatar) :
