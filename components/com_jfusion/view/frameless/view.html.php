@@ -68,14 +68,14 @@ class jfusionViewframeless extends JView {
 
         $pattern	= '#<head>(.*?)</head>\s*<body>(.*)</body>#';
         $pattern	= '#<head[^>]*>(.*)<\/head>\s*<body[^>]*>(.*)<\/body>#si';
-        preg_match_all($pattern, $buffer, $data);
+        preg_match($pattern, $buffer, $data);
 
         // Check if we found something
-        if (count($data) < 3 || !strlen($data[1][0]) || !strlen($data[2][0])) {
+        if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
             JError::raiseWarning(500, JText::_('NO_HTML'));
         } else {
 			// Add the header information
-            if (isset($data[1][0]) ) {
+            if (isset($data[1]) ) {
                 $document	= JFactory::getDocument();
                 global $mainframe;
 				$regex_header = array();
@@ -83,7 +83,7 @@ class jfusionViewframeless extends JView {
 
 	            //change the page title
 				$pattern = '#<title>(.*?)<\/title>#Si';
-				preg_match($pattern, $data[1][0], $page_title);
+				preg_match($pattern, $data[1], $page_title);
 				$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
         		$regex_header[]	= $pattern;
         		$replace_header[] = '';
@@ -93,7 +93,7 @@ class jfusionViewframeless extends JView {
 
 				foreach($meta as $m) {
 	        		$pattern = '#<meta name=["|\']'.$m.'["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
-	        		 if (preg_match($pattern, $data[1][0], $page_meta)){
+	        		 if (preg_match($pattern, $data[1], $page_meta)){
 				    	if($page_meta[2]) {
 				    		$document->setMetaData( $m, $page_meta[2] );
 				    	}
@@ -103,7 +103,7 @@ class jfusionViewframeless extends JView {
         		}
 
         		$pattern = '#<meta name=["|\']generator["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
-                if(preg_match($pattern, $data[1][0], $page_generator)) {
+                if(preg_match($pattern, $data[1], $page_generator)) {
                 	if($page_generator[2]) {
                 		$document->setGenerator( $document->getGenerator().', '. $page_generator[2]);
                 	}
@@ -116,17 +116,17 @@ class jfusionViewframeless extends JView {
 				$replace_header[] = '';
 
                 //remove above set meta data from software's header
-    	        $data[1][0] = preg_replace($regex_header, $replace_header, $data[1][0]);
+    	        $data[1] = preg_replace($regex_header, $replace_header, $data[1]);
 
-				$JFusionPlugin->parseHeader($data[1][0], $baseURL, $fullURL, $integratedURL);
-                $document->addCustomTag($data[1][0]);
+				$JFusionPlugin->parseHeader($data[1], $baseURL, $fullURL, $integratedURL);
+                $document->addCustomTag($data[1]);
             }
 
             // Output the body
-            if (isset($data[2][0]) ) {
+            if (isset($data[2]) ) {
                 // 	parse the URL's'
-                $JFusionPlugin->parseBody($data[2][0], $baseURL, $fullURL, $integratedURL);
-                echo $data[2][0];
+                $JFusionPlugin->parseBody($data[2], $baseURL, $fullURL, $integratedURL);
+                echo $data[2];
             }
 			ini_set('pcre.backtrack_limit',$backtrack_limit);
         }
