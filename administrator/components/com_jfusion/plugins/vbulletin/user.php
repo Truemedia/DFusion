@@ -276,7 +276,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 			unset($GLOBALS["vbulletin"]);
 			unset($GLOBALS["db"]);
 
-			$status['debug'] .= 'Destroyed session: ' .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
+			$status['debug'] .= 'Destroyed session: userid = ' . $userinfo->userid . ', password = '.substr($userinfo->password,0,6) . '********' ;
 
 			//restore Joomla's global scope
 			$this->restoreGlobals();
@@ -334,9 +334,14 @@ class JFusionUser_vbulletin extends JFusionUser{
 				//process login
 				process_new_login('', 1, '');
 
-
 				$status['error'] = false;
-				$status['debug'] .= JText::_('CREATED_SESSION') .JText::_('USERID') . '=' . $userinfo->userid . ', password:'.substr($userinfo->password,0,6) . '********' ;
+				
+				$vdb =& JFusionFactory::getDatabase($this->getJname());
+				$query = "SELECT varname, value FROM #__setting WHERE varname IN ('cookiedomain', 'cookiepath')";
+				$vdb->setQuery($query);
+				$cookie = $vdb->loadObjectList('varname');
+				$host =  (empty($cookie['cookiedomain']->value)) ? str_replace(array('http://','https://'),'',  $_SERVER['SERVER_NAME']) : $cookie['cookiedomain']->value;
+				$status['debug'] .= JText::_('CREATED_SESSION'). ' userid = ' . $userinfo->userid . ', password = '.substr($userinfo->password,0,6) . '********, ' . JText::_('COOKIE_PATH'). ' = '.$cookie['cookiepath']->value. ', ' . JText::_('COOKIE_DOMAIN') .' = '.$host;			
 	        } else {
 	            //could not find a valid userid
 	            $status['error'] = JText::_('INVALID_USERID');

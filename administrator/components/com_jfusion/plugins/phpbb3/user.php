@@ -181,7 +181,7 @@ class JFusionUser_phpbb3 extends JFusionUser{
         }
 
         //update session time for the user into user table
-        $query = 'UPDATE #__users SET user_lastvisit =' . time() . ' WHERE user_id =' . $userid;
+        $query = 'UPDATE #__users SET user_lastvisit =' . time() . ' WHERE user_id =' . $userinfo->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['debug'][] = 'Error could not update the last visit field ' . $db->stderr();

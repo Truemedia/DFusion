@@ -679,7 +679,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 	//needed to parse the bbcode for phpbb
 	function phpbbInit(&$text, &$message_parser)
 	{
-		$this->joomlaGlobals = $_GLOBALS;
+		$this->joomlaGlobals = $GLOBALS;
 		if(!class_exists('parse_message')) {
 			$params = JFusionFactory::getParams($this->getJname());
 
@@ -716,7 +716,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$message_parser->parse(1, 1, 1);
 		$text = $message_parser->message;
 
-		$_GLOBALS = $this->joomlaGlobals;
+		$GLOBALS = $this->joomlaGlobals;
 		JFusionFunction::reconnectJoomlaDb();
 	}
 }
