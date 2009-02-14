@@ -94,8 +94,10 @@ if($description){
 } else {
 	$plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$record->name.DS.'jfusion.xml';
 	if(file_exists($plugin_xml) && is_readable($plugin_xml)) {
-		$xml = simplexml_load_file($plugin_xml);
-		echo $xml->description;
+		$parser = JFactory::getXMLParser('Simple');
+    	$xml    = $parser->loadFile($plugin_xml);
+   		$xml    = $parser->document;
+		echo $xml->description[0]->data;
 	} else {
 		echo "";
 	}

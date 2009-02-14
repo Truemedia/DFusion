@@ -143,13 +143,16 @@ $plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'
 
 if(file_exists($plugin_xml) && is_readable($plugin_xml))
 {
-	$xml = simplexml_load_file($plugin_xml);
+	$parser = JFactory::getXMLParser('Simple');
+    $xml    = $parser->loadFile($plugin_xml);
+   	$xml    = $parser->document;
+
 ?>
-<td><?php echo $xml->description; ?></td>
-<td><?php echo $xml->version; ?></td>
-<td><?php echo $xml->creationDate; ?></td>
-<td><?php echo $xml->author; ?></td>
-<td><?php echo $xml->authorUrl; ?></td>
+<td><?php echo $xml->description[0]->data; ?></td>
+<td><?php echo $xml->version[0]->data; ?></td>
+<td><?php echo $xml->creationDate[0]->data; ?></td>
+<td><?php echo $xml->author[0]->data; ?></td>
+<td><?php echo $xml->authorUrl[0]->data; ?></td>
 
 <?php
 } else {

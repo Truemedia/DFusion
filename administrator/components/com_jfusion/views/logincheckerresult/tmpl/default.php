@@ -121,36 +121,47 @@ $login_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_login'.DS.'mod_jfusion_log
 
 if (file_exists($component_xml)) {
     //get the version number
-    $xml = simplexml_load_file($component_xml);
-    $version_number = ' ' . $xml->version . ' ';
+	$parser = JFactory::getXMLParser('Simple');
+    $xml    = $parser->loadFile($component_xml);
+   	$xml    = $parser->document;
+    $version_number = ' ' . $xml->version[0]->data . ' ';
     $jfusion_version['JFusion Component Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($auth_xml)) {
     //get the version number
-    $xml = simplexml_load_file($auth_xml);
-    $version_number = ' ' . $xml->version . ' ';
+	$parser = JFactory::getXMLParser('Simple');
+    $xml    = $parser->loadFile($auth_xml);
+   	$xml    = $parser->document;
+
+    $version_number = ' ' . $xml->version[0]->data . ' ';
     $jfusion_version['JFusion Auth Plugin Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($user_xml)) {
     //get the version number
-    $xml = simplexml_load_file($user_xml);
-    $version_number = ' ' . $xml->version . ' ';
+	$parser = JFactory::getXMLParser('Simple');
+    $xml    = $parser->loadFile($user_xml);
+   	$xml    = $parser->document;
+    $version_number = ' ' . $xml->version[0]->data . ' ';
     $jfusion_version['JFusion User Plugin Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($activity_xml)) {
     //get the version number
-    $xml = simplexml_load_file($activity_xml);
-    $version_number = ' ' . $xml->version . ' ';
+	$parser = JFactory::getXMLParser('Simple');
+    $xml    = $parser->loadFile($activity_xml);
+   	$xml    = $parser->document;
+    $version_number = ' ' . $xml->version[0]->data . ' ';
     $jfusion_version['JFusion Activity Module Version'] = $version_number;
     unset($xml);
 }
 if (file_exists($login_xml)) {
     //get the version number
-    $xml = simplexml_load_file($login_xml);
-    $version_number = ' ' . $xml->version . ' ';
+	$parser = JFactory::getXMLParser('Simple');
+    $xml    = $parser->loadFile($login_xml);
+   	$xml    = $parser->document;
+    $version_number = ' ' . $xml->version[0]->data . ' ';
     $jfusion_version['JFusion Login Module Version'] = $version_number;
     unset($xml);
 }
