@@ -88,12 +88,6 @@ class JFusionFunction{
     	}
     }
 
-    /**
-* Returns the parameters of a specific JFusion integration
-* @param string $jname name of the JFusion plugin used
-* @return object Joomla parameters object
-*/
-
 
     /**
 * Saves the posted JFusion component variables
@@ -401,13 +395,13 @@ class JFusionFunction{
      */
     function updateForumLookup($contentid, $forumid, $threadid, $postid, $jname)
     {
-        $db =& JFactory::getDBO();
+        $fdb =& JFactory::getDBO();
 		$modified = time();
 
 		//check to see if content item has already been created in forum software
-        $query = 'SELECT COUNT(*) FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentid . ' AND jname = ' . $db->Quote($jname);
-        $db->setQuery($query);
-	    if($db->loadResult() == 0) {
+        $query = 'SELECT COUNT(*) FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentid . ' AND jname = ' . $fdb->Quote($jname);
+        $fdb->setQuery($query);
+	    if($fdb->loadResult() == 0) {
 	    	//content item has not been created
 	        //prepare the variables
 	        $lookup = new stdClass;
@@ -419,12 +413,12 @@ class JFusionFunction{
 	        $lookup->jname = $jname;
 
 	        //insert the entry into the lookup table
-	        $db->insertObject('#__jfusion_forum_plugin', $lookup);
+	        $fdb->insertObject('#__jfusion_forum_plugin', $lookup);
 	    } else {
 	    	//content itmem has been created so updated variables to prevent duplicate threads
-	    	$query = "UPDATE #__jfusion_forum_plugin SET forumid = {$forumid}, threadid = {$threadid}, postid = {$postid}, modified = {$modified} WHERE contentid = {$contentid} AND jname = {$db->Quote($jname)}";
-	    	$db->setQuery($query);
-	    	$db->query();
+	    	$query = "UPDATE #__jfusion_forum_plugin SET forumid = {$forumid}, threadid = {$threadid}, postid = {$postid}, modified = {$modified} WHERE contentid = {$contentid} AND jname = {$fdb->Quote($jname)}";
+	    	$fdb->setQuery($query);
+	    	$fdb->query();
 	    }
     }
 
@@ -532,4 +526,68 @@ class JFusionFunction{
 
     	return $text;
     }
+    
+    /**
+     * Reconnects Joomla DB if it gets disconnected
+     */
+    function reconnectJoomlaDb()
+    {
+		//check to see if the Joomla database is still connnected
+		$db = & JFactory::getDBO();
+
+		if (!is_resource($db->_resource)) {
+			        			
+			//joomla connection needs to be re-established
+			jimport('joomla.database.database');
+			jimport( 'joomla.database.table' );
+			$conf =& JFactory::getConfig();
+
+			$host 		= $conf->getValue('config.host');
+			$user 		= $conf->getValue('config.user');
+			$password 	= $conf->getValue('config.password');
+			$database	= $conf->getValue('config.db');
+			$prefix 	= $conf->getValue('config.dbprefix');
+			$dbtype 	= $conf->getValue('config.dbtype');
+
+			if($dbtype == 'mysqli'){
+				// Unlike mysql_connect(), mysqli_connect() takes the port and socket
+				// as separate arguments. Therefore, we have to extract them from the
+				// host string.
+				$port	= NULL;
+				$socket	= NULL;
+				$targetSlot = substr( strstr( $host, ":" ), 1 );
+				if (!empty( $targetSlot )) {
+					// Get the port number or socket name
+					if (is_numeric( $targetSlot ))
+						$port	= $targetSlot;
+					else
+						$socket	= $targetSlot;
+
+					// Extract the host name only
+					$host = substr( $host, 0, strlen( $host ) - (strlen( $targetSlot ) + 1) );
+					// This will take care of the following notation: ":3306"
+					if($host == '')
+						$host = 'localhost';
+				}
+
+				// connect to the server
+				if (!($db->_resource->_resource = @mysqli_connect($host, $user, $password, NULL, $port, $socket))) {
+					$db->_errorNum = 2;
+					$db->_errorMsg = 'Could not connect to MySQL';
+					die ('could not reconnect to the Joomla database');
+				}
+			} else {
+				// connect using mysql
+				if (!($db->_resource = @mysql_connect( $host, $user, $password, true ))) {
+					$db->_errorNum = 2;
+					$db->_errorMsg = 'Could not connect to MySQL';
+					die ('could not reconnect to the Joomla database');
+				}
+			}
+
+			// select the database
+			$db->select($database);
+		}
+	}
+    
 }

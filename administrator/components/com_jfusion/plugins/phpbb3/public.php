@@ -157,60 +157,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
 
 		//check to see if the Joomla database is still connnected
-		$db = & JFactory::getDBO();
-		if (!is_resource($db->_resource)) {
-			//joomla connection needs to be re-established
-			jimport('joomla.database.database');
-			jimport( 'joomla.database.table' );
-			$conf =& JFactory::getConfig();
-
-			$host 		= $conf->getValue('config.host');
-			$user 		= $conf->getValue('config.user');
-			$password 	= $conf->getValue('config.password');
-			$database	= $conf->getValue('config.db');
-			$prefix 	= $conf->getValue('config.dbprefix');
-			$dbtype 	= $conf->getValue('config.dbtype');
-
-			if($dbtype == 'mysqli'){
-				// Unlike mysql_connect(), mysqli_connect() takes the port and socket
-				// as separate arguments. Therefore, we have to extract them from the
-				// host string.
-				$port	= NULL;
-				$socket	= NULL;
-				$targetSlot = substr( strstr( $host, ":" ), 1 );
-				if (!empty( $targetSlot )) {
-					// Get the port number or socket name
-					if (is_numeric( $targetSlot ))
-						$port	= $targetSlot;
-					else
-						$socket	= $targetSlot;
-
-					// Extract the host name only
-					$host = substr( $host, 0, strlen( $host ) - (strlen( $targetSlot ) + 1) );
-					// This will take care of the following notation: ":3306"
-					if($host == '')
-						$host = 'localhost';
-				}
-
-				// connect to the server
-				if (!($db->_resource->_resource = @mysqli_connect($host, $user, $password, NULL, $port, $socket))) {
-					$db->_errorNum = 2;
-					$db->_errorMsg = 'Could not connect to MySQL';
-					die ('could not reconnect to the Joomla database');
-				}
-			} else {
-				// connect using mysql
-				if (!($db->_resource = @mysql_connect( $host, $user, $password, true ))) {
-					$db->_errorNum = 2;
-					$db->_errorMsg = 'Could not connect to MySQL';
-					die ('could not reconnect to the Joomla database');
-				}
-			}
-
-			// select the database
-			$db->select($database);
-		}
-
+		JFusionFunction::reconnectJoomlaDb();
 
         return $buffer;
     }
