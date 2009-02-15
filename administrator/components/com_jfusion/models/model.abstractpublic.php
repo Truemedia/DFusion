@@ -146,7 +146,7 @@ class JFusionPublic{
 		if(is_array($results)) {	
 			foreach($results as $result) {
 				//add a link
-				$href = JFusionFunction::createURL($this->getSearchResultLink($result), $jname, $linkMode,$itemid);
+				$href = JFusionFunction::createURL($this->getSearchResultLink($result), $this->getJname(), $linkMode,$itemid);
 				$result->href = $href;
 				//open link in same window
 				$result->browsernav = 2;

@@ -45,6 +45,14 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 
 	function & getBuffer($jPluginParam)
 	{
+		//Handle PHP based Gallery Rewrite
+		$segments = JRequest::getVar('jFusion_Route');
+		if(!empty($segments)) {
+			$path_info = '/'.implode('/', unserialize($segments));
+			$path_info = str_replace(':','-',$path_info);
+			$_SERVER['PATH_INFO'] = $path_info;
+		}
+		
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
 		jFusion_g2BridgeCore::loadGallery2Api(true);
@@ -101,5 +109,66 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL) {}
 	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL) {}
 
-	
+
+
+
+	function getSearchResults(&$text, &$phrase, &$pluginParam, $linkMode, $itemid) 
+	{
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
+		DS.'gallery2'.DS.'gallery2.php');
+		jFusion_g2BridgeCore::loadGallery2Api(true, $itemid);
+		global $gallery;
+		
+		$params = JFusionFactory::getParams('gallery2');
+		$source_url = $params->get('source_url');
+		$urlGenerator = $gallery->getUrlGenerator();
+		
+		/* start preparing */
+		$text = trim( $text );
+		if ( $text == '' ) {
+			return array();
+		}
+		
+		//Limitation so prevent overheads -1 = unlimited
+		$limit = -1;
+		list(, $result['GalleryCoreSearch']) = GalleryEmbed::search($text, 'GalleryCoreSearch', 0, $limit);
+		
+		foreach ($result as $section => $resultArray) {
+			if($resultArray['count'] == 0){
+				continue;
+			}
+		
+			foreach($resultArray['results'] as $array){
+				$info = new stdClass();
+				$info->href = $urlGenerator->generateUrl(array('view' => 'core.ShowItem', 'itemId' => $array['itemId']));
+				list ($ret, $item) = GalleryCoreApi::loadEntitiesById($array['itemId']);
+				$info->title = $item->getTitle() ? $item->getTitle() : $item->getPathComponent();
+				$info->title = preg_replace('/\r\n/', ' ', $info->title);
+				$info->section = $section;
+
+				$info->created = $item->getcreationTimestamp();
+
+				$description = $item->getdescription();
+
+				$info->text = empty($description) ? $item->getSummary() : $description;
+				$info->browsernav = 2;
+
+				$item->getparentId();
+				if($item->getparentId() != 0){
+					list ($ret, $parent) = GalleryCoreApi::loadEntitiesById($item->getparentId());
+					$parent = $parent->getTitle() ? $parent->getTitle() : $parent->getPathComponent();
+					$info->section = preg_replace('/\r\n/', ' ', $parent);
+					if(strpos(strtolower($info->section), 'gallery') !== 0){
+						$info->section = 'Gallery/'.$info->section;
+					}
+				}
+
+				list(,$views) = GalleryCoreApi::fetchItemViewCount($array['itemId']);
+
+				$return[] = $info;
+				
+			}
+		}
+		return $return;
+	}
 }

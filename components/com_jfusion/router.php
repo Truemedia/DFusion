@@ -53,6 +53,7 @@ function jfusionBuildRoute(&$query)
 function jfusionParseRoute($segments)
 {
 	$vars = array();
+	$vars['jFusion_Route'] = serialize($segments);
 	if(isset($segments[0])){
 		if(strpos($segments[0],'.')){
 	    	$vars['jfile'] 		= $segments[0];
