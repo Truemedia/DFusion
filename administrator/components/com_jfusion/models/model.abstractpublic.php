@@ -99,9 +99,11 @@ class JFusionPublic{
      * @return array of results as objects
      * Each result should include:
      * $result->title = title of the post/article
-     * $result->section = section of  the post/article (shows underneath the title; example is Forum Name / Thread Name)
+     * $result->section = (optional) section of  the post/article (shows underneath the title; example is Forum Name / Thread Name)
      * $result->text = text body of the post/article
-     * $result->?? = whatever else you need to create the link in getSearchResultLink()
+     * $result->href = link to the content (without this, joomla will not display a title)
+     * $result->browsernav = 1 opens link in a new window, 2 opens in the same window
+     * $result->created = (optional) date when the content was created
      */
 	function getSearchResults(&$text, &$phrase, &$pluginParam, $linkMode, $itemid)
 	{

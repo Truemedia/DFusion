@@ -39,10 +39,19 @@ if (file_exists($model_file) && file_exists($factory_file)) {
     if ($jname->status == 1 ) {
     	
         $MasterPlugin = JFusionFactory::getPublic($jname->name);
-        $url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view, $itemid);
-        $url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view, $itemid);
-        $url_register = JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view, $itemid);
-
+    	
+        //Use the default joomla URLs if joomla_int is set as the master
+		if($jname->name=='joomla_int') {
+			//use the Joomla default urls
+			$url_lostpass = JRoute::_( 'index.php?option=com_user&amp;view=reset' );
+			$url_lostuser = JRoute::_( 'index.php?option=com_user&amp;view=remind' );
+			$url_register = JRoute::_( 'index.php?option=com_user&amp;task=register' );
+		} else {
+			$url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view, $itemid);
+			$url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view, $itemid);
+			$url_register = JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view, $itemid);
+		}
+		
 		//now find out from which plugin the avatars need to be displayed
 		$PluginName = $params->get('JFusionPlugin');
 		if ($PluginName != 'joomla_int'){
@@ -86,14 +95,6 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 				}
 			} else {
 				$avatar = false;
-			}
-
-			//only rewrite the URLs if the master plugin is joomla_int
-			if($jname->name=='joomla_int') {
-	 	        //use the Joomla default urls
-	    	    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
-	        	$url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
-		        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
 			}
 				        
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login'));

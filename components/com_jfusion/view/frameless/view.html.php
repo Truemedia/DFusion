@@ -49,7 +49,9 @@ class jfusionViewframeless extends JView {
         $JFusionPlugin = JFusionFactory::getPublic($this->jname);
 
         $buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
-
+		//check to see if the Joomla database is still connnected incase the plugin messed it up
+		JFusionFunction::reconnectJoomlaDb();
+		
 		if ($buffer === 0){
             JError::raiseWarning(500, JText::_('NO_FRAMELESS'));
             $result = false;

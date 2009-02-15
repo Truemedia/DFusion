@@ -588,6 +588,10 @@ class JFusionFunction{
 			// select the database
 			$db->select($database);
 		}
+			
+		//legacy $database must be restored
+		if(JPluginHelper::getPlugin('system','legacy')) {
+			$GLOBALS['database'] =& $db;
+		}
 	}
-    
 }

@@ -155,10 +155,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         global $Itemid;
         $Itemid = $Itemid_joomla;
 
-
-		//check to see if the Joomla database is still connnected
-		JFusionFunction::reconnectJoomlaDb();
-
         return $buffer;
     }
 
