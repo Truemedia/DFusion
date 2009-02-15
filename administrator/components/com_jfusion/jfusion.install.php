@@ -73,7 +73,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	('mybb', 0, 0, 0, 0, 0, 1, 0, 0),
 	('magento', 0, 0, 0, 0, 0, 3, 0, 0),
 	('moodle', 0, 0, 0, 0, 0, 3, 0, 0),
-	('gallery2', 0, 0, 0, 0, 0, 1, 0, 0);
+	('gallery2', 0, 0, 0, 0, 0, 1, 1, 0);
 	";
 	$db->setQuery($batch_query);
 	if (!$db->queryBatch()){
@@ -107,7 +107,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 			} elseif ($plugin=='moodle') {
 				$pluginSql[] = "('moodle', 0,  0, 0, 0,  0, 3, 0, 0)";
 			} elseif ($plugin=='gallery2') {
-				$pluginSql[] = "('gallery2', 0, 0, 0, 0, 0, 1, 0, 0)";
+				$pluginSql[] = "('gallery2', 0, 0, 0, 0, 0, 1, 1, 0)";
 			} elseif ($plugin=='dokuwiki') {
 				$pluginSql[] = "('dokuwiki', 0, 0, 0, 0, 0, 1, 0, 0)";
 			}
