@@ -15,7 +15,11 @@ defined('_JEXEC' ) or die('Restricted access' );
  * For detailed descriptions on these functions please check the model.abstractuser.php
  * @package JFusion_SMF
  */
-class JFusionUser_smf extends JFusionUser{
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.abstractuser.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jplugin.php');
+
+class JFusionUser_smf extends JFusionUser {
 
     function updateUser($userinfo, $overwrite)
     {
@@ -130,7 +134,7 @@ class JFusionUser_smf extends JFusionUser{
 
         if ($result) {
             //Check to see if they are banned
-            $query = 'SELECT ID_BAN_GROUP, expire_time FROM #__ban_groups WHERE name= ' . $db->Quote($result->username);
+            $query = 'SELECT ID_BAN_GROUP, expire_time FROM #__ban_groups WHERE name= ' . $db->quote($result->username);
             $db->setQuery($query);
             $expire_time = $db->loadObject();
             if ($expire_time) {
@@ -154,7 +158,6 @@ class JFusionUser_smf extends JFusionUser{
 
     }
 
-
     function getJname()
     {
         return 'smf';
@@ -165,49 +168,18 @@ class JFusionUser_smf extends JFusionUser{
         //TODO: create a function that deletes a user
     }
 
-    function destroySession($userinfo, $options)
-    {
+    function destroySession($userinfo, $options){
+		$status = JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
         $params = JFusionFactory::getParams($this->getJname());
-        $cookiename = $params->get('cookie_name');
-        setcookie($cookiename, serialize(array(0, '', 0)), time() - 3600,  '/', '', 0);
+		setcookie($params->get('cookie_name'), '',0,$params->get('cookie_path'),$params->get('cookie_domain'),$params->get('secure'),$params->get('httponly'));
+		return $status;
+     }
 
+    function createSession($userinfo, $options){
+		$status = JFusionJplugin::createSession($userinfo, $options,$this->getJname());
+		return $status;
     }
 
-    function createSession($userinfo, $options)
-    {
-        //check to see if the smf_api.php file exists
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_path = $params->get('source_path');
-        if (substr($source_path, -1) == DS) {
-            $api_file = $source_path .'smf_api.php';
-        } else {
-            $api_file = $source_path .DS.'smf_api.php';
-        }
-
-        if (file_exists($api_file)) {
-            require_once($api_file);
-            $username = $userinfo->username;
-            $password = $userinfo->password_clear;
-
-            if (isset($options['remember'])) {
-                $cookie_length = $options['remember'] ? 31536000 : 3600;
-            } else {
-                $cookie_length = 3600;
-            }
-
-            smf_setLoginCookie($cookie_length,$username,$password,false);
-            smf_loadSession();
-            smf_authenticateUser();
-
-            $status['debug'] = 'Created SMF session using the smf_api.php';
-            $status['error'] = false;
-            return $status;
-        } else {
-            $status['error'] = 'Dual login is not available for this plugin, as the smf_api.php file was not found at:'. $api_file . 'Please download the smf_api.php file and put it in your smf home directory:   http://www.simplemachines.org/community/index.php?action=dlattach;topic=42867.0;attach=9158';
-            return $status;
-
-        }
-    }
 
     function filterUsername($username)
     {
@@ -220,7 +192,7 @@ class JFusionUser_smf extends JFusionUser{
         $existinguser->password = sha1(strtolower($userinfo->username) . $userinfo->password_clear);
         $existinguser->password_salt = substr(md5(rand()), 0, 4);
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__members SET passwd = ' . $db->Quote($existinguser->password). ', passwordSalt = ' . $db->Quote($existinguser->password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
+        $query = 'UPDATE #__members SET passwd = ' . $db->quote($existinguser->password). ', passwordSalt = ' . $db->quote($existinguser->password_salt). ' WHERE ID_MEMBER  = ' . $existinguser->userid;
         $db = JFusionFactory::getDatabase($this->getJname());
         $db->setQuery($query );
         if (!$db->query()) {
@@ -239,7 +211,7 @@ class JFusionUser_smf extends JFusionUser{
     {
         //we need to update the email
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'UPDATE #__members SET emailAddress ='.$db->Quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
+        $query = 'UPDATE #__members SET emailAddress ='.$db->quote($userinfo->email) .' WHERE ID_MEMBER =' . $existinguser->userid;
         $db->setQuery($query);
         if (!$db->query()) {
             $status['error'][] = JText::_('EMAIL_UPDATE_ERROR') . $db->stderr();
@@ -274,7 +246,7 @@ class JFusionUser_smf extends JFusionUser{
     function unblockUser($userinfo, &$existinguser, &$status)
     {
         	$db = JFusionFactory::getDatabase($this->getJname());
-            $query = 'DELETE FROM #__ban_groups WHERE name = ' . $db->Quote($existinguser->username);
+            $query = 'DELETE FROM #__ban_groups WHERE name = ' . $db->quote($existinguser->username);
             $db->setQuery($query);
 		    if (!$db->query()) {
         	    $status['error'][] = JText::_('BLOCK_UPDATE_ERROR') . $db->stderr();
@@ -370,7 +342,7 @@ class JFusionUser_smf extends JFusionUser{
                 return;
             }
 
-            $query = 'REPLACE INTO #__settings (variable, value) VALUES (\'latestMember\', ' . $user->ID_MEMBER . '), (\'latestRealName\', ' . $db->Quote($userinfo->username) . ')';
+            $query = 'REPLACE INTO #__settings (variable, value) VALUES (\'latestMember\', ' . $user->ID_MEMBER . '), (\'latestRealName\', ' . $db->quote($userinfo->username) . ')';
             $db->setQuery($query);
             if (!$db->query()) {
                 //return the error
