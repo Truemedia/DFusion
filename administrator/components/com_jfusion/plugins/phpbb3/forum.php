@@ -392,7 +392,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$post_row->post_checksum	= md5($message_parser->message);
 		$post_row->bbcode_bitfield	= $message_parser->bbcode_bitfield;
 		$post_row->bbcode_uid		= $message_parser->bbcode_uid;
-		$post_row->post_edit_time 	= $current_time();
+		$post_row->post_edit_time 	= $current_time;
 		$post_row->post_edit_reason = 'JFusion Discussion Bot '. JText::_('UPDATE');
 		$post_row->post_edit_user	= $userid;
 		$post_row->post_edit_count	= $count + 1;
