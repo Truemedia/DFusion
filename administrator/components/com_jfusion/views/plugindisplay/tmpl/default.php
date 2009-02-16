@@ -97,7 +97,7 @@ if($description){
 		$parser = JFactory::getXMLParser('Simple');
     	$xml    = $parser->loadFile($plugin_xml);
    		$xml    = $parser->document;
-		echo $xml->description[0]->data;
+		echo $xml->description[0]->data();
 	} else {
 		echo "";
 	}

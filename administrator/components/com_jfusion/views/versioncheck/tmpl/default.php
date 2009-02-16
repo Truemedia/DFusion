@@ -118,175 +118,52 @@ if($server_compatible){
 </tr></thead><tbody>
 
 <?php
-//check if the JFusion component is installed
-$component_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'com_jfusion.xml';
-$auth_xml = JPATH_SITE .DS.'plugins'.DS.'authentication'.DS.'jfusion.xml';
-$user_xml = JPATH_SITE .DS.'plugins'.DS.'user'.DS.'jfusion.xml';
-$search_xml = JPATH_SITE .DS.'plugins'.DS.'search'.DS.'jfusion.xml';
-$discussion_xml = JPATH_SITE .DS.'plugins'.DS.'content'.DS.'jfusion.xml';
-$activity_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_activity'.DS.'mod_jfusion_activity.xml';
-$login_xml = JPATH_SITE .DS.'modules'.DS.'mod_jfusion_login'.DS.'mod_jfusion_login.xml';
+function getVersionNumber($filename, $name, $version, &$row_count, &$up2date){
+	if (file_exists($filename) && is_readable($filename)) {
+		//get the version number
+		$parser = JFactory::getXMLParser('Simple');
+    	$parser->loadFile($filename);
+
+		if (version_compare($parser->document->version[0]->data(), $version) == -1){
+			echo '<tr class = "bad'.$row_count.'">';
+			$up2date = false;
+		} else {
+			echo '<tr class = "good'.$row_count.'">';
+		}
+
+		echo '<td>' . JText::_('JFUSION') . ' ' .$name. ' ' . JText::_('VERSION') . '</td>';
+		echo '<td>' . $parser->document->version[0]->data() . '</td>';
+		echo '<td>' . $version . '</td></tr>';
+	} else {
+		JFusionFunction::raiseWarning(JText::_('ERROR'), JText::_('XML_FILE_MISSING') . ' JFusion ' . $plugin->name . ' ' .JText::_('PLUGIN'), 1);
+		echo '<td>' . JText::_('JFUSION') . ' ' .$name. ' ' . JText::_('VERSION') . '</td>';
+		echo '<td>' . $parser->document->version[0]->data() . '</td>';
+		echo '<td>' . JText::_('UNKNOWN'). '</td></tr>';
+	}
+
+	//cleanup for the next function call
+	unset($parser);
+	if ($row_count == 1){
+		$row_count = 0;
+	}	else {
+		$row_count = 1;
+	}
+}
+
+//check if the JFusion component,plugins and modules
 $row_count = 0;
 $up2date = true;
 
-if (file_exists($component_xml)) {
-	//get the version number
-	$parser = JFactory::getXMLParser('Simple');
-    $xml    = $parser->loadFile($component_xml);
-   	$xml    = $parser->document;
+//check the JFusion component,plugins and modules versions
+getVersionNumber(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'com_jfusion.xml', JText::_('COMPONENT'),$this->JFusionVersion->component[0]->data() ,$row_count, $up2date);
+getVersionNumber(JPATH_SITE .DS.'plugins'.DS.'authentication'.DS.'jfusion.xml',JText::_('AUTHENTICATION') .' ' . JText::_('PLUGIN') ,$this->JFusionVersion->auth[0]->data() ,$row_count, $up2date);
+getVersionNumber(JPATH_SITE .DS.'plugins'.DS.'user'.DS.'jfusion.xml',JText::_('USER') . ' ' . JText::_('PLUGIN'),$this->JFusionVersion->user[0]->data() ,$row_count, $up2date);
+getVersionNumber(JPATH_SITE .DS.'modules'.DS.'mod_jfusion_activity'.DS.'mod_jfusion_activity.xml',JText::_('ACTIVITY') . ' ' . JText::_('MODULE'),$this->JFusionVersion->activity[0]->data() ,$row_count, $up2date);
+getVersionNumber(JPATH_SITE .DS.'modules'.DS.'mod_jfusion_login'.DS.'mod_jfusion_login.xml',JText::_('LOGIN') .' ' . JText::_('MODULE'),$this->JFusionVersion->login[0]->data() ,$row_count, $up2date);
+getVersionNumber(JPATH_SITE .DS.'plugins'.DS.'search'.DS.'jfusion.xml',JText::_('SEARCH') .' ' . JText::_('PLUGIN'),$this->JFusionVersion->search[0]->data() ,$row_count, $up2date);
+getVersionNumber(JPATH_SITE .DS.'plugins'.DS.'content'.DS.'jfusion.xml',JText::_('DISCUSSION') .' ' . JText::_('PLUGIN'),$this->JFusionVersion->discussion[0]->data() ,$row_count, $up2date);
 
-	if (version_compare($xml->version[0]->data, $this->JFusionVersion->component[0]->data()) == -1){
-		echo '<tr class = "bad'.$row_count.'">';
-		$up2date = false;
-	} else {
-		echo '<tr class = "good'.$row_count.'">';
-	}	?>
-	<td>JFusion Component</td>
-	<td><?php echo $xml->version[0]->data;?></td>
-	<td><?php echo $this->JFusionVersion->component[0]->data();?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
-}
-
-
-if (file_exists($auth_xml)) {
-	//get the version number
-	$parser = JFactory::getXMLParser('Simple');
-    $xml    = $parser->loadFile($auth_xml);
-   	$xml    = $parser->document;
-
-	if (version_compare($xml->version[0]->data, $this->JFusionVersion->auth[0]->data()) == -1){
-		echo '<tr class = "bad'.$row_count.'">';
-		$up2date = false;
-	} else {
-		echo '<tr class = "good'.$row_count.'">';
-	}	?>
-	<td>JFusion Auth Plugin</td>
-	<td><?php echo $xml->version[0]->data;?></td>
-	<td><?php echo $this->JFusionVersion->auth[0]->data();?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
-}
-if (file_exists($user_xml)) {
-	//get the version number
-	$parser = JFactory::getXMLParser('Simple');
-    $xml    = $parser->loadFile($user_xml);
-   	$xml    = $parser->document;
-
-	if (version_compare($xml->version[0]->data, $this->JFusionVersion->user[0]->data()) == -1){
-		echo '<tr class = "bad'.$row_count.'">';
-		$up2date = false;
-	} else {
-		echo '<tr class = "good'.$row_count.'">';
-	}	?>
-	<td>JFusion User Plugin</td>
-	<td><?php echo $xml->version[0]->data;?></td>
-	<td><?php echo $this->JFusionVersion->user[0]->data();?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
-}
-if (file_exists($search_xml)) {
-	//get the version number
-	$parser = JFactory::getXMLParser('Simple');
-    $xml    = $parser->loadFile($search_xml);
-   	$xml    = $parser->document;
-
-	if (version_compare($xml->version[0]->data, $this->JFusionVersion->user[0]->data()) == -1){
-		echo '<tr class = "bad'.$row_count.'">';
-		$up2date = false;
-	} else {
-		echo '<tr class = "good'.$row_count.'">';
-	}	?>
-	<td>JFusion Search Plugin</td>
-	<td><?php echo $xml->version[0]->data;?></td>
-	<td><?php echo $this->JFusionVersion->search[0]->data();?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
-}
-if (file_exists($discussion_xml)) {
-	//get the version number
-	$parser = JFactory::getXMLParser('Simple');
-    $xml    = $parser->loadFile($discussion_xml);
-   	$xml    = $parser->document;
-
-	if (version_compare($xml->version[0]->data, $this->JFusionVersion->user[0]->data()) == -1){
-		echo '<tr class = "bad'.$row_count.'">';
-		$up2date = false;
-	} else {
-		echo '<tr class = "good'.$row_count.'">';
-	}	?>
-	<td>JFusion Discussion Bot Plugin</td>
-	<td><?php echo $xml->version[0]->data;?></td>
-	<td><?php echo $this->JFusionVersion->discussion[0]->data();?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
-}
-if (file_exists($activity_xml)) {
-	//get the version number
-	$parser = JFactory::getXMLParser('Simple');
-    $xml    = $parser->loadFile($activity_xml);
-   	$xml    = $parser->document;
-
-	if (version_compare($xml->version[0]->data, $this->JFusionVersion->activity[0]->data()) == -1){
-		echo '<tr class = "bad'.$row_count.'">';
-		$up2date = false;
-	} else {
-		echo '<tr class = "good'.$row_count.'">';
-	}	?>
-	<td>JFusion Activity Module</td>
-	<td><?php echo $xml->version[0]->data;?></td>
-	<td><?php echo $this->JFusionVersion->activity[0]->data();?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
-}
-if (file_exists($login_xml)) {
-	//get the version number
-	$parser = JFactory::getXMLParser('Simple');
-    $xml    = $parser->loadFile($login_xml);
-   	$xml    = $parser->document;
-
-	if (version_compare($xml->version[0]->data, $this->JFusionVersion->login[0]->data()) == -1){
-		echo '<tr class = "bad'.$row_count.'">';
-		$up2date = false;
-	} else {
-		echo '<tr class = "good'.$row_count.'">';
-	}	?>
-	<td>JFusion Login Module</td>
-	<td><?php echo $xml->version[0]->data;?></td>
-	<td><?php echo $this->JFusionVersion->login[0]->data();?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
-}
 echo '</table><br/>';
-
 ?>
 <table class="adminform" cellspacing="1"><thead><tr>
 <th class="title" align="left"><?php echo JText::_('JFUSION_PLUGINS'); ?></th>
@@ -299,54 +176,18 @@ $query = 'SELECT * from #__jfusion';
 $db->setQuery($query );
 $plugins = $db->loadObjectList();
 foreach ($plugins as $plugin) {
-	?>
-	<?php
-    $plugin_xml = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$plugin->name.DS.'jfusion.xml';
-    //get the version number
-	if(file_exists($plugin_xml) && is_readable($plugin_xml)) {
-		$parser = JFactory::getXMLParser('Simple');
-    	$xml    = $parser->loadFile($plugin_xml);
-   		$xml    = $parser->document;
+        if(isset($this->JFusionVersion->{$plugin->name}))       {
+                $plugin_version = $this->JFusionVersion->{$plugin->name};
+                if ($plugin_version[0]->data()){
+                        $version = $plugin_version[0]->data();
+                } else {
+                        $version = JText::_('UNKNOWN');
+                }
+        } else {
+        	$version = JText::_('UNKNOWN');
+        }
 
-		if(isset($this->JFusionVersion->{$plugin->name})){
-			if (version_compare($xml->version[0]->data, $this->JFusionVersion->{$plugin->name}[0]->data()) == -1){
-				echo '<tr class = "bad'.$row_count.'">';
-				$up2date = false;
-			} else {
-				echo '<tr class = "good'.$row_count.'">';
-			}
-		} else {
-			echo '<tr>';
-		}
-		echo "<td>JFusion {$plugin->name} " . JText::_('PLUGIN') . "</td>";
-		echo "<td>{$xml->version[0]->data}</td>\n";
-	} else {
-		JFusionFunction::raiseWarning(JText::_('ERROR'), JText::_('XML_FILE_MISSING') . ' JFusion ' . $plugin->name . ' ' .JText::_('PLUGIN'), 1);
-		echo '<tr class = "bad'.$row_count.'">';
-		echo "<td>JFusion {$plugin->name} " . JText::_('PLUGIN') . "</td>";
-		echo "<td>".JText::_('UNKNOWN')."</td>\n";
-	}
-	?>
-	<td><?php
-
-	if(isset($this->JFusionVersion->{$plugin->name}))	{
-		$plugin_version = $this->JFusionVersion->{$plugin->name};
-		if ($plugin_version[0]->data()){
-			echo $plugin_version[0]->data();
-		} else {
-			echo JText::_('UNKNOWN');
-		}
-	} else {
-		echo JText::_('UNKNOWN');
-	}
-
-	?></td></tr><?php
-	unset($xml);
-	if ($row_count == 1){
-		$row_count = 0;
-	}	else {
-		$row_count = 1;
-	}
+	getVersionNumber(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$plugin->name.DS.'jfusion.xml', $plugin->name . ' ' . JText::_('PLUGIN'),$version ,$row_count, $up2date);
 }
 
 echo '</table>';
@@ -391,7 +232,10 @@ else
 </td></tr></table>
 <br/><br/>
 
-<table bgcolor="#ffffce" width ="100%"><tr><td width="50px"><td>
+<?php
+}
+?>
+<br/><br/><br/><table bgcolor="#ffffce" width ="100%"><tr><td width="50px"><td>
 <img src="components/com_jfusion/images/advanced.png" height="75px" width="75px">
 <td><h3><?php echo JText::_('ADVANCED') . ' ' . JText::_('VERSION'). ' ' . JText::_('MANAGEMENT'); ?></h3>
 <script language="javascript" type="text/javascript">
@@ -436,8 +280,3 @@ if (agree){
 SVN build:<input type="text" name="svn_build" size="4"/> <input type="submit" value="<?php echo JText::_('INSTALL') . ' ' . JText::_('SPECIFIC') . ' SVN Build'; ?>" onCLick="return confirmSubmit2('svn');"/><br/>
 </td></tr></table>
 <br/><br/>
-
-
-<?php
-}
-

@@ -32,21 +32,24 @@ class JFusionAdmin_magento extends JFusionAdmin{
         }
         $xmlfile = $forumpath.'app'.DS.'etc'.DS.'local.xml';
         if (file_exists($xmlfile)) {
-            if (!$xml = simplexml_load_file($xmlfile)) {
+   			$xml = JFactory::getXMLParser('Simple');
+            if (!$xml->loadFile($xmlfile)) {
                 unset($xml);
                 JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). " $xmlfile " . JText::_('WIZARD_MANUAL'));
 	            $result = false;
     	        return $result;
             }
+
             //save the parameters into array
             $params = array();
-            $params['database_host']     = (string)$xml->global->resources->default_setup->connection->host;
-            $params['database_name']     = (string)$xml->global->resources->default_setup->connection->dbname;
-            $params['database_user']     = (string)$xml->global->resources->default_setup->connection->username;
-            $params['database_password'] = (string)$xml->global->resources->default_setup->connection->password;
-            $params['database_prefix']   = (string)$xml->global->resources->db->table_prefix;
+            $params['database_host']     = (string)$xml->document->global[0]->resources[0]->default_setup[0]->connection[0]->host[0]->data();
+            $params['database_name']     = (string)$xml->document->global[0]->resources[0]->default_setup[0]->connection[0]->dbname[0]->data();
+            $params['database_user']     = (string)$xml->document->global[0]->resources[0]->default_setup[0]->connection[0]->username[0]->data();
+            $params['database_password'] = (string)$xml->document->global[0]->resources[0]->default_setup[0]->connection[0]->password[0]->data();
+            $params['database_prefix']   = (string)$xml->document->global[0]->resources[0]->db[0]->table_prefix[0]->data();
             $params['database_type']     = "mysql";
             $params['source_path']       = $forumpath;
+            unset($xml);
             return $params;
         } else {
             JError::raiseWarning(500,JText::_('WIZARD_FAILURE'). " $xmlfile " . JText::_('WIZARD_MANUAL'));
