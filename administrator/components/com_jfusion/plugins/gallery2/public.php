@@ -105,12 +105,8 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 		return $buffer;
 	}
 
-
 	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL) {}
 	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL) {}
-
-
-
 
 	function getSearchResults(&$text, &$phrase, &$pluginParam, $linkMode, $itemid) 
 	{
@@ -170,5 +166,63 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 			}
 		}
 		return $return;
+	}
+	
+	/************************************************
+	 * Functions For JFusion Who's Online Module
+	 ***********************************************/
+
+	/**
+	 * Returns a query to find online users
+	 * Make sure the columns are in this order: userid, username, name (of user)
+	 */
+	function getOnlineUserQuery()
+	{
+		//get a unix time from 5 mintues ago
+		date_default_timezone_set('UTC');
+		$now = time();
+		$active = strtotime("-5 minutes",$now);
+		$query = "SELECT DISTINCT u.g_id AS userid, u.g_userName as username, u.g_fullName AS name  ".
+		         "FROM #__User AS u INNER JOIN #__SessionMap AS s ON s.g_userId = u.g_id ". 
+		         "WHERE s.g_modificationTimestamp > $active";
+		return $query;
+	}
+	
+	/**
+	 * Returns number of members
+	 * @return int
+	 */
+	function getNumberOnlineMembers()
+	{
+		//get a unix time from 5 mintues ago
+		date_default_timezone_set('UTC');
+		$now = time();
+		$active = strtotime("-5 minutes",$now);
+		
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) FROM #__SessionMap s ".
+		         "WHERE g_modificationTimestamp > $active AND s.g_userId != 5";
+		$db->setQuery($query);
+		$result = $db->loadResult();
+		return $result;
+	}
+	
+	/**
+	 * Returns number of guests
+	 * @return int
+	 */
+	function getNumberOnlineGuests()
+	{
+		//get a unix time from 5 mintues ago
+		date_default_timezone_set('UTC');
+		$now = time();
+		$active = strtotime("-5 minutes",$now);
+		
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) FROM #__SessionMap s ".
+		         "WHERE g_modificationTimestamp > $active AND s.g_userId = 5";
+		$db->setQuery($query);
+		$result = $db->loadResult();
+		return $result;
 	}
 }

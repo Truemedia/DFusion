@@ -351,6 +351,12 @@ class JFusionUser_gallery2 extends JFusionUser {
 			$session->put('session.siteAdminActivityTimestamp', $phpVm->time());
 		}
 		$ret = $session->regenerate();
+		
+        $session =& $gallery->getSession();
+
+		/* Touch this session - Done for WhoIsOnline*/
+		$session->put('touch', time());
+		$ret = $session->save();
 
 		//Close GalleryApi
 		if($framework) {

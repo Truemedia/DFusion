@@ -85,7 +85,6 @@ class JFusionForum_gallery2 extends JFusionForum
 		}
 		$array['linkTarget'] = $link_target;
 		
-		//TODO: Check if the g2 module "imageframe" is installed (debug mode)
 		if($config['debug'] && $frame == 'none') {
 			/* Load the module list */
 	        list ($ret, $moduleStatus) = GalleryCoreApi::fetchPluginStatus('module');
@@ -148,6 +147,18 @@ class JFusionForum_gallery2 extends JFusionForum
 			return 'Sidebar isn\'t initialisies. Maybe there is a Problem with the Bridge';
 	    }
 	}
+
+	/**
+	 * Returns the Profile Url in Gallery2
+	 * This Link requires Modules:members enabled in gallery2
+	 * 
+	 * @return string
+	 * @see Gallery2:Modules:members
+	 */
+    function getProfileURL($uid)
+    {
+        return 'main.php?g2_view=members.MembersProfile&g2_userId=$uid';
+    }
 }
 
 
