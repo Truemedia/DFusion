@@ -15,36 +15,36 @@ defined('_JEXEC' ) or die('Restricted access' );
  * For detailed descriptions on these functions please check the model.abstractpublic.php
  * @package JFusion_SMF
  */
-class JFusionPublic_smf extends JFusionPublic{
+class JFusionPublic_smf extends JFusionPublic {
 
-    function getJname()
-    {
-        return 'smf';
-    }
-
-    function getRegistrationURL()
-    {
-        return 'index.php?action=register';
-    }
-
-    function getLostPasswordURL()
-    {
-        return 'index.php?action=reminder';
-    }
-
-    function getLostUsernameURL()
-    {
-        return 'index.php?action=reminder';
-    }
-
-	function & getBuffer($jPluginParam)
+	function getJname()
 	{
-        $joomla_globals = $GLOBALS;
+		return 'smf';
+	}
+
+	function getRegistrationURL()
+	{
+		return 'index.php?action=register';
+	}
+
+	function getLostPasswordURL()
+	{
+		return 'index.php?action=reminder';
+	}
+
+	function getLostUsernameURL()
+	{
+		return 'index.php?action=reminder';
+	}
+
+	function & getBuffer()
+	{
+		$joomla_globals = $GLOBALS;
 		// We're going to want a few globals... these are all set later.
 		global $time_start, $maintenance, $msubject, $mmessage, $mbname, $language;
 		global $boardurl, $boarddir, $sourcedir, $webmaster_email, $cookiename;
-		global $db_server, $db_name, $db_user, $db_prefix, $db_persist, $db_error_send, $db_last_error;
-		global $db_connection, $modSettings, $context, $sc, $user_info, $topic, $board, $txt;
+		global $db_connection, $db_server, $db_name, $db_user, $db_prefix, $db_persist, $db_error_send, $db_last_error;
+		global $modSettings, $context, $sc, $user_info, $topic, $board, $txt;
 		global $scripturl;
 
 		// Required to avoid a warning about a license violation even though this is not the case
@@ -52,23 +52,18 @@ class JFusionPublic_smf extends JFusionPublic{
 
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
 
-
 		// Get the path
-        $params = JFusionFactory::getParams($this->getJname());
-        $source_path = $params->get('source_path');
+		$params = JFusionFactory::getParams($this->getJname());
+		$source_path = $params->get('source_path');
 
-        $user 		= $params->get('database_user');
-        $host 		= $params->get('database_host');
-        $database	= $params->get('database_name');
-
-        if (substr($source_path, -1) == DS) {
-            $index_file = $source_path .'index.php';
-        } else {
-            $index_file = $source_path .DS.'index.php';
-        }
+		if (substr($source_path, -1) == DS) {
+			$index_file = $source_path .'index.php';
+		} else {
+			$index_file = $source_path .DS.'index.php';
+		}
 
 		if ( ! is_file($index_file) ) {
-            JError::raiseWarning(500, 'The path to the SMF index file set in the component preferences does not exist');
+			JError::raiseWarning(500, 'The path to the SMF index file set in the component preferences does not exist');
 			return null;
 		}
 
@@ -84,65 +79,39 @@ class JFusionPublic_smf extends JFusionPublic{
 		//change the current directory back to Joomla.
 		chdir(JPATH_SITE);
 
-
 		// Log an error if we could not include the file
 		if (!$rs) {
-            JError::raiseWarning(500, 'Could not find SMF in the specified directory');
+			JError::raiseWarning(500, 'Could not find SMF in the specified directory');
 		}
-
-    	//restore the joomla globals like nothing happened
-    	$GLOBALS = $joomla_globals;
-		//check to see if the Joomla database is still connnected
-	    jimport('joomla.database.database');
-    	jimport( 'joomla.database.table' );
-		$db = & JFactory::getDBO();
-        $conf =& JFactory::getConfig();
-
-        $j_host 		= $conf->getValue('config.host');
-        $j_user 		= $conf->getValue('config.user');
-        $j_password 	= $conf->getValue('config.password');
-        $j_database	    = $conf->getValue('config.db');
-
-        if ( $user == $j_user || $database != $j_database || $host != $j_host ) {
-            if (!($db->_resource = @mysql_connect( $j_host, $j_user, $j_password, true ))) {
-              $db->_errorNum = 2;
-              $db->_errorMsg = 'Could not connect to MySQL';
-              die ('could not reconnect to the Joomla database');
-            }
-            // select the database
-            $db->select($j_database);
-        }
 		return $buffer;
 	}
 
-
-
 	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
 	{
-		static $regex_body, $replace_body;
+		$regex_body		= array();
+		$replace_body	= array();
 
-		if ( ! $regex_body || ! $replace_body )
-		{
-			// Define our preg arrayshttp://www.jfusion.org/administrator/index.php?option=com_extplorer#
-			$regex_body		= array();
-			$replace_body	= array();
+		//convert relative links with query into absolute links
+		$regex_body[]	= '#'.$integratedURL.'index.php\?(.*?)"#mSis';
+		$replace_body[]	=  $baseURL . '&$1"';
 
-			//convert relative links with query into absolute links
-			$regex_body[]	= '#' . $integratedURL . 'index.php\?(.*?)"#mS';
-			$replace_body[]	=  $baseURL . '&$1"';
+		//convert relative links without query into absolute links
+		$regex_body[]	= '#'.$integratedURL.'index.php"#mS';
+		$replace_body[]	= $baseURL. '"';;
 
-			//convert relative links without query into absolute links
-			$regex_body[]	= '#' . $integratedURL . 'index.php"#mS';
-			$replace_body[]	= $baseURL . '"';
+		//convert links to the same page with anchors
+		$regex_body[]	= '#'.$integratedURL.'index.php\#(.*?)"#mSis';
+		$replace_body[]	= $baseURL.'#$1"';
 
-			//convert relative links from images into absolute links
-			$regex_body[]	= '#\./(.*?)("|\))#mS';
-			$replace_body[]	= $integratedURL.'$1$2"';
+//	    $regex_body[]	= '#\#(.*?)#mSis';
+//		$replace_body[]	= $fullURL.'#$1';
 
-			//convert links to the same page with anchors
-			$regex_body[]	= '#href="\#(.*?)"#';
-			$replace_body[]	= 'href="'.$fullURL.'&#$1"';
-		}
+		//Jump Related fix
+	   $regex_body[]	= '#<select(.*?)id="jumpto"(.*?);">(.*?)</select>#mSsie';
+	   $replace_body[]	= '$this->fixJump("$3")';
+
+	   $regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
+	   $replace_body[] = '<input $1 window.location.href = \''.$baseURL.'\' + this.form.jumpto.options$3>';
 
 		$buffer = preg_replace($regex_body, $replace_body, $buffer);
 	}
@@ -164,10 +133,33 @@ class JFusionPublic_smf extends JFusionPublic{
 			//$regex_header[]	= '#(href|src)="(.*)"#mS';
 			//$replace_header[]	= 'href="'.$integratedURL.'$2"';
 
+			//convert relative links into absolute links
+			$regex_header[]	= '#(href|src)=("./|"/)(.*?)"#mS';
+			$replace_header[]	= 'href="'.$integratedURL.'$3"';
+
+			$regex_header[] = '#var smf_scripturl = ["|\'](.*?)["|\'];#mS';
+			$replace_header[] = 'var smf_scripturl = "'.$baseURL.'";';
 		}
-
 		$buffer = preg_replace($regex_header, $replace_header, $buffer);
+	}
+
+	function fixJump($content)
+	{
+	  $find = '#<option value="[?](.*?)">(.*?)</option>#mSsi';
+	  $replace = '<option value="&$1">$2</option>';
+
+	  $content = preg_replace($find, $replace, $content);
+
+	  return '<select name="jumpto" id="jumpto" onchange="if (this.selectedIndex > 0 && this.options[this.selectedIndex].value && this.options[this.selectedIndex].value.length) window.location.href = smf_scripturl + this.options[this.selectedIndex].value;">'.$content.'</select>';
+	}
 }
 
-}
+
+
+
+
+
+
+
+
 
