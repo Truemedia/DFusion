@@ -584,7 +584,7 @@ class JFusionForum_phpbb3 extends JFusionForum
                 if(empty($avatar_software) || $avatar_software=='jfusion') {
 					$avatarSrc = $this->getAvatar($p->user_id);
                 } else {
-                	$avatarSrc = $this->getAltAvatar($avatar_software,$p->user_id,true);
+                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->user_id,true);
                 }
     	            
 				if($avatarSrc) {
@@ -614,7 +614,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			if ($showuser) {
 				if ($userlink) {
 					if(!empty($link_software) && $link_software != 'jfusion' && $link_software!='custom') {
-						$user_url = $this->getAltProfileURL($link_software,$p->username);
+						$user_url = JFusionFunction::getAltProfileURL($link_software,$p->username);
 					} elseif ($link_software=='custom' && !empty($userlink_custom)) {
 						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->user_id,false);
 						$user_url = $userlink_custom.$userlookup->id;

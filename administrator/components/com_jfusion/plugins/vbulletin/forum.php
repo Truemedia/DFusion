@@ -372,7 +372,7 @@ class JFusionForum_vbulletin extends JFusionForum
 				if(empty($avatar_software) || $avatar_software=='jfusion') {
 					$avatarSrc = $this->getAvatar($p->userid);
 				} else {
-    	         	$avatarSrc = $this->getAltAvatar($avatar_software,$p->userid,true);
+    	         	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->userid,true);
 				}
 				
 				if($avatarSrc) {
@@ -407,7 +407,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			{
 				if ($userlink) {
 					if(!empty($link_software) && $link_software != 'jfusion' && $link_software!='custom') {
-						$user_url = $this->getAltProfileURL($link_software,$p->username);
+						$user_url = JFusionFunction::getAltProfileURL($link_software,$p->username);
 					} elseif ($link_software=='custom' && !empty($userlink_custom)) {
 						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->userid,false);
 						$user_url =  $userlink_custom.$userlookup->id;

@@ -66,7 +66,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
     	            if($avatarSrc=='' || $avatarSrc=='jfusion') {
 						$avatar = $JFusionPlugin->getAvatar($userlookup->userid);
     	            } else {
-    	            	$avatar = $JFusionPlugin->getAltAvatar($avatarSrc, $user->get('id'));
+    	            	$avatar = JFusionFunction::getAltAvatar($avatarSrc, $user->get('id'));
     	            }
             	}
 

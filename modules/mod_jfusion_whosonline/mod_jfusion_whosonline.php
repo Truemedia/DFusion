@@ -67,4 +67,3 @@ if(is_array($pluginParamValue)) {
 } else {
     echo JText::_('NO_COMPONENT');
 }
-
