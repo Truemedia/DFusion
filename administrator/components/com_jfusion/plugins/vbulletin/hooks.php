@@ -84,7 +84,7 @@
 			$hookNames = array("global_start","global_complete","header_redirect","redirect_generic","logout_process");
 		} elseif($plugin=="duallogin") {
 			//retrieve the hooks that vBulletin will use to login to Joomla			
-			$hookNames = array("login_process","logout_process");
+			$hookNames = array("login_verify_success","logout_process");
 			define('DUALLOGIN',1);
 		} else {
 			$hookNames = array();
@@ -251,7 +251,7 @@
 	 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 	 */
 
-	function login_process()
+	function login_verify_success()
 	{
 		global $vbulletin;
 

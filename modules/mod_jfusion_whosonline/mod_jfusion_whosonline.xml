@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install type="module" version="1.5" method="upgrade">
+	<name>JFusion Who's Online Module</name>
+	<author>JFusion Development Team</author>
+	<creationDate>February 2009</creationDate>
+	<copyright>Copyright (C) 2009 JFusion. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>webmaster@jfusion.org</authorEmail>
+	<authorUrl>www.jfusion.org</authorUrl>
+	<version>1.1.2-001</version>
+	<description>JFUSION_WHOSONLINE_DESCR</description>
+	<files folder="modules/mod_jfusion_whosonline">
+		<filename module="mod_jfusion_whosonline">mod_jfusion_whosonline.php</filename>
+		<filename>index.html</filename>
+		<filename>helper.php</filename>
+	</files>
+	<languages folder="language/en-GB">
+		<language tag="en-GB">en-GB.mod_jfusion_whosonline.ini</language>
+	</languages>
+	<params addpath="/administrator/components/com_jfusion/elements">
+		<param name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX" />
+		
+		<param name="JFusionPluginParam" type="JFusionAdvancedParam" default=""
+			label="JFUSION_PLUGIN" configfile="4" multiselect="true"
+			description="JFUSION_PLUGIN_DESCR" />
+	</params>
+</install>

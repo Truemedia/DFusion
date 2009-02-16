@@ -594,4 +594,96 @@ class JFusionFunction{
 			$GLOBALS['database'] =& $db;
 		}
 	}
+	
+   /**
+     * Retrieves the URL to a userprofile of a Joomla supported component
+     * @param $software string name of the software
+     * @param $uid int userid of the user
+     * @return string URL
+     */
+    function getAltProfileURL($software,$username)
+    {
+    	$db =& JFactory::getDBO();
+    	$query = "SELECT id FROM #__jfusion_users_plugin WHERE username = '$username' LIMIT 1";
+    	$db->setQuery($query);
+    	$uid = $db->loadResult();
+
+    	if(!empty($uid)){
+	    	if($software=="cb") {
+	    		$query = "SELECT id FROM #__menu WHERE type = 'component' AND link LIKE '%com_comprofiler%' LIMIT 1";
+	    		$db->setQuery($query);
+	    		$itemid = $db->loadResult();
+	    		$url = 'index.php?option=com_comprofiler&task=userProfile&Itemid='.$itemid.'&user='.$uid;
+	    	} elseif($software=="jomsocial") {
+	    		$query = "SELECT id FROM #__menu WHERE type = 'component' AND link LIKE '%com_community%' LIMIT 1";
+	    		$db->setQuery($query);
+	    		$itemid = $db->loadResult();
+	    		$url = 'index.php?option=com_community&view=profile&Itemid='.$itemid.'&userid='.$uid;
+	    	} elseif($software=="joomunity") {
+	    		$query = "SELECT id FROM #__menu WHERE type = 'component' AND link LIKE '%com_joomunity%' LIMIT 1";
+	    		$db->setQuery($query);
+	    		$itemid = $db->loadResult();
+	    		$url = 'index.php?option=com_joomunity&Itemid='.$itemid.'&cmd=Profile.View.'.$uid;
+	    	} else {
+	    		$url = false;
+	    	}
+    	} else {
+    		$url = false;
+    	}
+    	
+    	return $url;
+    }    
+    
+    /**
+     * Retrieves the source of the avatar for a Joomla supported component
+     * @param $software
+     * @param $uid
+     * @param $isPluginUid boolean if true, look up the Joomla id in the look up table
+     * @return unknown_type
+     */
+    function getAltAvatar($software,$uid,$isPluginUid = false)
+    {
+    	$db = & JFactory::getDBO();
+    	
+    	if($isPluginUid) {
+    		$jname = $this->getJname();
+    		$query = "SELECT id FROM #__jfusion_users_plugin WHERE jname = '$jname' AND userid = '$uid'";
+    		$db->setQuery($query);
+    		$uid = $db->loadResult();
+    	}
+    	
+        if($software=="cb") {
+       		$query = "SELECT avatar FROM #__comprofiler WHERE user_id = '$uid'";
+    		$db->setQuery($query);
+    		$result = $db->loadResult();
+    		if(!empty($result)) {
+    			$avatar = "images".DS."comprofiler".DS.$result;
+    		} else {
+    			$avatar = "components".DS."com_comprofiler".DS."plugin".DS."templates".DS."default".DS."images".DS."avatar".DS."nophoto_n.png";
+    		}
+    	} elseif($software=="jomsocial") {
+    	    $query = "SELECT avatar FROM #__community_users WHERE userid = '$uid'";
+    		$db->setQuery($query);
+    		$result = $db->loadResult();
+    		if(!empty($result)) {
+    			$avatar = $result;
+    		} else {
+    			$avatar = "components".DS."com_community".DS."assets".DS."default_thumb.jpg";
+    		}
+    	} elseif($software=="joomunity") {
+    		$query = "SELECT user_picture FROM #__joom_users WHERE user_id = '$uid'";
+    		$db->setQuery($query);
+    		$result = $db->loadResult();
+    		$avatar = "components".DS."com_joomunity".DS."files".DS."avatars".DS.$result;
+    	} elseif($software=="gravatar") {
+      		$query = "SELECT email FROM #__users WHERE id = '$uid'";
+    		$db->setQuery($query);
+    		$email = $db->loadResult(); 
+    		$avatar = "http://www.gravatar.com/avatar.php?gravatar_id=".md5( strtolower($email) )."&size=40"; 
+    	} else {
+    		$avatar = false;
+    	}
+		
+    	return $avatar;
+    }
 }

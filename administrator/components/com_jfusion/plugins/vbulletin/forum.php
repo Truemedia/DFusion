@@ -376,13 +376,16 @@ class JFusionForum_vbulletin extends JFusionForum
 				}
 				
 				if($avatarSrc) {
-					$size = getimagesize($avatar);
+					$size = @getimagesize($avatar);
 					$w = $size[0];
 					$h = $size[1];
 					if($size[0]>60) {
 						$scale = min(60/$w, 80/$h);
 						$w = floor($scale*$w);
 						$h = floor($scale*$h);
+					} else {
+						$w = 60;
+						$h = 80;
 					}
 					
 					$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";

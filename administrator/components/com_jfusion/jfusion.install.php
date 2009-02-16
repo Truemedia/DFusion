@@ -351,6 +351,7 @@ if (array_search($table_prefix . 'jfusion_sync',$table_list) == false) {
 jimport('joomla.installer.helper');
 $packages['Login Module'] = $basedir . DS . 'packages' . DS . 'jfusion_mod_login.zip';
 $packages['Activity Module'] = $basedir . DS . 'packages' . DS . 'jfusion_mod_activity.zip';
+$packages['Whos Online Module'] = $basedir . DS . 'packages' . DS . 'jfusion_mod_whosonline.zip';
 $packages['User Plugin'] = $basedir . DS . 'packages' . DS . 'jfusion_plugin_user.zip';
 $packages['Authentication Plugin'] = $basedir . DS . 'packages' . DS . 'jfusion_plugin_auth.zip';
 $packages['Search Plugin'] = $basedir . DS . 'packages' . DS . 'jfusion_plugin_search.zip';

@@ -37,6 +37,48 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		return 'login.php?do=lostpw';
 	}
 
+    
+   /************************************************
+	 * Functions For JFusion Who's Online Module
+	 ***********************************************/
+
+	/**
+	 * Returns a query to find online users
+	 * Make sure the columns are in this order: userid, username, name (of user)
+	 */
+	function getOnlineUserQuery()
+	{
+		return "SELECT DISTINCT u.userid, u.username AS username, u.username AS name FROM #__user AS u INNER JOIN #__session AS s ON u.userid = s.userid WHERE s.userid != 0";
+	}
+	
+	/**
+	 * Returns number of guests
+	 * @return int
+	 */
+	function getNumberOnlineGuests()
+	{
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) FROM #__session WHERE userid = 0";
+		$db->setQuery($query);
+		return $db->loadResult();
+	}
+	
+	/**
+	 * Returns number of logged in users
+	 * @return int
+	 */
+	function getNumberOnlineMembers()
+	{
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) FROM #__session WHERE userid != 0";
+		$db->setQuery($query);
+		return $db->loadResult();
+	}
+	
+	/************************************************
+	* Functions For Frameless View
+	************************************************/
+
 	function & getBuffer($jPluginParam)
 	{
 		//check to make sure the frameless hook is installed

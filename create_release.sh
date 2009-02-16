@@ -37,6 +37,12 @@ case $1 in
 		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_mod_login.zip mod_jfusion_login.xml -x *.svn* > /dev/null
 
 		cd $FULLPATH
+		zip -r $FULLPATH/administrator/components/com_jfusion/packages/jfusion_mod_whosonline.zip modules/mod_jfusion_whosonline -x *.svn*  > /dev/null
+		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_mod_whosonline.zip language/en-GB/en-GB.mod_jfusion_whosonline.ini -x *.svn* > /dev/null
+		cd $FULLPATH/modules/mod_jfusion_whosonline/
+		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_mod_whosonline.zip mod_jfusion_whosonline.xml -x *.svn* > /dev/null
+
+		cd $FULLPATH
 		zip -r $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_auth.zip plugins/authentication -x *.svn* > /dev/null
 		cd $FULLPATH/plugins/authentication/
 		zip -gr $FULLPATH/administrator/components/com_jfusion/packages/jfusion_plugin_auth.zip jfusion.xml -x *.svn* > /dev/null

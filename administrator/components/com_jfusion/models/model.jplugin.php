@@ -706,4 +706,38 @@ if ($jname == 'joomla_int'){
 		}
 	}
 
+    /************************************************
+	 * Functions For JFusion Who's Online Module
+	 ***********************************************/
+
+	function getOnlineUserQuery()
+	{
+		$query = 'SELECT DISTINCT u.id AS userid, u.username, u.name' .
+				 ' FROM #__users AS u INNER JOIN #__session AS s' .
+				 ' ON u.id = s.userid' .
+				 ' WHERE s.client_id = 0' .
+				 ' AND s.guest = 0';
+		return $query;
+	}
+
+	function getNumberOnlineGuests()
+	{
+	    $db		  =& JFactory::getDBO();
+		$query = 'SELECT COUNT(*)' . 
+					' FROM #__session' .
+					' WHERE guest = 1 AND usertype = "" AND client_id = 0';
+		$db->setQuery($query);
+		return $db->loadResult();
+	}
+
+	function getNumberOnlineMembers()
+	{
+	    $db		  =& JFactory::getDBO();
+		$query = 'SELECT COUNT(DISTINCT userid) AS c' . 
+					' FROM #__session' .
+					' WHERE guest = 0';
+		$db->setQuery($query);
+
+		return $db->loadResult();
+	}
 }

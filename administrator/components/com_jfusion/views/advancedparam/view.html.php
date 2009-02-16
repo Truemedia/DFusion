@@ -8,8 +8,8 @@ jimport('joomla.application.component.view');
 class jfusionViewadvancedparam extends JView {
 	var $configArray = array(1 => array(1 => "config.xml", 2 => " WHERE status = 1"),
 		                     2 => array(1 => "activity.xml", 2 => "WHERE activity = 1 and status = 1"),
-		                     3 => array(1 => "search.xml", 2 => " WHERE search = 1 and status =1"));
-		                         
+		                     3 => array(1 => "search.xml", 2 => " WHERE search = 1 and status =1"),
+							 4 => array(1 => "whosonline.xml", 2 => "WHERE status = 1"));
 	function display($tpl = null){
 		global $mainframe, $option;
 		

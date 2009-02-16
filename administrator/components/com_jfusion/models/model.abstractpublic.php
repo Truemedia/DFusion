@@ -218,4 +218,35 @@ class JFusionPublic{
 	{
 		return $text;
 	}
+	
+    /************************************************
+	 * Functions For JFusion Who's Online Module
+	 ***********************************************/
+
+	/**
+	 * Returns a query to find online users
+	 * Make sure the columns are in this order: userid, username, name (of user)
+	 */
+	function getOnlineUserQuery()
+	{
+		return '';
+	}
+	
+	/**
+	 * Returns number of guests
+	 * @return int
+	 */
+	function getNumberOnlineGuests()
+	{
+		return 0;
+	}
+	
+	/**
+	 * Returns number of logged in users
+	 * @return int
+	 */
+	function getNumberOnlineMembers()
+	{
+		return 0;
+	}	
 }
