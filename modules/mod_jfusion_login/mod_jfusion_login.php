@@ -89,7 +89,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 				//retrieve avatar
 				$avatarSrc = $params->get('avatar_software');
 				if($avatarSrc!='jfusion') {
-					$avatar = JFusionForum::getAltAvatar($avatarSrc, $user->get('id'));
+					$avatar = JFusionFunction::getAltAvatar($avatarSrc, $user->get('id'));
 				} else {
 					$avatar = false;
 				}
@@ -106,7 +106,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 			//retrieve avatar
 			$avatarSrc = $params->get('avatar_software');
 			if($avatarSrc!='jfusion') {
-				$avatar = JFusionForum::getAltAvatar($avatarSrc, $user->get('id'));
+				$avatar = JFusionFunction::getAltAvatar($avatarSrc, $user->get('id'));
 			} else {
 				$avatar = false;
 			}
