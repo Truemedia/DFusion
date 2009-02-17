@@ -27,7 +27,7 @@ class JFusionControllerFrontEnd extends JController
 		//find out if there is an itemID with the view variable
 		$menuitemid = JRequest::getVar('Itemid');
 		//we do not want the frontpage menuitem as it will cause a 500 error in some cases
-		$jPluginParam = NULL;
+		$jPluginParam = new JParameter('');
 		if ($menuitemid && $menuitemid!=1) {
 			$db =& JFactory::getDBO();
 			$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
@@ -37,7 +37,6 @@ class JFusionControllerFrontEnd extends JController
 			$menu_param = new JParameter($params, '');
 			$jview = $menu_param->get('visual_integration');
 			//load custom plugin parameter
-			$jPluginParam = new JParameter('');
 			$jPluginParam->loadArray(unserialize(base64_decode($menu_param->get('JFusionPluginParam'))));
 			$jname = $jPluginParam->get('jfusionplugin');
 		} elseif ($menuitemid==1) {

@@ -58,7 +58,7 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 		jFusion_g2BridgeCore::loadGallery2Api(true);
 		global $gallery;
 		
-		$album = $jPluginParam->get('album');
+		$album = $jPluginParam->get('album', -1);
 		if($album != -1) {
 			$gallery->setConfig('defaultAlbumId', $album);
 			$gallery->setConfig('breadcrumbRootId', $album);

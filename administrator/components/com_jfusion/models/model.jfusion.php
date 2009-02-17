@@ -193,7 +193,7 @@ class JFusionFunction{
             //use the itemid only to identify plugin name and view type
             $base_url = 'index.php?option=com_jfusion&amp;Itemid=' . $itemid;
     	} else {
-            $base_url = 'index.php?option=com_jfusion&amp;view=' . $view . '&amp;jname=' . $jname;
+            $base_url = 'index.php?option=com_jfusion&amp;Itemid=-1&amp;view=' . $view . '&amp;jname=' . $jname;
     	}
 
 		if ($view == 'direct') {
