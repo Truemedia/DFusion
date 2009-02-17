@@ -165,7 +165,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	$db->setQuery($query);
 	$columns = $db->loadResultArray();
 	if(!in_array('forumid',$columns)) {
-		$query = "ALTER TABLE #__jfusion
+		$query = "ALTER TABLE #__jfusion_forum_plugin
 				  ADD COLUMN forumid int(11) NOT NULL";
 		$db->setQuery($query);
 		if(!$db->query()) {
