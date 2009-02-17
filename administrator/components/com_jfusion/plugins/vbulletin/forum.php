@@ -65,37 +65,25 @@ class JFusionForum_vbulletin extends JFusionForum
         return 'vbulletin';
     }
 
-	function checkThreadExists(&$dbparams, &$contentitem)
+	function checkThreadExists(&$dbparams, &$contentitem, &$existingthread, $forumid)
 	{
 	    $status = array();
         $status['debug'] = array();
         $status['error'] = array();
 
-		//check to see if a valid $content object was passed on
-		if(!is_object($contentitem)){
-			$status['error'][] = JText::_('NO_CONTENT_DATA_FOUND');
-			return $status;
-		}
-
-		$forumid = $this->getDefaultForum($dbparams, $contentitem);
-
-		//see if the thread exists
-		$existingthread = $this->getThread($contentitem->id);
-
 		//set the timezone to UTC
 		date_default_timezone_set('UTC');
-
-		//datetime post was last updated
-		$postModified = $existingthread->modified;
-
-		//datetime content was last updated
-		$contentModified = strtotime($contentitem->modified);
 
 		//backup Joomla's global scope
 		$this->backupGlobals();
 		
 		if(!empty($existingthread))
 		{			
+			//datetime post was last updated
+			$postModified = $existingthread->modified;
+			//datetime content was last updated
+			$contentModified = strtotime($contentitem->modified);
+			
 			//check to make sure the thread still exists in the software
 			$jdb = & JFusionFactory::getDatabase($this->getJname());
 			$query = "SELECT COUNT(*) FROM #__thread WHERE forumid = {$existingthread->forumid} AND threadid = {$existingthread->threadid} AND firstpostid = {$existingthread->postid}";
@@ -142,6 +130,15 @@ class JFusionForum_vbulletin extends JFusionForum
         }
 	}
 	
+    function getThread($threadid)
+    {
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT threadid, forumid, firstpostid AS postid FROM #__thread WHERE threadid = $threadid";
+		$db->setQuery($query);
+		$results = $db->loadObject();
+		return $results;
+    }
+    	
 	function createThread(&$dbparams, &$contentitem, $forumid, &$status)
 	{
 		//initialize vb framework
@@ -165,7 +162,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			$text = $this->prepareText(JFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
 		} else {
 			//prepare the text for posting
-			$text = $this->prepareText($contentitem->text);
+			$text = $this->prepareText($contentitem->introtext.$contentitem->fulltext);
 		}
 
 		require_once (CWD . "/includes/functions.php");
@@ -211,7 +208,7 @@ class JFusionForum_vbulletin extends JFusionForum
 
 			require_once (CWD . "/includes/functions.php");
 			
-			$threadinfo = verify_id('thread', $ids["threadid"], 0, 1);
+			$threadinfo = verify_id('thread', $ids->threadid, 0, 1);
 			$foruminfo = fetch_foruminfo($threadinfo['forumid'], false);
 			$postinfo = array();
 	    	$postinfo['threadid'] = $threadinfo['threadid'];
@@ -224,10 +221,10 @@ class JFusionForum_vbulletin extends JFusionForum
 			$userinfo = $this->convertUserData($userinfo);
 			$postdm->set_info('user',$userinfo);			
 			$postdm->setr('userid', $userinfo['userid']);
-			$postdm->setr('parentid', $ids["postid"]);
-			$postdm->setr('threadid', $ids["threadid"]);
+			$postdm->setr('parentid', $ids->postid);
+			$postdm->setr('threadid', $ids->threadid);
 			$postdm->setr('pagetext', $text);
-			$postdm->set('title', "Re: {$threadinfo['title']}");
+			$postdm->set('title', "Re: {$this->prepareText($threadinfo['title'])}");
 			
 			$postdm->set('visible', 1);
 			$postdm->set('allowsmilie', 1);
@@ -267,7 +264,7 @@ class JFusionForum_vbulletin extends JFusionForum
 			$text = $this->prepareText(jFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
 		} else 	{
 			//prepare the text for posting
-			$text = $this->prepareText($contentitem->text);
+			$text = $this->prepareText($contentitem->introtext.$contentitem->fulltext);
 		}
 
 		require_once (CWD . "/includes/functions.php");
@@ -308,7 +305,7 @@ class JFusionForum_vbulletin extends JFusionForum
 				//replace plugin with nothing
 				$text = str_replace('{'.$plugin.'}',"",$text);
 			}
-			
+			$text = html_entity_decode($text);
 			$text = JFusionFunction::parseCode($text,'bbcode',true);
 		} else {
 			$text = JFusionFunction::parseCode($text,'html');
@@ -326,7 +323,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		$limit = empty($limit_posts) || trim($limit_posts)==0 ? "" :  "LIMIT 0,$limit_posts";
 		$sort = $dbparams->get("sort_posts");
 		$body_limit = $dbparams->get("body_limit");
-		$bodyLimit = empty($body_limit) || trim($body_limit)==0 ? "a.pagetext" : "left(a.pagetext, $body_limit)";
+		$bodyLimit = (empty($body_limit) || trim($body_limit)==0) ? "a.pagetext" : "left(a.pagetext, $body_limit) AS pagetext";
 
 		$where = "WHERE a.threadid = {$threadid} AND a.postid != {$postid} AND a.visible = 1";
 		$query = "SELECT a.postid , a.username, a.userid, a.title, a.dateline, $bodyLimit, a.threadid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid $where ORDER BY a.dateline $sort $limit";

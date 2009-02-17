@@ -159,34 +159,22 @@ class JFusionForum_phpbb3 extends JFusionForum
      * @param object $contentitem object containing content information
      * @return array Returns status of actions with errors if any
      */
-	function checkThreadExists(&$dbparams, &$contentitem)
+	function checkThreadExists(&$dbparams, &$contentitem, &$existingthread, $forumid)
 	{
 		$status = array();
 		$status['debug'] = array();
         $status['error'] = array();
 
-		//check to see if a valid $content object was passed on
-		if(!is_object($contentitem)){
-			$status['error'][] = JText::_('NO_CONTENT_DATA_FOUND');
-			return $status;
-		}
-
-		$forumid = $this->getDefaultForum($dbparams, $contentitem);
-
-		//see if the thread exists
-		$existingthread = $this->getThread($contentitem->id);
-
 		//set the timezone to UTC
 		date_default_timezone_set('UTC');
-
-		//datetime post was last updated
-		$postModified = $existingthread->modified;
-
-		//datetime content was last updated
-		$contentModified = strtotime($contentitem->modified);
-
+		
 		if(!empty($existingthread))
-		{
+		{	
+			//datetime post was last updated
+			$postModified = $existingthread->modified;
+			//datetime content was last updated
+			$contentModified = strtotime($contentitem->modified);
+		
 			//check to make sure the thread still exists in the software
 			$jdb = & JFusionFactory::getDatabase($this->getJname());
 			$query = "SELECT COUNT(*) FROM #__topics WHERE forum_id = {$existingthread->forumid} AND topic_id = {$existingthread->threadid} AND topic_first_post_id = {$existingthread->postid}";
@@ -220,7 +208,25 @@ class JFusionForum_phpbb3 extends JFusionForum
             return $status;
         }
 	}
-    
+
+    /**
+     * Retrieves thread information
+     * @param int Id of specific thread
+     * @return object Returns object with thread information
+     * return the object with these three items
+     * $result->forumid
+     * $result->threadid (yes add it even though it is passed in as it will be needed in other functions)
+     * $result->postid - this is the id of the first post in the thread
+     */
+    function getThread($threadid)
+    {
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT topic_id AS threadid, forum_id AS forumid, topic_first_post_id AS postid FROM #__topics WHERE topic_id = $threadid";
+		$db->setQuery($query);
+		$results = $db->loadObject();
+		return $results;
+    }	
+	
      /**
      * Creates new thread and posts first post
      * @param object with discussion bot parameters
@@ -246,7 +252,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$text = $this->prepareText(JFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
 		} else {
 			//prepare the text for posting
-			$text = $this->prepareText($contentitem->text);
+			$text = $this->prepareText($contentitem->introtext . $contentitem->fulltext);
 		}
 		
 		//the user information
@@ -373,7 +379,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$text = $this->prepareText(JFusionFunction::createJoomlaArticleURL($contentitem,$forumText));
 		} else {
 			//prepare the text for posting
-			$text = $this->prepareText($contentitem->text);
+			$text = $this->prepareText($contentitem->introtext . $contentitem->fulltext);
 		}
 		
 		$message_parser = '';
@@ -441,8 +447,8 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$current_time = time();
 
 			$post_row = new stdClass();
-			$post_row->forum_id			= $ids['forumid'];
-			$post_row->topic_id 		= $ids['threadid'];
+			$post_row->forum_id			= $ids->forumid;
+			$post_row->topic_id 		= $ids->threadid;
 			$post_row->poster_id		= $userid;
 			$post_row->icon_id			= 0;
 			$post_row->poster_ip		= $_SERVER["REMOTE_ADDR"];
@@ -477,13 +483,13 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$topic_row->topic_last_post_subject		= '';
 			$topic_row->topic_replies				= $topic->topic_replies + 1;
 			$topic_row->topic_replies_real 			= $topic->topic_replies_real + 1;
-			$topic_row->topic_id					= $ids['threadid'];
+			$topic_row->topic_id					= $ids->threadid;
 			if(!$jdb->updateObject('#__topics', $topic_row, 'topic_id' )) {
 				$status['error'] = $jdb->stderr();
 				return $status;
 			}
 
-			$query = "SELECT forum_posts FROM #__forums WHERE forum_id = {$ids['forumid']}";
+			$query = "SELECT forum_posts FROM #__forums WHERE forum_id = {$ids->forumid}";
 			$jdb->setQuery($query);
 			$num = $jdb->loadObject();
 			
@@ -495,8 +501,8 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$forum_stats->forum_last_poster_name 	=  $userinfo->username;
 			$forum_stats->forum_last_poster_colour 	= $phpbbUser->user_colour;
 			$forum_stats->forum_posts				= $num->forum_posts + 1;
-			$forum_stats->forum_id 					= $ids['forumid'];
-			$query = "SELECT forum_topics, forum_topics_real, forum_posts FROM #__forums WHERE forum_id = {$ids['forumid']}";
+			$forum_stats->forum_id 					= $ids->forumid;
+			$query = "SELECT forum_topics, forum_topics_real, forum_posts FROM #__forums WHERE forum_id = {$ids->forumid}";
 			$jdb->setQuery($query);
 			$num = $jdb->loadObject();
 			$forum_stats->forum_topics = $num->forum_topics + 1;
@@ -664,7 +670,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$limit = empty($limit_posts) || trim($limit_posts)==0 ? "" :  "LIMIT 0,$limit_posts";
 		$sort = $dbparams->get("sort_posts");
 		$body_limit = $dbparams->get("body_limit");
-		$bodyLimit = empty($body_limit) || trim($body_limit)==0 ? "p.post_text" : "left(p.post_text, $body_limit)";
+		$bodyLimit = (empty($body_limit) || trim($body_limit)==0) ? "p.post_text" : "left(p.post_text, $body_limit) AS post_text";
 
 		$where = "WHERE p.topic_id = {$threadid} AND p.post_id != {$postid} AND p.post_approved = 1";
 		$query = "SELECT p.post_id , u.username, u.user_id, p.post_subject, p.post_time, $bodyLimit, p.topic_id FROM `#__posts` as p INNER JOIN `#__users` as u ON p.poster_id = u.user_id $where ORDER BY p.post_time $sort $limit";

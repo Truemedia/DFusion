@@ -133,9 +133,10 @@ class JFusionForum
      * Checks to see if a thread already exists for the content item and calls the appropriate function
      * @param object with discussion bot parameters 
      * @param object $contentitem object containing content information
+     * @param int default forum id to create the new thread in if applicable (retrieved from $this->getDefaultForum)
      * @return array Returns status of actions with errors if any
      */
-	function checkThreadExists(&$params, &$contentitem)
+	function checkThreadExists(&$params, &$contentitem, $forumid)
 	{
 	    $status = array();
         $status['debug'] = array();
@@ -191,17 +192,16 @@ class JFusionForum
 
     /**
      * Retrieves thread information
-     *
      * @param int Id of specific thread
      * @return object Returns object with thread information
+     * return the object with these three items
+     * $result->forumid
+     * $result->threadid (yes add it even though it is passed in as it will be needed in other functions)
+     * $result->postid - this is the id of the first post in the thread
      */
-    function &getThread($contentid)
+    function getThread($threadid)
     {
-		$db =& JFactory::getDBO();
-        $query = "SELECT * FROM #__jfusion_forum_plugin WHERE contentid = '$contentid' AND jname = '".$this->getJname()."'";
-        $db->setQuery($query);
-        $result = $db->loadObject();
-        return $result;
+		return '';
     }
     
      /**

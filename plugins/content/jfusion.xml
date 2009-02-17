@@ -30,13 +30,21 @@
 			
 		<param name=" " type="helptext" label="" default="DISCUSSBOT_GENERAL_DESC"/>
 
-		<param name="link_mode" type="list" default="direct" label="" description="LINK_MODE_DESCR">
+		<param name="link_mode" type="list" default="direct" label="LINK_MODE" description="LINK_MODE_DESCR">
 			<option value="wrapper">LINK_MODE_0</option>
 			<option value="direct">LINK_MODE_1</option>
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
 		<param name="itemid" type="JFusionMenuItems" default='' label='ITEMID' description='ITEMID_DESCR' />
 		<param name="link_text" type="text" size="20" default="" label="DISCUSSBOT_LINK_TEXT" description="DISCUSSBOT_LINK_TEXT_DESC" />
+		<param name="link_target" type="list" default="_self" label="LINK_TARGET" description="LINK_TARGET_DESC">
+			<option value="_blank">NEW_WINDOW</option>
+			<option value="_self">SAME_WINDOW</option>
+		</param>	
+		<param name="always_show_link" type="list" default='1' label='ALWAYS_SHOW_LINK' description='ALWAYS_SHOW_LINK_DESC'>
+			<option value='1'>YES</option>
+			<option value='0'>NO</option>
+		</param>	
 		<param name=" " type="helptext" label="" default="DISCUSSBOT_POST_SETUP_DESC"/>
 		<param name="show_posts" type="list" default="0" label="SHOW_POSTS" description="SHOW_POSTS_DESC">
 			<option value="1">YES</option>
