@@ -160,6 +160,18 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		}
 	}
 
+	//add the forumid colum to #__jfusion_forum_plugin if upgrading from 1.1.1 Beta or earlier
+	$query = "SHOW COLUMNS FROM #__jfusion_forum_plugin";
+	$db->setQuery($query);
+	$columns = $db->loadResultArray();
+	if(!in_array('forumid',$columns)) {
+		$query = "ALTER TABLE #__jfusion
+				  ADD COLUMN forumid int(11) NOT NULL";
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}		
+	}
 	//insert of missing plugins
 	//#chris: moved after table modification to prevent errors
 	if(count($pluginSql)>0){
