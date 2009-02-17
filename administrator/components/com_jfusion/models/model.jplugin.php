@@ -172,7 +172,7 @@ class JFusionJplugin{
         if (!(substr($source_url,-1) == "/")) {
            $source_url = $source_url."/";
         }
-		
+
 
 		$curl_options['post_url']			= $source_url.$params->get('login_url');
 		$curl_options['formid']				= $params->get('loginform_id');
@@ -504,7 +504,7 @@ if ($jname == 'joomla_int'){
 				$instance->set('usertype'     , $usergroup );
 				$instance->set('gid'          , $gid );
 
-				if ($jname == joomla_int){
+				if ($jname == 'joomla_int'){
 					// save the user
 					if (!$instance->save(false)) {
 						//report the error
@@ -723,7 +723,7 @@ if ($jname == 'joomla_int'){
 	function getNumberOnlineGuests()
 	{
 	    $db		  =& JFactory::getDBO();
-		$query = 'SELECT COUNT(*)' . 
+		$query = 'SELECT COUNT(*)' .
 					' FROM #__session' .
 					' WHERE guest = 1 AND usertype = "" AND client_id = 0';
 		$db->setQuery($query);
@@ -733,7 +733,7 @@ if ($jname == 'joomla_int'){
 	function getNumberOnlineMembers()
 	{
 	    $db		  =& JFactory::getDBO();
-		$query = 'SELECT COUNT(DISTINCT userid) AS c' . 
+		$query = 'SELECT COUNT(DISTINCT userid) AS c' .
 					' FROM #__session' .
 					' WHERE guest = 0';
 		$db->setQuery($query);
