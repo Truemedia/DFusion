@@ -79,24 +79,24 @@ defined('_JEXEC') or die('Restricted access'); ?>
 	<?php endif; ?>
 	<input type="submit" name="Submit" class="button" value="<?php echo JText::_('BUTTON_LOGIN') ?>" />
 	<ul>
-        <?php if($params->get('show_lostpass')) : ?>
+        <?php if($params->get('lostpass_show')) : ?>
 		<li>
-			<a href="<?php echo $url_lostpass; ?>">
+			<a href="<?php echo $lostpass_url; ?>">
 			<?php echo JText::_('FORGOT_YOUR_PASSWORD'); ?>
 			</a>
 		</li>
 		<?php endif; ?>
-        <?php if($params->get('show_lostusername')) : ?>
+        <?php if($params->get('lostusername_show')) : ?>
 		<li>
-			<a href="<?php echo $url_lostuser; ?>">
+			<a href="<?php echo $lostusername_url; ?>">
 			<?php echo JText::_('FORGOT_YOUR_USERNAME'); ?></a>
 		</li>
 		<?php endif; ?>
 		<?php
 		$usersConfig = &JComponentHelper::getParams( 'com_users' );
-		if ($params->get('show_newaccount')) : ?>
+		if ($params->get('register_show')) : ?>
 		<li>
-			<a href="<?php echo $url_register ?>">
+			<a href="<?php echo $register_url ?>">
 				<?php echo JText::_('REGISTER'); ?>
 			</a>
 		</li>

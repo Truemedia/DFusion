@@ -37,27 +37,25 @@ if (file_exists($model_file) && file_exists($factory_file)) {
     //Get the forum integration object
     $jname = JFusionFunction::getMaster();
     if ($jname->status == 1 ) {
-    	
-        $MasterPlugin = JFusionFactory::getPublic($jname->name);
-    	
-        //Use the default joomla URLs if joomla_int is set as the master
-		if($jname->name=='joomla_int') {
-			//use the Joomla default urls
-			$url_lostpass = JRoute::_( 'index.php?option=com_user&amp;view=reset' );
-			$url_lostuser = JRoute::_( 'index.php?option=com_user&amp;view=remind' );
-			$url_register = JRoute::_( 'index.php?option=com_user&amp;task=register' );
-		} else {
-			$url_lostpass = JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view, $itemid);
-			$url_lostuser = JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view, $itemid);
-			$url_register = JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view, $itemid);
-		}
-		
+
+       $MasterPlugin = JFusionFactory::getPublic($jname->name);
+
+		//get any custom URLs
+		$lostpassword_url = $params->get('lostpassword_url');
+		$lostusername_url = $params->get('lostusername_url');
+		$register_url = $params->get('register_url');
+
+		//get the default URLs if no custom URL specified
+		if(empty($lostpassword_url)) JFusionFunction::createURL($MasterPlugin->getLostPasswordURL(), $jname->name, $view, $itemid);
+		if(empty($lostusername_url)) JFusionFunction::createURL($MasterPlugin->getLostUsernameURL(), $jname->name, $view, $itemid);
+		if(empty($register_url)) JFusionFunction::createURL($MasterPlugin->getRegistrationURL(), $jname->name, $view, $itemid);
+
 		//now find out from which plugin the avatars need to be displayed
 		$PluginName = $params->get('JFusionPlugin');
 		if ($PluginName != 'joomla_int'){
 			$JFusionPlugin = JFusionFactory::getForum($PluginName);
         	$userlookup = JFusionFunction::lookupUser($PluginName, $user->get('id'));
-			
+
 			//check to see if we found a user
 	        if ($userlookup) {
 	            if ($params->get('avatar')) {
@@ -96,34 +94,21 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 			} else {
 				$avatar = false;
 			}
-				        
+
     		require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
 
     } else {
-    	//show the avatar if it is not set to JFusion
-        if ($params->get('avatar')) {
-			//retrieve avatar
-			$avatarSrc = $params->get('avatar_software');
-			if($avatarSrc!='jfusion') {
-				$avatar = JFusionFunction::getAltAvatar($avatarSrc, $user->get('id'));
-			} else {
-				$avatar = false;
-			}
-		} else {
-			$avatar = false;
-		}
-		    	
-        //use the Joomla default urls
-        $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
-        $url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
-        $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
+        //JFusion not configured, use the Joomla default urls
+        $lostpassword_url = JRoute::_('index.php?option=com_user&amp;view=reset' );
+        $lostusername_url = JRoute::_('index.php?option=com_user&amp;view=remind' );
+        $register_url = JRoute::_('index.php?option=com_user&amp;task=register' );
     	require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
     }
 } else {
-    //use the Joomla default urls
-    $url_lostpass = JRoute::_('index.php?option=com_user&amp;view=reset' );
-    $url_lostuser = JRoute::_('index.php?option=com_user&amp;view=remind' );
-    $url_register = JRoute::_('index.php?option=com_user&amp;task=register' );
+    //JFusion not installed, use the Joomla default urls
+    $lostpassword_url = JRoute::_('index.php?option=com_user&amp;view=reset' );
+    $lostusername_url = JRoute::_('index.php?option=com_user&amp;view=remind' );
+    $register_url = JRoute::_('index.php?option=com_user&amp;task=register' );
     require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
 }

@@ -199,12 +199,14 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
 			//get the joomla path from the file
 			jimport('joomla.filesystem.file');
 			$file_data = JFile::read($common_file);
-	      	preg_match_all('/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/',$file_data,$matches);
+	      	preg_match_all('/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms',$file_data,$matches);
 
 			//compare it with our joomla path
 			if(empty($matches[1][0])){
 	        	$error = 1;
 	        	$reason = JText::_('MOD_NOT_ENABLED');
+			} else {
+				die(print_r($matches[1][0]));
 			}
 		}
 

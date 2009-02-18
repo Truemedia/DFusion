@@ -23,19 +23,6 @@
 			<option value="0">Never</option>
 		</param>
 	<param name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="PARAMMODULECLASSSUFFIX" />
-
-		<param name="link_mode" type="list" default="direct" label="LINK_MODE"
-			description="LINK_MODE_DESCR">
-			<option value="wrapper">LINK_MODE_0</option>
-			<option value="direct">LINK_MODE_1</option>
-			<option value="frameless">LINK_MODE_2</option>
-		</param>
-        <param name=" " type="helptext" default="ITEMID_DESCR"/>
-		<param name="itemid" type="text" size="5" default="150"
-			description="ITEMID" />
-		<param name=" " type="helptext" default="FRAMELESS_LIMITS" />
-		<param name=" " type="helptext" default="WRAPPER_OPTIONS_DESCR" label=""
-			description="" />
 		<param name="pretext" type="textarea" cols="20" rows="5"
 			default="" label="PRE_TEXT" description="PRE_TEXT_DESCR" />
 		<param name="posttext" type="textarea" cols="20" rows="5"
@@ -62,17 +49,23 @@
 			<option value="0">HIDE</option>
 			<option value="1">SHOW</option>
 		</param>
-		<param name="show_lostpass" type="radio" default="1"
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+        <param name=" " type="helptext" default="ITEMID_DESCR"/>
+		<param name="itemid" type="text" size="5" default="" description="ITEMID" />
+		<param name="lostpassword_url" label="LOST_PASSWORD_URL" type="text" size="50" default="" description="LOST_PASSWORD_URL_DESCR" />
+		<param name="lostpassword_show" type="radio" default="1"
 			label="LOST_PASSWORD" description="LOST_PASSWORD_DESCR">
 			<option value="0">HIDE</option>
 			<option value="1">SHOW</option>
 		</param>
-		<param name="show_lostusername" type="radio" default="1"
+		<param name="lostusername_url" label="LOST_USERNAME_URL" type="text" size="50" default="" description="LOST_USERNAME_URL_DESCR" />
+		<param name="lostusername_show" type="radio" default="1"
 			label="LOST_USERNAME" description="LOST_USERNAME_DESCR">
 			<option value="0">HIDE</option>
 			<option value="1">SHOW</option>
 		</param>
-		<param name="show_newaccount" type="radio" default="1"
+		<param name="register_url" label="REGISTER_URL" type="text" size="50" default="" description="REGISTER_URL_DESCR" />
+		<param name="register_show" type="radio" default="1"
 			label="CREATE_ACCOUNT" description="CREATE_ACCOUNT_DESCR">
 			<option value="0">HIDE</option>
 			<option value="1">SHOW</option>
@@ -82,8 +75,7 @@
 			<option value="0">NO</option>
 			<option value="1">YES</option>
 		</param>
-		<param name="@spacer" type="spacer" default="" label=""
-			description="" />
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name="JFusionPlugin" type="JFusionActivePlugins" default=""
 			label="JFUSION_PLUGIN"
 			description="JFUSION_PLUGIN_DESCR" />
@@ -106,10 +98,10 @@
 			description="AVATAR_SOFTWARE_DESC">
 				<option value='cb'>Community Builder</option>
 				<option value='gravatar'>Gravatar</option>
-				<option value='jfusion'>JFusion</option>				
+				<option value='jfusion'>JFusion</option>
 				<option value='jomsocial'>JomSocial</option>
-				<option value='joomunity'>Joomunity</option>				
-		</param>		
+				<option value='joomunity'>Joomunity</option>
+		</param>
 		<param name="pmcount" type="radio" default="1"
 			label="PM_COUNT"
 			description="PM_COUNT_DESCR">

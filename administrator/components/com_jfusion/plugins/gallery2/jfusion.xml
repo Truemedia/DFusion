@@ -41,7 +41,6 @@
 		<param name="cookie_name" type="text" size="40" default="" description="COOKIE_NAME" />
 
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />
-		<param name="smf_help" type="helptext" default="SMF_DUAL_TEXT" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
 		<param name="update_activation" type="list" default="1" label="" description="UPDATE_ACTIVATION">

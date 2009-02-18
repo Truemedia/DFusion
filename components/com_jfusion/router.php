@@ -12,21 +12,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 function jfusionBuildRoute(&$query)
 {
 	$segments = array();
-	//detect if url does not include an itemid
-	if (isset($query['jname']))	{
-		$segments[] = $query['jname'];
-		unset($query['jname']);
-		$segments[] = $query['view'];
-		unset($query['view']);
+	//make sure the url starts with the filename
+	if (isset($query['jfile']))	{
 		$segments[] = $query['jfile'];
 		unset($query['jfile']);
-	} else {
-		//make sure the url starts with the filename
-		if (isset($query['jfile']))	{
-			$segments[] = $query['jfile'];
-			unset($query['jfile']);
-		}
 	}
+
 	//change all other variables into SEF
 	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
 	$params = JFusionFactory::getParams('joomla_int');
@@ -54,16 +45,13 @@ function jfusionParseRoute($segments)
 {
 	$vars = array();
 	$vars['jFusion_Route'] = serialize($segments);
+
 	if(isset($segments[0])){
-		if(strpos($segments[0],'.')){
+		if(!strpos($segments[0],',') & !strpos($segments[0],'&')){
 	    	$vars['jfile'] 		= $segments[0];
 	    	unset($segments[0]);
-		} elseif (!empty($segments[2])) {
-		    $vars['jname'] 		= $segments[0];
-		    $vars['view'] 		= $segments[1];
-	    	$vars['jfile'] 		= $segments[2];
-	    	unset($segments[0],$segments[1],$segments[2]);
 		}
+
 		//parse all other segments
 		if(!empty($segments)){
 			foreach ($segments as $segment){
