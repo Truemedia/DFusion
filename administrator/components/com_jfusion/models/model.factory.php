@@ -204,7 +204,7 @@ class JFusionFactory{
     * @param string $jname name of the JFusion plugin used
     * @return object JParam JParam object for the JFusion plugin
     */
-    function &getParams($jname)
+    function &getParams($jname, $reset = false)
     {
         static $params_instances;
         if (!isset($params_instances )) {
@@ -212,7 +212,7 @@ class JFusionFactory{
         }
 
         //only create a new database instance if it has not been created before
-        if (!isset($params_instances[$jname] )) {
+        if (!isset($params_instances[$jname] ) || $reset) {
             $params_instances[$jname] = JFusionFactory::createParams($jname);
             return $params_instances[$jname];
         } else {
@@ -220,9 +220,7 @@ class JFusionFactory{
         }
     }
 
-
-
-function &createParams($jname)
+	function &createParams($jname)
     {
         //get the current parameters from the jfusion table
         $db = & JFactory::getDBO();

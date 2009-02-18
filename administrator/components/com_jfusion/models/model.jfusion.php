@@ -114,6 +114,9 @@ class JFusionFunction{
             return $result;
         }
 
+        //reset the params instance for this plugin
+        JFusionFactory::getParams($jname,true);
+        
         $result = true;
         return $result;
     }
