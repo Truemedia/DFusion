@@ -21,10 +21,6 @@
 		<filename plugin="jfusion">jfusion.php</filename>
 	</files>
 	
-	<languages>
-		 <language tag="en-GB">administrator/language/en-GB/en-GB.plg_content_jfusion.ini</language>
-	</languages>
-	
 	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="jname" type="JFusionActiveDiscussionEnabledPlugins" default="" label="JFUSION_PLUGIN" description="JFUSION_PLUGIN_DESC" />
 			
@@ -66,6 +62,7 @@
 			<option value="above">ABOVE</option>
 			<option value="below">BELOW</option>
 		</param>
+		<param name="must_login_msg" type="text" size="20" default="Login to reply" label="LOGIN_TO_POST_MSG" description="LOGIN_TO_POST_MSG_DESC" />
 		<param name="body_limit" type="text" size="20" default="" label="BODY_LIMIT" description="BODY_LIMIT_DESC" />
 		<param name="show_date" type="list" default="1" label="SHOW_DATE" description="SHOW_DATE_DESC">
 			<option value="1">YES</option>

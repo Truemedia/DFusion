@@ -290,6 +290,16 @@ class JFusionForum
 	{
 		return array();
 	}
+
+	/**
+	 * Returns the total number of posts in a thread
+     * @param object with forumid, threadid, and postid (first post in thread)
+	 * @return int
+	 */
+	function getReplyCount(&$existingthread)
+	{
+		return 0;
+	}
 	
 	/**
 	 * Returns HTML of a quick reply

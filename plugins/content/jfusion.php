@@ -17,7 +17,6 @@ jimport('joomla.plugin.plugin');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 
-JPlugin::loadLanguage( 'plg_content_jfusion' );
 
 class plgContentJfusion extends JPlugin
 {
@@ -39,10 +38,10 @@ class plgContentJfusion extends JPlugin
 
     function onPrepareContent(& $contentitem, $options)
     {
-    	JPlugin::loadLanguage( 'plg_content_jfusion' );
-    	  	
+		JPlugin::loadLanguage( 'plg_content_jfusion', JPATH_ADMINISTRATOR );
+    	        
 		//prevent any output by the plugins (this could prevent cookies from being passed to the header)
-		//ob_start();
+		ob_start();
 
     	//retrieve plugin software for discussion bot
 		if($this->params===false) {
@@ -58,7 +57,7 @@ class plgContentJfusion extends JPlugin
 		}
 		
 		//only use the discussion bot if a category and section id are set	 and we have a jfusion plugin		
-		if($jname!==false && !empty($contentitem->catid) && !empty($contentitem->sectionid)) {
+		if($jname!==false && isset($contentitem->catid) && isset($contentitem->sectionid)) {
 			//get the jfusion forum object
 			$JFusionPlugin =& JFusionFactory::getForum($jname);
 			//get the Joomla user object
@@ -128,7 +127,7 @@ class plgContentJfusion extends JPlugin
 				}
 			}
 			
-			//ob_end_clean();
+			ob_end_clean();
 			$result = true;
 			return $result;
 		}
@@ -148,7 +147,9 @@ class plgContentJfusion extends JPlugin
 		$linkTarget =& $this->params->get('link_target','_parent');
 		$itemid =& $this->params->get("itemid",false);
 		$noPostMsg =& $this->params->get("no_posts_msg");
-
+		$mustLoginMsg =& $this->params->get("must_login_msg");
+		$JoomlaUser =& JFactory::getUser();
+		
 		//load CSS
 		if(empty($this->css)) {
 			$this->loadDbCss();
@@ -156,53 +157,69 @@ class plgContentJfusion extends JPlugin
 
 		$view = JRequest::getVar('view');
 
+		$content = "<div style='float:none; display:block;'>";
+		
 		if($view=="article" || $this->params->get('always_show_link',false)) {
+			$numPosts = $JFusionPlugin->getReplyCount($existingthread);
+			$post = ($numPosts==1) ? "POST" : "POSTS";
+			
 			$threadid =& $existingthread->threadid;		
 			$urlstring_pre = JFusionFunction::createURL($JFusionPlugin->getThreadURL($threadid), $jname, $linkMode, $itemid);
-			$content = '<div class="'.$this->css['threadLink'].'"><a href="'. $urlstring_pre . '" target="' . $linkTarget . '">' . $linkText . '</a></div>';
+			$content .= '<div class="'.$this->css['threadLink'].'"><a href="'. $urlstring_pre . '" target="' . $linkTarget . '">' . $linkText . '</a> ['.$numPosts.' '.JText::_($post).']</div>';
 		}
 
 		//let's only show quick replies and posts on the article view
-		if($view=="article") {			
+		if($view=="article") {							
 			//prepare quick reply box if enabled
-			if($this->params->get("enable_quickreply") && !$JoomlaUser->guest) {
-				$replyForm .= "<div class='{$this->css["quickReplyHeader"]}'>{$this->params->get("quick_reply_header")}</div>\n";
+			
+			if($this->params->get("enable_quickreply")){
+				$show = (!$JoomlaUser->guest) ? "form" : "message"; 
+				$replyForm  = "<div class='{$this->css["quickReplyHeader"]}'>{$this->params->get("quick_reply_header")}</div>\n";
+				$replyForm .= "<div class='{$this->css["quickReply"]}'>\n";	
+			} else {
+				$show = false;
+			}
+			
+			if($show=="form") {
 				$replyForm .= "<form name='jfusionQuickReply{$contentitem->id}' method=post action='".$_SERVER["REQUEST_URI"]."'>\n";
 				$replyForm .= "<input type=hidden name='jfusionForm{$contentitem->id}' value='1'>\n";
 				$replyForm .= "<input type=hidden name='threadid' value='{$existingthread->threadid}'>\n";
 				$replyForm .= "<input type=hidden name='forumid' value='{$existingthread->forumid}'>\n";
 				$replyForm .= "<input type=hidden name='postid' value='{$existingthread->postid}'>\n";
-			} else {
-				$replyForm = false;
+				$replyForm .= $JFusionPlugin->createQuickReply()."</form>\n";
+				$replyForm .= "</div>\n";
+			} elseif($show=="message") {
+				$replyForm .= $mustLoginMsg;
+				$replyForm .= "</div>\n";
 			}
 			
 			//add posts to content if enabled
 			if($this->params->get("show_posts")) {
-				$content  .= "<div class='{$this->css["postArea"]}'> \n";
-			
-				if($replyForm && $this->params->get("quickreply_location")=="above") {
-					$content .= "<div class='{$this->css["quickReply"]}'>\n". $replyForm . $JFusionPlugin->createQuickReply()."</form>\n</div>\n";
-				}
-			
 				//get the posts
 				$posts = $JFusionPlugin->getPosts($this->params, $existingthread);
+			
+				$content  .= "<div class='{$this->css["postArea"]}'> \n";
+			
+				if($show!==false && $this->params->get("quickreply_location")=="above") {
+					$content .= $replyForm;
+				}
+			
 				if(!empty($posts)){			
 					$content .= $JFusionPlugin->createPostTable($this->params, $existingthread, $posts, $this->css);
 				} elseif(!empty($noPostMsg)) {
 					$content .= "<div class='{$this->css["noPostMsg"]}'> {$noPostMsg} </div>\n";
 				}
 				
-				if($replyForm && $this->params->get("quickreply_location")=="below"){
-					$content .= "<div class='{$this->css["quickReply"]}'>\n". $replyForm . $JFusionPlugin->createQuickReply()."</form>\n</div>\n";
+				if($show!==false && $this->params->get("quickreply_location")=="below"){
+					$content .= $replyForm;
 				}
+				
 				$content .= "</div> \n";
-			} elseif($replyForm){
-				$content .= "<div class='{$this->css["quickReply"]}'>\n". $replyForm . $JFusionPlugin->createQuickReply()."</form>\n</div>\n";
+			} elseif($show!==false){
+				$content .= $replyForm;
 			}
-		} else {
-			//show only the link
-			
 		}
+		$content .= "</div>";
 		return $content;
     }
     

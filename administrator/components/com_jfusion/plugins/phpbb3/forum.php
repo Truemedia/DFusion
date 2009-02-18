@@ -576,7 +576,6 @@ class JFusionForum_phpbb3 extends JFusionForum
 		if($showdate && $showuser) $colspan = 2;
 		else $colspan = 1;
 
-		$table .= "<div class='{$css["postArea"]}'> \n";
 		$table  = "<div class='{$css["postHeader"]}'>$header</div>\n";
 
 		for ($i=0; $i<count($posts); $i++)
@@ -648,8 +647,6 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$table .= "</div>";
 		}
 
-		$table .= "</div> \n";
-
 		return $table;
 	}
 
@@ -680,6 +677,15 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$posts = $jdb->loadObjectList();
 
 		return $posts;
+	}
+
+	function getReplyCount(&$existingthread)
+	{
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) AS c FROM #__posts WHERE topic_id = {$existingthread->threadid} AND post_id != {$existingthread->postid}";
+		$db->setQuery($query);
+		$result = $db->loadResult();
+		return $result;
 	}
 	
 	//needed to parse the bbcode for phpbb

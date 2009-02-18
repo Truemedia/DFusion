@@ -735,7 +735,7 @@ if ($jname == 'joomla_int'){
 	    $db		  =& JFactory::getDBO();
 		$query = 'SELECT COUNT(DISTINCT userid) AS c' .
 					' FROM #__session' .
-					' WHERE guest = 0';
+					' WHERE guest = 0 AND client_id = 0';
 		$db->setQuery($query);
 
 		return $db->loadResult();

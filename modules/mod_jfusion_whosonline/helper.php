@@ -34,17 +34,17 @@ class modjfusionWhosOnlineHelper {
                 	} elseif($numMembers==0 || $numMembers>1) {
                 		$output .= JText::sprintf('MEMBERS',$numMembers);
                 	}
-                	$output .= '&nbsp;'.JText::_('ONLINE');
+                	$output .= '&nbsp;'.JText::_('ONLINE') . '<br />';
 				}
 				
 		        $query = $public->getOnlineUserQuery();
 	            $db->setQuery($query);
 	            $result = $db->loadRowList();
-	            			
+	          
                 if (JError::isError($db)) {
                     return $db->stderr();
                 } else if (!$result) {
-                    return JText::_('NO_USERS_ONLINE');
+                    $output .= JText::_('NO_USERS_ONLINE');
                 } else { 
 					$output .= "<ul>";
                     // process result
@@ -104,9 +104,10 @@ class modjfusionWhosOnlineHelper {
                         //put it all together for output
                         $output .= '<li>'. $avatar . ' <b>'.$user.'</b></li>';
 						$output .= "</ul>";
-						return $output;   
 		            }
 				}
+				
+				return $output;
 	        }
 	    } else {
 	        return JText::_('NOT_CONFIGURED');

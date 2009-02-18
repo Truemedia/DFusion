@@ -334,6 +334,15 @@ class JFusionForum_vbulletin extends JFusionForum
 		return $posts;
 	}
 
+	function getReplyCount(&$existingthread)
+	{
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) AS c FROM #__post WHERE threadid = {$existingthread->threadid} AND postid != {$existingthread->postid}";
+		$db->setQuery($query);
+		$result = $db->loadResult();
+		return $result;
+	}
+	
 	function createPostTable(&$dbparams, &$existingthread, &$posts, &$css)
 	{
 		//get required params
@@ -355,7 +364,6 @@ class JFusionForum_vbulletin extends JFusionForum
 		if($showdate && $showuser) $colspan = 2;
 		else $colspan = 1;
 
-		$table .= "<div class='{$css["postArea"]}'> \n";
 		$table  = "<div class='{$css["postHeader"]}'>$header</div>\n";
 
 		for ($i=0; $i<count($posts); $i++)
@@ -431,8 +439,6 @@ class JFusionForum_vbulletin extends JFusionForum
 			$table .= "<div class='{$css["postText"]}'>{$text}</div> \n";
 			$table .= "</div>";
 		}
-
-		$table .= "</div> \n";
 
 		return $table;
 	}
