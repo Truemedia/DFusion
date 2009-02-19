@@ -116,7 +116,7 @@ class JFusionFunction{
 
         //reset the params instance for this plugin
         JFusionFactory::getParams($jname,true);
-        
+
         $result = true;
         return $result;
     }
@@ -494,6 +494,9 @@ class JFusionFunction{
  				$search[] = "#\<a (.*?) href=('|\")mailto:(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
  				$replace[] = "[email=$3]$6[/email]";
 
+				$search[] = "#<a href=['|\"](?!\w{0,10}://)(.*?)['|\"].*?>(.*?)</a>#sie";
+ 				$replace[] = "'[url='.JRoute::_(JURI::base().\"$1\").']$2[/url]'";
+
  				$search[] = "#\<a (.*?) href=('|\")(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
  				$replace[] = "[url=$3]$6[/url]";
 
@@ -529,7 +532,7 @@ class JFusionFunction{
 
     	return $text;
     }
-    
+
     /**
      * Reconnects Joomla DB if it gets disconnected
      */
@@ -539,7 +542,7 @@ class JFusionFunction{
 		$db = & JFactory::getDBO();
 
 		if (!is_resource($db->_resource)) {
-			        			
+
 			//joomla connection needs to be re-established
 			jimport('joomla.database.database');
 			jimport( 'joomla.database.table' );
@@ -591,13 +594,13 @@ class JFusionFunction{
 			// select the database
 			$db->select($database);
 		}
-			
+
 		//legacy $database must be restored
 		if(JPluginHelper::getPlugin('system','legacy')) {
 			$GLOBALS['database'] =& $db;
 		}
 	}
-	
+
    /**
      * Retrieves the URL to a userprofile of a Joomla supported component
      * @param $software string name of the software
@@ -633,10 +636,10 @@ class JFusionFunction{
     	} else {
     		$url = false;
     	}
-    	
+
     	return $url;
-    }    
-    
+    }
+
     /**
      * Retrieves the source of the avatar for a Joomla supported component
      * @param $software
@@ -647,14 +650,14 @@ class JFusionFunction{
     function getAltAvatar($software,$uid,$isPluginUid = false)
     {
     	$db = & JFactory::getDBO();
-    	
+
     	if($isPluginUid) {
     		$jname = $this->getJname();
     		$query = "SELECT id FROM #__jfusion_users_plugin WHERE jname = '$jname' AND userid = '$uid'";
     		$db->setQuery($query);
     		$uid = $db->loadResult();
     	}
-    	
+
         if($software=="cb") {
        		$query = "SELECT avatar FROM #__comprofiler WHERE user_id = '$uid'";
     		$db->setQuery($query);
@@ -681,12 +684,12 @@ class JFusionFunction{
     	} elseif($software=="gravatar") {
       		$query = "SELECT email FROM #__users WHERE id = '$uid'";
     		$db->setQuery($query);
-    		$email = $db->loadResult(); 
-    		$avatar = "http://www.gravatar.com/avatar.php?gravatar_id=".md5( strtolower($email) )."&size=40"; 
+    		$email = $db->loadResult();
+    		$avatar = "http://www.gravatar.com/avatar.php?gravatar_id=".md5( strtolower($email) )."&size=40";
     	} else {
     		$avatar = false;
     	}
-		
+
     	return $avatar;
     }
 }
