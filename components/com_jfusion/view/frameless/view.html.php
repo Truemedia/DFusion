@@ -70,8 +70,7 @@ class jfusionViewframeless extends JView {
 		$backtrack_limit = ini_get('pcre.backtrack_limit');
 		ini_set('pcre.backtrack_limit',strlen($buffer)*2);
 
-        $pattern	= '#<head>(.*?)</head>\s*<body>(.*)</body>#';
-        $pattern	= '#<head[^>]*>(.*)<\/head>\s*<body[^>]*>(.*)<\/body>#si';
+        $pattern	= '#<head[^>]*>(.*)<\/head>.*?<body[^>]*>(.*)<\/body>#si';
         preg_match($pattern, $buffer, $data);
 
         // Check if we found something
