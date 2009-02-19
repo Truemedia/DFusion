@@ -150,7 +150,7 @@ $syncdata = unserialize(base64_decode($record->syncdata));
 <td><?php echo $record->action; ?></td>
 <td><?php echo date("d/m/y : H:i:s", $record->time_start) ; ?></td>
 <?php if($record->time_end){?>
-<td><?echo date("d/m/y : H:i:s", $record->time_end) ; ?></td>
+<td><?php echo date("d/m/y : H:i:s", $record->time_end) ; ?></td>
 <td><?php echo get_formatted_timediff($record->time_start, $record->time_end); ?></td>
 <?php } else {?>
 <td></td>
