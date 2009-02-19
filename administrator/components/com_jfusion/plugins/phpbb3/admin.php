@@ -174,6 +174,119 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
         }
     }
 
+    function enable_redirect_mod()
+    {
+    	$error = 0;
+    	//check to see if a path is defined
+        $params = JFusionFactory::getParams($this->getJname());
+        $path = $params->get('source_path');
+        if(empty($path)){
+        	$error = 1;
+        	$reason = JText::_('SET_PATH_FIRST');
+        }
+        //check for trailing slash and generate file path
+        if (substr($path, -1) == DS) {
+            $common_file = $path . 'common.php';
+        } else {
+            $common_file = $path .DS. 'common.php';
+        }
+        //see if the common.php file exists
+		if (!file_exists($common_file) && $error == 0){
+        	$error = 1;
+        	$reason = JText::_('NO_FILE_FOUND');
+		}
+		if($error == 0) {
+			//get the joomla path from the file
+			jimport('joomla.filesystem.file');
+			$file_data = JFile::read($common_file);
+	      	preg_match_all('/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms',$file_data,$matches);
+
+			//remove any old code
+			if(!empty($matches[1][0])){
+		      	$search = '/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms';
+		      	$file_data = preg_replace($search,'',$file_data);
+
+			}
+
+    		$cookie_name = $params->get('cookie_prefix');
+		    $joomla_url = JURI::base();
+    		$joomla_itemid = $params->get('redirect_itemid');
+
+			//create the new redirection code
+			$redirect_code = '
+//JFUSION REDIRECT START
+//SET SOME VARS
+$current_userid = $_COOKIE[\'' . $cookie_name . '\'];
+$joomla_url = \''. $joomla_url . '\';
+$joomla_itemid = ' . $joomla_itemid .';
+	';
+			$allow_mods =$params->get('mod_ids');
+		    if (!empty($allow_mods)){
+				//get a userlist of mod ids
+        		$db = & JFusionFactory::getDatabase($this->getJname());
+				$query = "SELECT b.user_id, a.group_name FROM #__groups as a INNER JOIN #__user_group as b ON a.group_id = b.group_id WHERE a.group_name = 'GLOBAL_MODERATORS' or a.group_name = 'ADMINISTRATORS'";
+		        $db->setQuery($query);
+        		$mod_ids = $db->loadResultArray();
+die(print_r($mod_ids));
+        		$mod_ids = implode(",", $mod_ids);
+
+		    	$redirect_code .= '
+$mod_ids = array(' . $mod_ids . ');
+if(!defined(\'_JEXEC\') && !defined(\'ADMIN_START\') && $_GET[\'jfile\'] != \'file.php\' && !in_array($current_userid, $mod_ids))';
+    } else {
+		    $redirect_code .= '
+if(!defined(\'_JEXEC\') && !defined(\'ADMIN_START\') && $_GET[\'jfile\'] != \'file.php\')';
+    }
+		    $redirect_code .= '
+{
+    $file = $_SERVER["SCRIPT_NAME"];
+    $break = Explode(\'/\', $file);
+    $pfile = $break[count($break) - 1];
+    $jfusion_url = $joomla_url . \'?option=com_jfusion&Itemid=\' . $your_itemid . \'&jfile=\'.$pfile. \'&\' . $_SERVER[\'QUERY_STRING\'];
+    header(\'Location: \' . $jfusion_url);
+}
+//JFUSION REDIRECT END
+';
+die(htmlentities($redirect_code));
+	      	$search = '/\<\?php/si';
+			$replace = '<?php' . $redirect_code;
+	      	$file_data = preg_replace($search,$replace,$file_data);
+			JFile::write($common_file, $file_data);
+		}
+    }
+
+    function disable_redirect_mod()
+    {
+    	$error = 0;
+    	//check to see if a path is defined
+        $params = JFusionFactory::getParams($this->getJname());
+        $path = $params->get('source_path');
+        if(empty($path)){
+        	$error = 1;
+        	$reason = JText::_('SET_PATH_FIRST');
+        }
+        //check for trailing slash and generate file path
+        if (substr($path, -1) == DS) {
+            $common_file = $path . 'common.php';
+        } else {
+            $common_file = $path .DS. 'common.php';
+        }
+        //see if the common.php file exists
+		if (!file_exists($common_file) && $error == 0){
+        	$error = 1;
+        	$reason = JText::_('NO_FILE_FOUND');
+		}
+		if($error == 0) {
+			//get the joomla path from the file
+			jimport('joomla.filesystem.file');
+			$file_data = JFile::read($common_file);
+	      	$search = '/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/si';
+	      	$file_data = preg_replace($search,'',$file_data);
+			JFile::write($common_file, $file_data);
+		}
+
+    }
+
     function show_redirect_mod()
     {
     	$error = 0;
@@ -205,8 +318,6 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
 			if(empty($matches[1][0])){
 	        	$error = 1;
 	        	$reason = JText::_('MOD_NOT_ENABLED');
-			} else {
-				die(print_r($matches[1][0]));
 			}
 		}
 
@@ -228,11 +339,12 @@ return;
 		if ($error == 0){
 			//return success
 			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('REDIRECTION_MOD') . ' ' . JText::_('ENABLED');
-			//$output .= ' <a href="javascript:void(0);" onclick="return auth_mod(\'disable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_DISABLE') . '</a>';
+			$output .= ' <a href="javascript:void(0);" onclick="return auth_mod(\'disable_redirect_mod\')">' . JText::_('MOD_DISABLE') . '</a>';
+			$output .= ' <a href="javascript:void(0);" onclick="return auth_mod(\'enable_redirect_mod\')">' . JText::_('MOD_UPDATE') . '</a>';
 			return $output;
 		} else {
        		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('REDIRECTION_MOD') . ' ' . JText::_('DISABLED') .': ' . $reason;
-			//$output .= ' <a href="javascript:void(0);" onclick="return auth_mod(\'enable_auth_mod\')">' . JText::_('AUTHENTICATION_MOD_ENABLE') . '</a>';
+			$output .= ' <a href="javascript:void(0);" onclick="return auth_mod(\'enable_redirect_mod\')">' . JText::_('MOD_ENABLE') . '</a>';
 			return $output;
 		}
 
