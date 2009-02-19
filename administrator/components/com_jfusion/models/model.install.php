@@ -496,16 +496,26 @@ class JFusionPluginInstaller extends JObject {
 		$tmpDir =& $config->getValue('config.tmp_path');
 
 		//compress the files
-		$filename = $tmpDir.DS."$jname.gz";
+		$tarfile = $tmpDir.DS.$jname.'.tar';
 		//retrieve a list of files within the plugin directory
-		$files = JFolder::files(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname,null,false,true);
+		$pluginPath = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname;
+		$fileList = JFolder::files($pluginPath);
 
 		//compress the plugin
-		JArchive::create($filename, $files, 'gz');
+		$cwd = getcwd();
+		chdir($pluginPath);
+		@JArchive::create($tarfile, $fileList);
+		$gzfile = $tmpDir.DS.$jname.'.tgz';
+		@JArchive::create($gzfile, $tarfile,'gz',null,$tmpDir);
+		chdir($cwd);
 
 		//now get the contents of the compressed file to return
-		$data = addslashes(file_get_contents($filename));
-
+		$data = file_get_contents($gzfile);
+		
+		//remove the backup file
+		unlink($gzfile);
+		unlink($tarfile);
+	
 		return $data;
 	}
 }

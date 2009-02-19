@@ -148,11 +148,11 @@ if(file_exists($plugin_xml) && is_readable($plugin_xml))
    	$xml    = $parser->document;
 
 ?>
-<td><?php echo $xml->description[0]->data; ?></td>
-<td><?php echo $xml->version[0]->data; ?></td>
-<td><?php echo $xml->creationDate[0]->data; ?></td>
-<td><?php echo $xml->author[0]->data; ?></td>
-<td><?php echo $xml->authorUrl[0]->data; ?></td>
+<td><?php echo $xml->description[0]->data(); ?></td>
+<td><?php echo $xml->version[0]->data(); ?></td>
+<td><?php echo $xml->creationDate[0]->data(); ?></td>
+<td><?php echo $xml->author[0]->data(); ?></td>
+<td><?php echo $xml->authorUrl[0]->data(); ?></td>
 
 <?php
 } else {

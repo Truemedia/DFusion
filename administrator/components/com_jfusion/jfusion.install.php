@@ -205,7 +205,8 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	$restorePlugins = array();
 	//require the model.install.php file to recreate copied plugins
 	require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'models'.DS. 'model.install.php');
-	$model = new JFusionModelInstaller();
+	$model = new JFusionModelInstaller();	
+	
 
 	foreach($installedPlugins as $plugin) {
 		//attempt to restore missing plugins
@@ -225,21 +226,33 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 				}
 			} elseif(!empty($plugin->plugin_files)) {
 				//save the compressed file to the tmp dir
-				$file = $tmpDir.DS.$plugin->name.'.gz';
-				if(JFile::write($file,$plugin->plugin_files)){
+				$gzfile = $tmpDir.DS.$plugin->name.'.tgz';
+				if(@JFile::write($gzfile,$plugin->plugin_files)){
 					//decompress the file
-					if (!JArchive::extract($file, $pluginDir)) {
-						//the files were not able to be copied to the plugin directory so remove the plugin
+					if (!@JArchive::extract($gzfile, $tmpDir)) {
+						//decompression failed
 						$uninstallPlugin[] = $plugin->name;
 						$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
+						//remove the file
+						unlink($gzfile);
 					} else {
-						//extra check to make sure the files were decompressed to prevent possible fatal errors
-						if(file_exists($pluginDir.DS.$plugin->name)) {
-							//remove the file
-							unset($file);
-						} else {
+						$tarfile = $tmpDir.DS.$plugin->name.'.tar';						
+						if (!@JArchive::extract($tarfile, $pluginDir.DS.$plugin->name)) {
+							//decompression failed
 							$uninstallPlugin[] = $plugin->name;
 							$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
+							//remove the files
+							unlink($gzfile);
+							unlink($tarfile);						
+						} else {
+							//extra check to make sure the files were decompressed to prevent possible fatal errors
+							if(!file_exists($pluginDir.DS.$plugin->name)) {
+								$uninstallPlugin[] = $plugin->name;
+								$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
+							}
+							//remove the files
+							unlink($gzfile);
+							unlink($tarfile);
 						}
 					}
 				} else {
