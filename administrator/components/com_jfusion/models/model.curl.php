@@ -493,41 +493,47 @@ class JFusionCurl{
 
     function RemoteLogin($curl_options){
 
-        global $ch;
+		global $ch;
         global $cookiearr;
         global $cookies_to_set;
         global $cookies_to_set_index;
         $status = array();
         $tmpurl = array();
-      $overridearr = array();
-      $newhidden = array();
-      $lines = array();
-      $line=array();
+      	$overridearr = array();
+      	$newhidden = array();
+      	$lines = array();
+      	$line=array();
         $cookies_to_set=array();
         $status['debug']=array();
         $status['error']=array();
-    $status['cURL']=array();
+    	$status['cURL']=array();
         $status['cURL']['moodle']='';
         $cookies_to_set_index=0;
 
-      // check parameters and set defaults
-      if (!isset($curl_options['post_url']) || !isset($curl_options['formid']) ||
-          !isset($curl_options['username']) || !isset($curl_options['password'])){
-      $status['error'][] = JText::_('CURL_FATAL');
+ 		// check if curl extension is loaded
+ 		if (!extension_loaded('curl')) {
+      		$status['error'][] = JText::_('CURL_NOTINSTALLED');
+            return $status;
+ 		}
+
+      	// check parameters and set defaults
+      	if (!isset($curl_options['post_url']) || !isset($curl_options['formid']) ||
+          	!isset($curl_options['username']) || !isset($curl_options['password'])){
+      		$status['error'][] = JText::_('CURL_FATAL');
             return $status;
         }
-       if (!isset($curl_options['integrationtype'])) {$curl_options['integrationtype'] = 1;}
-       if (!isset($curl_options['relpath'])) {$curl_options['relpath'] = false;}
-       if (!isset($curl_options['hidden'])) {$curl_options['hidden'] = false;}
-       if (!isset($curl_options['buttons'])) {$curl_options['buttons'] = false;}
-       if (!isset($curl_options['override'])) {$curl_options['override'] = NULL;}
-       if (!isset($curl_options['cookiedomain'])) {$curl_options['cookiedomain'] = '';}
-       if (!isset($curl_options['cookiepath'])) {$curl_options['cookiepath'] = '';}
-       if (!isset($curl_options['expires'])) {$curl_options['expires'] = 1800;}
+       	if (!isset($curl_options['integrationtype'])) {$curl_options['integrationtype'] = 1;}
+       	if (!isset($curl_options['relpath'])) {$curl_options['relpath'] = false;}
+       	if (!isset($curl_options['hidden'])) {$curl_options['hidden'] = false;}
+       	if (!isset($curl_options['buttons'])) {$curl_options['buttons'] = false;}
+       	if (!isset($curl_options['override'])) {$curl_options['override'] = NULL;}
+       	if (!isset($curl_options['cookiedomain'])) {$curl_options['cookiedomain'] = '';}
+       	if (!isset($curl_options['cookiepath'])) {$curl_options['cookiepath'] = '';}
+       	if (!isset($curl_options['expires'])) {$curl_options['expires'] = 1800;}
         if (!isset($curl_options['input_username_id'])) {$curl_options['input_username_id'] = '';}
         if (!isset($curl_options['input_password_id'])) {$curl_options['input_password_id'] = '';}
-       if (!isset($curl_options['secure']))     {$curl_options['secure'] = '0';}
-       if (!isset($curl_options['httponly']))     {$curl_options['httponly'] = '0';}
+       	if (!isset($curl_options['secure']))     {$curl_options['secure'] = '0';}
+       	if (!isset($curl_options['httponly']))     {$curl_options['httponly'] = '0';}
 
         // find out if we have a SSL enabled website
         if (strpos( $curl_options['post_url'],'https://') === false){
@@ -537,10 +543,10 @@ class JFusionCurl{
         }
 
         # prevent usererror by not supplying trailing backslash
-#        if (!(substr($curl_options['post_url'],-1) == "/")) {
-#           $curl_options['post_url'] = $curl_options['post_url']."/";
+#       if (!(substr($curl_options['post_url'],-1) == "/")) {
+#			$curl_options['post_url'] = $curl_options['post_url']."/";
 #        }
-    $status['debug'][] = JText::_('CURL_POST_URL_1')." ".$curl_options['post_url'];
+    	$status['debug'][] = JText::_('CURL_POST_URL_1')." ".$curl_options['post_url'];
 
 
         # read the login page
@@ -588,8 +594,8 @@ class JFusionCurl{
               $helpthem = $helpthem.' -- Name='.$result[$i]['form_data']['name'].' &ID='.$result[$i]['form_data']['id'];
               $i +=1;
             } while ($i<$frmcount);
-      $status['error'][] = JText::_('CURL_NO_LOGINFORM')." ".$helpthem;
-           return $status;
+      		$status['error'][] = JText::_('CURL_NO_LOGINFORM')." ".$helpthem;
+           	return $status;
         }
         $status['debug'][] = JText::_('CURL_VALID_FORM');
 
