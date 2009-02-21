@@ -55,7 +55,7 @@ class JElementJFusionAdvancedParam extends JElement
 		$doc->addScriptDeclaration($js);
 
 		//Create Link
-		$link = 'index.php?option=com_jfusion&amp;task=advancedparam&amp;tmpl=component&amp;params='.$value;
+		$link = 'index.php?option=com_jfusion&amp;task=itemidselect&amp;tmpl=component&amp;params='.$value;
 		if(!is_null($configfile)) {
 			$link .= "&amp;configfile=".$configfile;
 		}

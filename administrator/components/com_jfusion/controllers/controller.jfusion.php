@@ -643,6 +643,12 @@ class JFusionController extends JController
 		}
 	}
 
+        function itemidselect()
+        {
+                JRequest::setVar('view', 'itemidselect');
+                parent::display();
+        }
+
         /**
          * Displays the JFusion PluginMenu Parameters
          */
