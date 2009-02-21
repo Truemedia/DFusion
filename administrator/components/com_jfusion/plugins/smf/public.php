@@ -152,6 +152,49 @@ class JFusionPublic_smf extends JFusionPublic{
 
 	  return '<select name="jumpto" id="jumpto" onchange="if (this.selectedIndex > 0 && this.options[this.selectedIndex].value && this.options[this.selectedIndex].value.length) window.location.href = smf_scripturl + this.options[this.selectedIndex].value;">'.$content.'</select>';
 	}
+
+	/************************************************
+	 * For JFusion Search Plugin
+	 ***********************************************/
+ 	function cleanUpSearchText($text)
+	{
+		//remove phpbb's bbcode uids
+		$text = preg_replace("#\[(.*?):(.*?)]#si","[$1]",$text);
+		$text = JFusionFunction::parseCode($text,'html');
+		return $text;
+	}
+
+	function getSearchQueryColumns()
+	{
+		$columns = new stdClass();
+		$columns->title = "p.subject";
+		$columns->text = "p.body";
+		return $columns;
+	}
+
+	function getSearchQuery()
+	{
+		//need to return threadid, postid, title, text, created, section
+		$query = 'SELECT p.ID_TOPIC, p.ID_MSG, p.ID_BOARD, CASE WHEN p.subject = "" THEN CONCAT("Re: ",fp.subject) ELSE p.subject END AS title, p.body AS text,
+					FROM_UNIXTIME(p.posterTime, "%Y-%m-%d %h:%i:%s") AS created,
+					CONCAT_WS( "/", f.name, fp.subject ) AS section
+					FROM #__messages AS p
+					INNER JOIN #__topics AS t ON t.ID_TOPIC = p.ID_TOPIC
+					INNER JOIN #__messages AS fp ON fp.ID_MSG = t.ID_FIRST_MSG
+					INNER JOIN #__boards AS f on f.ID_BOARD = p.ID_BOARD';
+		return $query;
+	}
+
+	function filterSearchResults(&$results)
+	{
+
+	}
+
+	function getSearchResultLink($post)
+	{
+		$forum = JFusionFactory::getForum($this->getJname());
+		return $forum->getPostURL($post->ID_TOPIC,$post->ID_MSG);
+	}
 }
 
 
