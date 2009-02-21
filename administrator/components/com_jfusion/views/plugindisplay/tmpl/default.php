@@ -15,7 +15,7 @@ JFusionFunction::displayDonate();
 
 ?>
 <style type="text/css"> .icon-32-addusers{
-background-image: url(templates/khepri/images/toolbar/icon-32-adduser.png);
+background-image: url(templates/khepri/<?php echo $images; ?>toolbar/icon-32-adduser.png);
 background-repeat: no-repeat;
 } </style>
 
@@ -53,9 +53,9 @@ radioObj[i].checked = true;
 
 <?php echo $this->toolbar; ?>
 <table><tr><td width="100px">
-<img src="components/com_jfusion/images/jfusion_large.png" height="75px" width="75px">
+<img src="components/com_jfusion/<?php echo $images; ?>jfusion_large.png" height="75px" width="75px">
 </td><td width="100px">
-<img src="components/com_jfusion/images/controlpanel.png" height="75px" width="75px">
+<img src="components/com_jfusion/<?php echo $images; ?>controlpanel.png" height="75px" width="75px">
 <td><h2><?php echo JText::_('PLUGIN_CONFIGURATION'); ?></h2></td></tr></table><br/>
 
 <table class="adminlist" cellspacing="1"><thead><tr>
@@ -72,8 +72,14 @@ radioObj[i].checked = true;
 <th class="title" align="center"><?php echo JText::_('DEFAULT_USERGROUP'); ?></th>
 </tr></thead><tbody>
 
-<?php $row_count = 0;
+<?php 
+$masterSet = false;
+$row_count = 0;
 foreach ($this->rows as $record) {
+if($record->master=='1') {
+	$masterSet = true;
+}	
+
 echo '<tr class="row' . $row_count .'">';
 if ($row_count == 1){
 	$row_count = 0;
@@ -83,6 +89,25 @@ if ($row_count == 1){
 
 $JFusionPlugin = NULL;
 $JFusionPlugin = JFusionFactory::getAdmin($record->name);
+
+//added check for database configuration to prevent error after moving sites
+if ($record->status == '1') {
+	$config_status =  $JFusionPlugin->checkConfig($record->name);
+	$disabled = ($config_status['config']==1) ? 0 : 1;
+	//do a check to see if the status field is correct
+	if ($config_status['config'] != $record->status){
+	    //Save this error for the integration
+        $jdb =& JFactory::getDBO();
+        $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $jdb->Quote($record->name);
+        $jdb->setQuery($query );
+        $jdb->query();
+	}
+} else {
+	$config_status = array();
+	$config_status['config'] = 3;
+	$disabled = 1;
+	$config_status['message'] = JText::_('NO_CONFIG');
+}
 
 	?>
 <td><?php echo $record->id; ?></td>
@@ -101,67 +126,59 @@ if($description){
 	} else {
 		echo "";
 	}
-}?></td>
+}
+
+$images = 'components'.DS.'com_jfusion'.DS.'images'.DS;
+?></td>
 
 <?php //check to see if module is a master
-if ($record->master =='1') {?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'master'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Plugin"><img src="images/tick.png" border="0" alt="Enabled" /></a></td>
+if ($disabled==1) { ?>
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+<?php } elseif ($record->master =='1') {?>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'master'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Plugin"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->master =='0') { ?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'master'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Plugin"><img src="images/publish_x.png" border="0" alt="Disabled" /></a></td>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'master'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Plugin"><img src="<?php echo $images; ?>cross.png" border="0" alt="Disabled" /></a></td>
 <?php } else { ?>
-<td><img src="images/checked_out.png" border="0" alt="Unavailable" /></td>
+<td><img src="<?php echo $images; ?>checked_out.png" border="0" alt="Unavailable" /></td>
 <?php }
 
 //check to see if module is s slave
-if ($record->slave =='1') { ?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'slave'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Plugin"><img src="images/tick.png" border="0" alt="Enabled" /></a></td>
+if ($disabled==1) { ?>
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+<?php } elseif ($record->slave =='1') { ?>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'slave'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Plugin"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->slave =='0') { ?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'slave'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Plugin"><img src="images/publish_x.png" border="0" alt="Disabled" /></a></td>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'slave'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Plugin"><img src="<?php echo $images; ?>cross.png" border="0" alt="Disabled" /></a></td>
 <?php } else { ?>
-<td><img src="images/checked_out.png" border="0" alt="Unavailable" /></td>
+<td><img src="<?php echo $images; ?>checked_out.png" border="0" alt="Unavailable" /></td>
 <?php }
 
 //check to see if password encryption is enabled
-if ($record->check_encryption == '1') { ?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'check_encryption'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Encryption"><img src="images/tick.png" border="0" alt="Enabled" /></a></td>
+if ($disabled==1) { ?>
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+<?php } elseif ($record->check_encryption == '1') { ?>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'check_encryption'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Encryption"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->check_encryption == '0') { ?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'check_encryption'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Encryption"><img src="images/publish_x.png" border="0" alt="Disabled" /></a></td>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'check_encryption'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Encryption"><img src="<?php echo $images; ?>cross.png" border="0" alt="Disabled" /></a></td>
 <?php } else { ?>
-<td><img src="images/checked_out.png" border="0" alt="Unavailable" /></td>
+<td><img src="<?php echo $images; ?>checked_out.png" border="0" alt="Unavailable" /></td>
 <?php }
 
 //check to see if dual login is enabled
-if ($record->dual_login =='1') { ?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'dual_login'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Dual Login"><img src="images/tick.png" border="0" alt="Enabled" /></a></td>
+if ($disabled==1) { ?>
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+<?php } elseif ($record->dual_login =='1') { ?>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'dual_login'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Dual Login"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->dual_login =='0') { ?>
-<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'dual_login'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Dual Login"><img src="images/publish_x.png" border="0" alt="Disabled" /></a></td>
+<td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'dual_login'; document.adminForm.field_value.value = '1';submitbutton('changesetting')" title="Enable Dual Login"><img src="<?php echo $images; ?>cross.png" border="0" alt="Disabled" /></a></td>
 <?php } else { ?>
-<td><img src="images/checked_out.png" border="0" alt="Unavailable" /></td>
+<td><img src="<?php echo $images; ?>checked_out.png" border="0" alt="Unavailable" /></td>
 <?php }
-
-
-//added check for database configuration to prevent error after moving sites
-if ($record->slave == 1 || $record->master == 1) {
-	$config_status =  $JFusionPlugin->checkConfig($record->name);
-
-	//do a check to see if the status field is correct
-	if ($config_status['config'] != $record->status){
-	    //Save this error for the integration
-        $jdb =& JFactory::getDBO();
-        $query = 'UPDATE #__jfusion SET status = '. $config_status['config']. ' WHERE name =' . $jdb->Quote($record->name);
-        $jdb->setQuery($query );
-        $jdb->query();
-	}
-} else {
-	$config_status = array();
-	$config_status['config'] = 0;
-	$config_status['message'] = JText::_('NO_CONFIG');
-}
 
 //check to see what the config status is
 if ($config_status['config'] == 1) {
 
-echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' . $config_status['message'] .'</td>';
+echo '<td><img src="'.$images.'tick.png" border="0" alt="Good Config" />' . $config_status['message'] .'</td>';
 
 //output the total number of users for the plugin
 $total_users = NULL;
@@ -174,9 +191,9 @@ $new_registration = NULL;
 $new_registration  = $JFusionPlugin->allowRegistration();
 
 if ($new_registration) {
-echo '<td><img src="images/tick.png" border="0" alt="Enabled" />' . JText::_('ENABLED') . '</td>';
+echo '<td><img src="'.$images.'tick.png" border="0" alt="Enabled" />' . JText::_('ENABLED') . '</td>';
 } else {
-echo '<td><img src="images/publish_x.png" border="0" alt="Disabled" />' .JText::_('DISABLED') . '</td>';
+echo '<td><img src="'.$images.'cross.png" border="0" alt="Disabled" />' .JText::_('DISABLED') . '</td>';
 }
 
 //output a warning to the administrator if the allowRegistration setting is wrong
@@ -193,20 +210,24 @@ $usergroup = $JFusionPlugin->getDefaultUsergroup();
 if ($usergroup) {
 	echo "<td>$usergroup</td></tr>";
 } else {
-	echo '<td><img src="images/publish_x.png" border="0" alt="Disabled" />' . JText::_('MISSING'). ' ' .JText::_('DEFAULT_USERGROUP'). '</td></tr>';
+	echo '<td><img src="'.$images.'cross.png" border="0" alt="Disabled" />' . JText::_('MISSING'). ' ' .JText::_('DEFAULT_USERGROUP'). '</td></tr>';
     JError::raiseWarning(0, $record->name . ': ' . JText::_('MISSING'). ' '. JText::_('DEFAULT_USERGROUP'));
 }
 
 } else {
-if (!empty($record->status)){
-	echo '<td><img src="images/tick.png" border="0" alt="Good Config" />' .JText::_('GOOD_CONFIG') . '</td>';
+if ($record->status=='1'){
+	echo '<td><img src="'.$images.'tick.png" border="0" alt="Good Config" />' .JText::_('GOOD_CONFIG') . '</td>';
 } else {
-	echo '<td><img src="images/publish_x.png" border="0" alt="Wrong Config" />' .JText::_('NO_CONFIG') . '</td>';
+	echo '<td><img src="'.$images.'cross.png" border="0" alt="Wrong Config" />' .JText::_('NO_CONFIG') . '</td>';
 }
 
 echo '<td></td><td></td><td></td></tr>';
 }
 
+}
+
+if(!$masterSet) {
+	JError::raiseWarning(0, JText::_('NO_MASTER_WARNING'));
 }
 
 ?>
@@ -216,9 +237,9 @@ echo '<td></td><td></td><td></td></tr>';
 
 <input type="hidden" name="field_name" value=""><input type="hidden" name="field_value" value=""></form>
 
-<table width="100%"><tr><td><img src="images/tick.png" border="0" alt="Enabled" /> = <?php echo JText::_('ENABLED'); ?> </td>
-<td><img src="images/publish_x.png" border="0" alt="Disabled" /> = <?php echo JText::_('DISABLED'); ?> </td>
-<td><img src="images/checked_out.png" border="0" alt="Unavailable" /> = <?php echo JText::_('UNAVAILABLE'); ?> </td>
+<table width="100%"><tr><td><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /> = <?php echo JText::_('ENABLED'); ?> </td>
+<td><img src="<?php echo $images; ?>cross.png" border="0" alt="Disabled" /> = <?php echo JText::_('DISABLED'); ?> </td>
+<td><img src="<?php echo $images; ?>checked_out.png" border="0" alt="Unavailable" /> = <?php echo JText::_('UNAVAILABLE'); ?> </td>
 </tr></table></br>
 <br/><br/><br/>
 <table class="adminlist" cellspacing="1"><thead><tr><th colspan="2" class="title" >

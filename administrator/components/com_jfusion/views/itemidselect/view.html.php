@@ -90,20 +90,24 @@ class jfusionViewitemidselect extends JView
 					<td>
 						<?php echo $row->alias; ?>
 					</td>
-					<td>
-						<?php //get the integration method
-				        $registry = new JRegistry();
-				        $registry->loadINI($row->params);
-	    				$params = $registry->toObject();
 
-						echo $params->visual_integration; ?>
-					</td>
 					<td>
 						<?php //get the plugin name
-						$jPluginParam = new JParameter('');
-						$jPluginParam->loadArray(unserialize(base64_decode($params->JFusionPluginParam)));
-						echo $jPluginParam->get('jfusionplugin');?>
+						$params = new JParameter($row->params);
+						$jPluginParam = unserialize(base64_decode($params->get('JFusionPluginParam')));
+						if(is_array($jPluginParam)) {
+							echo $jPluginParam['jfusionplugin'];
+						} else {
+							echo JText::_('NO_PLUGIN_SELECTED');
+						}
+						?>
 					</td>
+					<td>
+						<?php 
+						//get the integration method
+						echo $params->get('visual_integration'); 
+						?>
+					</td>					
 				</tr>
 				<?php
 			}

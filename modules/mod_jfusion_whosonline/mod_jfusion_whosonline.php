@@ -15,7 +15,7 @@ require_once(dirname(__FILE__).DS.'helper.php');
 $model_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php';
 $factory_file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php';
 if (file_exists($model_file) && file_exists($factory_file)) {
-
+	
 /**
 * require the JFusion libraries
 */

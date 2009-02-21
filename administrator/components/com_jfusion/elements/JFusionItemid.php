@@ -31,8 +31,8 @@ class JElementJFusionItemid extends JElement
 
   	    $js = "
 		function jSelectItemid(id) {
-			document.getElementById($name + '_id').value = id;
-			document.getElementById($name + '_name').value = id;
+			document.getElementById('{$name}_id').value = id;
+			document.getElementById('{$name}_name').value = id;
 			document.getElementById('sbox-window').close();
 		}";
 		$doc->addScriptDeclaration($js);

@@ -44,8 +44,9 @@ function _uninstallPlugin($type, $id, $group, $description) {
 echo '<h2>JFusion Uninstall</h2><br/>';
 
 //uninstall the JFusion Modules
-_uninstallPlugin('module','mod_jfusion_login', '', 'JFusion Login module');
-_uninstallPlugin('module','mod_jfusion_activity', '', 'JFusion Activity module');
+_uninstallPlugin('module','mod_jfusion_login', '', 'JFusion Login Module');
+_uninstallPlugin('module','mod_jfusion_activity', '', 'JFusion Activity Module');
+_uninstallPlugin('module','mod_jfusion_whosonline', '', 'JFusion Whos Online Module');
 
 //restore the normal login behaviour
 $db =& JFactory::getDBO();
@@ -61,6 +62,8 @@ $db->Query();
 //uninstall the JFusion plugins
 _uninstallPlugin('plugin','jfusion', 'user', 'JFusion User Plugin');
 _uninstallPlugin('plugin','jfusion', 'authentication', 'JFusion Authentication Plugin');
+_uninstallPlugin('plugin','jfusion', 'search', 'JFusion Search Plugin');
+_uninstallPlugin('plugin','jfusion', 'content', 'JFusion Discussion Bot Plugin');
 
 //remove the jfusion tables.
 $db =& JFactory::getDBO();
@@ -68,10 +71,9 @@ $query = "DROP TABLE #__jfusion;
 DROP TABLE #__jfusion_sync;
 DROP TABLE #__jfusion_users;
 DROP TABLE #__jfusion_users_plugin;
+DROP TABLE #__jfusion_forum_plugin;
 ";
 $db->setQuery($query);
 if (!$db->queryBatch()){
 	echo $db->stderr() . '<br/>';
 }
-
-

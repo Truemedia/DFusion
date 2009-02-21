@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="1.5" type="plugin" group="content" method="upgrade">
-	<name>JFusion Discussion Bot</name>
+	<name>Content - JFusion Discussion Bot</name>
 	<author>JFusion Development Team</author>
 	<creationDate>February 2009</creationDate>
 	<author>JFusion Development Team</author>
@@ -21,6 +21,10 @@
 		<filename plugin="jfusion">jfusion.php</filename>
 	</files>
 	
+	<languages folder="administrator/language/en-GB">
+		<language tag="en-GB">en-GB.plg_content_jfusion.ini</language>
+	</languages>
+	
 	<params addpath="/administrator/components/com_jfusion/elements">
 		<param name="jname" type="JFusionActiveDiscussionEnabledPlugins" default="" label="JFUSION_PLUGIN" description="JFUSION_PLUGIN_DESC" />
 			
@@ -31,7 +35,7 @@
 			<option value="direct">LINK_MODE_1</option>
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
-		<param name="itemid" type="JFusionMenuItems" default='' label='ITEMID' description='ITEMID_DESCR' />
+		<param name="itemid" type="JFusionItemid" default='' label='ITEMID' description='ITEMID_DESCR' />
 		<param name="link_text" type="text" size="20" default="" label="DISCUSSBOT_LINK_TEXT" description="DISCUSSBOT_LINK_TEXT_DESC" />
 		<param name="link_target" type="list" default="_self" label="LINK_TARGET" description="LINK_TARGET_DESC">
 			<option value="_blank">NEW_WINDOW</option>

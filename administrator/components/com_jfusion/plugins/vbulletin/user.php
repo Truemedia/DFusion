@@ -341,7 +341,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 				$vdb->setQuery($query);
 				$cookie = $vdb->loadObjectList('varname');
 				$host =  (empty($cookie['cookiedomain']->value)) ? str_replace(array('http://','https://'),'',  $_SERVER['SERVER_NAME']) : $cookie['cookiedomain']->value;
-				$status['debug'] .= JText::_('CREATED_SESSION'). ' userid = ' . $userinfo->userid . ', password = '.substr($userinfo->password,0,6) . '********, ' . JText::_('COOKIE_PATH'). ' = '.$cookie['cookiepath']->value. ', ' . JText::_('COOKIE_DOMAIN') .' = '.$host;			
+				$status['debug'] .= JText::_('CREATED_SESSION'). ' userid = ' . $userinfo->userid . ', password = '.substr($userinfo->password,0,6) . '********, ' . JText::_('COOKIE_SALT_STR'). ' = '.substr($vbLicense,0,4).'******, ' . JText::_('COOKIE_PATH'). ' = '.$cookie['cookiepath']->value. ', ' . JText::_('COOKIE_DOMAIN') .' = '.$host;			
 	        } else {
 	            //could not find a valid userid
 	            $status['error'] = JText::_('INVALID_USERID');

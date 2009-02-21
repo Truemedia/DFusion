@@ -160,8 +160,12 @@ $db =& JFactory::getDBO();
 
 //get the JFusion master
 $master = JFusionFunction::getMaster();
-$JFusionMaster = JFusionFactory::getUser($master->name);
-$userinfo = $JFusionMaster->getUser($credentials['username']);
+if(!empty($master)) {
+	$JFusionMaster = JFusionFactory::getUser($master->name);
+	$userinfo = $JFusionMaster->getUser($credentials['username']);
+} else {
+	$userinfo = '';
+}
 
 //check if a user was found
 if (!empty($userinfo)) {
@@ -250,9 +254,12 @@ $JFusionActive = true;
 
 //get the JFusion master
 $master = JFusionFunction::getMaster();
-$JFusionMaster = JFusionFactory::getUser($master->name);
-$userinfo = $JFusionMaster->getUser($user['username']);
-
+if(!empty($master)) {
+	$JFusionMaster = JFusionFactory::getUser($master->name);
+	$userinfo = $JFusionMaster->getUser($user['username']);
+} else {
+	$userinfo = '';
+}
 //apply the cleartext password to the user object if set
 if(!empty($user['password'])){
 	$userinfo->password_clear = $user['password'];

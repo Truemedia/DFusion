@@ -432,7 +432,13 @@ class JFusionForum_vbulletin extends JFusionForum
 			}
 
 			//post date
-			if($showdate) $table .= "<div class='{$css["postDate"]}'>".strftime($date_format, $tz_offset * 3600 + ($p->dateline)) . "</div>";
+			if($showdate){
+				jimport('joomla.utilities.date');
+				$JDate =  new JDate($p->dateline);
+				$JDate->setOffset($tz_offset);
+				$date = $JDate->toFormat($date_format);
+				$table .= "<div class='{$css["postDate"]}'>".$date."</div>";			
+			} 
 
 			//post body
 			$text = $this->prepareText($p->pagetext,true);

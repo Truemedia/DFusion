@@ -31,7 +31,7 @@ class JFusionControllerFrontEnd extends JController
 		if ($menuitemid && $menuitemid!=1) {
 			$db =& JFactory::getDBO();
 			$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
-			$menu_data = $db->loadResult();
+			//$menu_data = $db->loadResult();
 			$db->setQuery($query);
 			$params = $db->loadResult();
 			$menu_param = new JParameter($params, '');
@@ -81,7 +81,7 @@ class JFusionControllerFrontEnd extends JController
 				//get the wrapper params from the menu item
 				$db =& JFactory::getDBO();
 				$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
-				$menu_data = $db->loadResult();
+				//$menu_data = $db->loadResult();
 				$db->setQuery($query);
 				$params = $db->loadResult();
 				$menu_param = new JParameter($params, '');

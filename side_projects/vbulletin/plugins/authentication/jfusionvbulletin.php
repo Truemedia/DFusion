@@ -69,8 +69,12 @@ class plgAuthenticationjfusionvbulletin extends JPlugin
 
         //get the JFusion master as a check that the user exists in Joomla
         $master = JFusionFunction::getMaster();
-        $JFusionMaster = JFusionFactory::getUser($master->name);
-        $userinfo = $JFusionMaster->getUser($credentials['username']);
+        if(!empty($master)) {
+        	$JFusionMaster = JFusionFactory::getUser($master->name);
+        	$userinfo = $JFusionMaster->getUser($credentials['username']);
+        } else {
+        	$userinfo = '';
+        }
 
         if(!empty($userinfo))
         {

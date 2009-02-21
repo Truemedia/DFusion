@@ -20,7 +20,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 $mainframe->registerEvent( 'onSearch', 'plgSearchjfusion' );
 $mainframe->registerEvent( 'onSearchAreas', 'plgSearchjfusionAreas');
 
-JPlugin::loadLanguage( 'plg_search_jfusion' );
+JPlugin::loadLanguage( 'plg_search_jfusion');
 
 //get the name of each plugin and add to areas
 function &plgSearchjfusionAreas()
@@ -61,6 +61,9 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 		if(empty($searchPlugins)) {
 			return array();
 		}
+	} else {
+		//we need to extract the keys since they are the jnames
+		$searchPlugins = array_keys($searchPlugins);
 	}
 		
 	//get the search plugin parameters

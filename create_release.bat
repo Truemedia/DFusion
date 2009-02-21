@@ -18,10 +18,10 @@ wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_auth.zip p
 wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_user.zip plugins/user
 wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_user.zip plugins/user/jfusion.xml
 
-wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_search.zip plugins/search
+wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_search.zip plugins/search administrator/language/en-GB/en-GB.plg_search_jfusion.ini
 wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_search.zip plugins/search/jfusion.xml
 
-wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_content.zip plugins/content
+wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_content.zip plugins/content administrator/language/en-GB/en-GB.plg_content_jfusion.ini
 wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_content.zip plugins/content/jfusion.xml
 
 REM create the new master package

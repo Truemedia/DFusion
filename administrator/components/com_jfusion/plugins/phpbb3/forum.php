@@ -256,7 +256,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		}
 		
 		//the user information
-		$query = "SELECT username_clean, user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
+		$query = "SELECT username, username_clean, user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
 		$jdb->setQuery($query);		
 		$phpbbUser = $jdb->loadObject();
 		
@@ -269,7 +269,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$topic_row->icon_id = false;
 		$topic_row->topic_approved	= 1;
 		$topic_row->topic_title = $subject;
-		$topic_row->topic_first_poster_name	= $phpbbUser->username_clean;
+		$topic_row->topic_first_poster_name	= $phpbbUser->username;
 		$topic_row->topic_first_poster_colour = $phpbbUser->user_permissions;
 		$topic_row->topic_type = 0;
 		$topic_row->topic_time_limit = 0;
@@ -436,11 +436,11 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$this->phpbbInit($text, $message_parser);	
 
 			//get some topic information
-			$query = "SELECT topic_title, topic_replies,	topic_replies_real FROM #__topics WHERE topic_id = {$ids['threadid']}";
+			$query = "SELECT topic_title, topic_replies, topic_replies_real FROM #__topics WHERE topic_id = {$ids['threadid']}";
 			$jdb->setQuery($query);
 			$topic = $jdb->loadObject();			
 			//the user information
-			$query = "SELECT user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
+			$query = "SELECT username, user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
 			$jdb->setQuery($query);		
 			$phpbbUser = $jdb->loadObject();
 			
@@ -478,7 +478,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$topic_row->topic_last_post_id			= $postid;
 			$topic_row->topic_last_post_time		= $current_time;
 			$topic_row->topic_last_poster_id		= (int) $userid;
-			$topic_row->topic_last_poster_name		= $userinfo->username;
+			$topic_row->topic_last_poster_name		= $phpbbUser->username;
 			$topic_row->topic_last_poster_colour	= $phpbbUser->user_colour;
 			$topic_row->topic_last_post_subject		= '';
 			$topic_row->topic_replies				= $topic->topic_replies + 1;
@@ -494,11 +494,11 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$num = $jdb->loadObject();
 			
 			$forum_stats = new stdClass();
-			$forum_stats->forum_last_post_id 		=  $postid;
+			$forum_stats->forum_last_post_id 		= $postid;
 			$forum_stats->forum_last_post_subject	= '';
-			$forum_stats->forum_last_post_time 		=  $current_time;
-			$forum_stats->forum_last_poster_id 		=  (int) $userid;
-			$forum_stats->forum_last_poster_name 	=  $userinfo->username;
+			$forum_stats->forum_last_post_time 		= $current_time;
+			$forum_stats->forum_last_poster_id 		= (int) $userid;
+			$forum_stats->forum_last_poster_name 	= $phpbbUser->username;
 			$forum_stats->forum_last_poster_colour 	= $phpbbUser->user_colour;
 			$forum_stats->forum_posts				= $num->forum_posts + 1;
 			$forum_stats->forum_id 					= $ids->forumid;
@@ -640,7 +640,13 @@ class JFusionForum_phpbb3 extends JFusionForum
 			}
 
 			//post date
-			if($showdate) $table .= "<div class='{$css["postDate"]}'>".strftime($date_format, $tz_offset * 3600 + ($p->post_time)) . "</div>";
+			if($showdate){
+				jimport('joomla.utilities.date');
+				$JDate =  new JDate($p->post_time);
+				$JDate->setOffset($tz_offset);
+				$date = $JDate->toFormat($date_format);
+				$table .= "<div class='{$css["postDate"]}'>".$date."</div>";
+			} 
 
 			//post body
 			$table .= "<div class='{$css["postText"]}'>{$this->prepareText($p->post_text,true)}</div> \n";

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="1.5" type="plugin" group="authentication" method="upgrade">
-	<name>Authentication - jfusion</name>
+	<name>Authentication - JFusion</name>
 	<author>JFusion Development Team</author>
 	<creationDate>July 2008</creationDate>
 	<author>JFusion Development Team</author>

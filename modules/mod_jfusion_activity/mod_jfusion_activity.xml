@@ -49,7 +49,7 @@
 
     <param name=" " type="helptext" default="ITEMID_DESCR"/>
 
-		<param name="itemid" type="JFusionMenuItems" size="5" default="150"
+		<param name="itemid" type="JFusionItemid" size="5" default="150"
 			description="ITEMID" />
 
 		<param name="@spacer" type="spacer" default="" label=""

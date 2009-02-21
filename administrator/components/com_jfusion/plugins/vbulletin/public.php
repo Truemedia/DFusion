@@ -588,7 +588,7 @@ function fixURL($matches)
 	//if the plugin is set as a slave, find the master and replace register/lost password urls
 	if (strpos($url,'register.php')!==false) {
 		$master = JFusionFunction::getMaster();
-		if($master->name!=_JFUSION_JNAME) {
+		if(!empty($master) && $master->name!=_JFUSION_JNAME) {
 			$master =& JFusionFactory::getPublic($master->name);
 			$url =  $master->getRegistrationURL();
 			$replacement =  'href="' . JRoute::_($url) . "\" $extra>";
@@ -601,7 +601,7 @@ function fixURL($matches)
 
 	if (strpos($url,'login.php?do=lostpw')!==false) {
 		$master = JFusionFunction::getMaster();
-		if($master->name!=_JFUSION_JNAME) {
+		if(!empty($master) && $master->name!=_JFUSION_JNAME) {
 			$master =& JFusionFactory::getPublic($master->name);
 			$url =  $master->getLostPasswordURL();
 			$replacement = 'href="' . JRoute::_($url) . "\" $extra>";

@@ -69,7 +69,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	('vbulletin',  0, 0, 0, 0, 0, 1, 1, 1),
 	('phpbb3', 0, 0, 0, 0, 0, 1, 1, 1),
 	('dokuwiki', 0, 0, 0, 0, 0, 1, 0, 0),
-	('smf', 0, 0, 0, 0, 0, 1, 0, 0),
+	('smf', 0, 0, 0, 0, 0, 1, 1, 1),
 	('mybb', 0, 0, 0, 0, 0, 1, 0, 0),
 	('magento', 0, 0, 0, 0, 0, 3, 0, 0),
 	('moodle', 0, 0, 0, 0, 0, 3, 0, 0),
@@ -99,7 +99,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 			} elseif ($plugin=='phpbb3') {
 				$pluginSql[] = "('phpbb3', 0, 0, 0, 0, 0, 1, 1, 1)";
 			} elseif ($plugin=='smf') {
-				$pluginSql[] = "('smf', 0, 0, 0, 0,  0, 1, 0, 0)";
+				$pluginSql[] = "('smf', 0, 0, 0, 0,  0, 1, 1, 1)";
 			} elseif ($plugin=='mybb') {
 				$pluginSql[] = "('mybb', 0,  0, 0, 0,  0, 1, 0, 0)";
 			} elseif ($plugin=='magento') {
@@ -183,7 +183,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	}
 
 	//update plugins with search and discuss bot capabilities
-	$query = "UPDATE #__jfusion SET search = 1, discussion = 1 WHERE name IN ('vbulletin','phpbb3')";
+	$query = "UPDATE #__jfusion SET search = 1, discussion = 1 WHERE name IN ('vbulletin','phpbb3','smf')";
 	$db->setQuery($query);
 	if(!$db->query()) {
 		echo $db->stderr() . '<br/>';

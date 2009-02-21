@@ -84,7 +84,14 @@ class modjfusionActivityHelper {
 	                        }
 	
 	                        //process date info
-	                        $date = $config['showdate'] ? " - ".strftime($config['date_format'], $config['tz_offset'] * 3600 + ($result[$i][4])) : "";
+	                        if($config['showdate']) {
+	                        	jimport('joomla.utilities.date');
+	                        	$JDate =  new JDate($result[$i][4]);
+	                        	$JDate->setOffset($config['tz_offset']);
+	                        	$date = $JDate->toFormat($config['date_format']);
+	                        } else {
+	                        	$date = '';
+	                        }
 	
 	                        //process subject or body info
 	                        $subject = ($config['display_body'] == 0 && empty($result[$i][3]) ||

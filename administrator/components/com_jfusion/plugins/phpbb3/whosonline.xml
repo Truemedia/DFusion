@@ -14,7 +14,7 @@
 			<option value="frameless">LINK_MODE_2</option>
 		</param>
 
-		<param name="itemid" type="JFusionMenuItems" size="5" default="150" label="MENU_ITEM"
+		<param name="itemid" type="JFusionItemid" size="5" default="150" label="MENU_ITEM"
 			description="MENU_ITEM_DESC" />
 				
 		<param name="name" type="list" default="0"

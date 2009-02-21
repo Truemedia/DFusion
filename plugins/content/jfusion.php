@@ -17,6 +17,7 @@ jimport('joomla.plugin.plugin');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.jfusion.php');
 
+JPlugin::loadLanguage( 'plg_content_jfusion', JPATH_ADMINISTRATOR );
 
 class plgContentJfusion extends JPlugin
 {
@@ -37,9 +38,7 @@ class plgContentJfusion extends JPlugin
     }
 
     function onPrepareContent(& $contentitem, $options)
-    {
-		JPlugin::loadLanguage( 'plg_content_jfusion', JPATH_ADMINISTRATOR );
-    	        
+    {   	        
 		//prevent any output by the plugins (this could prevent cookies from being passed to the header)
 		ob_start();
 

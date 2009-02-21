@@ -648,7 +648,7 @@ class JFusionController extends JController
                 JRequest::setVar('view', 'itemidselect');
                 parent::display();
         }
-
+        
         /**
          * Displays the JFusion PluginMenu Parameters
          */

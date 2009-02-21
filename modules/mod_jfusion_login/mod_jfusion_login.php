@@ -36,7 +36,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 
     //Get the forum integration object
     $jname = JFusionFunction::getMaster();
-    if ($jname->status == 1 ) {
+    if ($jname && $jname->status == 1 ) {
 
        $MasterPlugin = JFusionFactory::getPublic($jname->name);
 
