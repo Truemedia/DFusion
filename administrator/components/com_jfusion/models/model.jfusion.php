@@ -454,9 +454,10 @@ class JFusionFunction{
      * @param $text
      * @param $to string with what to conver the text to; bbcode or html
      * @param $stripAllHtml boolean  if $to==bbcode, strips all unsupported html from text
+     * @param $morePatten array $morePatten[0] startsearch, $morePatten[1] startreplace, $morePatten[2] endsearch, $morePatten[3] endreplace, strips all unsupported html from text     *
      * @return string with converted text
      */
-    function parseCode($text, $to, $stripAllHtml = false)
+    function parseCode($text, $to, $stripAllHtml = false,$morePatten=null)
     {
     	if($to=='html') {
     		//entities must be decoded to prevent encoding already encoded entities
@@ -471,61 +472,63 @@ class JFusionFunction{
  			static $search, $replace;
  			if(!is_array($search)) {
  				$search = $replace = array();
+ 				$search[] = "#<(blockquote|cite).*?>(.*?)<\/\\1>#si";
+ 				$replace[] = "[quote]$2[/quote]";
 
- 				//convert anything between code, html, or php tags to html entities to prevent conversion
- 				$search[] = "#\<(code|pre)(.*?)\>(.*?)\<\/(code|pre)\>#sie";
- 				$replace[] = "'[code]'.htmlspecialchars($3, ENT_QUOTES, UTF-8).'[/code]'";
+ 				$search[] = "#<ol.*?>(.*?)<\/ol>#si";
+ 				$replace[] = "[list=1]$1[/list]";
 
- 				$search[] = "#\<(blockquote|cite)(.*?)\>(.*?)\<\/(blockquote|cite)\>#si";
- 				$replace[] = "[quote]$3[/quote]";
+				$search[] = "#<ul.*?>(.*?)<\/ul>#si";
+ 				$replace[] = "[list]$1[/list]";
 
- 				$search[] = "#\<\ol(.*?)>(.*?)\<\/ol\>#si";
- 				$replace[] = "[list=1]$2[/list]";
+ 				$search[] = "#<li.*?>(.*?)<\/li>#si";
+ 				$replace[] = "[*]$1";
 
-				$search[] = "#\<ul(.*?)\>(.*?)\<\/ul\>#si";
- 				$replace[] = "[list]$2[/list]";
+ 				$search[] = "#<img.*?src=['|\"](?!\w{0,10}://)(.*?)['|\"].*?>#sie";
+ 				$replace[] = "'[img]'.JRoute::_(JURI::base().\"$1\").'[/img]'";
 
- 				$search[] = "#\<li(.*?)>(.*?)\<\/li\>#si";
- 				$replace[] = "[*]$2";
+ 				$search[] = "#<img.*?src=['|\"](.*?)['|\"].*?>#sim";
+ 				$replace[] = "[img]$1[/img]";
 
- 				$search[] = "#\<img (.*?) src=('|\")(.*?)('|\")\>(.*?)\<\/img\>#si";
- 				$replace[] = "[img]$3[/img]";
+ 				$search[] = "#<a .*?href=['|\"]mailto:(.*?)['|\"].*?>(.*?)<\/a>#si";
+ 				$replace[] = "[email=$1]$2[/email]";
 
- 				$search[] = "#\<a (.*?) href=('|\")mailto:(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
- 				$replace[] = "[email=$3]$6[/email]";
-
-				$search[] = "#<a href=['|\"](?!\w{0,10}://)(.*?)['|\"].*?>(.*?)</a>#sie";
+				$search[] = "#<a .*?href=['|\"](?!\w{0,10}://|#)(.*?)['|\"].*?>(.*?)</a>#sie";
  				$replace[] = "'[url='.JRoute::_(JURI::base().\"$1\").']$2[/url]'";
 
- 				$search[] = "#\<a (.*?) href=('|\")(.*?)('|\")(.*?)\>(.*?)\<\/a\>#si";
- 				$replace[] = "[url=$3]$6[/url]";
+ 				$search[] = "#<a .*?href=['|\"](.*?)['|\"].*?>(.*?)<\/a>#si";
+ 				$replace[] = "[url=$1]$2[/url]";
 
- 				$search[] = "#\<([biu])\>(.*?)\<\/([biu])\>#si";
- 				$replace[] = "[$1]$2[/$3]";
+ 				$search[] = "#<(b|i|u)>(.*?)<\/\\1>#si";
+ 				$replace[] = "[$1]$2[/$1]";
 
- 				$search[] = "#\<(.*?)style=(.*?)color:(.*?);(.*?)\>(.*?)\<\/(.*?)\>#si";
- 				$replace[] = "[color=$3]$5</font>";
+ 				$search[] = "#<font.*?color=['|\"](.*?)['|\"].*?>(.*?)<\/font>#si";
+ 				$replace[] = "[color=$1]$2[/color]";
 
- 				$search[] = "#\<font color=('|\")(.*?)('|\")(.*?)\>(.*?)\<\/font\>#si";
- 				$replace[] = "[color=$2]$5[/color]";
-
-				$search[] = "#\<tr(.*?)\>(.*?)\<\/tr\>#si";
- 				$replace[] = "$2\n";
-
-				$search[] = "#\<td(.*?)\>(.*?)\<\/td\>#si";
- 				$replace[] = " $2 ";
-
- 				$search[] = "#\<p\>\<\/p>#si";
- 				$replace[] = "\n\n";
-
- 				//decode html entities that we converted for code and pre tags
- 				$search[] = "#\[code\](.*?)\[\/code\]#sie";
- 				$replace[] = "'[code]'.htmlspecialchars_decode($1,ENT_QUOTES).'[/code]'";
-
+ 				$search[] = "#<p>(.*?)<\/p>#si";
+ 				$replace[] = "$1\n\n";
  			}
+ 			$searchNS = $replaceNS = array();
+ 			//convert anything between code, html, or php tags to html entities to prevent conversion
+            $searchNS[] = "#<(code|pre)(.*?)>(.*?)<\/\\1>#sie";
+			$replaceNS[] = "'[code]'.htmlspecialchars($3, ENT_QUOTES, UTF-8).'[/code]'";
+
+ 			if ( is_array($morePatten) && isset($morePatten[0]) && isset($morePatten[1]) ) {
+				$searchNS = array_merge($searchNS, $morePatten[0]);
+				$replaceNS = array_merge($replaceNS, $morePatten[1]);
+ 			}
+			$searchNS = array_merge($searchNS, $search);
+			$replaceNS = array_merge($replaceNS, $replace);
+ 			if ( is_array($morePatten) && isset($morePatten[2]) && isset($morePatten[3]) ) {
+				$searchNS = array_merge($searchNS, $morePatten[2]);
+				$replaceNS = array_merge($replaceNS, $morePatten[3]);
+ 			}
+ 			//decode html entities that we converted for code and pre tags
+ 			$searchNS[] = "#\[code\](.*?)\[\/code\]#sie";
+ 			$replaceNS[] = "'[code]'.htmlspecialchars_decode($1,ENT_QUOTES).'[/code]'";
 
  			$text = str_ireplace(array("<br />","<br>","<br/>"), "\n", $text);
- 			$text = preg_replace($search,$replace,$text);
+ 			$text = preg_replace($searchNS,$replaceNS,$text);
  			 $text = preg_replace( '/\p{Z}/u', ' ', $text );
  			if($stripAllHtml) { $text = strip_tags($text); }
     	}
