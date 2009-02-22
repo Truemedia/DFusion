@@ -110,8 +110,12 @@ class JFusionPublic_smf extends JFusionPublic{
 		$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
 		$replace_body[]	= '$this->fixJump("$1")';
 
-	   $regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
-	   $replace_body[] = '<input $1 window.location.href = \''.$baseURL.'\' + this.form.jumpto.options$3>';
+		$regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
+		$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
+
+		//todo: Fix quickreply ( Quote )
+		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
+		$replace_body[]	= '<a $1>';
 
 		$buffer = preg_replace($regex_body, $replace_body, $buffer);
 	}
@@ -138,7 +142,7 @@ class JFusionPublic_smf extends JFusionPublic{
 			$replace_header[]	= 'href="'.$integratedURL.'$3"';
 
 			$regex_header[] = '#var smf_scripturl = ["|\'](.*?)["|\'];#mS';
-			$replace_header[] = 'var smf_scripturl = "'.$baseURL.'";';
+			$replace_header[] = 'var smf_scripturl = "$1"; var jf_scripturl = "'.$baseURL.'";';
 		}
 		$buffer = preg_replace($regex_header, $replace_header, $buffer);
 	}
@@ -150,7 +154,7 @@ class JFusionPublic_smf extends JFusionPublic{
 
 	  $content = preg_replace($find, $replace, $content);
 
-	  return '<select name="jumpto" id="jumpto" onchange="if (this.selectedIndex > 0 && this.options[this.selectedIndex].value && this.options[this.selectedIndex].value.length) window.location.href = smf_scripturl + this.options[this.selectedIndex].value;">'.$content.'</select>';
+	  return '<select name="jumpto" id="jumpto" onchange="if (this.selectedIndex > 0 && this.options[this.selectedIndex].value && this.options[this.selectedIndex].value.length) window.location.href = jf_scripturl + this.options[this.selectedIndex].value;">'.$content.'</select>';
 	}
 
 	/************************************************
@@ -196,10 +200,3 @@ class JFusionPublic_smf extends JFusionPublic{
 		return $forum->getPostURL($post->ID_TOPIC,$post->ID_MSG);
 	}
 }
-
-
-
-
-
-
-
