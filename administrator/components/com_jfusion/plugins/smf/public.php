@@ -107,8 +107,8 @@ class JFusionPublic_smf extends JFusionPublic{
 //		$replace_body[]	= $fullURL.'#$1';
 
 		//Jump Related fix
-	   $regex_body[]	= '#<select(.*?)id="jumpto"(.*?);">(.*?)</select>#mSsie';
-	   $replace_body[]	= '$this->fixJump("$3")';
+		$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
+		$replace_body[]	= '$this->fixJump("$1")';
 
 	   $regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
 	   $replace_body[] = '<input $1 window.location.href = \''.$baseURL.'\' + this.form.jumpto.options$3>';
