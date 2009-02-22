@@ -182,6 +182,24 @@ class JFusionFunction{
         }
     }
 
+    function routeURL($url, $itemid)
+    {
+    	if(!is_numeric($itemid)){
+    		//we need to create direct link to the plugin
+            $params = JFusionFactory::getParams($itemid);
+            $url = $params->get('source_url') . $url;
+            return $url;
+    	} else {
+			//we need to create link to a joomla itemid
+			$u =& JURI::getInstance( $url );
+			$u->setVar('jfile', $u->getPath());
+			$u->setVar('option', 'com_jfusion');
+			$u->setVar('Itemid', $itemid);
+			$query = $u->getQuery(false);
+			return JRoute::_('index.php?'.$query);
+    	}
+    }
+
 
     /**
 * Returns either the Joomla wrapper URL or the full URL directly to the forum

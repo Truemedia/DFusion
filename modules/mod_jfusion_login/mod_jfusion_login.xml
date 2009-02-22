@@ -51,7 +51,7 @@
 		</param>
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
         <param name=" " type="helptext" default="ITEMID_DESCR"/>
-		<param name="itemid" type="text" size="5" default="" description="ITEMID" />
+		<param name="link_itemid" type="JFusionItemid" size="5" default="" description="ITEMID" />
 		<param name="lostpassword_url" label="LOST_PASSWORD_URL" type="text" size="50" default="" description="LOST_PASSWORD_URL_DESCR" />
 		<param name="lostpassword_show" type="radio" default="1"
 			label="LOST_PASSWORD" description="LOST_PASSWORD_DESCR">
