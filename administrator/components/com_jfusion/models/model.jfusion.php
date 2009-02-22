@@ -493,7 +493,7 @@ class JFusionFunction{
  				$search[] = "#<a .*?href=['|\"]mailto:(.*?)['|\"].*?>(.*?)<\/a>#si";
  				$replace[] = "[email=$1]$2[/email]";
 
-				$search[] = "#<a .*?href=['|\"](?!\w{0,10}://|#)(.*?)['|\"].*?>(.*?)</a>#sie";
+				$search[] = "#<a .*?href=['|\"](?!\w{0,10}://|\#)(.*?)['|\"].*?>(.*?)</a>#sie";
  				$replace[] = "'[url='.JRoute::_(JURI::base().\"$1\").']$2[/url]'";
 
  				$search[] = "#<a .*?href=['|\"](.*?)['|\"].*?>(.*?)<\/a>#si";
@@ -694,5 +694,5 @@ class JFusionFunction{
     	}
 
     	return $avatar;
-    }
+    }    	
 }
