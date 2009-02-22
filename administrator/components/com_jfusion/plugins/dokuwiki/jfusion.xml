@@ -14,12 +14,12 @@
 	<slave>0</slave>
 	<dual_login>0</dual_login>
 	<files>
-
 		<filename>auth/basic.class.php</filename>
 		<filename>auth/io.class.php</filename>
 		<filename>plain.class.php</filename>
 		<filename>admin.php</filename>
 		<filename>auth.php</filename>
+		<filename>doku_search.php</filename>
 		<filename>dokuwiki.php</filename>
 		<filename>public.php</filename>
 		<filename>user.php</filename>

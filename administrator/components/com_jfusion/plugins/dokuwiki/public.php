@@ -458,6 +458,97 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		}
 		return $count;
 	}
+
+	/************************************************
+	 * For JFusion Search Plugin
+	 ***********************************************/
+ 	function cleanUpSearchText($text)
+	{
+		//remove phpbb's bbcode uids
+		$text = preg_replace("#\[(.*?):(.*?)]#si","[$1]",$text);
+		$text = JFusionFunction::parseCode($text,'html');
+		return $text;
+	}
+
+    /**
+     * Retrieves the search results to be displayed.  Placed here so that plugins that do not use the database can retrieve and return results
+     * @param $text string text to be searched
+     * @param $phrase string how the search should be performed exact, all, or any
+     * @param $pluginParam custom plugin parameters in search.xml
+     * @param $linkMode what mode to use when creating the URL
+     * @param $itemid what menu item to use when creating the URL
+     * @return array of results as objects
+     * Each result should include:
+     * $result->title = title of the post/article
+     * $result->section = (optional) section of  the post/article (shows underneath the title; example is Forum Name / Thread Name)
+     * $result->text = text body of the post/article
+     * $result->href = link to the content (without this, joomla will not display a title)
+     * $result->browsernav = 1 opens link in a new window, 2 opens in the same window
+     * $result->created = (optional) date when the content was created
+     */
+	function getSearchResults(&$text, &$phrase, &$pluginParam, $linkMode, $itemid)
+	{
+		global $rootFolder;
+
+		$params = JFusionFactory::getParams($this->getJname());
+		$rootFolder = $params->get('source_path');
+
+		if (substr($rootFolder, -1) == DS) {
+			define(DOKU_INC, $rootFolder);
+		} else {
+			define(DOKU_INC, $rootFolder.'/');
+		}
+
+
+		require_once('doku_search.php');
+
+//		require_once(DOKU_INC.'inc'.DS.'fulltext.php');
+//		require_once(DOKU_INC.'inc'.DS.'common.php');
+
+
+
+		$results = ft_pageSearch($text, &$highlights);
+
+		//pass results back to the plugin in case they need to be filtered
+		$this->filterSearchResults($results);
+
+	 	$rows = array();
+	 	$pos = 0;
+		foreach($results as $key => $index)
+		{
+			$rows[$pos]->title = JText::_( $key );
+			$rows[$pos]->text = $this->getPage($rootFolder,$key);
+
+			$rows[$pos]->href  = JFusionFunction::createURL($this->getSearchResultLink($key), $this->getJname(), $linkMode,$itemid);
+			$rows[$pos]->section = JText::_( $key );
+			$pos++;
+	   	}
+		return $rows;
+	}
+
+	function getPage($path,$page)
+	{
+		$file = $path.DS.'data'.DS.'pages'.DS.str_replace(":", DS, $page).'.txt';
+		$text = '';
+		if (file_exists($file)) {
+			$handle = fopen($file, "r");
+   			while (!feof($handle)) {
+       			$text .= fgets($handle, 4096);
+   			}
+		    fclose($handle);
+		}
+		return $text?$text:"Please, follow the given link to get the DokuWiki article where we found one or more keyword(s).";"Please, follow the given link to get the DokuWiki article where we found one or more keyword(s).";
+	}
+
+	function filterSearchResults(&$results)
+	{
+
+	}
+
+	function getSearchResultLink($post)
+	{
+		return "doku.php?id=" . $post;
+	}
 }
 
 
