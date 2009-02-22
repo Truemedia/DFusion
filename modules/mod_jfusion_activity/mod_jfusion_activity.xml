@@ -37,13 +37,6 @@
 			label="JFUSION_PLUGIN" configfile="2" multiselect="true"
 			description="JFUSION_PLUGIN_DESCR" />
 
-		<param name="link_mode" type="list" default="direct" label="LINK_MODE"
-			description="LINK_MODE_DESCR">
-			<option value="wrapper">LINK_MODE_0</option>
-			<option value="direct">LINK_MODE_1</option>
-			<option value="frameless">LINK_MODE_2</option>
-		</param>
-
 		<param name="@spacer" type="spacer" default="" label=""
 			description="" />
 
@@ -159,4 +152,3 @@
 		</param>
 	</params>
 </install>
-

@@ -68,7 +68,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 	('joomla_ext', 0, 3, 3, 0, 0, 0, 0, 0),
 	('vbulletin',  0, 0, 0, 0, 0, 1, 1, 1),
 	('phpbb3', 0, 0, 0, 0, 0, 1, 1, 1),
-	('dokuwiki', 0, 0, 0, 0, 0, 1, 0, 0),
+	('dokuwiki', 0, 0, 0, 0, 0, 1, 1, 0),
 	('smf', 0, 0, 0, 0, 0, 1, 1, 1),
 	('mybb', 0, 0, 0, 0, 0, 1, 0, 0),
 	('magento', 0, 0, 0, 0, 0, 3, 0, 0),
@@ -109,7 +109,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 			} elseif ($plugin=='gallery2') {
 				$pluginSql[] = "('gallery2', 0, 0, 0, 0, 0, 1, 1, 0)";
 			} elseif ($plugin=='dokuwiki') {
-				$pluginSql[] = "('dokuwiki', 0, 0, 0, 0, 0, 1, 0, 0)";
+				$pluginSql[] = "('dokuwiki', 0, 0, 0, 0, 0, 1, 1, 0)";
 			}
 		}
 	}

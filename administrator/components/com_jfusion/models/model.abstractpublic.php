@@ -94,7 +94,6 @@ class JFusionPublic{
      * @param $text string text to be searched
      * @param $phrase string how the search should be performed exact, all, or any
      * @param $pluginParam custom plugin parameters in search.xml
-     * @param $linkMode what mode to use when creating the URL
      * @param $itemid what menu item to use when creating the URL
      * @return array of results as objects
      * Each result should include:
@@ -105,7 +104,7 @@ class JFusionPublic{
      * $result->browsernav = 1 opens link in a new window, 2 opens in the same window
      * $result->created = (optional) date when the content was created
      */
-	function getSearchResults(&$text, &$phrase, &$pluginParam, $linkMode, $itemid)
+	function getSearchResults(&$text, &$phrase, &$pluginParam, $itemid)
 	{
 		//initialize plugin database
 		$db = & JFusionFactory::getDatabase($this->getJname());
@@ -146,7 +145,7 @@ class JFusionPublic{
 		if(is_array($results)) {	
 			foreach($results as $result) {
 				//add a link
-				$href = JFusionFunction::createURL($this->getSearchResultLink($result), $this->getJname(), $linkMode,$itemid);
+				$href = JFusionFunction::routeURL($this->getSearchResultLink($result), $itemid);
 				$result->href = $href;
 				//open link in same window
 				$result->browsernav = 2;

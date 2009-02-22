@@ -141,10 +141,9 @@ class plgContentJfusion extends JPlugin
     	
 		//setup parameters
 		$JFusionPlugin =& JFusionFactory::getForum($jname);
-		$linkMode =& $this->params->get("link_mode");
 		$linkText =& $this->params->get("link_text");
 		$linkTarget =& $this->params->get('link_target','_parent');
-		$itemid =& $this->params->get("itemid",false);
+		$itemid =& $this->params->get("itemid");
 		$noPostMsg =& $this->params->get("no_posts_msg");
 		$mustLoginMsg =& $this->params->get("must_login_msg");
 		$JoomlaUser =& JFactory::getUser();
@@ -163,7 +162,7 @@ class plgContentJfusion extends JPlugin
 			$post = ($numPosts==1) ? "POST" : "POSTS";
 			
 			$threadid =& $existingthread->threadid;		
-			$urlstring_pre = JFusionFunction::createURL($JFusionPlugin->getThreadURL($threadid), $jname, $linkMode, $itemid);
+			$urlstring_pre = JFusionFunction::routeURL($JFusionPlugin->getThreadURL($threadid), $itemid);
 			$content .= '<div class="'.$this->css['threadLink'].'"><a href="'. $urlstring_pre . '" target="' . $linkTarget . '">' . $linkText . '</a> ['.$numPosts.' '.JText::_($post).']</div>';
 		}
 

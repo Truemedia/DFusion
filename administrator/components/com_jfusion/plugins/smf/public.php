@@ -162,8 +162,6 @@ class JFusionPublic_smf extends JFusionPublic{
 	 ***********************************************/
  	function cleanUpSearchText($text)
 	{
-		//remove phpbb's bbcode uids
-		$text = preg_replace("#\[(.*?):(.*?)]#si","[$1]",$text);
 		$text = JFusionFunction::parseCode($text,'html');
 		return $text;
 	}

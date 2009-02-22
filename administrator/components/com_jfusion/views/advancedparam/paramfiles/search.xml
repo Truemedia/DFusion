@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<params addpath="/administrator/components/com_jfusion/elements">
+		<param name="itemid" type="JFusionItemid" size="5" default="150" label="MENU_ITEM"
+			description="MENU_ITEM_DESC" />
+	</params>
+</config>

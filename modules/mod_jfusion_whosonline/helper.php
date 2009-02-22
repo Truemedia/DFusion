@@ -67,7 +67,7 @@ class modjfusionWhosOnlineHelper {
 							}  
   
 							if($user_url === false  && $jname!='joomla_int' && $jname!='joomla_ext') {
-  								$user_url = JFusionFunction::createURL($forum->getProfileURL($result[$i][0], $result[$i][1]), $jname, $config['view'], $config['itemid']);
+  								$user_url = JFusionFunction::routeURL($forum->getProfileURL($result[$i][0], $result[$i][1]), $config['itemid']);
   							}
 							 
   							$user = '<a href="'. $user_url . '">'.$name.'</a>';

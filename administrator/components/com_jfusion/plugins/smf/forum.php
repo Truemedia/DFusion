@@ -131,52 +131,6 @@ class JFusionForum_smf extends JFusionForum
 		}
 	}
 
-	//needed to parse the bbcode for phpbb
-	function smfInit(&$text, &$message_parser)
-	{
-		/*
-		$this->joomlaGlobals = $GLOBALS;
-		if(!class_exists('parse_message')) {
-			$params = JFusionFactory::getParams($this->getJname());
-
-			$source_path = $params->get('source_path');
-
-	        define('IN_PHPBB',true);
-			global $phpbb_root_path, $phpEx, $db;
-			$phpbb_root_path = $source_path .'/';
-			$phpEx = "php";
-
-			if (!function_exists('utf8_clean_string')) {
-				//load the filtering functions for phpBB3
-				global $jname;
-				$jname = $this->getJname();
-				require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'discussionbot_clean.php');
-			}
-
-			include_once($source_path . '/config.php');
-			include_once($source_path . '/includes/constants.php');
-			include_once($source_path . '/includes/db/dbal.php');
-			include_once($source_path . '/includes/db/mysql.php');
-
-			$db = new dbal_mysql();
-			$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
-
-			include_once($source_path . '/includes/bbcode.php');
-			include_once($source_path . '/includes/functions.php');
-			include_once($source_path . '/includes/functions_content.php');
-			include_once($source_path . '/includes/message_parser.php');
-
-		}
-
-		$message_parser = new parse_message($text);
-		$message_parser->parse(1, 1, 1);
-		$text = $message_parser->message;
-
-		$GLOBALS = $this->joomlaGlobals;
-		JFusionFunction::reconnectJoomlaDb();
-		*/
-	}
-
 	function checkThreadExists(&$dbparams, &$contentitem, &$existingthread, $forumid)
 	{
 	    $status = array();
@@ -277,9 +231,6 @@ class JFusionForum_smf extends JFusionForum
 		}
 		$topicid = $jdb->insertid();
 
-		$message_parser = '';
-		$this->smfInit($text, $message_parser);
-
 		$post_row = new stdClass();
 		$post_row->ID_BOARD			= $forumid;
 		$post_row->ID_TOPIC 		= $topicid;
@@ -364,9 +315,6 @@ class JFusionForum_smf extends JFusionForum
 			$text = $this->prepareText($contentitem->introtext.$contentitem->fulltext);
 		}
 
-		$message_parser = '';
-		$this->smfInit($text, $message_parser);
-
 		$current_time = time();
 		$userid = $dbparams->get('default_user');
 
@@ -409,9 +357,6 @@ class JFusionForum_smf extends JFusionForum
 
 		if(!empty($text)) {
 			$text = $this->prepareText($text);
-
-			$message_parser = '';
-			$this->smfInit($text, $message_parser);
 
 			//get some topic information
 			$where = "WHERE t.ID_TOPIC = {$ids->threadid} AND m.ID_MSG = t.ID_FIRST_MSG";
@@ -536,7 +481,6 @@ class JFusionForum_smf extends JFusionForum
 		$userlink = intval($dbparams->get('user_link'));
 		$link_software = $dbparams->get('userlink_software',false);
 		$userlink_custom = $dbparams->get('userlink_custom',false);
-		$linkMode = $dbparams->get("link_mode");
 		$itemid = $dbparams->get("itemid");
 		$jname = $this->getJname();
 		$header = $dbparams->get("post_header");
@@ -583,7 +527,7 @@ class JFusionForum_smf extends JFusionForum
 			$table .= $avatar;
 
 			//post title
-			$urlstring_pre = JFusionFunction::createURL($this->getPostURL($p->ID_TOPIC,$p->ID_MSG), $jname, $linkMode, $itemid);
+			$urlstring_pre = JFusionFunction::routeURL($this->getPostURL($p->ID_TOPIC,$p->ID_MSG), $itemid);
 			$title = '<a href="'. $urlstring_pre . '">'. $p->subject .'</a>';
 			$table .= "<div class = '{$css["postTitle"]}'>{$title}</div>\n";
 
@@ -601,7 +545,7 @@ class JFusionForum_smf extends JFusionForum
 					}
 
 					if($user_url === false) {
-						$user_url = JFusionFunction::createURL($this->getProfileURL($p->ID_MEMBER), $jname, $linkMode, $itemid);
+						$user_url = JFusionFunction::routeURL($this->getProfileURL($p->ID_MEMBER), $itemid);
 					}
 					$user = '<a href="'. $user_url . '">'.$p->memberName.'</a>';
 				} else {
@@ -637,6 +581,7 @@ class JFusionForum_smf extends JFusionForum
 	function prepareText($text, $prepareForJoomla = false)
 	{
 		static $bbcode;
+
 		if($prepareForJoomla===false) {
 			//first thing is to remove all joomla plugins
 			preg_match_all('/\{(.*)\}/U',$text,$matches);
@@ -668,6 +613,7 @@ class JFusionForum_smf extends JFusionForum
 				$bbcode[2][] = '#<(strike|s)>(.*?)<\/\\1>#sim';
 				$bbcode[3][] = '[s]$2[/s]';
  			}
+ 			
 			$text = JFusionFunction::parseCode($text,'bbcode',false,$bbcode);
 		} else {
 			//remove phpbb's bbcode uids
@@ -677,6 +623,7 @@ class JFusionForum_smf extends JFusionForum
 			//parse bbcode to html
 			$text = JFusionFunction::parseCode($text,'html');
 		}
+
 		return $text;
 	}
 }

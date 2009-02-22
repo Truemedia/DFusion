@@ -7,13 +7,6 @@
 			<option value="2">BOTH</option>
 		</param>
 		
-		<param name="link_mode" type="list" default="direct" label="LINK_MODE"
-			description="LINK_MODE_DESCR">
-			<option value="wrapper">LINK_MODE_0</option>
-			<option value="direct">LINK_MODE_1</option>
-			<option value="frameless">LINK_MODE_2</option>
-		</param>
-
 		<param name="itemid" type="JFusionItemid" size="5" default="150" label="MENU_ITEM"
 			description="MENU_ITEM_DESC" />
 				

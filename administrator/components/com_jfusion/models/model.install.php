@@ -285,18 +285,26 @@ class JFusionPluginInstaller extends JObject {
 				$db->Query();
 			}
 		} else {
-			//get some more details
-			$dual_login = & $this->manifest->getElementByPath('dual_login');
-			$slave = & $this->manifest->getElementByPath('slave');
-			$activity = & $this->manifest->getElementByPath('activity');
-
+			//determine the features of the plugin
+			$features = array('dual_login','slave','activity','search','discussion');
+			foreach($features as $f) {
+				$xml = $this->manifest->getElementByPath($f);
+				if (is_a($xml, 'JSimpleXMLElement')) {
+					$$f = JFilterInput::clean($xml->data(), 'integer');
+				} else {
+					$$f = 3;
+				}				
+			}
+			
             //prepare the variables
             $plugin_entry = new stdClass;
             $plugin_entry->id = NULL;
             $plugin_entry->name = $name;
-			$plugin_entry->dual_login = JFilterInput::clean($dual_login->data(), 'integer');
-			$plugin_entry->slave = JFilterInput::clean($slave->data(), 'integer');
-			$plugin_entry->activity = JFilterInput::clean($activity->data(), 'integer');
+			$plugin_entry->dual_login = $dual_login;
+			$plugin_entry->slave = $slave;
+			$plugin_entry->activity = $activity;
+			$plugin_entry->search = $search;
+			$plugin_entry->discussion = $discussion;
 			$plugin_entry->plugin_files = $this->backup($name);
 
             //now append the new plugin data

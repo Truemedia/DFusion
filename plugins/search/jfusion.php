@@ -77,8 +77,7 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 	
 	foreach($searchPlugins AS $key => $jname)
 	{
-		$linkMode =& $params->get('link_mode_'.$jname,'direct');
-		$itemid =& $params->get('itemid_'.$jname,false);
+		$itemid =& $params->get('itemid_'.$jname);
 		$searchMe =& JFusionFactory::getPublic($jname);
 		if(is_array($pluginParamValue)){
 			$pluginParam = new JParameter('');
@@ -87,7 +86,7 @@ function plgSearchjfusion($text, $phrase = '', $ordering = '', $areas = null )
 			$pluginParam = '';
 		}
 		
-		$results = $searchMe->getSearchResults($text,$phrase,$pluginParam, $linkMode, $itemid);
+		$results = $searchMe->getSearchResults($text,$phrase,$pluginParam, '', $itemid);
 
 		$searchResults = array_merge($searchResults,$results);	
 	}

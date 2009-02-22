@@ -73,7 +73,7 @@ class modjfusionActivityHelper {
 	                            	}
 	                            	
 	                            	if($user_url === false) {
-	                            		$user_url = JFusionFunction::createURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $jname, $config['view'], $config['itemid']);
+	                            		$user_url = JFusionFunction::routeURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $config['itemid']);
 	                            	}
 	                            	
 									$user = '<a href="'. $user_url . '" target="' . $config['new_window'] . '">'.$result[$i][1].'</a>';
@@ -108,10 +108,10 @@ class modjfusionActivityHelper {
 	
 	                        //combine all info into an urlstring
 	                        if ($config['linktype'] == LINKPOST) {
-								$urlstring_pre = JFusionFunction::createURL($forum->getPostURL($result[$i][6], $result[$i][0]), $jname, $config['view'], $config['itemid']);
+								$urlstring_pre = JFusionFunction::routeURL($forum->getPostURL($result[$i][6], $result[$i][0]), $config['itemid']);
 	    	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $config['new_window'] . '">'. $subject.'</a>';
 	                        } else {
-	                        	$urlstring_pre = JFusionFunction::createURL($forum->getThreadURL($result[$i][0]), $jname, $config['view'], $config['itemid']);
+	                        	$urlstring_pre = JFusionFunction::routeURL($forum->getThreadURL($result[$i][0]), $config['itemid']);
 	                        	$urlstring = '<a href="'. $urlstring_pre . '" target="' . $config['new_window'] . '">' .$subject.'</a>';
 	                        }
 	

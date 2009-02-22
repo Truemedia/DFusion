@@ -77,18 +77,18 @@ if (file_exists($model_file) && file_exists($factory_file)) {
                 }
             }
 
-            if ($params->get('pmcount')) {
+            if ($params->get('pmcount') && $PluginName!='joomla_ext') {
                 $pmcount = $JFusionPlugin->getPrivateMessageCounts($userlookup->userid);
-                $url_pm = JFusionFunction::createURL($JFusionPlugin->getPrivateMessageURL(), $PluginName, $view2,  $itemid2);
+                $url_pm = JFusionFunction::routeURL($JFusionPlugin->getPrivateMessageURL(),  $link_itemid);
+            } else {
+            	$pmcount = false;
             }
 
-            if ($params->get('viewnewmessages')) {
-                $url_viewnewmessages = JFusionFunction::createURL($JFusionPlugin->getViewNewMessagesURL(), $PluginName, $view2, $itemid2);
+            if ($params->get('viewnewmessages') && $PluginName!='joomla_ext') {
+                $url_viewnewmessages = JFusionFunction::routeURL($JFusionPlugin->getViewNewMessagesURL(), $link_itemid);
+            } else {
+            	$url_viewnewmessages = false;
             }
-            //output the login module
-            require(JModuleHelper::getLayoutPath('mod_jfusion_login', 'jfusion'));
-        } else {
-            require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
         }
     } else {
         //show the avatar if it is not set to JFusion
@@ -103,8 +103,8 @@ if (file_exists($model_file) && file_exists($factory_file)) {
         } else {
             $avatar = false;
         }
-
-        require(JModuleHelper::getLayoutPath('mod_jfusion_login'));
+        
+        $pmcount = $url_viewnewmessages = false;
     }
 
 }

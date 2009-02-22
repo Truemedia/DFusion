@@ -568,7 +568,6 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$userlink = intval($dbparams->get('user_link'));
 		$link_software = $dbparams->get('userlink_software',false);
 		$userlink_custom = $dbparams->get('userlink_custom',false);
-		$linkMode = $dbparams->get("link_mode");
 		$itemid = $dbparams->get("itemid");
 		$jname = $this->getJname();
 		$header = $dbparams->get("post_header");
@@ -611,7 +610,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$table .= $avatar;
 
 			//post title
-			$urlstring_pre = JFusionFunction::createURL($this->getPostURL($p->topic_id,$p->post_id), $jname, $linkMode, $itemid);
+			$urlstring_pre = JFusionFunction::routeURL($this->getPostURL($p->topic_id,$p->post_id), $itemid);
 			$title = '<a href="'. $urlstring_pre . '">'. $p->post_subject .'</a>';
 			$table .= "<div class = '{$css["postTitle"]}'>{$title}</div>\n";
 
@@ -629,7 +628,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 					}
 					
 					if($user_url === false) {
-						$user_url = JFusionFunction::createURL($this->getProfileURL($p->user_id), $jname, $linkMode, $itemid);
+						$user_url = JFusionFunction::routeURL($this->getProfileURL($p->user_id), $itemid);
 					}
 					$user = '<a href="'. $user_url . '">'.$p->username.'</a>';
 				} else {

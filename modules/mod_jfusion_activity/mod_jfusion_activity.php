@@ -47,7 +47,6 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 	$config['userlink'] = intval($params->get('userlink'),false);
 	$config['userlink_software'] = $params->get('userlink_software',false);
 	$config['userlink_custom'] = $params->get('userlink_custom',false);
-	$config['view'] = $params->get('link_mode');
 	$config['debug'] = $params->get('debug');
 	$config['itemid'] = $params->get('itemid');
 	

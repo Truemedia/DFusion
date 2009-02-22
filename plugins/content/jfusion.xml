@@ -30,11 +30,6 @@
 			
 		<param name=" " type="helptext" label="" default="DISCUSSBOT_GENERAL_DESC"/>
 
-		<param name="link_mode" type="list" default="direct" label="LINK_MODE" description="LINK_MODE_DESCR">
-			<option value="wrapper">LINK_MODE_0</option>
-			<option value="direct">LINK_MODE_1</option>
-			<option value="frameless">LINK_MODE_2</option>
-		</param>
 		<param name="itemid" type="JFusionItemid" default='' label='ITEMID' description='ITEMID_DESCR' />
 		<param name="link_text" type="text" size="20" default="" label="DISCUSSBOT_LINK_TEXT" description="DISCUSSBOT_LINK_TEXT_DESC" />
 		<param name="link_target" type="list" default="_self" label="LINK_TARGET" description="LINK_TARGET_DESC">

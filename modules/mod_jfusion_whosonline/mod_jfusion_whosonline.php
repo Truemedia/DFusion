@@ -35,12 +35,10 @@ if(is_array($pluginParamValue)) {
 		// configuration
 		$config = array();
 		$config['showmode'] = intval($pluginParam->get('showmode'));
-		$config['link_mode'] = $pluginParam->get('link_mode','direct');
 		$config['name'] = $pluginParam->get('name');
 		$config['userlink'] = intval($pluginParam->get('userlink'),false);
 		$config['userlink_software'] = $pluginParam->get('userlink_software',false);
 		$config['userlink_custom'] = $pluginParam->get('userlink_custom',false);
-		$config['view'] = $pluginParam->get('link_mode');
 		$config['itemid'] = $pluginParam->get('itemid');
 		$config['avatar'] = $pluginParam->get('avatar',false);
 		$config['avatar_software'] = $pluginParam->get('avatar_software','jfusion');
