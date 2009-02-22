@@ -42,9 +42,6 @@ class JFusionControllerFrontEnd extends JController
 		} elseif ($menuitemid==1) {
 			//if menuitemid is set to frontpage, unset it
 			JRequest::setVar('Itemid','');
-		} else {
-			$jview = JRequest::getVar('view');
-			$jname = JRequest::getVar('jname');
 		}
 
 		if ($jview) {
@@ -60,16 +57,10 @@ class JFusionControllerFrontEnd extends JController
 				return $result;
 			}
 		} else {
-			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-			//make one final attempt to get a default view from the joomla_int plugin
-			$params = JFusionFactory::getParams('joomla_int');
-			$default_plugin = $params->get('default_plugin');
-			$jview = $params->get('link_mode');
-			if(empty($jview) || empty($default_plugin)){
 				echo JText::_('NO_VIEW_SELECTED');
 				$result = false;
 				return $result;
-			}
+
 		}
 
 		//load the view
@@ -77,22 +68,12 @@ class JFusionControllerFrontEnd extends JController
 
 		//parse required variables and render output
 		if ($jview == 'wrapper') {
-			if ($menuitemid){
-				//get the wrapper params from the menu item
-				$db =& JFactory::getDBO();
-				$query = 'SELECT params from #__menu WHERE id = ' . $menuitemid;
-				//$menu_data = $db->loadResult();
-				$db->setQuery($query);
-				$params = $db->loadResult();
-				$menu_param = new JParameter($params, '');
-			} else {
-				//fetch the general wrapper settings from joomla_int
-				$menu_param  = JFusionFactory::getParams('joomla_int');
-			}
 
-			//parse the url
-			$wrap = urldecode(JRequest::getVar('wrap', '', 'get'));
-			$wrap = base64_decode(str_replace("_slash_","/",$wrap));
+			//get the url
+			$query = ($_GET);
+			$jfile = $query['jfile'];
+			unset($query['option'], $query['jfile'], $query['Itemid'], $query['jFusion_Route']);
+			$wrap = $jfile . '?' . implode($query,'&');
 			$params2 = JFusionFactory::getParams($jname);
 			$source_url = $params2->get('source_url');
 
