@@ -214,19 +214,23 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$document->addCustomTag($js);
 		
 		$db =& JFusionFactory::getDatabase($this->getJname());
-		$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin' AND active = 1";
-		$db->setQuery($query);
-		$check = ($db->loadResult() > 0) ? true : false;
-		
-    	if ($check){
-			//return success
-			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_FRAMELESS_HOOK') . ' ' . JText::_('ENABLED');
-			$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'disable_frameless\')">' . JText::_('DISABLE_THIS_PLUGIN') . '</a>';
-			return $output;
+		if(!JError::isError($db) && !empty($db)) {
+			$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin' AND active = 1";
+			$db->setQuery($query);
+			$check = ($db->loadResult() > 0) ? true : false;
+			
+	    	if ($check){
+				//return success
+				$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_FRAMELESS_HOOK') . ' ' . JText::_('ENABLED');
+				$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'disable_frameless\')">' . JText::_('DISABLE_THIS_PLUGIN') . '</a>';
+				return $output;
+			} else {
+	       		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('VB_FRAMELESS_HOOK') . ' ' . JText::_('DISABLED');
+				$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'enable_frameless\')">' . JText::_('ENABLE_THIS_PLUGIN') . '</a>';
+				return $output;
+			}
 		} else {
-       		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('VB_FRAMELESS_HOOK') . ' ' . JText::_('DISABLED');
-			$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'enable_frameless\')">' . JText::_('ENABLE_THIS_PLUGIN') . '</a>';
-			return $output;
+			return JText::_('VB_CONFIG_FIRST');
 		}
     }
 
@@ -272,25 +276,29 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
     function installDualLoginHook()
     {
 		$db =& JFusionFactory::getDatabase($this->getJname());
-		$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Dual Login Plugin' AND active = 1";
-		$db->setQuery($query);
-		$check = ($db->loadResult() > 0) ? true : false;
-
-		//make sure the vb auth plugin is installed and published
-		if($check===true) {
-			$check = (JPluginHelper::getPlugin('authentication','jfusionvbulletin')) ? true : false;	
-		} 
-			
-        if ($check){
-			//return success
-			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_DUALLOGIN_HOOK') . ' ' . JText::_('ENABLED');
-			$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'disable_duallogin\')">' . JText::_('DISABLE_THIS_PLUGIN') . '</a>';
-			return $output;
+		if(!JError::isError($db) && !empty($db)) {
+			$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Dual Login Plugin' AND active = 1";
+			$db->setQuery($query);
+			$check = ($db->loadResult() > 0) ? true : false;
+	
+			//make sure the vb auth plugin is installed and published
+			if($check===true) {
+				$check = (JPluginHelper::getPlugin('authentication','jfusionvbulletin')) ? true : false;	
+			} 
+				
+	        if ($check){
+				//return success
+				$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_DUALLOGIN_HOOK') . ' ' . JText::_('ENABLED');
+				$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'disable_duallogin\')">' . JText::_('DISABLE_THIS_PLUGIN') . '</a>';
+				return $output;
+			} else {
+	       		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('VB_DUALLOGIN_HOOK') . ' ' . JText::_('DISABLED');
+				$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'enable_duallogin\')">' . JText::_('ENABLE_THIS_PLUGIN') . '</a>';
+				return $output;
+			}
 		} else {
-       		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('VB_DUALLOGIN_HOOK') . ' ' . JText::_('DISABLED');
-			$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'enable_duallogin\')">' . JText::_('ENABLE_THIS_PLUGIN') . '</a>';
-			return $output;
-		}    	
+			return JText::_('VB_CONFIG_FIRST');
+		}  	
     }
 
     function enable_duallogin()
@@ -353,20 +361,24 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
     function installRedirectHook()
     {
     	$db =& JFusionFactory::getDatabase($this->getJname());
-		$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Redirect Plugin' AND active = 1";
-		$db->setQuery($query);
-		$check = ($db->loadResult() > 0) ? true : false;
-
-		if ($check){
-			//return success
-			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_REDIRECT_HOOK') . ' ' . JText::_('ENABLED');
-			$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'disable_redirect\')">' . JText::_('DISABLE_THIS_PLUGIN') . '</a>';
-			return $output;
-		} else {
-       		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('VB_REDIRECT_HOOK') . ' ' . JText::_('DISABLED');
-			$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'enable_redirect\')">' . JText::_('ENABLE_THIS_PLUGIN') . '</a>';
-			return $output;
-		}   	
+    	if(!JError::isError($db) && !empty($db)) {    	
+			$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Redirect Plugin' AND active = 1";
+			$db->setQuery($query);
+			$check = ($db->loadResult() > 0) ? true : false;
+	
+			if ($check){
+				//return success
+				$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_REDIRECT_HOOK') . ' ' . JText::_('ENABLED');
+				$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'disable_redirect\')">' . JText::_('DISABLE_THIS_PLUGIN') . '</a>';
+				return $output;
+			} else {
+	       		$output = '<img src="components/com_jfusion/images/check_bad.png" height="20px" width="20px">' . JText::_('VB_REDIRECT_HOOK') . ' ' . JText::_('DISABLED');
+				$output .= ' <a href="javascript:void(0);" onclick="return toggleHook(\'enable_redirect\')">' . JText::_('ENABLE_THIS_PLUGIN') . '</a>';
+				return $output;
+			}
+    	} else {
+			return JText::_('VB_CONFIG_FIRST');
+		}	
     }
     
     function enable_redirect()
