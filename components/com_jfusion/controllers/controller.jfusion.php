@@ -71,7 +71,12 @@ class JFusionControllerFrontEnd extends JController
 
 			//get the url
 			$query = ($_GET);
-			$jfile = $query['jfile'];
+			if(isset($query['jfile'])){
+				$jfile = $query['jfile'];
+			} else {
+				$jfile = 'index.php';
+			}
+
 			unset($query['option'], $query['jfile'], $query['Itemid'], $query['jFusion_Route']);
 			$wrap = $jfile . '?' . implode($query,'&');
 			$params2 = JFusionFactory::getParams($jname);

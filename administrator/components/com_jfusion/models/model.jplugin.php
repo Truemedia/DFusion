@@ -377,41 +377,12 @@ class JFusionJplugin{
 				$username = $JFusionPlugin->filterUsername($username);
 			}
 		}
-		//the return statement did not work, used global as a temp measure
-		global $filtered_username;
-		$filtered_username = $username;
 		return $username;
 	}
 
 	function updateUsername($userinfo, &$existinguser, &$status,$jname){
 		//generate the filtered integration username
-		$username_clean = $userinfo->username;// $this->filterUsername($userinfo->username, $jname);
-		//the return statement did not work, used global as a temp measure
-		global $filtered_username;
-//		$username_clean = $filtered_username;
-//debug
-		$username_clean= $userinfo->username; /// DEBUG statement because username filtering does not work
-		//define which characters which Joomla forbids in usernames
-		$trans = array('&#60;' => '_', '&lt;' => '_', '&#62;' => '_', '&gt;' => '_', '&#34;' => '_', '&quot;' => '_', '&#39;' => '_', '&#37;' => '_', '&#59;' => '_', '&#40;' => '_', '&#41;' => '_', '&amp;' => '_', '&#38;' => '_', '<' => '_', '>' => '_', '"' => '_', '\'' => '_', '%' => '_', ';' => '_', '(' => '_', ')' => '_', '&' => '_');
-
-		//remove forbidden characters for the username
-		$username_clean = strtr($username_clean, $trans);
-
-    	$status['debug'][] = JText::_('USERNAME'). ': ' . $userinfo->username . ' -> ' .  JText::_('FILTERED_USERNAME') . ':' . $username_clean;
-
-		//make sure the username is at least 3 characters long
-		while (strlen($username_clean) < 3) {
-			$username_clean .= '_';
-		}
-
-		//now we need to make sure the username is unique in Joomla
-        $db = & JFusionFactory::getDatabase($jname);
-		$db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
-		while ($db->loadResult()) {
-			$username_clean .= '_';
-			$db->setQuery('SELECT id FROM #__users WHERE username='.$db->Quote($username_clean));
-		}
-
+		$username_clean = $userinfo->username;
     	$status['debug'][] = JText::_('USERNAME'). ': ' . $userinfo->username . ' -> ' .  JText::_('FILTERED_USERNAME') . ':' . $username_clean;
 
 		$query = 'UPDATE #__users SET username =' . $db->Quote($username_clean) . 'WHERE id =' . $existinguser->userid;
@@ -422,29 +393,29 @@ class JFusionJplugin{
 		} else {
 			$status['debug'][] = JText::_('USERNAME_UPDATE') .': ' . $username_clean;
 		}
-if ($jname == 'joomla_int'){
-		//delete old entries in the #__jfusion_users table
-		$query = 'DELETE FROM #__jfusion_users WHERE id =' . $existinguser->userid;
-		$db->setQuery($query);
-		if (!$db->query()) {
-			$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
-		}
 
-		//delete old entries in the #__jfusion_users_plugin table
-		$query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $existinguser->userid;
-		$db->setQuery($query);
-		if (!$db->query()) {
-			$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
-		}
+		if ($jname == 'joomla_int'){
+			//delete old entries in the #__jfusion_users table
+			$query = 'DELETE FROM #__jfusion_users WHERE id =' . $existinguser->userid;
+			$db->setQuery($query);
+			if (!$db->query()) {
+				$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
+			}
 
-		//add a new entry in the #__jfusion_users table to allow login with the new username
-		$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $existinguser->userid . ',' . $db->Quote($userinfo->username) . ')';
-		$db->setQuery($query);
-		if (!$db->query()) {
-			$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
-		}
-}
+			//delete old entries in the #__jfusion_users_plugin table
+			$query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $existinguser->userid;
+			$db->setQuery($query);
+			if (!$db->query()) {
+				$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
+			}
 
+			//add a new entry in the #__jfusion_users table to allow login with the new username
+			$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $existinguser->userid . ',' . $db->Quote($userinfo->username) . ')';
+			$db->setQuery($query);
+			if (!$db->query()) {
+				$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
+			}
+		}
 	}
 
 	function createUser($userinfo, $overwrite, &$status,$jname){
