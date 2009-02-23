@@ -71,6 +71,7 @@ class jfusionViewitemidselect extends JView
         $db->setQuery($query);
         $rows = $db->loadObjectList();
 
+
         $row_count = 0;
         foreach($rows as $row) {
             echo '<tr class="row' . $row_count .'">';
@@ -129,6 +130,12 @@ class jfusionViewitemidselect extends JView
         $query = 'SELECT * from #__jfusion WHERE status = 1';
         $db->setQuery($query);
         $rows = $db->loadObjectList();
+
+		$ename = JRequest::getVar('ename');
+		if(strpos($ename, 'itemid')){
+			//do not output the direct link options
+			return;
+		}
 
         echo '<br/><h3>' . JText::_('SELECT_DIRECT_VIEW' ) . '</h3>';
         ?>

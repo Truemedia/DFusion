@@ -179,6 +179,7 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
     	$error = 0;
     	//check to see if a path is defined
         $params = JFusionFactory::getParams($this->getJname());
+		$joomla_params = JFusionFactory::getParams('joomla_int');
         $path = $params->get('source_path');
         if(empty($path)){
         	$error = 1;
@@ -209,7 +210,7 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
 			}
 
     		$cookie_name = $params->get('cookie_prefix');
-		    $joomla_url = JURI::base();
+		    $joomla_url = $joomla_params->get('source_url');
     		$joomla_itemid = $params->get('redirect_itemid');
 
 			//create the new redirection code
@@ -226,9 +227,14 @@ $joomla_itemid = ' . $joomla_itemid .';
         		$db = & JFusionFactory::getDatabase($this->getJname());
 				$query = "SELECT b.user_id, a.group_name FROM #__groups as a INNER JOIN #__user_group as b ON a.group_id = b.group_id WHERE a.group_name = 'GLOBAL_MODERATORS' or a.group_name = 'ADMINISTRATORS'";
 		        $db->setQuery($query);
-        		$mod_ids = $db->loadResultArray();
-die(print_r($mod_ids));
-        		$mod_ids = implode(",", $mod_ids);
+        		$mod_list = $db-> loadObjectList();
+        		$mod_array = array();
+        		foreach ($mod_list as $mod_list){
+        			if(!isset($mod_array[$mod_list->user_id])){
+        				$mod_array[$mod_list->user_id] = $mod_list->user_id;
+        			}
+        		}
+        		$mod_ids = implode(",", $mod_array);
 
 		    	$redirect_code .= '
 $mod_ids = array(' . $mod_ids . ');
@@ -242,12 +248,12 @@ if(!defined(\'_JEXEC\') && !defined(\'ADMIN_START\') && $_GET[\'jfile\'] != \'fi
     $file = $_SERVER["SCRIPT_NAME"];
     $break = Explode(\'/\', $file);
     $pfile = $break[count($break) - 1];
-    $jfusion_url = $joomla_url . \'?option=com_jfusion&Itemid=\' . $your_itemid . \'&jfile=\'.$pfile. \'&\' . $_SERVER[\'QUERY_STRING\'];
+    $jfusion_url = $joomla_url . \'index.php?option=com_jfusion&Itemid=\' . $joomla_itemid . \'&jfile=\'.$pfile. \'&\' . $_SERVER[\'QUERY_STRING\'];
     header(\'Location: \' . $jfusion_url);
 }
 //JFUSION REDIRECT END
 ';
-die(htmlentities($redirect_code));
+
 	      	$search = '/\<\?php/si';
 			$replace = '<?php' . $redirect_code;
 	      	$file_data = preg_replace($search,$replace,$file_data);

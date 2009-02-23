@@ -37,7 +37,7 @@ class JElementJFusionItemid extends JElement
 		}";
 		$doc->addScriptDeclaration($js);
 
-		$link = 'index.php?option=com_jfusion&amp;task=itemidselect&amp;tmpl=component';
+		$link = 'index.php?option=com_jfusion&amp;task=itemidselect&amp;tmpl=component&amp;ename='.$name;
 
 		JHTML::_('behavior.modal', 'a.modal');
 		$html = "\n".'<div style="float: left;"><input style="background: #ffffff;" type="text" id="'.$name.'_name" value="'.$value.'" disabled="disabled" /></div>';
