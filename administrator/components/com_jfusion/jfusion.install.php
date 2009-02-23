@@ -226,34 +226,23 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 				}
 			} elseif(!empty($plugin->plugin_files)) {
 				//save the compressed file to the tmp dir
-				$gzfile = $tmpDir.DS.$plugin->name.'.tgz';
-				if(@JFile::write($gzfile,$plugin->plugin_files)){
+				$zipfile = $tmpDir.DS.$plugin->name.'.zip';
+				if(@JFile::write($zipfile,$plugin->plugin_files)){
 					//decompress the file
-					if (!@JArchive::extract($gzfile, $tmpDir)) {
+					if (!@JArchive::extract($zipfile, $pluginDir.DS.$plugin->name)) {
 						//decompression failed
 						$uninstallPlugin[] = $plugin->name;
 						$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
 						//remove the file
-						unlink($gzfile);
+						unlink($zipfile);
 					} else {
-						$tarfile = $tmpDir.DS.$plugin->name.'.tar';						
-						if (!@JArchive::extract($tarfile, $pluginDir.DS.$plugin->name)) {
-							//decompression failed
+						//extra check to make sure the files were decompressed to prevent possible fatal errors
+						if(!file_exists($pluginDir.DS.$plugin->name)) {
 							$uninstallPlugin[] = $plugin->name;
 							$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
-							//remove the files
-							unlink($gzfile);
-							unlink($tarfile);						
-						} else {
-							//extra check to make sure the files were decompressed to prevent possible fatal errors
-							if(!file_exists($pluginDir.DS.$plugin->name)) {
-								$uninstallPlugin[] = $plugin->name;
-								$uninstallReason[$plugin->name] = JText::_('UPGRADE_DECOMPRESS_FAILED');
-							}
-							//remove the files
-							unlink($gzfile);
-							unlink($tarfile);
 						}
+						//remove the file
+						unlink($zipfile);
 					}
 				} else {
 					//the compressed file was not able to be written to the tmp dir so remove it

@@ -504,26 +504,59 @@ class JFusionPluginInstaller extends JObject {
 		$tmpDir =& $config->getValue('config.tmp_path');
 
 		//compress the files
-		$tarfile = $tmpDir.DS.$jname.'.tar';
+		$filename = $tmpDir.DS.$jname.'.zip';
 		//retrieve a list of files within the plugin directory
 		$pluginPath = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname;
-		$fileList = JFolder::files($pluginPath);
-
-		//compress the plugin
+		//check for zip creation
+		$zipSuccess = false;
+		//we need to chdir into the plugin path
 		$cwd = getcwd();
-		chdir($pluginPath);
-		@JArchive::create($tarfile, $fileList);
-		$gzfile = $tmpDir.DS.$jname.'.tgz';
-		@JArchive::create($gzfile, $tarfile,'gz',null,$tmpDir);
-		chdir($cwd);
+		chdir($pluginPath);	
+		//get the contents of the files in the plugin dir	
+		$filesArray = $this->getFiles($pluginPath,$jname);
 
-		//now get the contents of the compressed file to return
-		$data = file_get_contents($gzfile);
+		if(extension_loaded('zlib')) {
+			//use Joomla's zip class to create the zip
+	        $zip =& JArchive::getAdapter('zip');
+	        if($zip->create($filename, $filesArray)) {
+	        	$zipSuccess = true;
+	        }
+	        
+		} elseif(class_exists('ZipArchive')) {
+			//use PECL ZipArchive to create the zip
+			$zip = new ZipArchive();
+			if($zip->open($filename, ZIPARCHIVE::CREATE)===TRUE) {
+				foreach($filesArray as $file) {
+					$zip->addFromString($file['name'],$file['data']);
+				}
+				$zip->close();
+				$zipSuccess = true;
+			}
+		}
 		
-		//remove the backup file
-		unlink($gzfile);
-		unlink($tarfile);
-	
+		chdir($cwd);
+		$data = ($zipSuccess && file_exists($filename)) ? @file_get_contents($filename) : '';
+		
 		return $data;
+	}
+	
+	function getFiles($folder,$jname) 
+	{
+		$filesArray = array();
+		$files = JFolder::files($folder,null,false,true);
+		foreach($files as $file)
+        {
+        	$file = str_replace(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$jname.DS,'',$file);
+            $data = JFile::read($file);
+            $filesArray[] = array('name' => $file, 'data' => $data);
+        }
+        $folders = JFolder::folders($folder,null,false,true);
+        if(!empty($folders)){
+        	foreach($folders as $f) {
+        		$filesArray = array_merge($filesArray,$this->getFiles($f,$jname));
+        	}
+        }
+        
+        return $filesArray;
 	}
 }
