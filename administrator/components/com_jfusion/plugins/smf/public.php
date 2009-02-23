@@ -83,6 +83,13 @@ class JFusionPublic_smf extends JFusionPublic{
 		if (!$rs) {
 			JError::raiseWarning(500, 'Could not find SMF in the specified directory');
 		}
+
+		if ( preg_match('#<\?xml(.*?)\?>#si', $buffer) ){
+        	die($buffer);
+		}
+
+		$document = JFactory::getDocument();
+		$document->addScript(JURI::base().DS.'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'smf'.DS.'js'.DS.'script.js');
 		return $buffer;
 	}
 
@@ -114,8 +121,11 @@ class JFusionPublic_smf extends JFusionPublic{
 		$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
 
 		//todo: Fix quickreply ( Quote )
+//		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
+//		$replace_body[]	= '<a $1>';
+
 		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
-		$replace_body[]	= '<a $1>';
+		$replace_body[]	= '<a $1 onclick="jfusion_doQuote$2>';
 
 		$buffer = preg_replace($regex_body, $replace_body, $buffer);
 	}
@@ -162,6 +172,8 @@ class JFusionPublic_smf extends JFusionPublic{
 	 ***********************************************/
  	function cleanUpSearchText($text)
 	{
+		//remove phpbb's bbcode uids
+		$text = preg_replace("#\[(.*?):(.*?)]#si","[$1]",$text);
 		$text = JFusionFunction::parseCode($text,'html');
 		return $text;
 	}
@@ -198,3 +210,13 @@ class JFusionPublic_smf extends JFusionPublic{
 		return $forum->getPostURL($post->ID_TOPIC,$post->ID_MSG);
 	}
 }
+
+
+
+
+
+
+
+
+
+
