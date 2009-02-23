@@ -60,7 +60,13 @@ defined('_JEXEC') or die('Restricted access');
 
         // Check if we found something
         if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
-            JError::raiseWarning(500, JText::_('NO_HTML'));
+            if(!empty($buffer)){
+	   			//non html output, return without parsing
+	   			die($buffer);
+			} else {
+				//no output returned
+   			    JError::raiseWarning(500, JText::_('NO_HTML'));
+			}
         } else {
 			// Add the header information
             if (isset($data[1]) ) {
