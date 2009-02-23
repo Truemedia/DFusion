@@ -103,11 +103,11 @@ class jfusionViewitemidselect extends JView
 						?>
 					</td>
 					<td>
-						<?php 
+						<?php
 						//get the integration method
-						echo $params->get('visual_integration'); 
+						echo $params->get('visual_integration');
 						?>
-					</td>					
+					</td>
 				</tr>
 				<?php
 			}
@@ -115,5 +115,50 @@ class jfusionViewitemidselect extends JView
 			</tbody>
 			</table>
 		<?php
+			//get a list of direct links for jfusion plugins
+			$db = & JFactory::getDBO();
+        	$query = 'SELECT * from #__jfusion WHERE status = 1';
+	        $db->setQuery($query);
+    	    $rows = $db->loadObjectList();
+
+		?>
+			<table class="adminlist" cellspacing="1">
+			<thead>
+				<tr>
+					<th width="10">
+						<?php echo JText::_( 'NAME' ); ?>
+					</th>
+					<th class="title">
+						<?php echo JText::_( 'DESCRIPTION' ); ?>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php
+
+			$row_count = 0;
+			foreach ($rows as $row) {
+				echo '<tr class="row' . $row_count .'">';
+				if ($row_count == 1){
+					$row_count = 0;
+				}	else {
+				$row_count = 1;
+				}
+
+				?>
+				<tr class="<?php echo "row$row_count"; ?>">
+					<td>
+						<a style="cursor: pointer;" onclick="window.parent.jSelectItemid('<?php echo $row->name; ?>');">
+							<?php echo htmlspecialchars($row->name, ENT_QUOTES, 'UTF-8'); ?></a>
+					</td>
+					<td>
+						<?php
+    	    $JFusionParam = JFusionFactory::getParams($row->name);
+			$description = $JFusionParam->get('description');
+						 echo $row->description; ?>
+					</td>
+				</tr> <?php
+
+
 	}
 }

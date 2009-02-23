@@ -93,11 +93,20 @@ class JFusionAdmin{
     function checkConfig($jname)
     {
 
-		//internal Joomla plugin is always properly configured
+		//for joomla_int check to see if params are set
 		if ($jname == 'joomla_int') {
-            $status['config'] = 1;
-			$status['message'] = JText::_('GOOD_CONFIG');
-            return $status;
+			$params = JFusionFactory::getParams($jname);
+			$sefmode = $params->get('sefmode');
+			if(empty($sefmode)){
+	            $status['config'] = 0;
+				$status['message'] = JText::_('NOT_CONFIGURED');
+        	    return $status;
+			} else {
+	            $status['config'] = 1;
+				$status['message'] = JText::_('GOOD_CONFIG');
+        	    return $status;
+			}
+
         }
 
         $db = JFusionFactory::getDatabase($jname);
