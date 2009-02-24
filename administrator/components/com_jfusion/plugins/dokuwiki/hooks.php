@@ -25,31 +25,11 @@ class JFusionDokuWikiHook
   }
 
   function _ACTION_SHOW_REDIRECT(&$event, $param) {
-	$share = Dokuwiki::getInstance();
-	$conf = $share->getConf();
-
-	$uri = new JURI();
-	if ( JRequest::getVar('Itemid') ) $uri->setVar('Itemid', JRequest::getVar('Itemid'));
-	if ( JRequest::getVar('option') ) $uri->setVar('option', JRequest::getVar('option'));
-	if ( JRequest::getVar('jname') ) $uri->setVar('jname', JRequest::getVar('jname'));
-	if ( JRequest::getVar('view') ) $uri->setVar('view', JRequest::getVar('view'));
-
-	$url = rtrim( JURI::base(), '/');
-	if ( $conf['userewrite'] ) {
-		$url .= JRoute::_('index.php?'.$uri->getQuery());
-		if ( $event->data['id'] ) $url .= $event->data['id'];
-	} else {
-		if ( $event->data['id'] ) $uri->setVar('id', $event->data['id']);
-		$url .= JRoute::_('index.php?'.$uri->getQuery());
-	}
-	header('Location: '.$url);
-	exit();
+	header('Location: '. JFusionFunction::routeURL('doku.php?id='.$event->data['id'].'&do='.$event->data['preact'], JRequest::getVar('Itemid') ) );
   }
 
   function _ACTION_ACT_PREPROCESS(&$event, $param) {
-  	$do = JRequest::getVar('do');
-  	$page = JRequest::getVar('page');
-  	if ( $do == 'admin' && $page == 'config') ini_set("session.save_handler", "files");
+	ini_set("session.save_handler", "files");
   }
 
   function _DOKUWIKI_STARTED(&$event, $param) {
