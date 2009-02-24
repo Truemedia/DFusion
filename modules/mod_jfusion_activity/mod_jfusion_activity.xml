@@ -34,7 +34,7 @@
 			description="" />
 
 		<param name="JFusionPluginParam" type="JFusionAdvancedParam" default=""
-			label="JFUSION_PLUGIN" configfile="2" multiselect="true"
+			label="JFUSION_PLUGIN" configfile="2"
 			description="JFUSION_PLUGIN_DESCR" />
 
 		<param name="@spacer" type="spacer" default="" label=""

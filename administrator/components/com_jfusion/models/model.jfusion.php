@@ -452,6 +452,11 @@ class JFusionFunction{
     function createJoomlaArticleURL(&$contentitem,$text)
     {
     	require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
+    	
+    	//we need item id so we can reset it
+    	$origItemid = JRequest::getVar('Itemid');
+    	
+    	//find the itemid of the content item
 		$needles = array(
 			'article'  => (int) $contentitem->id,
 			'category' => (int) $contentitem->catid,
@@ -464,8 +469,14 @@ class JFusionFunction{
 
 		$link = JRoute::_(JURI::base().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid);
 		$link = "<a href='$link'>$text</a>";
+		
+		//set the original back
+		global $Itemid;
+		$Itemid = $origItemid;
+
 		return $link;
     }
+    
 
     /**
      * Pasrses text from bbcode to html or html to bbcode

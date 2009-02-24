@@ -103,8 +103,8 @@ class modjfusionWhosOnlineHelper {
                    
                         //put it all together for output
                         $output .= '<li>'. $avatar . ' <b>'.$user.'</b></li>';
-						$output .= "</ul>";
 		            }
+		            $output .= "</ul>";
 				}
 				
 				return $output;

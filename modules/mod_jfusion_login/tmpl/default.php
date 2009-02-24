@@ -14,13 +14,16 @@ defined('_JEXEC') or die('Restricted access'); ?>
 <form action="index.php" method="post" name="login" id="form-login">
 
 <?php if(!empty($avatar)) :
-$size = getimagesize($avatar);
+$size = @getimagesize($avatar);
 $w = $size[0];
 $h = $size[1];
 if($size[0]>60) {
 	$scale = min(60/$w, 80/$h);
 	$w = floor($scale*$w);
 	$h = floor($scale*$h);
+} else {
+	$w = 60;
+	$h = 80;
 }
 ?>
 	<div align="center"><img src="<?php echo $avatar; ?>" height="<?php echo $h; ?>" width="<?php echo $w; ?>" alt="<?php echo $user->get('name'); ?>" /></div>

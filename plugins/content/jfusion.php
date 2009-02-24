@@ -104,10 +104,10 @@ class plgContentJfusion extends JPlugin
 				    		//get the updated thread info
 				    		$existingthread = $existingthread = $this->getThread($contentitem->id, $jname);		
 				    	}
+				    	
+				    	$content = $this->getContent($contentitem, $existingthread, $jname);
+						$contentitem->text .= $content;
 					}
-									
-					$content = $this->getContent($contentitem, $existingthread, $jname);
-					$contentitem->text .= $content;
 				}			
 		    } 
 		    
@@ -327,7 +327,7 @@ class plgContentJfusion extends JPlugin
 	
 			$categories =& $this->params->get("exclude_categories");
 			$excludeCategories = empty($categories) ? false : explode(",",$categories);
-	
+
 			//section and category id of content
 			$secid =& $contentitem->sectionid;
 			$catid =& $contentitem->catid;
@@ -351,15 +351,15 @@ class plgContentJfusion extends JPlugin
 			} elseif($includeCategories) {
 				//there are category stipulations on what articles to include but no section stipulations
 		        //check to see if this article is not in the selected categories
-				if(!in_array($catid,$includeCategories)) $generate = false;
+				$generate = (!in_array($catid,$includeCategories)) ? false : true;
 			} elseif($excludeSections) {
 			    //there are section stipulations on what articles to exclude
 				//check to see if this article is in the excluded sections
-				if(in_array($secid,$excludeSections)) $generate = false;
+				$generate = (in_array($secid,$excludeSections)) ? false : true;
 			} elseif($excludeCategories) {
 				//there are category stipulations on what articles to exclude but no exclude stipulations on section
 				//check to see if this article is in the excluded categories
-				if(in_array($catid,$excludeCategories)) $generate = false;
+				$generate = (in_array($catid,$excludeCategories)) ? false : true;
 			} elseif($forumid!==false) {
 				$generate = true;
 			} else {

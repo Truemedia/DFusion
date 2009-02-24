@@ -592,7 +592,7 @@ class JFusionForum_phpbb3 extends JFusionForum
                 }
     	            
 				if($avatarSrc) {
-					$size = getimagesize($avatar);
+					$size = @getimagesize($avatar);
 					$w = $size[0];
 					$h = $size[1];
 					if($size[0]>60) {

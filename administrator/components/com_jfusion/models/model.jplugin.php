@@ -226,7 +226,7 @@ class JFusionJplugin{
         $db = & JFusionFactory::getDatabase($jname);
 
 		//decide what can be used as a login credential
-		$login_identifier = $params->get('login_identifier');
+		$login_identifier = $params->get('login_identifier',1);
 		if ($login_identifier == 1){
 			$identifier_type = 'b.username';
 //			$identifier = $this->filterUsername($identifier);
