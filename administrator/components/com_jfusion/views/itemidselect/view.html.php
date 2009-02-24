@@ -71,7 +71,9 @@ class jfusionViewitemidselect extends JView
         $db->setQuery($query);
         $rows = $db->loadObjectList();
 
-
+		//get the element id to update after selecting a menu item
+		$elId = JRequest::getVar('elId'); 
+        
         $row_count = 0;
         foreach($rows as $row) {
             echo '<tr class="row' . $row_count .'">';
@@ -84,7 +86,7 @@ class jfusionViewitemidselect extends JView
             ?>
             <tr class="<?php echo "row$row_count"; ?>">
             <td>
-            <a style="cursor: pointer;" onclick="window.parent.jSelectItemid('<?php echo $row->id; ?>');">
+            <a style="cursor: pointer;" onclick="window.parent.jSelectItemid('<?php echo $row->id; ?>',<?php echo  $elId; ?>);">
             <?php echo htmlspecialchars($row->id, ENT_QUOTES, 'UTF-8');
             ?></a>
             </td>
