@@ -10,6 +10,8 @@
  * Class that handles password encryption for phpBB3
  * @package JFusion_phpBB3
  */
+if (!class_exists('PasswordHash')) {
+
 class PasswordHash {
    var $itoa64;
    var $iteration_count_log2;
@@ -230,5 +232,4 @@ class PasswordHash {
       return $hash == $stored_hash;
    }
 }
-
-?>
+}

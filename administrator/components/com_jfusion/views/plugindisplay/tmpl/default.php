@@ -72,13 +72,13 @@ radioObj[i].checked = true;
 <th class="title" align="center"><?php echo JText::_('DEFAULT_USERGROUP'); ?></th>
 </tr></thead><tbody>
 
-<?php 
+<?php
 $masterSet = false;
 $row_count = 0;
 foreach ($this->rows as $record) {
 if($record->master=='1') {
 	$masterSet = true;
-}	
+}
 
 echo '<tr class="row' . $row_count .'">';
 if ($row_count == 1){
@@ -132,7 +132,7 @@ if($description){
 
 <?php //check to see if module is a master
 if ($disabled==1 && ($record->master =='1' || $record->master == '0')) {  ?>
-	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>
 <?php } elseif ($record->master =='1') {?>
 <td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'master'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Plugin"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->master =='0') { ?>
@@ -143,7 +143,7 @@ if ($disabled==1 && ($record->master =='1' || $record->master == '0')) {  ?>
 
 //check to see if module is s slave
 if ($disabled==1 && ($record->slave =='1' || $record->slave == '0')) {  ?>
-	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>
 <?php } elseif ($record->slave =='1') { ?>
 <td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'slave'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Plugin"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->slave =='0') { ?>
@@ -154,7 +154,7 @@ if ($disabled==1 && ($record->slave =='1' || $record->slave == '0')) {  ?>
 
 //check to see if password encryption is enabled
 if ($disabled==1 && ($record->check_encryption =='1' || $record->check_encryption == '0')) { ?>
-	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>
 <?php } elseif ($record->check_encryption == '1') { ?>
 <td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'check_encryption'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Encryption"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->check_encryption == '0') { ?>
@@ -165,7 +165,7 @@ if ($disabled==1 && ($record->check_encryption =='1' || $record->check_encryptio
 
 //check to see if dual login is enabled
 if ($disabled==1 && ($record->dual_login =='1' || $record->dual_login == '0')) { ?>
-	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>	
+	<td><img src="<?php echo $images; ?>cross_dim.png" border="0" alt="Wrong Config" /></td>
 <?php } elseif ($record->dual_login =='1') { ?>
 <td><a href="javascript:void(0);" onclick="setCheckedValue(document.adminForm.jname, '<?php echo $record->name; ?>'); document.adminForm.field_name.value = 'dual_login'; document.adminForm.field_value.value = '0';submitbutton('changesetting')" title="Disable Dual Login"><img src="<?php echo $images; ?>tick.png" border="0" alt="Enabled" /></a></td>
 <?php } elseif ($record->dual_login =='0') { ?>
@@ -195,14 +195,8 @@ echo '<td><img src="'.$images.'tick.png" border="0" alt="Enabled" />' . JText::_
 echo '<td><img src="'.$images.'cross.png" border="0" alt="Disabled" />' .JText::_('DISABLED') . '</td>';
 }
 
-//output a warning to the administrator if the allowRegistration setting is wrong
-if ($new_registration && $record->slave == '1'){
-   JError::raiseWarning(0, $record->name . ' ' . JText::_('DISABLE_REGISTRATION'));
-}
-
-if (!$new_registration && $record->master == '1'){
-   JError::raiseWarning(0, $record->name . ' ' . JText::_('ENABLE_REGISTRATION'));
-}
+//output detailed configuration warnings for the plugin
+$JFusionPlugin->debugConfig($record->name);
 
 //display the default usergroup
 $usergroup = $JFusionPlugin->getDefaultUsergroup();
