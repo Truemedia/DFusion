@@ -209,14 +209,41 @@ class JFusionPublic_smf extends JFusionPublic{
 		$forum = JFusionFactory::getForum($this->getJname());
 		return $forum->getPostURL($post->ID_TOPIC,$post->ID_MSG);
 	}
+
+   /************************************************
+	 * Functions For JFusion Who's Online Module
+	 ***********************************************/
+
+	/**
+	 * Returns a query to find online users
+	 * Make sure the columns are in this order: userid, username, name (of user)
+	 */
+	function getOnlineUserQuery()
+	{
+		return "SELECT DISTINCT u.ID_MEMBER, u.memberName AS username, u.realName AS name FROM #__members AS u INNER JOIN #__log_online AS s ON u.ID_MEMBER = s.ID_MEMBER WHERE s.ID_MEMBER != 0";
+	}
+
+	/**
+	 * Returns number of guests
+	 * @return int
+	 */
+	function getNumberOnlineGuests()
+	{
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) FROM #__log_online WHERE ID_MEMBER = 0";
+		$db->setQuery($query);
+		return $db->loadResult();
+	}
+
+	/**
+	 * Returns number of logged in users
+	 * @return int
+	 */
+	function getNumberOnlineMembers()
+	{
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT COUNT(*) FROM #__log_online WHERE ID_MEMBER != 0";
+		$db->setQuery($query);
+		return $db->loadResult();
+	}
 }
-
-
-
-
-
-
-
-
-
-
