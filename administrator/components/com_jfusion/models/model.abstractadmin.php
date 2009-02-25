@@ -169,10 +169,29 @@ class JFusionAdmin{
 
 		//output a warning to the administrator if the allowRegistration setting is wrong
 		if ($new_registration && $plugin->slave == '1'){
-   			JError::raiseNotice(0, $jname . ' ' . JText::_('DISABLE_REGISTRATION'));
+   			JError::raiseNotice(0, $jname . ': ' . JText::_('DISABLE_REGISTRATION'));
 		}
 		if (!$new_registration && $plugin->master == '1'){
-   			JError::raiseNotice(0, $jname->name . ' ' . JText::_('ENABLE_REGISTRATION'));
+   			JError::raiseNotice(0, $jname . ': ' . JText::_('ENABLE_REGISTRATION'));
+		}
+
+  		//most dual login problems are due to incorrect cookie domain settings
+		//therefore we should check it and output a warning if needed.
+		$params = JFusionFactory::getParams($this->getJname());
+		$cookie_domain = $params->get('cookie_domain');
+		$correct_array = explode('.' , html_entity_decode($_SERVER['SERVER_NAME']));
+		if(isset($correct_array[count($correct_array)-2]) && isset($correct_array[count($correct_array)-1])){
+			$correct_domain = '.' . $correct_array[count($correct_array)-2] . '.' .$correct_array[count($correct_array) -1];
+			if ($correct_domain != $cookie_domain){
+	   			JError::raiseNotice(0, $jname . ': ' . JText::_('BEST_COOKIE_DOMAIN') . ' ' . $correct_domain);
+			}
+		}
+
+		//also check the cookie path as it can intefere with frameless
+		$params = JFusionFactory::getParams($this->getJname());
+		$cookie_path = $params->get('cookie_path');
+		if ($correct_domain != $cookie_domain){
+	   		JError::raiseNotice(0, $jname . ': ' . JText::_('BEST_COOKIE_PATH') . ' /');
 		}
     }
 }

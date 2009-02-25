@@ -190,7 +190,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
             return $result;
         }
     }
-    
+
     function installFramelessHook()
     {
     	$js  = "<script language=\"javascript\" type=\"text/javascript\">\n";
@@ -201,7 +201,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$js .= "alert('".JText::_('VB_REDIRECT_HOOK_ITEMID_EMPTY')."');\n";
 		$js .= "return false;\n";
 		$js .= "}\n";
-		$js .= "alert('".JText::_('VB_PLUGIN_CHANGE_ALERT')."');\n";		
+		$js .= "alert('".JText::_('VB_PLUGIN_CHANGE_ALERT')."');\n";
 		$js .= "form.customcommand.value = action;\n";
 		$js .= "form.action.value = 'apply';\n";
 		$js .= "submitform('saveconfig')\n";
@@ -209,16 +209,16 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$js .= "}\n";
 		$js .= "//-->\n";
 		$js .= "</script>\n";
-		
+
 		$document =& JFactory::getDocument();
 		$document->addCustomTag($js);
-		
+
 		$db =& JFusionFactory::getDatabase($this->getJname());
 		if(!JError::isError($db) && !empty($db)) {
 			$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin' AND active = 1";
 			$db->setQuery($query);
 			$check = ($db->loadResult() > 0) ? true : false;
-			
+
 	    	if ($check){
 				//return success
 				$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_FRAMELESS_HOOK') . ' ' . JText::_('ENABLED');
@@ -234,13 +234,13 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		}
     }
 
-  	function enable_frameless() 
+  	function enable_frameless()
    	{
     	$db =& JFusionFactory::getDatabase($this->getJname());
 		$query = "SELECT active FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin'";
 		$db->setQuery($query);
 		$active = $db->loadResult();
-		
+
 		//remove and recreate the hook for easy upgrade purposes
 		if($active=='0' || $active == '1') {
 			$query = "DELETE FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin'";
@@ -248,11 +248,11 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			if (!$db->query()) {
 				JError::raiseWarning(500,$db->stderr());
 			}
-		} 
+		}
 		$php = $this->getHookPHP('frameless');
-		$query = "INSERT INTO #__plugin SET 
-			title = 'JFusion Frameless Integration Plugin', 
-			hookname = 'init_startup', 
+		$query = "INSERT INTO #__plugin SET
+			title = 'JFusion Frameless Integration Plugin',
+			hookname = 'init_startup',
 			phpcode = ".$db->Quote($php).",
 			product = 'vbulletin',
 			active = 1,
@@ -260,9 +260,9 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$db->setQuery($query);
 		if (!$db->query()) {
 			JError::raiseWarning(500,$db->stderr());
-		}	   	
-   	}		
-    
+		}
+   	}
+
    	function disable_frameless()
     {
     	$db =& JFusionFactory::getDatabase($this->getJname());
@@ -271,8 +271,8 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		if (!$db->query()) {
 			JError::raiseWarning(500,$db->stderr());
 		}
-    }		    
-    
+    }
+
     function installDualLoginHook()
     {
 		$db =& JFusionFactory::getDatabase($this->getJname());
@@ -280,12 +280,12 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Dual Login Plugin' AND active = 1";
 			$db->setQuery($query);
 			$check = ($db->loadResult() > 0) ? true : false;
-	
+
 			//make sure the vb auth plugin is installed and published
 			if($check===true) {
-				$check = (JPluginHelper::getPlugin('authentication','jfusionvbulletin')) ? true : false;	
-			} 
-				
+				$check = (JPluginHelper::getPlugin('authentication','jfusionvbulletin')) ? true : false;
+			}
+
 	        if ($check){
 				//return success
 				$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_DUALLOGIN_HOOK') . ' ' . JText::_('ENABLED');
@@ -298,7 +298,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			}
 		} else {
 			return JText::_('VB_CONFIG_FIRST');
-		}  	
+		}
     }
 
     function enable_duallogin()
@@ -307,20 +307,20 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$query = "SELECT active FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Dual Login Plugin'";
 		$db->setQuery($query);
 		$active = $db->loadResult();
-		
+
 		//remove and recreate the hook for easy upgrade purposes
 		if($active=='0' || $active == '1') {
 			$query = "DELETE FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Dual Login Plugin'";
 			$db->setQuery($query);
 			if (!$db->query()) {
 				JError::raiseWarning(500,$db->stderr());
-			}	   	
+			}
 		}
-		
+
 		$php = $this->getHookPHP('duallogin');
-		$query = "INSERT INTO #__plugin SET 
-			title = 'JFusion Dual Login Plugin', 
-			hookname = 'init_startup', 
+		$query = "INSERT INTO #__plugin SET
+			title = 'JFusion Dual Login Plugin',
+			hookname = 'init_startup',
 			phpcode = ".$db->Quote($php).",
 			product = 'vbulletin',
 			active = 1,
@@ -328,13 +328,13 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$db->setQuery($query);
 		if (!$db->query()) {
 			JError::raiseWarning(500,$db->stderr());
-		}  
+		}
 
 		jimport('joomla.installer.helper');
 		jimport('joomla.installer.installer');
     	$config =& JFactory::getConfig();
 		$url = 'http://jfusion.googlecode.com/svn/trunk/side_projects/vbulletin/plg_auth_jfusionvbulletin.zip';
-		$filename = JInstallerHelper::downloadPackage($url);			
+		$filename = JInstallerHelper::downloadPackage($url);
 		$filename = $config->getValue('config.tmp_path').DS.$filename;
 		$package = JInstallerHelper::unpack($filename);
 		$tmpInstaller = new JInstaller();
@@ -347,7 +347,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		}
 		unset ($package, $tmpInstaller,$filename);
     }
-    		
+
     function disable_duallogin()
     {
     	$db =& JFusionFactory::getDatabase($this->getJname());
@@ -355,17 +355,17 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$db->setQuery($query);
 		if (!$db->query()) {
 			JError::raiseWarning(500,$db->stderr());
-		}   	
+		}
     }
-        
+
     function installRedirectHook()
     {
     	$db =& JFusionFactory::getDatabase($this->getJname());
-    	if(!JError::isError($db) && !empty($db)) {    	
+    	if(!JError::isError($db) && !empty($db)) {
 			$query = "SELECT COUNT(*) FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Redirect Plugin' AND active = 1";
 			$db->setQuery($query);
 			$check = ($db->loadResult() > 0) ? true : false;
-	
+
 			if ($check){
 				//return success
 				$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('VB_REDIRECT_HOOK') . ' ' . JText::_('ENABLED');
@@ -378,16 +378,16 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			}
     	} else {
 			return JText::_('VB_CONFIG_FIRST');
-		}	
+		}
     }
-    
+
     function enable_redirect()
     {
 		$db =& JFusionFactory::getDatabase($this->getJname());
 		$query = "SELECT active FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Redirect Plugin'";
 		$db->setQuery($query);
 		$active = $db->loadResult();
-		
+
 		//remove and recreate the hook for easy upgrade purposes
 		if($active=='0' || $active == '1') {
 			$query = "DELETE FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Redirect Plugin'";
@@ -395,30 +395,30 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			if (!$db->query()) {
 				JError::raiseWarning(500,$db->stderr());
 			}
-		} 
-		
+		}
+
   		$params = JRequest::getVar('params');
    		$itemid = $params['itemid_redirect'];
-		
+
    		if(!empty($itemid))
    		{
    			$php = $this->getHookPHP('redirect',$itemid);
-			$query = "INSERT INTO #__plugin SET 
-				title = 'JFusion Redirect Plugin', 
-				hookname = 'init_startup', 
+			$query = "INSERT INTO #__plugin SET
+				title = 'JFusion Redirect Plugin',
+				hookname = 'init_startup',
 				phpcode = ".$db->Quote($php).",
 				product = 'vbulletin',
 				active = 1,
 				executionorder = 5";
 			$db->setQuery($query);
 			if (!$db->query()) {
-				JError::raiseWarning(500,$db->stderr());   	
+				JError::raiseWarning(500,$db->stderr());
 			}
    		} else {
 			JError::raiseWarning(500,JText::_('VB_REDIRECT_HOOK_ITEMID_EMPTY'));
-   		}   		
+   		}
     }
-    
+
     function disable_redirect()
     {
     	$db =& JFusionFactory::getDatabase($this->getJname());
@@ -428,7 +428,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			JError::raiseWarning(500,$db->stderr());
 		}
     }
-    
+
     function getHookPHP($plugin, $itemid = false)
     {
     	if($plugin=="frameless") {
@@ -442,23 +442,43 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			$menu = $JMenu->getInstance('site');
     		$params =& $menu->getParams($itemid);
     		$mode = $params->get('visual_integration','frameless');
-    		
+
     		$url = str_replace('/administrator','',JURI::base());
     		$php .= "define('BASEURL','{$url}index.php?option=com_jfusion&Itemid=$itemid');\n";
     		$php .= "define('INTEGRATION_MODE','$mode');\n";
-    	} 
-    	
+    	}
+
     	$hookPath = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php';
-    	
+
 		$php .= "define('HOOK_FILE','$hookPath');\n";
     	$php .= "include_once(HOOK_FILE);\n";
      	$php .=	"\$val = '$plugin';\n";
      	$php .= "\$JFusionHook = new executeJFusionHook('init_startup',\$val);\n";
-		
+
      	if($plugin!="duallogin") {
      		$php .= "}";
      	}
-		
+
 		return $php;
+    }
+    function debugConfig($jname)
+    {
+    	//get registration status
+		$JFusionPlugin = JFusionFactory::getAdmin($jname);
+		$new_registration  = $JFusionPlugin->allowRegistration();
+
+        //get the data about the JFusion plugins
+        $db = & JFactory::getDBO();
+        $query = 'SELECT * from #__jfusion WHERE name = ' . $db->Quote($jname);
+        $db->setQuery($query );
+        $plugin = $db->loadObject();
+
+		//output a warning to the administrator if the allowRegistration setting is wrong
+		if ($new_registration && $plugin->slave == '1'){
+   			JError::raiseNotice(0, $jname . ': ' . JText::_('DISABLE_REGISTRATION'));
+		}
+		if (!$new_registration && $plugin->master == '1'){
+   			JError::raiseNotice(0, $jname . ': ' . JText::_('ENABLE_REGISTRATION'));
+		}
     }
 }
