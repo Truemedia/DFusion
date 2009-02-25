@@ -403,11 +403,7 @@ class JFusionJplugin{
 			}
 
 			//delete old entries in the #__jfusion_users_plugin table
-			$query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $existinguser->userid;
-			$db->setQuery($query);
-			if (!$db->query()) {
-				$status['error'][] = JText::_('USERNAME_UPDATE_ERROR'). ': ' . $db->stderr();
-			}
+			JFusionFunction::updateLookup($userinfo, $existinguser->userid, $jname);
 
 			//add a new entry in the #__jfusion_users table to allow login with the new username
 			$query = 'INSERT INTO #__jfusion_users (id, username) VALUES (' . $existinguser->userid . ',' . $db->Quote($userinfo->username) . ')';

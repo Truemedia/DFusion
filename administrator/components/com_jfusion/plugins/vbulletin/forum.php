@@ -373,29 +373,29 @@ class JFusionForum_vbulletin extends JFusionForum
 
 			//avatar
 			if($showavatar){
-				if(empty($avatar_software) || $avatar_software=='jfusion') {
+                if(empty($avatar_software) || $avatar_software=='jfusion') {
 					$avatarSrc = $this->getAvatar($p->userid);
-				} else {
-    	         	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->userid,true);
+                } else {
+                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->userid,true);
+                }
+    	           
+				if(empty($avatarSrc)) {
+					$avatarSrc = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 				}
 				
-				if($avatarSrc) {
-					$size = @getimagesize($avatar);
-					$w = $size[0];
-					$h = $size[1];
-					if($size[0]>60) {
-						$scale = min(60/$w, 80/$h);
-						$w = floor($scale*$w);
-						$h = floor($scale*$h);
-					} else {
-						$w = 60;
-						$h = 80;
-					}
-					
-					$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";
+				$size = @getimagesize($avatarSrc);
+				$w = $size[0];
+				$h = $size[1];
+				if($size[0]>60) {
+					$scale = min(60/$w, 80/$h);
+					$w = floor($scale*$w);
+					$h = floor($scale*$h);
 				} else {
-					$avatar = "";
+					$w = 60;
+					$h = 80;
 				}
+			
+				$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";			
 			} else {
 				$avatar = "";
 			}
@@ -413,7 +413,7 @@ class JFusionForum_vbulletin extends JFusionForum
 					if(!empty($link_software) && $link_software != 'jfusion' && $link_software!='custom') {
 						$user_url = JFusionFunction::getAltProfileURL($link_software,$p->username);
 					} elseif ($link_software=='custom' && !empty($userlink_custom)) {
-						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->userid,false);
+						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->userid,false, $p->username);
 						$user_url =  $userlink_custom.$userlookup->id;
 					} else {
 						$user_url = false;

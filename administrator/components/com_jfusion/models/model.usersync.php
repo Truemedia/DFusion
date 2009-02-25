@@ -91,6 +91,7 @@ class JFusionUsersync{
 			        debug::show($status['debug'], $syncdata['errors'][$id]['user']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 				} else {
 			        debug::show($status['debug'], $syncdata['errors'][$id]['user']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
+			        JFusionFunction::updateLookup($syncdata['errors'][$id]['conflict']['userinfo'], 0, $syncdata['errors'][$id]['user']['jname']);
 				}
 
 			} elseif ($error['action'] == '2') {
@@ -105,6 +106,7 @@ class JFusionUsersync{
 			        debug::show($status['debug'], $syncdata['errors'][$id]['conflict']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
 				} else {
 			        debug::show($status['debug'], $syncdata['errors'][$id]['conflict']['jname'].' ' .JText::_('USER')  .' ' .JText::_('UPDATE').' ' .JText::_('DEBUG'), 0);
+			        JFusionFunction::updateLookup($syncdata['errors'][$id]['user']['userinfo'], 0, $syncdata['errors'][$id]['user']['jname']);
 				}
 
 			} elseif ($error['action'] == '3') {
@@ -121,8 +123,8 @@ class JFusionUsersync{
 				} else {
 					//delete success
 					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' . $error['master_jname'] . ' ' . JText::_('USER') . ' ' . $error['master_username'] . '<br/>';
+					JFusionFunction::updateLookup($userinfo, 0, $error['master_jname'],true);
 				}
-
 			} elseif ($error['action'] == '4') {
 				//delete the slave user
 
@@ -137,6 +139,7 @@ class JFusionUsersync{
 				} else {
 					//delete success
 					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' . $error['slave_jname'] . ' ' . JText::_('USER') . ' ' . $error['slave_username'] . '<br/>';
+					JFusionFunction::updateLookup($userinfo, 0, $error['slave_jname'],true);
 				}
 			}
 		}
@@ -214,6 +217,9 @@ class JFusionUsersync{
                                 $syncdata['slave_data'][$i]['updated'] += 1;
                             }
                             $syncdata['slave_data'][$i]['total'] -= 1;
+                            
+                            //update the lookup table
+                            JFusionFunction::updateLookup($userinfo,0,$jname);
                         }
                         //update the database
                         JFusionUsersync::updateSyncdata($syncdata);

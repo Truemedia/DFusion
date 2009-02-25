@@ -590,20 +590,24 @@ class JFusionForum_phpbb3 extends JFusionForum
                 } else {
                 	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->user_id,true);
                 }
-    	            
-				if($avatarSrc) {
-					$size = @getimagesize($avatar);
-					$w = $size[0];
-					$h = $size[1];
-					if($size[0]>60) {
-						$scale = min(60/$w, 80/$h);
-						$w = floor($scale*$w);
-						$h = floor($scale*$h);
-					}
-					$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";
-				} else {
-					$avatar = "";
+    	           
+				if(empty($avatarSrc)) {
+					$avatarSrc = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 				}
+				
+				$size = @getimagesize($avatarSrc);
+				$w = $size[0];
+				$h = $size[1];
+				if($size[0]>60) {
+					$scale = min(60/$w, 80/$h);
+					$w = floor($scale*$w);
+					$h = floor($scale*$h);
+				} else {
+					$w = 60;
+					$h = 80;
+				}
+			
+				$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";			
 			} else {
 				$avatar = "";
 			}
@@ -620,7 +624,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 					if(!empty($link_software) && $link_software != 'jfusion' && $link_software!='custom') {
 						$user_url = JFusionFunction::getAltProfileURL($link_software,$p->username);
 					} elseif ($link_software=='custom' && !empty($userlink_custom)) {
-						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->user_id,false);
+						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->user_id,false,$p->username);
 						$user_url = $userlink_custom.$userlookup->id;
 						
 					} else {

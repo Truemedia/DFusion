@@ -75,6 +75,10 @@ if (file_exists($model_file) && file_exists($factory_file)) {
                 } else {
                     $avatar = JFusionFunction::getAltAvatar($avatarSrc, $user->get('id'));
                 }
+               
+                if(empty($avatar)) {
+					$avatar = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
+				}	
             }
 
             if ($params->get('pmcount') && $PluginName!='joomla_ext') {
@@ -83,7 +87,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
             } else {
             	$pmcount = false;
             }
-
+            
             if ($params->get('viewnewmessages') && $PluginName!='joomla_ext') {
                 $url_viewnewmessages = JFusionFunction::routeURL($JFusionPlugin->getViewNewMessagesURL(), $link_itemid);
             } else {
@@ -98,7 +102,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
             if ($avatarSrc!='jfusion') {
                 $avatar = JFusionFunction::getAltAvatar($avatarSrc, $user->get('id'));
             } else {
-                $avatar = false;
+                $avatar = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";;
             }
         } else {
             $avatar = false;

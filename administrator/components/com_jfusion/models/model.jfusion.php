@@ -244,24 +244,68 @@ class JFusionFunction{
     /**
 * Updates the JFusion user lookup table during login
 * @param object $userinfo object containing the userdata
-* @param string $jname name of the JFusion plugin used
 * @param string $joomla_id The Joomla ID of the user
+* @param string $jname name of the JFusion plugin used
+* @param boolean $delete deletes an entry from the table
 */
 
-    function updateLookup($userinfo, $jname, $joomla_id)
-    {
+    function updateLookup($userinfo, $joomla_id, $jname = '', $delete = false)
+    {	
+    	$db =& JFactory::getDBO();
+    	
+ 		//check to see if we have been given a joomla id
+ 		if($joomla_id==0) {
+ 			$query = "SELECT id FROM #__users WHERE username = ".$db->Quote($userinfo->username);
+ 			$db->setQuery($query);
+ 			$joomla_id = $db->loadResult();
+ 			if(empty($joomla_id)) {
+ 				return;
+ 			}
+ 		}
 
-        $db =& JFactory::getDBO();
-        //prepare the variables
-        $lookup = new stdClass;
-        $lookup->userid = $userinfo->userid;
-        $lookup->username = $userinfo->username;
-        $lookup->jname = $jname;
-        $lookup->id = $joomla_id;
-
-
-        //insert the entry into the lookup table
-        $db->insertObject('#__jfusion_users_plugin', $lookup, 'autoid' );
+ 		if(empty($jname)) {
+ 			$queries = array();
+ 			//we need to update each master/slave
+ 			$query = "SELECT name FROM #__jfusion WHERE master = 1 OR slave = 1";
+ 			$db->setQuery($query);
+ 			$jnames = $db->loadObjectList();
+ 			
+ 			foreach($jnames as $jname) {
+ 				$user =& JFusionFactory::getUser($jname->name);
+ 				$puserinfo = $user->getUser($userinfo->username);
+ 				
+ 				if($delete) {
+ 					$queries[] = "(id = $joomla_id AND jname = '{$jname->name}')";
+ 				} else {
+ 					$queries[] = "({$puserinfo->userid},'{$puserinfo->username}', $joomla_id, '{$jname->name}')";
+ 				}
+ 				
+ 				unset($user);
+ 				unset($puserinfo);
+ 			}
+ 			
+ 			if(!empty($queries)){
+ 				if($delete) {
+ 					$query = "DELETE #__jfusion_users_plugin WHERE ".implode(' OR ',$queries);
+ 				} else {
+ 					$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES (". implode(',',$queries) . ")";
+ 				}
+ 				$db->setQuery($query);
+ 				if(!$db->query()) {
+ 					JError::raiseWarning(0,$db->stderr());
+ 				}
+ 			}
+ 		} else {
+ 			if($delete) {
+ 				$query = "DELETE #__jfusion_users_plugin WHERE id = $joomla_id AND jname = '$jname'";
+ 			} else {
+	 			$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES ({$userinfo->userid},'{$userinfo->username}',$joomla_id,'$jname')";	
+ 			}
+ 		 	$db->setQuery($query);
+ 			if(!$db->query()) {
+ 				JError::raiseWarning(0,$db->stderr());
+ 			}	
+ 		}
     }
 
     /**
@@ -269,16 +313,50 @@ class JFusionFunction{
 * @param string $jname name of the JFusion plugin used
 * @param string $userid The ID of the user
 * @param boolean $isJoomlaId if true, returns the userinfo data based on Joomla, otherwise the plugin
+* @param string $username If the userid is that of the plugin's, we need the username to find the user in case there is no record in the lookup table
 * @return object database Returns the userinfo as a Joomla database object
 **/
 
-    function lookupUser($jname, $userid, $isJoomlaId = true)
+    function lookupUser($jname, $userid, $isJoomlaId = true, $username = '')
     {
     	$column = ($isJoomlaId) ? 'id' : 'userid';
         $db =& JFactory::getDBO();
         $query = 'SELECT * FROM #__jfusion_users_plugin WHERE '.$column.' = ' . $userid . ' AND jname = ' . $db->Quote($jname);
         $db->setQuery($query);
         $result = $db->loadObject();
+
+        //for some reason this user is not in the database so let's find them
+        if(empty($result)) {
+        	if($isJoomlaId) {
+				//we have a joomla id
+        		$query = "SELECT username FROM #__users WHERE id = $userid";
+        		$db->setQuery($query);
+        		$username = $db->loadResult();        		
+        		$joomla_id = $userid;
+        	} else {
+				//we have a plugin's id so we need to find Joomla's id
+        		$query = "SELECT id FROM #__users WHERE username = ".$db->Quote($username);
+        		$db->setQuery($query);
+        		$joomla_id = $db->loadResult();
+        	}
+        	
+			if(!empty($username) && !empty($joomla_id)) {
+	        	//get the plugin's userinfo
+	        	$user =& JFusionFactory::getUser($jname);
+	        	$userinfo = $user->getUser($username);
+	        	
+	        	//update the lookup table
+	        	updateLookup($userinfo, $joomla_id, $jname);
+	        	
+	        	//return the results
+	        	$result = new stdClass();
+	        	$result->userid = $userinfo->userid;
+	        	$result->username = $userinfo->username;
+	        	$result->id = $joomla_id;
+	        	$result->jname = $jname;
+			}
+        }
+        
         return $result;
     }
 
@@ -419,28 +497,15 @@ class JFusionFunction{
         $fdb =& JFactory::getDBO();
 		$modified = time();
 
-		//check to see if content item has already been created in forum software
-        $query = 'SELECT COUNT(*) FROM #__jfusion_forum_plugin WHERE contentid = ' . $contentid . ' AND jname = ' . $fdb->Quote($jname);
-        $fdb->setQuery($query);
-	    if($fdb->loadResult() == 0) {
-	    	//content item has not been created
-	        //prepare the variables
-	        $lookup = new stdClass;
-	        $lookup->contentid = $contentid;
-	        $lookup->forumid = $forumid;
-	        $lookup->threadid = $threadid;
-	        $lookup->postid = $postid;
-	        $lookup->modified = $modified;
-	        $lookup->jname = $jname;
-
-	        //insert the entry into the lookup table
-	        $fdb->insertObject('#__jfusion_forum_plugin', $lookup);
-	    } else {
-	    	//content itmem has been created so updated variables to prevent duplicate threads
-	    	$query = "UPDATE #__jfusion_forum_plugin SET forumid = {$forumid}, threadid = {$threadid}, postid = {$postid}, modified = {$modified} WHERE contentid = {$contentid} AND jname = {$fdb->Quote($jname)}";
-	    	$fdb->setQuery($query);
-	    	$fdb->query();
-	    }
+		$query = "REPLACE INTO #__jfusion_forum_plugin SET 
+					contentid = $contentid, 
+					forumid = $forumid, 
+					threadid = $threadid, 
+					postid = $postid, 
+					modified = '$modified',
+					jname = '$jname'";
+    	$fdb->setQuery($query);
+    	$fdb->query();
     }
 
     /**
@@ -491,7 +556,7 @@ class JFusionFunction{
     	if($to=='html') {
     		//entities must be decoded to prevent encoding already encoded entities
 			$text = html_entity_decode($text);
-   			require_once("parsers/nbbc.php");
+   			if(!class_exists('BBCode_Parser')) require_once("parsers/nbbc.php");
    			$bbcode = new BBCode_Parser;
    			$text = $bbcode->Parse($text);
    			//must decode again to display entities properly
@@ -558,7 +623,8 @@ class JFusionFunction{
 
  			$text = str_ireplace(array("<br />","<br>","<br/>"), "\n", $text);
  			$text = preg_replace($searchNS,$replaceNS,$text);
- 			 $text = preg_replace( '/\p{Z}/u', ' ', $text );
+ 			$text = preg_replace( '/\p{Z}/u', ' ', $text );
+ 			
  			if($stripAllHtml) { $text = strip_tags($text); }
     	}
 

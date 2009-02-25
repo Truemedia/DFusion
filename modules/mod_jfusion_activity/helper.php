@@ -66,7 +66,7 @@ class modjfusionActivityHelper {
 	                            	if($config['userlink_software']!='' && $config['userlink_software'] != 'jfusion' && $config["userlink_software"]!='custom') {
 	                            		$user_url = JFusionFunction::getAltProfileURL($config['userlink_software'],$result[$i][1]);
 	                            	} elseif ($config['userlink_software']=='custom' && !empty($config['userlink_custom'])) {
-										$userlookup = JFusionFunction::lookupUser($jname,$result[$i][2],false);
+										$userlookup = JFusionFunction::lookupUser($jname,$result[$i][2],false,$result[$i][1]);
 										$user_url = $config['userlink_custom'].$userlookup->id;
 									} else {
 	                            		$user_url = false;
@@ -80,7 +80,7 @@ class modjfusionActivityHelper {
 	                            } else {
 									$user = $result[$i][1];
 	                            }
-	                            $user = " - <b>".$user."</b>";
+	                            $user = " - <b>".$user."</b> ";
 	                        }
 	
 	                        //process date info

@@ -53,7 +53,7 @@ class modjfusionWhosOnlineHelper {
 							$userlookup = new stdClass();
 							$userlookup->id  = $result[$i][0];
 						} else {
-							$userlookup = JFusionFunction::lookupUser($jname,$result[$i][0],false);
+							$userlookup = JFusionFunction::lookupUser($jname,$result[$i][0],false, $result[$i][1]);
 						}
 
 						$name = ($config["name"]==1) ? $result[$i][2] : $result[$i][1];
@@ -85,21 +85,23 @@ class modjfusionWhosOnlineHelper {
 		    	            	$avatar = JFusionFunction::getAltAvatar($avatarSrc, $userlookup->id);
 		    	            }
 		    	            
-							if(!empty($avatar)) {								
-								$size = @getimagesize($avatar);
-								$w = $size[0];
-								$h = $size[1];
-								if($size[0]>40) {
-									$scale = min(40/$w, 53/$h);
-									$w = floor($scale*$w);
-									$h = floor($scale*$h);
-								} elseif (empty($size)) {
-									$h = 53;
-									$w = 40;
-								}
-								$avatar = "<img style='vertical-align:middle'; src='$avatar' height='$h' width='$w' alt='$name' />";
-				            }
-			            }				            
+							if(empty($avatar)) {
+								$avatar = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
+							}
+								
+							$size = @getimagesize($avatar);
+							$w = $size[0];
+							$h = $size[1];
+							if($size[0]>40) {
+								$scale = min(40/$w, 53/$h);
+								$w = floor($scale*$w);
+								$h = floor($scale*$h);
+							} elseif (empty($size)) {
+								$h = 53;
+								$w = 40;
+							}
+							$avatar = "<img style='vertical-align:middle'; src='$avatar' height='$h' width='$w' alt='$name' />";
+			            } 
                    
                         //put it all together for output
                         $output .= '<li>'. $avatar . ' <b>'.$user.'</b></li>';

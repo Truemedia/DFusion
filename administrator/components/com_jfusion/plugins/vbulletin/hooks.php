@@ -137,7 +137,7 @@
 			$vBquery = str_replace(JURI::root(),"",$this->vars);
 			$vBquery = str_replace("?","&",$vBquery);
 
-	 		$this->vars = JURI::root().$query.$vBquery;
+	 		$this->vars = JRoute::_(JURI::root().$query.$vBquery);
 
 			if(defined('_JFUSION_DEBUG')) {
 				$debug['parsed'] = $this->vars;

@@ -170,8 +170,25 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		$db->setQuery($query);
 		if(!$db->query()) {
 			echo $db->stderr() . '<br/>';
-		}		
+		}
 	}
+	
+	//we need to add a couple unique indexes to the plugin tables
+	$query = "ALTER TABLE #__jfusion_forum_plugin DROP INDEX `lookup`";
+	$db->Execute($query);
+	$query = "ALTER TABLE #__jfusion_forum_plugin ADD UNIQUE  `lookup` (contentid,jname)";
+	$db->setQuery($query);
+	if(!$db->query()) {
+		echo $db->stderr() . '<br/>';
+	}
+	$query = "ALTER TABLE #__jfusion_users_plugin DROP INDEX `lookup`";
+	$db->Execute($query);
+	$query = "ALTER TABLE #__jfusion_users_plugin  ADD UNIQUE `lookup` (id,jname)";
+	$db->setQuery($query);
+	if(!$db->query()) {
+		echo $db->stderr() . '<br/>';
+	}
+	
 	//insert of missing plugins
 	//#chris: moved after table modification to prevent errors
 	if(count($pluginSql)>0){
@@ -300,7 +317,8 @@ if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 	username varchar(50),
 	userid int(11) NOT NULL,
     jname varchar(50) NOT NULL,
-	PRIMARY KEY (autoid)
+	PRIMARY KEY (autoid),
+	UNIQUE `lookup` (id,jname)
 ) DEFAULT CHARACTER SET utf8;';
 	$db->setQuery($query);
 	if (!$db->query()){
@@ -316,27 +334,14 @@ if (array_search($table_prefix . '#__jfusion_forum_plugin',$table_list) == false
   threadid int(11) NOT NULL,
   postid int(11) NOT NULL,
   jname varchar(255) NOT NULL,
-  modified int(11) NOT NULL default 0
+  modified int(11) NOT NULL default 0,
+  UNIQUE `lookup` (contentid,jname)
 ) CHARSET=utf8;';
 	$db->setQuery($query);
 	if (!$db->query()){
 		echo $db->stderr() . '<br/>';
 	}
-} else {
-	//add the forum id column
-	$query = "SHOW COLUMNS FROM #__jfusion_forum_plugin";
-	$db->setQuery($query);
-	$columns = $db->loadResultArray();
-
-	if(!in_array('forumid',$columns)) {
-		$query = "ALTER TABLE #__jfusion_forum_plugin ADD COLUMN forumid int(11) NOT NULL";
-		$db->setQuery($query);
-		if (!$db->query()){
-			echo $db->stderr() . '<br/>';
-		}
-	}
 }
-
 
 //create the jfusion_sync table if it does not exist already
 if (array_search($table_prefix . 'jfusion_sync',$table_list) == false) {

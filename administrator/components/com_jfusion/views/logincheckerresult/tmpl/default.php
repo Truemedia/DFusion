@@ -357,7 +357,7 @@ if ($master->name != 'joomla_int') {
 
 
 if ($master->name != 'joomla_int') {
-    JFusionFunction::updateLookup($userinfo, $master->name, $JoomlaUser['userinfo']->userid);
+    JFusionFunction::updateLookup($userinfo, $JoomlaUser['userinfo']->userid, $master->name);
 }
 
 
@@ -402,7 +402,7 @@ foreach($slaves as $slave) {
 	        $SlaveUser['userinfo']->password_clear = $user['password'];
 		}
 
-        JFusionFunction::updateLookup($SlaveUser['userinfo'], $slave->name, $JoomlaUser['userinfo']->userid);
+        JFusionFunction::updateLookup($SlaveUser['userinfo'], $JoomlaUser['userinfo']->userid, $slave->name);
 
         if ($slave->dual_login == 1) {
             $SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);

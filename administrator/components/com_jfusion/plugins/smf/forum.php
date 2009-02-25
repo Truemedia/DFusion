@@ -498,29 +498,29 @@ class JFusionForum_smf extends JFusionForum
 
 			//avatar
 			if($showavatar){
-				if(empty($avatar_software) || $avatar_software=='jfusion') {
+                if(empty($avatar_software) || $avatar_software=='jfusion') {
 					$avatarSrc = $this->getAvatar($p->ID_MEMBER);
-				} else {
-    	         	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->ID_MEMBER,true);
+                } else {
+                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->ID_MEMBER,true);
+                }
+    	           
+				if(empty($avatarSrc)) {
+					$avatarSrc = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 				}
-
-				if($avatarSrc) {
-					$size = @getimagesize($avatar);
-					$w = $size[0];
-					$h = $size[1];
-					if($size[0]>60) {
-						$scale = min(60/$w, 80/$h);
-						$w = floor($scale*$w);
-						$h = floor($scale*$h);
-					} else {
-						$w = 60;
-						$h = 80;
-					}
-
-					$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";
+				
+				$size = @getimagesize($avatarSrc);
+				$w = $size[0];
+				$h = $size[1];
+				if($size[0]>60) {
+					$scale = min(60/$w, 80/$h);
+					$w = floor($scale*$w);
+					$h = floor($scale*$h);
 				} else {
-					$avatar = "";
+					$w = 60;
+					$h = 80;
 				}
+			
+				$avatar = "<div class='{$css["userAvatar"]}'><img height='$h' width='$w' src='$avatarSrc'></div>";			
 			} else {
 				$avatar = "";
 			}
@@ -538,7 +538,7 @@ class JFusionForum_smf extends JFusionForum
 					if(!empty($link_software) && $link_software != 'jfusion' && $link_software!='custom') {
 						$user_url = JFusionFunction::getAltProfileURL($link_software,$p->memberName);
 					} elseif ($link_software=='custom' && !empty($userlink_custom)) {
-						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->ID_MEMBER,false);
+						$userlookup = JFusionFunction::lookupUser($this->getJname(),$p->ID_MEMBER,false, $p->memberName);
 						$user_url =  $userlink_custom.$userlookup->id;
 					} else {
 						$user_url = false;

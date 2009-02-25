@@ -77,7 +77,7 @@ class JFusionUser{
      */
     function filterUsername($username)
     {
-        return '';
+        return $username;
     }
 
 

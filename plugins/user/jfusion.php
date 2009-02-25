@@ -247,16 +247,9 @@ class plgUserJfusion extends JPlugin
 				$JoomlaUser = array( 'userinfo' => $userinfo, 'error' => '');
 			}
 			
-			//delete old entries in the jos_jfusion_users_plugin table
-			$db = & JFactory::getDBO();
-			$query = 'DELETE FROM #__jfusion_users_plugin WHERE id =' . $JoomlaUser['userinfo']->userid;
-			$db->setQuery($query);
-			if (!$db->query()){
-				JError::raiseWarning(0,$db->stderr());
-			}
-			
+			//update the jos_jfusion_users_plugin table			
 			if ($master->name != 'joomla_int'){
-				JFusionFunction::updateLookup($userinfo, $master->name, $JoomlaUser['userinfo']->userid);
+				JFusionFunction::updateLookup($userinfo, $JoomlaUser['userinfo']->userid, $master->name);
 			}
 			
 			//setup the other slave JFusion plugins
@@ -270,7 +263,7 @@ class plgUserJfusion extends JPlugin
 					//apply the cleartext password to the user object
 					$SlaveUser['userinfo']->password_clear = $user['password'];
 					
-					JFusionFunction::updateLookup($SlaveUser['userinfo'], $slave->name, $JoomlaUser['userinfo']->userid);
+					JFusionFunction::updateLookup($SlaveUser['userinfo'], $JoomlaUser['userinfo']->userid, $slave->name);
 					
 					if (!isset($options['group']) && $slave->dual_login == 1 && $JFusionActivePlugin != $slave->name){
 						$SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);
