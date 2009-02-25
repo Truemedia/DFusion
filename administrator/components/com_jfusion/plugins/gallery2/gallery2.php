@@ -71,6 +71,24 @@ class jFusion_g2BridgeCore {
 			} else {
 				GalleryEmbed::logout();
 			}
+
+			$cookie_domain = $params->get('cookie_domain');
+			if(!empty($cookie_domain)) {
+				$ret = GalleryCoreApi::setPluginParameter('module', 'core', 
+						'cookie.domain', $cookie_domain);
+				if($ret) {
+					return $ret->getAsHtml();
+				}
+			}
+	
+			$cookie_path = $params->get('cookie_path');
+			if(!empty($cookie_path)) {
+				$ret = GalleryCoreApi::setPluginParameter('module', 'core', 
+						'cookie.path', $cookie_path);
+				if($ret) {
+					return $ret->getAsHtml();
+				}
+			}
 		}
 		
 		self::$loadedGallery = true;

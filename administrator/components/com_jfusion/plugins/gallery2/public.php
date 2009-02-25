@@ -30,18 +30,18 @@ class JFusionPublic_gallery2 extends JFusionPublic{
 
 	function getRegistrationURL()
 	{
-		return 'main.php?g2_view=core.UserAdmin&g2_subView=register.UserSelfRegistration';
+		return '?g2_view=core.UserAdmin&g2_subView=register.UserSelfRegistration';
 	}
 
 	function getLostPasswordURL()
 	{
-		return 'main.php?g2_view=core.UserAdmin&g2_subView=core.UserRecoverPassword';
+		return '?g2_view=core.UserAdmin&g2_subView=core.UserRecoverPassword';
 	}
-
+/*
 	function getLostUsernameURL()
 	{
 		return '';
-	}
+	}*/
 
 	function & getBuffer($jPluginParam)
 	{
