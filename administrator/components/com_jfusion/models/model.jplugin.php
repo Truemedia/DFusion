@@ -590,6 +590,7 @@ class JFusionJplugin{
 
 
         if (!empty($existinguser)) {
+        	$changed = false;
             //a matching user has been found
 			$status['debug'][] = JText::_('USER_DATA_FOUND');
             if ($existinguser->email != $userinfo->email) {
@@ -597,6 +598,7 @@ class JFusionJplugin{
               if ($update_email || $overwrite) {
 			      $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_ENABLED');
                   $this->updateEmail($userinfo, $existinguser, $status);
+                  $changed = true;
               } else {
                 //return a email conflict
 			    $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_DISABLED');
@@ -611,6 +613,7 @@ class JFusionJplugin{
 				//if not salt set, update the password
 				if(empty($userinfo->password_salt)){
 					$this->updatePassword($userinfo, $existinguser, $status,$jname);
+					$changed = true;
 				} else {
 					// add password_clear to existinguser for the Joomla helper routines
 					$existinguser->password_clear=$userinfo->password_clear;
@@ -619,6 +622,7 @@ class JFusionJplugin{
 					$testcrypt = $model->generateEncryptedPassword($existinguser);
 					if ($testcrypt != $existinguser->password) {
 						$this->updatePassword($userinfo, $existinguser, $status,$jname);
+						$changed = true;
 					} else {
 						$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
 					}
@@ -632,9 +636,11 @@ class JFusionJplugin{
 					if ($userinfo->block) {
 						//block the user
 						$this->blockUser($userinfo, $existinguser, $status,$jname);
+						$changed = true;
 					} else {
 						//unblock the user
 						$this->unblockUser($userinfo, $existinguser, $status,$jname);
+						$changed = true;
 					}
 				} else {
 					//return a debug to inform we skiped this step
@@ -648,9 +654,11 @@ class JFusionJplugin{
 					if ($userinfo->activation) {
 						//inactiva the user
 						$this->inactivateUser($userinfo, $existinguser, $status,$jname);
+						$changed = true;
 					} else {
 						//activate the user
 						$this->activateUser($userinfo, $existinguser, $status,$jname);
+						$changed = true;
 					}
 				} else {
 					//return a debug to inform we skiped this step
@@ -658,10 +666,14 @@ class JFusionJplugin{
 				}
 			}
 
-			$status['userinfo'] = $existinguser;
-			if (empty($status['error'])) {
-				$status['action'] = 'updated';
-			}
+            $status['userinfo'] = $existinguser;
+            if (empty($status['error'])) {
+            	if($changed == true){
+                	$status['action'] = 'updated';
+            	} else {
+            		$status['action'] = 'unchanged';
+            	}
+            }
 			return $status;
 		} else {
 			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');

@@ -214,6 +214,14 @@ class JFusionController extends JController
             	}
             }
 
+            //auto disable the auth and dual login for newly disabled plugins
+            if (($field_name == 'slave' || $field_name == 'master') && $field_value == '0') {
+               	//only set the encryption if dual login is disabled
+               	$query = 'UPDATE #__jfusion SET check_encryption = 0, dual_login = 0 WHERE name = ' . $db->Quote($jname);
+               	$db->setQuery($query );
+               	$db->query();
+            }
+
         } else {
             JError::raiseWarning(500, JText::_('NONE_SELECTED'));
         }
@@ -648,7 +656,7 @@ class JFusionController extends JController
                 JRequest::setVar('view', 'itemidselect');
                 parent::display();
         }
-        
+
         /**
          * Displays the JFusion PluginMenu Parameters
          */

@@ -55,4 +55,24 @@ class JFusionAdmin_joomla_int extends JFusionAdmin
     {
         return JFusionJplugin::allowRegistration($this->getJname());
     }
+    function debugConfig($jname)
+    {
+    	//get registration status
+		$JFusionPlugin = JFusionFactory::getAdmin($jname);
+		$new_registration  = $JFusionPlugin->allowRegistration();
+
+        //get the data about the JFusion plugins
+        $db = & JFactory::getDBO();
+        $query = 'SELECT * from #__jfusion WHERE name = ' . $db->Quote($jname);
+        $db->setQuery($query );
+        $plugin = $db->loadObject();
+
+		//output a warning to the administrator if the allowRegistration setting is wrong
+		if ($new_registration && $plugin->slave == '1'){
+   			JError::raiseNotice(0, $jname . ': ' . JText::_('DISABLE_REGISTRATION'));
+		}
+		if (!$new_registration && $plugin->master == '1'){
+   			JError::raiseNotice(0, $jname . ': ' . JText::_('ENABLE_REGISTRATION'));
+		}
+    }
  }

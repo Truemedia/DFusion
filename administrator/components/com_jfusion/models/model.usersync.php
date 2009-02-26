@@ -214,19 +214,7 @@ class JFusionUsersync{
                             //save the error for later
                             $syncdata['errors'][] = $sync_error;
 
-                            //update the counters
-                            $syncdata['slave_data'][$i]['error'] += 1;
-                            $syncdata['slave_data'][$i]['total'] -= 1;
                         } else {
-                            if ($status['action'] == 'created') {
-								echo '<img src="components/com_jfusion/images/created.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('CREATED') . '<br/>';
-                                $syncdata['slave_data'][$i]['created'] += 1;
-                            } else {
-								echo '<img src="components/com_jfusion/images/updated.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('UPDATED') . '<br/>';
-                                $syncdata['slave_data'][$i]['updated'] += 1;
-                            }
-                            $syncdata['slave_data'][$i]['total'] -= 1;
-                            
                             //update the lookup table
                             if($action=="master") {
     	                      	JFusionFunction::updateLookup($userinfo,0,$jname);
@@ -234,6 +222,11 @@ class JFusionUsersync{
 								JFusionFunction::updateLookup($SlaveUser->getUser($userlist[$j]->username),0,$jname);
                             }
                         }
+
+                        //update the counters
+                        $syncdata['slave_data'][$i][$status['action']] += 1;
+                        $syncdata['slave_data'][$i]['total'] -= 1;
+
                         //update the database
                         JFusionUsersync::updateSyncdata($syncdata);
         			}

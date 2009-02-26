@@ -14,10 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 if (!$this->syncdata['slave_data']){
 	echo JText::_('SYNC_NODATA');
     return;
-} elseif ($this->syncdata['completed']) {
+} elseif (!empty($this->syncdata['completed'])) {
 	echo '<br/><br/><br/>';
 	//check to see if there were any errors
-	if (isset($this->syncdata['errors'])) {
+	if (!empty($this->syncdata['errors'])) {
 		//redirect to resolve errors
 		echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $this->syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2>';
 	} else {
@@ -40,10 +40,13 @@ if (!$this->syncdata['slave_data']){
 <?php echo JText::_('SYNC_USERS_TODO');
 ?>
 </th><th>
-<?php echo JText::_('USERS') . ' ' . JText::_('CREATED');
+<?php echo JText::_('USERS') . ' ' . JText::_('UNCHANGED');
 ?>
 </th><th>
 <?php echo JText::_('USERS') . ' ' . JText::_('UPDATED');
+?>
+</th><th>
+<?php echo JText::_('USERS') . ' ' . JText::_('CREATED');
 ?>
 </th><th>
 <?php echo JText::_('USERS') . ' ' . JText::_('DELETED');
@@ -60,9 +63,11 @@ if (!$this->syncdata['slave_data']){
 </td><td>
 <?php echo $slave['total'];?>
 </td><td>
-<?php echo $slave['created'];?>
+<?php echo $slave['unchanged'];?>
 </td><td>
 <?php echo $slave['updated'];?>
+</td><td>
+<?php echo $slave['created'];?>
 </td><td>
 <?php echo $slave['deleted'];?>
 </td><td>

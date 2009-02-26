@@ -57,123 +57,6 @@ class JFusionUser_vbulletin extends JFusionUser{
 		}
 	}
 
-    function updateUser($userinfo, $overwrite)
-    {
-        // Initialise some variables
-        $db = & JFusionFactory::getDatabase($this->getJname());
-        $update_block = $this->params->get('update_block');
-        $update_activation = $this->params->get('update_activation');
-        $update_email = $this->params->get('update_email');
-
-        $status = array();
-        $status['debug'] = array();
-        $status['error'] = array();
-
-		//check to see if a valid $userinfo object was passed on
-		if(!is_object($userinfo)){
-			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
-			return $status;
-		}
-
-		//backup Joomla's global scope
-		$this->backupGlobals();
-
-        //find out if the user already exists
-        $existinguser = $this->getUser($userinfo->username);
-
-        if (!empty($existinguser)) {
-            //a matching user has been found
-			$status['debug'][] = JText::_('USER_DATA_FOUND');
-            if ($existinguser->email != $userinfo->email) {
-			  $status['debug'][] = JText::_('EMAIL_CONFLICT');
-              if ($update_email || $overwrite) {
-			      $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_ENABLED');
-                  $this->updateEmail($userinfo, $existinguser, $status);
-              } else {
-                //return a email conflict
-			    $status['debug'][] = JText::_('EMAIL_CONFLICT_OVERWITE_DISABLED');
-                $status['error'][] = JText::_('EMAIL') . ' ' . JText::_('CONFLICT').  ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-                $status['userinfo'] = $existinguser;
-
-                //restore Joomla's global scope
-				$this->restoreGlobals();
-
-                return $status;
-              }
-            }
-
-			if (!empty($userinfo->password_clear) && strlen($userinfo->password_clear) != 32){
-				// add password_clear to existinguser for the Joomla helper routines
-				//die("<pre>".print_r($existinguser,true)."<br>".print_r($userinfo,true)."</pre>");
-				$existinguser->password_clear=$userinfo->password_clear;
-			    //check if the password needs to be updated
-	    	    $model = JFusionFactory::getAuth($this->getJname());
-        		$testcrypt = $model->generateEncryptedPassword($existinguser);
-            	if ($testcrypt != $existinguser->password) {
-                	$this->updatePassword($userinfo, $existinguser, $status);
-            	} else {
-                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
-            	}
-        	} else {
-            	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
-        	}
-
-
-            //check the blocked status
-            if ($existinguser->block != $userinfo->block) {
-              if ($update_block || $overwrite) {
-                  if ($userinfo->block) {
-                      //block the user
-                      $this->blockUser($userinfo, $existinguser, $status);
-                  } else {
-                      //unblock the user
-                      $this->unblockUser($userinfo, $existinguser, $status);
-                  }
-              } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_BLOCK_UPDATE') . ': ' . $existinguser->block . ' -> ' . $userinfo->block;
-              }
-            }
-
-            //check the activation status
-            if ($existinguser->activation != $userinfo->activation) {
-              if ($update_activation || $overwrite) {
-                  if ($userinfo->activation) {
-                      //inactivate the user
-                      $this->inactivateUser($userinfo, $existinguser, $status);
-                  } else {
-                      //activate the user
-                      $this->activateUser($userinfo, $existinguser, $status);
-                  }
-              } else {
-                //return a debug to inform we skiped this step
-                $status['debug'][] = JText::_('SKIPPED_EMAIL_UPDATE') . ': ' . $existinguser->email . ' -> ' . $userinfo->email;
-              }
-            }
-
-            //backup Joomla's global scope
-			$this->restoreGlobals();
-
-            $status['userinfo'] = $existinguser;
-            if (empty($status['error'])) {
-                $status['action'] = 'updated';
-            }
-            return $status;
-
-        } else {
-			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
-            $this->createUser($userinfo, $status);
-            if (empty($status['error'])) {
-                $status['action'] = 'created';
-            }
-
-            //restore Joomla's global scope
-			$this->restoreGlobals();
-
-            return $status;
-        }
-    }
-
     function &getUser($username)
     {
         // Get user info from database
@@ -335,13 +218,13 @@ class JFusionUser_vbulletin extends JFusionUser{
 				process_new_login('', 1, '');
 
 				$status['error'] = false;
-				
+
 				$vdb =& JFusionFactory::getDatabase($this->getJname());
 				$query = "SELECT varname, value FROM #__setting WHERE varname IN ('cookiedomain', 'cookiepath')";
 				$vdb->setQuery($query);
 				$cookie = $vdb->loadObjectList('varname');
 				$host =  (empty($cookie['cookiedomain']->value)) ? str_replace(array('http://','https://'),'',  $_SERVER['SERVER_NAME']) : $cookie['cookiedomain']->value;
-				$status['debug'] .= JText::_('CREATED_SESSION'). ' userid = ' . $userinfo->userid . ', password = '.substr($userinfo->password,0,6) . '********, ' . JText::_('COOKIE_SALT_STR'). ' = '.substr($vbLicense,0,4).'******, ' . JText::_('COOKIE_PATH'). ' = '.$cookie['cookiepath']->value. ', ' . JText::_('COOKIE_DOMAIN') .' = '.$host;			
+				$status['debug'] .= JText::_('CREATED_SESSION'). ' userid = ' . $userinfo->userid . ', password = '.substr($userinfo->password,0,6) . '********, ' . JText::_('COOKIE_SALT_STR'). ' = '.substr($vbLicense,0,4).'******, ' . JText::_('COOKIE_PATH'). ' = '.$cookie['cookiepath']->value. ', ' . JText::_('COOKIE_DOMAIN') .' = '.$host;
 	        } else {
 	            //could not find a valid userid
 	            $status['error'] = JText::_('INVALID_USERID');
@@ -398,6 +281,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function blockUser ($userinfo, &$existinguser, &$status)
     {
+		//backup Joomla's global scope
+		$this->backupGlobals();
+
     	//initialize vb framework
 		if(!$this->vBulletinInit()) return null;
 
@@ -433,10 +319,16 @@ class JFusionUser_vbulletin extends JFusionUser{
 				$status['debug'][] = JText::_('BLOCK_UPDATE'). ': ' . $existinguser->block . ' -> ' . $userinfo->block;
 			}
 		}
+
+        //backup Joomla's global scope
+		$this->restoreGlobals();
     }
 
     function unblockUser ($userinfo, &$existinguser, &$status)
     {
+		//backup Joomla's global scope
+		$this->backupGlobals();
+
     	//initialize vb framework
 		if(!$this->vBulletinInit()) return null;
 
@@ -514,6 +406,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 	    }
 
 	    unset($userdm);
+
+        //backup Joomla's global scope
+		$this->restoreGlobals();
     }
 
     function activateUser ($userinfo, &$existinguser, &$status)
@@ -583,6 +478,9 @@ class JFusionUser_vbulletin extends JFusionUser{
 
     function createUser ($userinfo, &$status)
     {
+		//backup Joomla's global scope
+		$this->backupGlobals();
+
     	//initialize vb framework
 		if(!$this->vBulletinInit()) return null;
 
@@ -644,6 +542,8 @@ class JFusionUser_vbulletin extends JFusionUser{
 	    }
 
 	    unset($userdm);
+        //backup Joomla's global scope
+		$this->restoreGlobals();
     }
 
     //convert the existinguser variable into something vbulletin understands
@@ -684,4 +584,3 @@ class JFusionUser_vbulletin extends JFusionUser{
     	}
     }
 }
-?>
