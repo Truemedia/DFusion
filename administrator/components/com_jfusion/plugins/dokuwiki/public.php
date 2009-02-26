@@ -56,7 +56,6 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 	function & getBufferInclude()
 	{
-		$joomla_globals = $GLOBALS;
 		// We're going to want a few globals... these are all set later.
 
 		global $INFO,$ACT,$ID,$QUERY,$USERNAME,$CLEAR,$QUIET,$USERINFO,$DOKU_PLUGINS,$PARSER_MODES,$TOC,$EVENT_HANDLER,$AUTH,$IMG,$JUMPTO;
@@ -111,35 +110,11 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			JError::raiseWarning(500, 'Could not find DokuWiki in the specified directory');
 		}
 
-		//restore the joomla globals like nothing happened
-		$GLOBALS = $joomla_globals;
-		//check to see if the Joomla database is still connnected
-		jimport('joomla.database.database');
-		jimport( 'joomla.database.table' );
-		$db = & JFactory::getDBO();
-		$conf =& JFactory::getConfig();
-
-		$j_host		 = $conf->getValue('config.host');
-		$j_user		 = $conf->getValue('config.user');
-		$j_password	 = $conf->getValue('config.password');
-		$j_database		= $conf->getValue('config.db');
-
-		if ( $user == $j_user || $database != $j_database || $host != $j_host ) {
-			if (!($db->_resource = @mysql_connect( $j_host, $j_user, $j_password, true ))) {
-			  $db->_errorNum = 2;
-			  $db->_errorMsg = 'Could not connect to MySQL';
-			  die ('could not reconnect to the Joomla database');
-			}
-			// select the database
-			$db->select($j_database);
-		}
 		return $buffer;
 	}
 
 /*	function & getBufferCurl()
 	{
-		$joomla_globals = $GLOBALS;
-
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'helper.php');
 		// Get the path
@@ -181,32 +156,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		if (!$buffer) {
 			JError::raiseWarning(500, 'Could not access dokuwiki in the specified directory');
 		}
-		//restore the joomla globals like nothing happened
-		$GLOBALS = $joomla_globals;
 
-		//check to see if the Joomla database is still connnected
-		$db = & JFactory::getDBO();
-		if (!is_resource($db->_resource)) {
-			//joomla connection needs to be re-established
-			jimport('joomla.database.database');
-			jimport( 'joomla.database.table' );
-			$conf =& JFactory::getConfig();
-
-			$host		 = $conf->getValue('config.host');
-			$user		 = $conf->getValue('config.user');
-			$password	 = $conf->getValue('config.password');
-			$database	= $conf->getValue('config.db');
-			$prefix	 = $conf->getValue('config.dbprefix');
-
-			// connect to the server
-			if (!($db->_resource = @mysql_connect( $host, $user, $password, true ))) {
-				$db->_errorNum = 2;
-				$db->_errorMsg = 'Could not connect to MySQL';
-				die ('could not reconnect to the Joomla database');
-			}
-			// select the database
-			$db->select($database);
-		}
 		return $buffer;
 	}*/
 

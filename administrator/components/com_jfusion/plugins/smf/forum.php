@@ -501,7 +501,7 @@ class JFusionForum_smf extends JFusionForum
                 if(empty($avatar_software) || $avatar_software=='jfusion') {
 					$avatarSrc = $this->getAvatar($p->ID_MEMBER);
                 } else {
-                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->ID_MEMBER,true);
+                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->ID_MEMBER,true,$this->getJname(),$p->memberName);
                 }
     	           
 				if(empty($avatarSrc)) {

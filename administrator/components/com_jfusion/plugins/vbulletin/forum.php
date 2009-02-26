@@ -376,7 +376,7 @@ class JFusionForum_vbulletin extends JFusionForum
                 if(empty($avatar_software) || $avatar_software=='jfusion') {
 					$avatarSrc = $this->getAvatar($p->userid);
                 } else {
-                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->userid,true);
+                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->userid,true,$this->getJname(),$p->username);
                 }
     	           
 				if(empty($avatarSrc)) {

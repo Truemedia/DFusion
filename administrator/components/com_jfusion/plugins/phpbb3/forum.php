@@ -588,7 +588,7 @@ class JFusionForum_phpbb3 extends JFusionForum
                 if(empty($avatar_software) || $avatar_software=='jfusion') {
 					$avatarSrc = $this->getAvatar($p->user_id);
                 } else {
-                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->user_id,true);
+                	$avatarSrc = JFusionFunction::getAltAvatar($avatar_software,$p->user_id,true,$this->getJname(),$p->username_clean);
                 }
     	           
 				if(empty($avatarSrc)) {
@@ -679,7 +679,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$bodyLimit = (empty($body_limit) || trim($body_limit)==0) ? "p.post_text" : "left(p.post_text, $body_limit) AS post_text";
 
 		$where = "WHERE p.topic_id = {$threadid} AND p.post_id != {$postid} AND p.post_approved = 1";
-		$query = "SELECT p.post_id , u.username, u.user_id, p.post_subject, p.post_time, $bodyLimit, p.topic_id FROM `#__posts` as p INNER JOIN `#__users` as u ON p.poster_id = u.user_id $where ORDER BY p.post_time $sort $limit";
+		$query = "SELECT p.post_id , u.username, u.username_clean, u.user_id, p.post_subject, p.post_time, $bodyLimit, p.topic_id FROM `#__posts` as p INNER JOIN `#__users` as u ON p.poster_id = u.user_id $where ORDER BY p.post_time $sort $limit";
 
 		$jdb = & JFusionFactory::getDatabase($this->getJname());
 		$jdb->setQuery($query);

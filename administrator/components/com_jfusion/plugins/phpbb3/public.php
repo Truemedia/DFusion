@@ -45,8 +45,8 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	{
 		//get a unix time from 5 mintues ago
 		date_default_timezone_set('UTC');
-		$now = time();
-		$active = strtotime("-5 minutes",$now);
+		$active = strtotime("-5 minutes",time());
+		
 		$query = "SELECT DISTINCT u.user_id AS userid, u.username, u.username AS name FROM #__users AS u INNER JOIN #__sessions AS s ON u.user_id = s.session_user_id WHERE s.session_user_id != 1 AND s.session_time > $active";
 		return $query;
 	}
@@ -55,8 +55,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	{
 		//get a unix time from 5 mintues ago
 		date_default_timezone_set('UTC');
-		$now = time();
-		$active = strtotime("-5 minutes",$now);
+		$active = strtotime("-5 minutes",time());
 		
 		$db =& JFusionFactory::getDatabase($this->getJname());
 		$query = "SELECT COUNT(*) FROM #__sessions WHERE session_user_id = 1 AND session_time > $active";
@@ -69,14 +68,15 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	{
 		//get a unix time from 5 mintues ago
 		date_default_timezone_set('UTC');
-		$active = strtotime("-5 minutes",$now);
+		$active = strtotime("-5 minutes",time());
 		
 		$db =& JFusionFactory::getDatabase($this->getJname());
 		$query = "SELECT COUNT(*) FROM #__sessions WHERE session_user_id != 1 AND session_time > $active";
+		
 		$db->setQuery($query);
 		$result = $db->loadResult();
 		return $result;
-	}    
+	}     
 	
     /************************************************
 	 * Functions For Frameless Integration
@@ -84,12 +84,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 		
     function & getBuffer($jPluginParam)
     {
-    	//save the current globals
-    	$joomla_globals = $GLOBALS;
-
-		//get the Itemid
-  		$Itemid_joomla = JRequest::getVar('Itemid');
-
         // Get the path
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
@@ -187,18 +181,8 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             ob_end_clean();
         }
 
-		global $mainframe;
-		$mainframe->setPageTitle('');
-
         //change the current directory back to Joomla.
         chdir(JPATH_SITE);
-
-    	//restore the joomla globals like nothing happened
-    	$GLOBALS = $joomla_globals;
-
-       //reset the global itemid
-        global $Itemid;
-        $Itemid = $Itemid_joomla;
 
         return $buffer;
     }

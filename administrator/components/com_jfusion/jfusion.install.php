@@ -122,7 +122,11 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
  		$db->Execute($query);
 	}
 
-	//if pre 1.1.0 Beta Patch 2 columns exist, drop them
+	
+	/***
+	 * UPGRADES FOR 1.1.0 Patch 2
+	 ***/
+	
 	//see if the columns exists
 	$query = "SHOW COLUMNS FROM #__jfusion";
 	$db->setQuery($query);
@@ -137,6 +141,11 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		}
 	}
 
+	
+	/***
+	 * UPGRADES FOR 1.1.1 Beta
+	 ***/	
+	
 	//add the plugin_files and original columns if it does not exist
 	if(!in_array('plugin_files',$columns)){
 		//add the column
@@ -149,7 +158,12 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		}
 	}
 
-	//add the search and discussion columns if upgrading from 1.1.1 Beta or earlier
+	
+	/***
+	 * UPGRADES FOR 1.1.2 Beta
+	 ***/
+	
+	//add the search and discussion columns
 	if(!in_array('search',$columns)) {
 		$query = "ALTER TABLE #__jfusion
 					ADD COLUMN search tinyint(4) NOT NULL DEFAULT 0,
@@ -160,7 +174,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		}
 	}
 
-	//add the forumid colum to #__jfusion_forum_plugin if upgrading from 1.1.1 Beta or earlier
+	//add the forumid colum to #__jfusion_forum_plugin
 	$query = "SHOW COLUMNS FROM #__jfusion_forum_plugin";
 	$db->setQuery($query);
 	$columns = $db->loadResultArray();
@@ -173,20 +187,55 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		}
 	}
 	
-	//we need to add a couple unique indexes to the plugin tables
-	$query = "ALTER TABLE #__jfusion_forum_plugin DROP INDEX `lookup`";
-	$db->Execute($query);
-	$query = "ALTER TABLE #__jfusion_forum_plugin ADD UNIQUE  `lookup` (contentid,jname)";
+	//add a unique index to jfusion_forum_plugin
+	$query = "SHOW INDEX FROM #__jfusion_forum_plugin";
 	$db->setQuery($query);
-	if(!$db->query()) {
-		echo $db->stderr() . '<br/>';
+	$indexes = $db->loadObjectList("Key_name");
+	if(!array_key_exists('lookup',$indexes)) {
+		$query = "ALTER TABLE #__jfusion_forum_plugin 
+					ADD UNIQUE  `lookup` (contentid,jname)";
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
 	}
-	$query = "ALTER TABLE #__jfusion_users_plugin DROP INDEX `lookup`";
-	$db->Execute($query);
-	$query = "ALTER TABLE #__jfusion_users_plugin  ADD UNIQUE `lookup` (id,jname)";
+	
+	$query = "SHOW INDEX FROM #__jfusion_users_plugin";
 	$db->setQuery($query);
-	if(!$db->query()) {
-		echo $db->stderr() . '<br/>';
+	$indexes = $db->loadObjectList("Key_name");
+	if(!array_key_exists('lookup',$indexes)) {
+		//we need to make sure that old jfusion_users_plugin table doesn't have duplicates
+		//in prep of adding an unique index
+		$query = "CREATE TABLE #__jfusion_users_plugin_backup AS
+					SELECT * FROM  #__jfusion_users_plugin WHERE 1 GROUP BY id, jname";
+		$db->setQuery($query);
+		if($db->query()) {
+			$query = "DROP TABLE #__jfusion_users_plugin";
+			$db->setQuery($query);
+			if($db->query()) {		
+				$query = "RENAME TABLE #__jfusion_users_plugin_backup TO #__jfusion_users_plugin";
+				$db->setQuery($query);
+				if(!$db->query()) {
+					echo $db->stderr() . '<br/>';
+				}
+			} else {
+				echo $db->stderr() . '<br/>';
+			}
+		} else {
+			echo $db->stderr() . '<br/>';
+		}
+		
+		//in addition the unique indexes we need to change the userid column to accept text as 
+		//plugins such as dokuwiki does not use int userids
+		$query = "ALTER TABLE #__jfusion_users_plugin  
+					ADD UNIQUE `lookup` (id,jname),
+					ADD PRIMARY KEY ( `autoid` ),
+					CHANGE `autoid` `autoid` INT( 11 ) NOT NULL AUTO_INCREMENT,
+					CHANGE `userid` `userid` VARCHAR(50) NOT NULL";
+		$db->setQuery($query);
+		if(!$db->query()) {
+			echo $db->stderr() . '<br/>';
+		}
 	}
 	
 	//insert of missing plugins
@@ -199,6 +248,7 @@ if (array_search($table_prefix . 'jfusion',$table_list) == false) {
 		}
 	}
 
+	
 	//update plugins with search and discuss bot capabilities
 	$query = "UPDATE #__jfusion SET search = 1, discussion = 1 WHERE name IN ('vbulletin','phpbb3','smf')";
 	$db->setQuery($query);
@@ -315,7 +365,7 @@ if (array_search($table_prefix . 'jfusion_users_plugin',$table_list) == false) {
 	autoid int(11) NOT NULL auto_increment,
 	id int(11) NOT NULL,
 	username varchar(50),
-	userid int(11) NOT NULL,
+	userid varchar(50) NOT NULL,
     jname varchar(50) NOT NULL,
 	PRIMARY KEY (autoid),
 	UNIQUE `lookup` (id,jname)

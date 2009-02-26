@@ -56,8 +56,12 @@ class JFusionUser_joomla_int extends JFusionUser{
             //this user was created by JFusion and we need to delete them from the joomla user and jfusion lookup table
             $user =& JUser::getInstance($userid);
             $user->delete();
-            $db->Execute('DELETE FROM #__jfusion_users_plugin WHERE id='.$userid);
-            $db->Execute('DELETE FROM #__jfusion_users WHERE id='.$userid);
+
+            $db->setQuery('DELETE FROM #__jfusion_users_plugin WHERE id = '.$userid);
+            $db->query();
+            $db->setQuery('DELETE FROM #__jfusion_users WHERE id='.$userid);
+            $db->query();
+            
 			$status['error'] = false;
             $status['debug'][] = JText::_('USER_DELETION'). ' ' . $username;
         } else {
@@ -66,6 +70,10 @@ class JFusionUser_joomla_int extends JFusionUser{
             $db->setQuery($query);
             $userid = $db->loadResult();
             if ($userid) {
+            	//just in case
+				$db->setQuery('DELETE FROM #__jfusion_users_plugin WHERE id = '.$userid);
+				$db->query();
+				
                 //delete it from the Joomla usertable
                 $user =& JUser::getInstance($userid);
                 $user->delete();

@@ -197,7 +197,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$js .= "<!--\n";
 		$js .= "function toggleHook(action) {\n";
 		$js .= "var form = document.adminForm;\n";
-		$js .= "if(action=='enable_redirect' && form.paramsitemid_redirect.value=='') {\n";
+		$js .= "if(action=='enable_redirect' && form.itemid_redirect_id0.value=='0') {\n";
 		$js .= "alert('".JText::_('VB_REDIRECT_HOOK_ITEMID_EMPTY')."');\n";
 		$js .= "return false;\n";
 		$js .= "}\n";
@@ -461,6 +461,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 
 		return $php;
     }
+    
     function debugConfig($jname)
     {
     	//get registration status

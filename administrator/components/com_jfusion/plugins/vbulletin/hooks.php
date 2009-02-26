@@ -27,40 +27,16 @@
 
 	function init_startup()
 	{
-		if($this->vars=='redirect' && !isset($_GET['noredirect'])) {
-			//only redirect if in the main forum				
-			if(strpos($url,'admincp')===false && strpos($url,'modcp')===false && strpos($url,'archive')===false && strpos($url,'printthread.php')===false) {
-				$s = $_SERVER['PHP_SELF'];
+		if($this->vars=="redirect" && !isset($_GET['noredirect']) && !defined('_JEXEC')) {
+			//only redirect if in the main forum
+			$s = $_SERVER['PHP_SELF'];
+			if(strpos($s,'login.php')===false && strpos($s,'admincp')===false && strpos($s,'modcp')===false && strpos($s,'archive')===false && strpos($s,'printthread.php')===false) {
 				$filename = substr($s,strrpos($s,'/')+1);
-				if(!empty($_SERVER["QUERY_STRING"])) {
-					$query = (strpos($url,'?')===false) ? "?".$_SERVER["QUERY_STRING"] : "&".$_SERVER["QUERY_STRING"];
-				} else {
-					$query = '';
-				}	
-				$url = $filename.$query;
-				
-				$redirect = true;
-				if(INTEGRATION_MODE=='wrapper') {
-					if(isset($_GET['jfwrap']) && strpos($ref,'com_jfusion')===false) {
-						$url .= (empty($query)) ? "?jfwrap=1" : "&jfwrap=1";
-						$url = BASEURL . '&wrap='. str_replace("/","_slash_",base64_encode($url));
-					} elseif(!isset($_GET['jfwrap']) && strpos($ref,'com_jfusion')!==false) {
-						//unfortuneately, the only way to get this to work in a wrapper is to redirect adding on a wrapper tag
-						$url = $s.$query;
-						$url .= (empty($query)) ? "?jfwrap=1" : "&jfwrap=1";
-					} else {
-						$redirect = false;
-					}
-				} elseif(INTEGRATION_MODE=='frameless') {
-					$url = BASEURL . "&jfile=" . $url;
-				} else {
-					$url = BASEURL;
-				}
-				
-				if($redirect) {
-					header("Location: $url");
-					exit;
-				}
+				$query = $_SERVER["QUERY_STRING"];
+				$url = BASEURL."&jfile={$filename}";
+				$url .= (empty($query)) ? '' : "&{$query}";
+				header("Location: $url");
+				exit;
 			}
 		} 
 			

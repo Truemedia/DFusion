@@ -39,7 +39,6 @@ class JFusionPublic_smf extends JFusionPublic{
 
 	function & getBuffer()
 	{
-		$joomla_globals = $GLOBALS;
 		// We're going to want a few globals... these are all set later.
 		global $time_start, $maintenance, $msubject, $mmessage, $mbname, $language;
 		global $boardurl, $boarddir, $sourcedir, $webmaster_email, $cookiename;

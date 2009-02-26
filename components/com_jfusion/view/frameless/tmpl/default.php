@@ -33,9 +33,23 @@ defined('_JEXEC') or die('Restricted access');
         // Get the output from the JFusion plugin
         $JFusionPlugin = JFusionFactory::getPublic($this->jname);
 
+        //backup Joomla's globals
 		$joomla_globals = $GLOBALS;
+		//get the Itemid
+  		$Itemid_joomla = JRequest::getVar('Itemid');
+  		//get the buffer
         $buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
+        //restore Joomla's globals
 		$GLOBALS = $joomla_globals;
+       //reset the global itemid
+        global $Itemid;
+        $Itemid = $Itemid_joomla;
+        //clear the page title
+		if(!empty($buffer)) {
+        	global $mainframe;
+			$mainframe->setPageTitle('');
+		}
+		
 		//check to see if the Joomla database is still connnected incase the plugin messed it up
 		JFusionFunction::reconnectJoomlaDb();
 
@@ -71,7 +85,6 @@ defined('_JEXEC') or die('Restricted access');
 			// Add the header information
             if (isset($data[1]) ) {
                 $document	= JFactory::getDocument();
-                global $mainframe;
 				$regex_header = array();
 				$replace_header = array();
 

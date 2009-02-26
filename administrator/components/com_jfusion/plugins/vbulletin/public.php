@@ -119,9 +119,6 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		//set the current directory to vBulletin
 		chdir($source_path);
 
-		//save the joomla globals
-		$joomla_globals = $GLOBALS;
-
 		// Get the output
 		ob_start();
 
@@ -347,14 +344,8 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 				ob_end_clean();
 			}
 
-			global $mainframe;
-			$mainframe->setPageTitle('');
-
 			//change the current directory back to Joomla.
 			chdir(JPATH_SITE);
-
-			//restore joomla globals
-			$GLOBALS = $joomla_globals;
 
 			return $buffer;
 	}

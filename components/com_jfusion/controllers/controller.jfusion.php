@@ -78,7 +78,15 @@ class JFusionControllerFrontEnd extends JController
 			}
 
 			unset($query['option'], $query['jfile'], $query['Itemid'], $query['jFusion_Route']);
-			$wrap = $jfile . '?' . implode($query,'&');
+
+			$queries = array();
+			
+			foreach($query as $key => $var) {
+				$queries[] = $key."=".$var;
+			}
+
+			$wrap = $jfile . '?'. implode($queries,'&');
+
 			$params2 = JFusionFactory::getParams($jname);
 			$source_url = $params2->get('source_url');
 

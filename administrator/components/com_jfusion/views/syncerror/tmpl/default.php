@@ -51,12 +51,22 @@ JHTML::_('behavior.modal', 'a.modal');
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
 <div id="ajax_bar"><?php echo JText::_('APPLY_ACTION_ALL_CONFLICTS'); ?>
+<?php 
+$action = $this->syncdata['action'];
+if($action=="slave") {
+	$user = JText::_('MASTER');
+	$conflict = JText::_('SLAVE');
+} else {
+	$user = JText::_('SLAVE');
+	$conflict = JText::_('MASTER');	
+}
+?>
 <select name="default_value" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
-<option value="1"><?php echo JText::_('UPDATE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
-<option value="2"><?php echo JText::_('UPDATE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
-<option value="3"><?php echo JText::_('DELETE'). ' ' . JText::_('MASTER'). ' ' . JText::_('USER')?></option>
-<option value="4"><?php echo JText::_('DELETE'). ' ' . JText::_('SLAVE'). ' ' . JText::_('USER')?></option>
+<option value="1"><?php echo JText::_('UPDATE'). ' ' . $user . ' ' . JText::_('USER')?></option>
+<option value="2"><?php echo JText::_('UPDATE'). ' ' . $conflict . ' ' . JText::_('USER')?></option>
+<option value="3"><?php echo JText::_('DELETE'). ' ' . $user . ' ' . JText::_('USER')?></option>
+<option value="4"><?php echo JText::_('DELETE'). ' ' . $conflict . ' ' . JText::_('USER')?></option>
 </select>
 
 <script language="javascript" type="text/javascript">
@@ -105,6 +115,7 @@ $error =  $this->syncdata['errors'][$i];
 </td>
 <td>
 <?php
+
 //check to see what sort of an error it is
 if (empty($error['conflict']['userinfo'])){
     $error_type = 'Error';
@@ -117,7 +128,7 @@ if (empty($error['conflict']['userinfo'])){
 }
 echo $error_type; ?>
 </td>
-<td><?php echo $error['user']['jname'] . ': ' . $error['user']['userlist']->userid . ' / ' . $error['user']['userlist']->username  .' / ' . $error['user']['userlist']->email ;
+<td><?php echo $error['user']['jname'] . ': ' . $error['user']['userinfo']->userid . ' / ' . $error['user']['userlist']->username  .' / ' . $error['user']['userlist']->email ;
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
 //debug::show($error, 'Info on Error');
  ?></td>
@@ -132,14 +143,13 @@ if ($error_type != 'Error'){
 <a class="modal" rel="{handler: 'iframe', size: {x: 650, y: 375}}" href="index.php?option=com_jfusion&task=syncerrordetails&syncid=<?php echo $this->syncdata['syncid'];?>&errorid=<?php echo $i;?>"><?php echo JText::_('DETAILS'); ?></a>
 </td><td>
 <?php
-if ($error_type != 'Error'){ ?>
+if ($error_type != 'Error'){?>
 <select name="syncerror[<?php echo $i; ?>][action]" default="0">
 <option value="0"><?php echo JText::_('IGNORE')?></option>
 <option value="1"><?php echo JText::_('UPDATE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')?></option>
 <option value="2"><?php echo JText::_('UPDATE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')?></option>
 <option value="3"><?php echo JText::_('DELETE'). ' ' . $error['user']['jname']. ' ' . JText::_('USER')?></option>
 <option value="4"><?php echo JText::_('DELETE'). ' ' . $error['conflict']['jname']. ' ' . JText::_('USER')?></option>
-?>
 </select>
 <?php }
 echo '</td></tr>';

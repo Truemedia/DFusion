@@ -251,6 +251,11 @@ class JFusionFunction{
 
     function updateLookup($userinfo, $joomla_id, $jname = '', $delete = false)
     {	
+    	//we don't need to update the lookup for internal joomla unless deleting a user
+    	if($jname=='joomla_int' && !$delete){
+    		return;
+    	}
+    	
     	$db =& JFactory::getDBO();
     	
  		//check to see if we have been given a joomla id
@@ -271,17 +276,19 @@ class JFusionFunction{
  			$jnames = $db->loadObjectList();
  			
  			foreach($jnames as $jname) {
- 				$user =& JFusionFactory::getUser($jname->name);
- 				$puserinfo = $user->getUser($userinfo->username);
- 				
- 				if($delete) {
- 					$queries[] = "(id = $joomla_id AND jname = '{$jname->name}')";
- 				} else {
- 					$queries[] = "({$puserinfo->userid},'{$puserinfo->username}', $joomla_id, '{$jname->name}')";
+ 				if($jname!="joomla_int") {
+	 				$user =& JFusionFactory::getUser($jname->name);
+	 				$puserinfo = $user->getUser($userinfo->username);
+	 				
+	 				if($delete) {
+	 					$queries[] = "(id = $joomla_id AND jname = ".$db->Quote($jname->name).")";
+	 				} else {
+	 					$queries[] = "(".$db->Quote($puserinfo->userid).",".$db->Quote($puserinfo->username).", $joomla_id, ".$db->Quote($jname->name).")";
+	 				}
+	 				
+	 				unset($user);
+	 				unset($puserinfo);
  				}
- 				
- 				unset($user);
- 				unset($puserinfo);
  			}
  			
  			if(!empty($queries)){
@@ -321,7 +328,7 @@ class JFusionFunction{
     {
     	$column = ($isJoomlaId) ? 'id' : 'userid';
         $db =& JFactory::getDBO();
-        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE '.$column.' = ' . $userid . ' AND jname = ' . $db->Quote($jname);
+        $query = 'SELECT * FROM #__jfusion_users_plugin WHERE '.$column.' = ' . $db->Quote($userid) . ' AND jname = ' . $db->Quote($jname);
         $db->setQuery($query);
         $result = $db->loadObject();
 
@@ -743,17 +750,22 @@ class JFusionFunction{
      * @param $software
      * @param $uid
      * @param $isPluginUid boolean if true, look up the Joomla id in the look up table
+     * @param $jname needed if $isPluginId = true
      * @return unknown_type
      */
-    function getAltAvatar($software,$uid,$isPluginUid = false)
+    function getAltAvatar($software, $uid, $isPluginUid = false, $jname = '', $username = '')
     {
     	$db = & JFactory::getDBO();
 
     	if($isPluginUid) {
-    		$jname = $this->getJname();
-    		$query = "SELECT id FROM #__jfusion_users_plugin WHERE jname = '$jname' AND userid = '$uid'";
-    		$db->setQuery($query);
-    		$uid = $db->loadResult();
+    		$userlookup = lookupUser($jname,$uid,false,$username);
+    		if(!empty($userlookup)) {
+    			$uid = $userlookup->id;
+    		} else {
+    			//no user was found
+    			$avatar = "components".DS."com_comprofiler".DS."plugin".DS."templates".DS."default".DS."images".DS."avatar".DS."nophoto_n.png";
+    			return $avatar;
+    		}
     	}
 
         if($software=="cb") {
