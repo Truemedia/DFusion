@@ -400,9 +400,8 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
   		$params = JRequest::getVar('params');
    		$itemid = $params['itemid_redirect'];
 
-   		if(!empty($itemid))
-   		{
-   			$php = $this->getHookPHP('redirect',$itemid);
+   		if(!empty($itemid) && is_numeric($itemid)) { 
+   		   	$php = $this->getHookPHP('redirect',$itemid);
 			$query = "INSERT INTO #__plugin SET
 				title = 'JFusion Redirect Plugin',
 				hookname = 'init_startup',

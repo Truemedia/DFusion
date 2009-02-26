@@ -30,6 +30,9 @@ class jfusionViewitemidselect extends JView
         $template = $mainframe->getTemplate();
         $document->addStyleSheet("templates/$template/css/general.css");
 
+        //get the number to attach to the id of the input to update after selecting a menu item
+		$elId = JRequest::getVar('elId'); 
+        
         JHTML::_('behavior.tooltip');
         echo '<h3>' . JText::_('SELECT_INTEGRATED_VIEW' ) . '</h3>';
         ?>
@@ -70,9 +73,6 @@ class jfusionViewitemidselect extends JView
         $query = 'SELECT id, menutype, name, alias, params FROM #__menu WHERE link = \'index.php?option=com_jfusion\'';
         $db->setQuery($query);
         $rows = $db->loadObjectList();
-
-		//get the element id to update after selecting a menu item
-		$elId = JRequest::getVar('elId'); 
         
         $row_count = 0;
         foreach($rows as $row) {
@@ -173,7 +173,7 @@ class jfusionViewitemidselect extends JView
             ?>
             <tr class="<?php echo "row$row_count"; ?>">
             <td>
-            <a style="cursor: pointer;" onclick="window.parent.jSelectItemid('<?php echo $row->name; ?>');">
+            <a style="cursor: pointer;" onclick="window.parent.jSelectItemid('<?php echo $row->name; ?>',<?php echo  $elId; ?>);">
             <?php echo htmlspecialchars($row->name, ENT_QUOTES, 'UTF-8');
             ?></a>
             </td>

@@ -293,7 +293,7 @@ class JFusionFunction{
  			
  			if(!empty($queries)){
  				if($delete) {
- 					$query = "DELETE #__jfusion_users_plugin WHERE ".implode(' OR ',$queries);
+ 					$query = "DELETE FROM #__jfusion_users_plugin WHERE ".implode(' OR ',$queries);
  				} else {
  					$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES (". implode(',',$queries) . ")";
  				}
@@ -304,7 +304,7 @@ class JFusionFunction{
  			}
  		} else {
  			if($delete) {
- 				$query = "DELETE #__jfusion_users_plugin WHERE id = $joomla_id AND jname = '$jname'";
+ 				$query = "DELETE FROM #__jfusion_users_plugin WHERE id = $joomla_id AND jname = '$jname'";
  			} else {
 	 			$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES ({$userinfo->userid},'{$userinfo->username}',$joomla_id,'$jname')";	
  			}

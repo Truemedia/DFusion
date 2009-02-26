@@ -22,7 +22,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 	function JFusionUser_vbulletin()
 	{
 		//get the params object
-	    $this->params = JFusionFactory::getParams($this->getJname());
+	    $this->params =& JFusionFactory::getParams($this->getJname());
 	}
 
 	function vBulletinInit()
@@ -114,7 +114,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 		if(!$this->vBulletinInit()) return null;
 
 		//setup the existing user
-		$userdm =& datamanager_init('User', $vbulletin, ERRTYPE_SILENT);
+		$userdm =& datamanager_init('User', $GLOBALS["vbulletin"], ERRTYPE_SILENT);
 		$existinguser = $this->convertUserData($userinfo);
 		$userdm->set_existing($existinguser);
 
