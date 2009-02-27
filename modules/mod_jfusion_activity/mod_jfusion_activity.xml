@@ -74,6 +74,12 @@
 			<option value="3">DISPLAY_BODY_3</option>
 		</param>
 
+		<param name="new_window" type="list" default="0"
+			label="LINK_TARGET" description="LINK_TARGET_DESCR">
+				<option value="0">NO</option>
+				<option value="1">YES</option>
+		</param>
+
 		<param name="forum_mode" type="radio" default="0" label="FORUM_MODE"
 			description="FORUM_MODE_DESCR">
 			<option value="0">FORUM_MODE_0</option>
