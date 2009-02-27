@@ -306,7 +306,7 @@ class JFusionFunction{
  			if($delete) {
  				$query = "DELETE FROM #__jfusion_users_plugin WHERE id = $joomla_id AND jname = '$jname'";
  			} else {
-	 			$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES ({$userinfo->userid},'{$userinfo->username}',$joomla_id,'$jname')";	
+	 			$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES ({$db->Quote($userinfo->userid)},{$db->Quote($userinfo->username)},$joomla_id,{$db->Quote($jname)})";	
  			}
  		 	$db->setQuery($query);
  			if(!$db->query()) {
