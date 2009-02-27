@@ -73,6 +73,10 @@
       <option value="1">YES</option>
       <option value="">NO</option>
     </param>
+    <param name="ssl_verifyhost" type="list" default="1" label="" description="CURL_VERIFYHOST">
+      <option value="1">YES</option>
+      <option value="0">NO</option>
+    </param>
     <param name="@spacer" type="spacer" default="" label="" description="" />
     <param name="login_url" type="text" size="100" label=""
       default="index.php/customer/account/login/" description="CURL_LOGIN_URL" />

@@ -532,8 +532,9 @@ class JFusionCurl{
        	if (!isset($curl_options['expires'])) {$curl_options['expires'] = 1800;}
         if (!isset($curl_options['input_username_id'])) {$curl_options['input_username_id'] = '';}
         if (!isset($curl_options['input_password_id'])) {$curl_options['input_password_id'] = '';}
-       	if (!isset($curl_options['secure']))     {$curl_options['secure'] = '0';}
-       	if (!isset($curl_options['httponly']))     {$curl_options['httponly'] = '0';}
+       	if (!isset($curl_options['secure']))     {$curl_options['secure'] = 0;}
+       	if (!isset($curl_options['httponly']))     {$curl_options['httponly'] = 0;}
+       	if (!isset($curl_options['verifyhost']))     {$curl_options['verifyhost'] = 1;}
 
         // find out if we have a SSL enabled website
         if (strpos( $curl_options['post_url'],'https://') === false){
@@ -555,10 +556,19 @@ class JFusionCurl{
         curl_setopt($ch, CURLOPT_URL,$curl_options['post_url']);
         curl_setopt($ch, CURLOPT_REFERER, "");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,$curl_options['verifyhost']);
+		curl_setopt($ch, CURLOPT_FAILONERROR,1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 0);
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, array('JFusionCurl','read_header'));
         $remotedata = curl_exec($ch);
+		if (curl_error($ch)) {
+			$status['error'][] = JText::_('CURL_ERROR_MSG').": ".curl_error($ch);
+			curl_close($ch);
+			return $status;
+			
+			}
+
         if ($curl_options['integrationtype'] ==1){
             curl_close($ch);
         }
@@ -591,7 +601,9 @@ class JFusionCurl{
             $i = 0;
             $helpthem = 'I found';
             do {
-              $helpthem = $helpthem.' -- Name='.$result[$i]['form_data']['name'].' &ID='.$result[$i]['form_data']['id'];
+           	 if (isset($result[$i]['form_data']['id'])){
+                $helpthem = $helpthem.' -- Name='.$result[$i]['form_data']['name'].' &ID='.$result[$i]['form_data']['id'];
+           	 }
               $i +=1;
             } while ($i<$frmcount);
       		$status['error'][] = JText::_('CURL_NO_LOGINFORM')." ".$helpthem;
@@ -709,6 +721,8 @@ class JFusionCurl{
              curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
              curl_setopt($ch, CURLOPT_REFERER, "");
              curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,$curl_options['verifyhost']);
+			 curl_setopt($ch, CURLOPT_FAILONERROR,1);
              curl_setopt($ch, CURLOPT_HEADERFUNCTION, array('JFusionCurl','read_header'));
         }
         curl_setopt($ch, CURLOPT_URL,$form_action);
@@ -716,6 +730,11 @@ class JFusionCurl{
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_params.$strParameters);
         $remotedata = curl_exec($ch);
+		if (curl_error($ch)) {
+			$status['error'][] = JText::_('CURL_ERROR_MSG').": ".curl_error($ch);
+			curl_close($ch);
+			return $status;
+		}
         curl_close($ch);
 
         #we have to set the cookies now
@@ -752,8 +771,9 @@ class JFusionCurl{
         if (!isset($curl_options['cookiedomain']))   {$curl_options['cookiedomain'] = '';}
        if (!isset($curl_options['cookiepath']))   {$curl_options['cookiepath'] = '';}
        if (!isset($curl_options['leavealone']))   {$curl_options['leavealone'] = NULL;}
-       if (!isset($curl_options['secure']))     {$curl_options['secure'] = '0';}
-       if (!isset($curl_options['httponly']))     {$curl_options['httponly'] = '0';}
+       if (!isset($curl_options['secure']))     {$curl_options['secure'] = 0;}
+       if (!isset($curl_options['httponly']))     {$curl_options['httponly'] = 0;}
+       	if (!isset($curl_options['verifyhost']))     {$curl_options['verifyhost'] = 1;}
 
         # prevent usererror by not supplying trailing backslash
         if (!(substr($curl_options['post_url'],-1) == "/")) {
@@ -763,10 +783,17 @@ class JFusionCurl{
         curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
         curl_setopt($ch, CURLOPT_REFERER, "");
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,$curl_options['verifyhost']);
+		curl_setopt($ch, CURLOPT_FAILONERROR,1);
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, array('JFusionCurl','read_header'));
         curl_setopt($ch, CURLOPT_URL,$curl_options['post_url']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
         $remotedata = curl_exec($ch);
+		if (curl_error($ch)) {
+			$status['error'][] = JText::_('CURL_ERROR_MSG').": ".curl_error($ch);
+			curl_close($ch);
+			return $status;
+			}
         curl_close($ch);
 
         #we have to delete the cookies now
