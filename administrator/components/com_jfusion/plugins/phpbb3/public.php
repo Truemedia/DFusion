@@ -46,42 +46,42 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 		//get a unix time from 5 mintues ago
 		date_default_timezone_set('UTC');
 		$active = strtotime("-5 minutes",time());
-		
+
 		$query = "SELECT DISTINCT u.user_id AS userid, u.username, u.username AS name FROM #__users AS u INNER JOIN #__sessions AS s ON u.user_id = s.session_user_id WHERE s.session_user_id != 1 AND s.session_time > $active";
 		return $query;
 	}
-	
+
 	function getNumberOnlineGuests()
 	{
 		//get a unix time from 5 mintues ago
 		date_default_timezone_set('UTC');
 		$active = strtotime("-5 minutes",time());
-		
+
 		$db =& JFusionFactory::getDatabase($this->getJname());
 		$query = "SELECT COUNT(*) FROM #__sessions WHERE session_user_id = 1 AND session_time > $active";
 		$db->setQuery($query);
 		$result = $db->loadResult();
 		return $result;
 	}
-	
+
 	function getNumberOnlineMembers()
 	{
 		//get a unix time from 5 mintues ago
 		date_default_timezone_set('UTC');
 		$active = strtotime("-5 minutes",time());
-		
+
 		$db =& JFusionFactory::getDatabase($this->getJname());
 		$query = "SELECT COUNT(*) FROM #__sessions WHERE session_user_id != 1 AND session_time > $active";
-		
+
 		$db->setQuery($query);
 		$result = $db->loadResult();
 		return $result;
-	}     
-	
+	}
+
     /************************************************
 	 * Functions For Frameless Integration
 	 ***********************************************/
-		
+
     function & getBuffer($jPluginParam)
     {
         // Get the path
@@ -236,72 +236,38 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
       function fixAction($url, $extra, $baseURL){
       	$url = htmlspecialchars_decode($url);
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-		$params = JFusionFactory::getParams('joomla_int');
-		$sefmode = $params->get('sefmode');
-      	//check to see if the URL is in SEF
-      	if(preg_match("/\,/",$url && $sefmode == 1)) {
-			$parts = preg_split('/\/\&|\/|&/', $url);
+        $config =& JFactory::getConfig();
+        $sef = $config->getValue( 'config.sef' );
+        $Itemid = JRequest::getVar('Itemid');
+
+     	//check to see if the URL is in SEF
+      	if($sef == 1) {
+			$parts = preg_split('/\/\&|\/|&|\?/', $url);
 			foreach ($parts as $part){
 				$vars =preg_split('/,|=/', $part);
 				if(isset($vars[1])){
 					$url_variables[$vars[0]] = $vars[1];
+				} elseif (strpos($part,'.php')){
+					$jfile = $part;
 				}
 			}
+			$baseURL = substr(JURI::base(),0,-1) . JRoute::_('index.php?option=com_jfusion&Itemid='.$Itemid.'&jfile='.$jfile);
+			$replacement = 'action="'.$baseURL . '"' . $extra . '>';
 	    } else {
 	      	$url_details = parse_url($url);
     	  	$url_variables = array();
       		parse_str($url_details['query'], $url_variables);
+   	     	$jfile = basename($url_details['path']);
+	      	//set the correct action and close the form tag
+			$replacement = 'action="'.$baseURL . '"' . $extra . '>';
+      		$replacement .= '<input type="hidden" name="jfile" value="'. $jfile . '">';
+      		$replacement .= '<input type="hidden" name="Itemid" value="'.$Itemid . '">';
+    	  	$replacement .= '<input type="hidden" name="option" value="com_jfusion">';
 		}
+        unset($url_variables['option'],$url_variables['jfile'],$url_variables['Itemid']);
 
-      	//set the correct action and close the form tag
-		$replacement = 'action="'.$baseURL . '"' . $extra . '>';
-
-		//add which file is being referred to
-		if (!empty($url_variables['jfile'])){
-        	//use the action file that was in jfile variable
-        	$jfile = $url_variables['jfile'];
-        	unset($url_variables['jfile']);
-		} else {
-			//get the filename
-        	$jfile = JRequest::getVar('jfile');
-        	if(!empty($jfile)){
-				//use the action file from the action URL itself
-    	     	$jfile = basename($url_details['path']);
-        	}
-		}
-
-		//actions references from the ucp file always go back to ucp
-		global $jfusion_file;
-		if($jfusion_file == 'ucp.php'){
-			$jfile = $jfusion_file;
-		}
-
-
-      	$replacement .= '<input type="hidden" name="jfile" value="'. $jfile . '">';
-
-		//add a reference to JFusion
-      	$replacement .= '<input type="hidden" name="option" value="com_jfusion">';
-        unset($url_variables['option']);
-
-		//add a reference to the itemid if set
-        $Itemid = JRequest::getVar('Itemid');
-	    if ($Itemid){
-      		$replacement .=  '<input type="hidden" name="Itemid" value="'.$Itemid . '">';
-	    }
-        unset($url_variables['Itemid']);
-
-        //needed in case the url is generated using default view from the joomla_int plugin
-		$view = JRequest::getVar('view');
-		if ($view){
-			$replacement .=  '<input type="hidden" name="view" value="'. $view . '">';
-		}
-		unset($url_variables['view']);
-		$jname = JRequest::getVar('jname');
-		if ($jname){
-			$replacement .=  '<input type="hidden" name="jname" value="'. $jname . '">';
-		}
-		unset($url_variables['jname']);
+		//added unset sid as a test
+		unset($url_variables['sid']);
 
 		//add any other variables
 		if(is_array($url_variables)){
@@ -309,7 +275,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       			$replacement .=  '<input type="hidden" name="'. $key .'" value="'.$value . '">';
       		}
 		}
-
       	return $replacement;
       }
 
