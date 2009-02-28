@@ -69,10 +69,11 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		// Get the path
 		$params = JFusionFactory::getParams($this->getJname());
 		$source_path = $params->get('source_path');
+		$source_url = $params->get('source_url');
 
-		$user		 = $params->get('database_user');
-		$host		 = $params->get('database_host');
-		$database	= $params->get('database_name');
+		$doku_rel = preg_replace( '#(\w{0,10}://)(.*?)/(.*?)#is'  , '$3' , $source_url );
+		$doku_rel = preg_replace('#//+#','/',"/$doku_rel/");
+		define('DOKU_COOKIE', 'DW'.md5($doku_rel));
 
 		if (substr($source_path, -1) == DS) {
 			$index_file = $source_path .'doku.php';
