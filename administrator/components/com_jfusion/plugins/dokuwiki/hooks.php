@@ -25,8 +25,33 @@ class JFusionDokuWikiHook
   }
 
   function _ACTION_SHOW_REDIRECT(&$event, $param) {
-	header('Location: '. JFusionFunction::routeURL('doku.php?id='.$event->data['id'].'&do='.$event->data['preact'], JRequest::getVar('Itemid') ) );
+/*
+ 		global $mainframe;
+
+		//var_dump($mainframe);
+		//die();
+//		$mainframe = &JFactory::getApplication('site');
+		$my =& JFactory::getUser();
+//		echo $mainframe->getClientId();
+
+//		var_dump($mainframe);
+
+//		echo $my->get('id');
+        // logout any joomla users
+       $mainframe->logout();
+//		die();
+        // clean up session
+        $session =& JFactory::getSession();
+        $session->close();
+*/
+	if ( $event->data['preact']['save'] ) {
+		header('Location: '.substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'], JRequest::getVar('Itemid')));
+	} else {
+		header('Location: '.substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'].'&do='.$event->data['preact'], JRequest::getVar('Itemid')));
+	}
+	exit();
   }
+
 
   function _ACTION_ACT_PREPROCESS(&$event, $param) {
 	ini_set("session.save_handler", "files");

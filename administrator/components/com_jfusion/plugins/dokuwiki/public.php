@@ -40,24 +40,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 	function & getBuffer()
 	{
-		/*
-		$do = JRequest::getVar('do');
-		$page = JRequest::getVar('page');
-
-		if ( $do['save'] == 'Save' ||
-			$do == 'edit' ||
-			( $do == 'admin' && $page == 'config' ) ) $needCurl = true;
-
-//		if($needCurl) $buffer = $this->getBufferCurl();
-//		else $buffer = $this-> getBufferInclude();*/
- 		$buffer = $this-> getBufferInclude();
-		return $buffer;
-	}
-
-	function & getBufferInclude()
-	{
 		// We're going to want a few globals... these are all set later.
-
 		global $INFO,$ACT,$ID,$QUERY,$USERNAME,$CLEAR,$QUIET,$USERINFO,$DOKU_PLUGINS,$PARSER_MODES,$TOC,$EVENT_HANDLER,$AUTH,$IMG,$JUMPTO;
 		global $HTTP_RAW_POST_DATA,$RANGE,$HIGH,$MSG,$DATE,$PRE,$TEXT,$SUF,$AUTH_ACL,$QUIET,$SUM,$SRC,$IMG,$NS,$IDX,$REV,$INUSE,$NS,$AUTH_ACL;
 		global $UTF8_UPPER_TO_LOWER,$UTF8_LOWER_TO_UPPER,$UTF8_LOWER_ACCENTS,$UTF8_UPPER_ACCENTS,$UTF8_ROMANIZATION,$UTF8_SPECIAL_CHARS,$UTF8_SPECIAL_CHARS2;
@@ -78,9 +61,13 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		if (substr($source_path, -1) == DS) {
 			$index_file = $source_path .'doku.php';
 			if ( JRequest::getVar('jfile') == 'detail.php' ) $index_file = $source_path.'lib'.DS.'exe'.DS.'detail.php';
+//			if ( JRequest::getVar('jfile') == 'fetch.php' ) $index_file = $source_path.'lib'.DS.'exe'.DS.'fetch.php';
+//			if ( JRequest::getVar('jfile') == 'feed.php' ) $index_file = $source_path .'feed.php';
 		} else {
 			$index_file = $source_path .DS.'doku.php';
 			if ( JRequest::getVar('jfile') == 'detail.php' ) $index_file = $source_path.DS.'lib'.DS.'exe'.DS.'detail.php';
+//			if ( JRequest::getVar('jfile') == 'fetch.php' ) $index_file = $source_path.DS.'lib'.DS.'exe'.DS.'fetch.php';
+//			if ( JRequest::getVar('jfile') == 'feed.php' ) $index_file = $source_path .DS.'feed.php';
 		}
 
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
@@ -101,65 +88,15 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$rs = include_once($index_file);
 		$buffer = ob_get_contents();
 		ob_end_clean();
-
-		//change the current directory back to Joomla.
+		//change the current directory back to Joomla. 5*60
 		chdir(JPATH_SITE);
-
 
 		// Log an error if we could not include the file
 		if (!$rs) {
 			JError::raiseWarning(500, 'Could not find DokuWiki in the specified directory');
 		}
-
 		return $buffer;
 	}
-
-/*	function & getBufferCurl()
-	{
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'helper.php');
-		// Get the path
-		$params = JFusionFactory::getParams($this->getJname());
-		$share = Dokuwiki::getInstance();
-		$user = & JFactory::getUser();
-		$conf = $share->getConf();
-
-		$source_path = $params->get('source_path');
-		if (substr($source_path, -1) == DS) {
-			$index_file = $source_path .'doku.php';
-		} else {
-			$index_file = $source_path .DS.'doku.php';
-		}
-		if ( !is_file($index_file) ) {
-			JError::raiseWarning(500, 'The path to the doku index file set in the component preferences does not exist');
-			return null;
-		}
-
-		$source_url = $params->get('source_url');
-		if (substr($source_url, -1) == DS) {
-			$url = $source_url .'doku.php';
-			if ( JRequest::getVar('file') == 'detail.php' ) $url = $source_url.'lib/exe/detail.php';
-		} else {
-			$url = $source_url .DS.'doku.php';
-			if ( JRequest::getVar('file') == 'detail.php' ) $url = $source_url.DS.'lib/exe/detail.php';
-		}
-
-		if ( $conf['userewrite'] == 2 ) {
-			$home = explode( '/' , $_SERVER['PATH_INFO']);
-			$home = $home[count($home)-1];
-			$url = $url.'/'.$home;
-		}
-
-		if ( stristr(JRequest::getVar('do'), 'login') ) header('Location: '.JURI::base().'index.php?option=com_user&view=login');
-		$buffer = JFusionCurlHelper::getBuffer($this->getJname(),$url,$_GET,$_POST);
-
-		// Log an error if we could not include the file
-		if (!$buffer) {
-			JError::raiseWarning(500, 'Could not access dokuwiki in the specified directory');
-		}
-
-		return $buffer;
-	}*/
 
 	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
 	{
@@ -171,14 +108,6 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$regex_body		= array();
 		$replace_body	= array();
 
-		$url_r = array( 'feed.php', 'fetch.php');
-		$this->replaceUrl($buffer,'doku.php',$url_r,$conf['userewrite'] );
-
-		$this->replaceForm($buffer,'doku.php',null,$conf['userewrite']);
-
-		$regex_body[] = '#(src)=["|\'][./|/](.*?)["|\']#mS';
-		$replace_body[]	= '$1="'.$integratedURL.'$2"';
-
 		$regex_body[]	= '#(href)=["|\']/feed.php["|\']#mS';
 		$replace_body[]	= '$1="'.$integratedURL.'feed.php"';
 
@@ -186,6 +115,17 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
 		$regex_body[]	= '#href=["|\']/(_media/)(.*?)["|\']#mS';
 		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
+
+		$regex_body[] = '#href=["|\'](?!\w{0,10}://|\w{0,10}:|\#)/(.*?)["|\']#mSie';
+		$replace_body[]	= '\'href="\'.$this->fixUrl("$1").\'"\'';
+
+//		$regex_body[] = '#href=["|\'][./|/](.*?)["|\']#mSie';
+//		$replace_body[]	= 'href="'.$integratedURL.'$1"';
+
+		$this->replaceForm($buffer);
+
+		$regex_body[] = '#(src)=["|\'][./|/](.*?)["|\']#mS';
+		$replace_body[]	= '$1="'.$integratedURL.'$2"';
 
 		$buffer = preg_replace($regex_body, $replace_body, $buffer);
 	}
@@ -207,207 +147,83 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$buffer = preg_replace($regex_header, $replace_header, $buffer);
 	}
 
-	function replaceUrl( &$data , $default='index.php' , $url_r=array(), $sef=false ) {
-		if(!$data || ( !is_array($url_r) && $url_r ) ) return false;
-		if (!$url_r) $url_r=array();
-		$pattern = '#<a(.*?)href=["|\'](.*?)["|\'](.*?)>#mSsi';
-
-		preg_match_all($pattern, $data, $links,$file);
-		$count = 0;
-		foreach ( $links[2] as $key => $value ) {
-			if ( strstr( substr($value, 0, 3) , '/' ) ) {
-				$path_parts = pathinfo($value);
-
-				$uri = new JURI();
-
-				$addlink = false;
-				unset( $id,$media,$other,$file);
-
-				switch ($sef) {
-				    case 0:
-						if ( strpos($path_parts['basename'],'?') === false ) $id = $path_parts['basename'];
-						else list( $file , $other ) = explode( '?' , $path_parts['basename'] );
-
-						if ( array_search($file, $url_r) === false ) {
-							$addlink = true;
-							if ( strpos($file ,$default) === false) $uri->setVar('jfile', $file);
-							parse_str( $other , $arg );
-						}
-				        break;
-				    case 1:
-				    	if ( strpos($path_parts['dirname'],'_media') !== false ) break;
-						if ( strpos($path_parts['dirname'],'_detail') !== false ) {
-							$addlink = true;
-							$uri->setVar('jfile', 'detail.php');
-
-							list( $media , $id ) = explode( '?' , $path_parts['basename'] );
-							parse_str( $id , $arg );
-							$uri->setVar('media', $media);
-						} else {
-							if ( strpos($path_parts['basename'],'?') === false ) $id = $path_parts['basename'];
-							else list( $id , $other ) = explode( '?' , $path_parts['basename'] );
-
-							if ( array_search($id, $url_r) === false ) {
-								$addlink = true;
-								parse_str( $other , $arg );
-								$arg['id'] = $id;
-							}
-						}
-
-				        break;
-				    case 2:
-						$start = strpos($value,'.php')+4;
-						$file = substr($value, 0, $start ); // returns "d"
-						$file = explode('/' , $file );
-						$file = $file[count($file)-1];
-						if ( array_search($file, $url_r) === false ) {
-							$addlink = true;
-							$start = substr($value, $start+1 ); // returns "d"
-							if ( $file == 'detail.php' ) {
-								$uri->setVar('jfile', 'detail.php');
-								list( $media , $id ) = explode( '?' , $start );
-								parse_str( $id , $arg );
-								$uri->setVar('media', $media);
-							} else {
-								if ( strpos($start,'?') === false )	$id = $start;
-								else list( $id , $other ) = explode( '?' , $start );
-								parse_str( $other , $arg );
-								$arg['id'] = $id;
-								if ( strpos($file ,$default) === false) $uri->setVar('jfile', $file);
-							}
-						}
-				        break;
-				}
-
-				if ( $addlink ) {
-					$count++;
-					foreach ( $arg as $arg_key => $arg_value ) {
-						if ($arg_value) {
-							if ( strpos($arg_value,'#') === false ) {
-								$uri->setVar($arg_key, $arg_value);
-							} else {
-								list( $v , $f ) = explode( '#' , $arg_value );
-								$uri->setVar($arg_key, $v);
-								$uri->setFragment($f);
-							}
-						}
-					}
-
-					$jfile = $uri->getVar('jfile');
-					if(empty($jfile)){
-						$uri->setVar('jfile', 'doku.php');
-					}
-					$value = JRoute::_('index.php?'.$uri->getQuery());
-					$data = str_replace($links[0][$key], '<a'.$links[1][$key].'href="'.$value.'"'.$links[3][$key].'>', $data);
-				 }
+	function fixUrl($q='')
+	{
+		//disable joomla :/- encoding and remove
+		$order		= array(':','%3A','-');
+		$replace	= array('__CO__','__CO__','__MI__');
+		$q = str_replace($order, $replace, $q);
+		if ( strpos($q,'_detail/') === 0 || strpos($q,'lib/exe/detail.php') === 0 ) {
+			if( strpos($q,'_detail/') === 0 ) {
+				$q = substr($q,strlen('_detail/'));
+			} else {
+				$q = substr($q,strlen('lib/exe/detail.php'));
 			}
+
+			if ( strpos($q,'?') === 0 ) {
+				$url = JFusionFunction::routeURL('detail.php'.$q, JRequest::getVar('Itemid'));
+			} else {
+				$q = ltrim( $q , '/' );
+				$q = str_replace('?','&',$q);
+				$url = JFusionFunction::routeURL('detail.php?media='.$q, JRequest::getVar('Itemid'));
+			}
+		} else if ( strpos($q,'_media/') === 0 || strpos($q,'lib/exe/fetch.php') === 0 ) {
+			if( strpos($q,'_media/') === 0 ) {
+				$q = substr($q,strlen('_media/'));
+			} else {
+				$q = substr($q,strlen('lib/exe/fetch.php'));
+			}
+
+			if ( strpos($q,'?') === 0 ) {
+				$url = JFusionFunction::routeURL('fetch.php'.$q, JRequest::getVar('Itemid'));
+			} else {
+				$q = ltrim( $q , '/' );
+				$q = str_replace('?','&',$q);
+				$url = JFusionFunction::routeURL('fetch.php?media='.$q, JRequest::getVar('Itemid'));
+			}
+		} else if ( strpos($q,'doku.php') === 0 ) {
+			$q = substr($q,strlen('doku.php'));
+			if ( strpos($q,'?') === 0 ) {
+				$url = JFusionFunction::routeURL('doku.php'.$q, JRequest::getVar('Itemid'));
+			} else {
+				$q = ltrim( $q , '/' );
+				$q = str_replace('?','&',$q);
+				if ( strlen($q) ) $url = JFusionFunction::routeURL('doku.php?id='.$q, JRequest::getVar('Itemid'));
+				else $url = JFusionFunction::routeURL('doku.php', JRequest::getVar('Itemid'));
+			}
+		} else {
+			$q = str_replace('?','&',$q);
+			if ( strlen($q) ) $url = JFusionFunction::routeURL('doku.php?id='.$q, JRequest::getVar('Itemid'));
+			else $url = JFusionFunction::routeURL('', JRequest::getVar('Itemid'));
 		}
-		return $count;
+		//disable joomla :/- encoding and readd them
+		$order   = array('__CO__','__MI__');
+		$replace = array(':','-');
+		$url = str_replace($order, $replace, $url);
+
+		if ( $url ) return substr(JURI::base(),0,-1).$url;
+		return $q;
 	}
 
-	function replaceForm( &$data , $default='index.php', $url_r=array(), $sef=false ) {
-		if(!$data || ( !is_array($url_r) && $url_r ) ) return false;
-		if (!$url_r) $url_r=array();
-		$pattern = '#<form(.*?)action=["|\'](.*?)["|\'](.*?)>(.*?)</form>#mSsi';
+	function replaceForm( &$data ) {
+		$pattern = '#<form(.*?)action=["|\']/(.*?)["|\'](.*?)>(.*?)</form>#mSsi';
 		$getData = '';
-		if ( !$sef ) {
-			if (JRequest::getVar('Itemid')) $getData .= '<input name="Itemid" value="'.JRequest::getVar('Itemid').'" type="hidden">';
-			if (JRequest::getVar('option')) $getData .= '<input name="option" value="'.JRequest::getVar('option').'" type="hidden">';
-			if (JRequest::getVar('jname')) $getData .= '<input name="jname" value="'.JRequest::getVar('jname').'" type="hidden">';
-			if (JRequest::getVar('view')) $getData .= '<input name="view" value="'.JRequest::getVar('view').'" type="hidden">';
-		}
+		if (JRequest::getVar('Itemid')) $getData .= '<input name="Itemid" value="'.JRequest::getVar('Itemid').'" type="hidden">';
+		if (JRequest::getVar('option')) $getData .= '<input name="option" value="'.JRequest::getVar('option').'" type="hidden">';
+		if (JRequest::getVar('jname')) $getData .= '<input name="jname" value="'.JRequest::getVar('jname').'" type="hidden">';
+		if (JRequest::getVar('view')) $getData .= '<input name="view" value="'.JRequest::getVar('view').'" type="hidden">';
 
 		preg_match_all($pattern, $data, $links);
-		$count = 0;
+
 		foreach ( $links[2] as $key => $value ) {
 			$method = '#method=["|\']post["|\']#mS';
 			$is_get = true;
-			if ( strstr( substr($value, 0, 3) , '/' ) ) {
-				if ( preg_match($method,$links[1][$key]) || preg_match($method,$links[3][$key]) ) $is_get = false;
-				$path_parts = pathinfo($value);
+			if ( preg_match($method,$links[1][$key]) || preg_match($method,$links[3][$key]) ) $is_get = false;
+			$value = $this->fixUrl($links[2][$key]);
 
-				$uri = new JURI();
-
-				$addlink = false;
-				unset( $id,$media,$other,$file);
-
-				switch ($sef) {
-				    case 0:
-						if ( strpos($path_parts['basename'],'?') === false ) $id = $path_parts['basename'];
-						else list( $file , $other ) = explode( '?' , $path_parts['basename'] );
-
-						if ( array_search($file, $url_r) === false ) {
-							$addlink = true;
-							if ( strpos($file ,$default) === false) $uri->setVar('jfile', $file);
-							parse_str( $other , $arg );
-						}
-				        break;
-				    case 1:
-				    	if ( strpos($path_parts['dirname'],'_media') !== false ) break;
-						if ( strpos($path_parts['dirname'],'_detail') !== false ) {
-							$addlink = true;
-							$uri->setVar('jfile', 'detail.php');
-
-							list( $media , $id ) = explode( '?' , $path_parts['basename'] );
-							parse_str( $id , $arg );
-							$uri->setVar('media', $media);
-						} else {
-							if ( strpos($path_parts['basename'],'?') === false ) $id = $path_parts['basename'];
-							else list( $id , $other ) = explode( '?' , $path_parts['basename'] );
-
-							if ( array_search($id, $url_r) === false ) {
-								$addlink = true;
-								parse_str( $other , $arg );
-								$arg['id'] = $id;
-							}
-						}
-
-				        break;
-				    case 2:
-						$start = strpos($value,'.php')+4;
-						$file = substr($value, 0, $start ); // returns "d"
-						$file = explode('/' , $file );
-						$file = $file[count($file)-1];
-						if ( array_search($file, $url_r) === false ) {
-							$addlink = true;
-							$start = substr($value, $start+1 ); // returns "d"
-							if ( $file == 'detail.php' ) {
-								$uri->setVar('jfile', 'detail.php');
-								list( $media , $id ) = explode( '?' , $start );
-								parse_str( $id , $arg );
-								$uri->setVar('media', $media);
-							} else {
-								if ( strpos($start,'?') === false )	$id = $start;
-								else list( $id , $other ) = explode( '?' , $start );
-								parse_str( $other , $arg );
-								$arg['id'] = $id;
-								if ( strpos($file ,$default) === false) $uri->setVar('jfile', $file);
-							}
-						}
-				        break;
-				}
-
-				if ( $addlink ) {
-					$count++;
-					foreach ( $arg as $arg_key => $arg_value ) {
-						if ($arg_value) {
-							if ( strpos($arg_value,'#') === false ) {
-								$uri->setVar($arg_key, $arg_value);
-							} else {
-								list( $v , $f ) = explode( '#' , $arg_value );
-								$uri->setVar($arg_key, $v);
-								$uri->setFragment($f);
-							}
-						}
-					}
-
-					$value = JRoute::_('index.php?'.$uri->getQuery());
-					if( $is_get && substr($value, -1) != DS ) $links[4][$key] = $getData.$links[4][$key];
-					$data = str_replace($links[0][$key], '<form'.$links[1][$key].'action="'.$value.'"'.$links[3][$key].'>'.$links[4][$key].'</form>', $data);
-				 }
-			}
+			if( $is_get && substr($value, -1) != DS ) $links[4][$key] = $getData.$links[4][$key];
+			$data = str_replace($links[0][$key], '<form'.$links[1][$key].'action="'.$value.'"'.$links[3][$key].'>'.$links[4][$key].'</form>', $data);
 		}
-		return $count;
 	}
 
 	/************************************************
@@ -450,13 +266,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			define(DOKU_INC, $rootFolder.'/');
 		}
 
-
 		require_once('doku_search.php');
-
-//		require_once(DOKU_INC.'inc'.DS.'fulltext.php');
-//		require_once(DOKU_INC.'inc'.DS.'common.php');
-
-
 
 		$results = ft_pageSearch($text, &$highlights);
 
