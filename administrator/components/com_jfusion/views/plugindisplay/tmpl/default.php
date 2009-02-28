@@ -188,10 +188,18 @@ echo '<td>' .$total_users . '</td>';
 $new_registration = NULL;
 $new_registration  = $JFusionPlugin->allowRegistration();
 
-if ($new_registration) {
-echo '<td><img src="'.$images.'tick.png" border="0" alt="Enabled" />' . JText::_('ENABLED') . '</td>';
+if ( $record->master != '1' ) {
+	if ($new_registration) {
+		echo '<td><img src="'.$images.'cross.png" border="0" alt="Enabled" />' . JText::_('ENABLED') . '</td>';
+	} else {
+		echo '<td><img src="'.$images.'tick.png" border="0" alt="Disabled" />' . JText::_('DISABLED') . '</td>';
+	}
 } else {
-echo '<td><img src="'.$images.'cross.png" border="0" alt="Disabled" />' .JText::_('DISABLED') . '</td>';
+	if ($new_registration) {
+		echo '<td><img src="'.$images.'tick.png" border="0" alt="Enabled" />' . JText::_('ENABLED') . '</td>';
+	} else {
+		echo '<td><img src="'.$images.'cross.png" border="0" alt="Disabled" />' . JText::_('DISABLED') . '</td>';
+	}
 }
 
 //output detailed configuration warnings for the plugin
