@@ -70,8 +70,7 @@
 			<filename>controllers/index.html</filename>
     		<folder>packages</folder>
     		<folder>images</folder>
-    		<folder>js</folder>
-    		<folder>css</folder>
+    		<folder>usersync</folder>
     		<folder>models</folder>
 	    	<folder>views</folder>
 		    <folder>elements</folder>

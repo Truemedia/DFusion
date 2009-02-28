@@ -125,11 +125,6 @@ class JFusionHook
 			$uri->setFragment($anchor);
 		}
 
-		if(strpos($url, 'jfile=')) {
-            $url = preg_replace('#.*jfile=(.*?\.php).*#mS', '$1', $url);
-            return $url;
-		}
-
 		$view = basename($url);
 
 		//add an excemption for the admincp
@@ -141,12 +136,6 @@ class JFusionHook
 		//add an excemption for editing profiles
 		if($arrParams['i'] == 'profile' || $arrParams['i'] == 'prefs' ||$arrParams['i'] == 'zebra') {
 				$view = 'ucp.php';
-		}
-
-		//captha codes should be displayed as direct links
-		if ($view == 'ucp.php' && $arrParams['mode'] == 'confirm'){
-	        global $jfusion_source_url;
-	        return $jfusion_source_url . 'ucp.php' .$uri->toString(array('query', 'fragment'));
 		}
 
 		//set the jfile param if needed

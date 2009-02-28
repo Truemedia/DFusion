@@ -33,6 +33,25 @@ defined('_JEXEC' ) or die('Restricted access' );
 
 class JFusionUsersync{
 
+    function saveErrorData($syncid, $syncdata)
+    {
+        //serialize the $syncdata to allow storage in a file
+        $serialized = serialize($syncdata);
+		//set file path
+		$file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'usersync'.DS.$syncid;
+		jimport('joomla.filesystem.file');
+		JFile::write($file, $serialized);
+    }
+
+    function getErrorData($syncid)
+    {
+		//set file path
+		$file = JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'usersync'.DS.$syncid;
+		jimport('joomla.filesystem.file');
+		$serialized = JFile::read($file);
+        $syncdata = unserialize($serialized);
+		return $syncdata;
+    }
 
     function saveSyncdata($syncdata)
     {
@@ -80,7 +99,7 @@ class JFusionUsersync{
 		$syncdata = JFusionUsersync::getSyncdata($syncid);
 		foreach ($syncerror as $id => $error) {
 			if ($error['action'] == '1') {
-				//update the first entity 
+				//update the first entity
 				echo '<h2>' . $syncdata['errors'][$id]['user']['jname'] . ' ' . JText::_('USER')  .' ' .JText::_('UPDATE').'</h2>';
 		        $JFusionPlugin = JFusionFactory::getUser($syncdata['errors'][$id]['user']['jname']);
 			    debug::show($syncdata['errors'][$id]['conflict']['userinfo'], $syncdata['errors'][$id]['conflict']['jname']. ' ' . JText::_('USER'). ' ' . JText::_('INFORMATION'),1);
@@ -117,7 +136,7 @@ class JFusionUsersync{
 				//prevent Joomla from deleting all the slaves via the user plugin if it is set as master
 				global $JFusionActive;
 				$JFusionActive = 1;
-				
+
 		        $JFusionPlugin = JFusionFactory::getUser($error['user_jname']);
 		        $userinfo = $JFusionPlugin->getUser(html_entity_decode($error['user_username']));
 		        $status = $JFusionPlugin->deleteUser($userinfo);
@@ -131,13 +150,13 @@ class JFusionUsersync{
 				}
 			} elseif ($error['action'] == '4') {
 				//delete the second entity (conflicting plugin)
-			
+
 				//NOT IMPLEMENTED YET
 
 				//prevent Joomla from deleting all the slaves via the user plugin if it is set as master
 				global $JFusionActive;
 				$JFusionActive = 1;
-				
+
 		        $JFusionPlugin = JFusionFactory::getUser($error['conflict_jname']);
 		      	$userinfo = $JFusionPlugin->getUser(html_entity_decode($error['conflict_username']));
 		        $status = $JFusionPlugin->deleteUser($userinfo);
@@ -152,7 +171,7 @@ class JFusionUsersync{
 			}
 		}
 		echo '</div>';
-		echo "<h2>".JText::_('CONFLICT_RESOLUTION_COMPLETE')."</h2>";		
+		echo "<h2>".JText::_('CONFLICT_RESOLUTION_COMPLETE')."</h2>";
     }
 
     function SyncExecute($syncdata, $action, $plugin_offset, $user_offset)
@@ -160,7 +179,11 @@ class JFusionUsersync{
         //setup some variables
         $MasterPlugin = JFusionFactory::getAdmin($syncdata['master']);
         $MasterUser = JFusionFactory::getUser($syncdata['master']);
-        $sync_errors = array();
+        $sync_errors_array = array();
+
+        //only store syncdata every 20 users for better performance
+        $store_interval = 20;
+        $user_count = 0;
 
         //we should start with the import of slave users into the master
         if ($syncdata['slave_data']) {
@@ -212,7 +235,7 @@ class JFusionUsersync{
                             $sync_error['user']['userlist'] = $userlist[$j];
 
                             //save the error for later
-                            $syncdata['errors'][] = $sync_error;
+                            $sync_error_array[] = $sync_error;
 
                         } else {
                             //update the lookup table
@@ -228,13 +251,20 @@ class JFusionUsersync{
                         $syncdata['slave_data'][$i]['total'] -= 1;
 
                         //update the database
-                        JFusionUsersync::updateSyncdata($syncdata);
+                        if ($user_count > $store_interval){
+                        	JFusionUsersync::updateSyncdata($syncdata);
+                        	JFusionUsersync::saveErrorData($syncdata['syncid'],$sync_error_array);
+                        	$user_count = 0;
+                        } else {
+                        	$user_count = $user_count + 1;
+                        }
         			}
                 }
             }
             //end of sync, save the final data
             $syncdata['completed'] = 'true';
             JFusionUsersync::updateSyncdata($syncdata);
+           	JFusionUsersync::saveErrorData($syncdata['syncid'],$sync_error_array);
 
             //update the finish time
       		$db =& JFactory::getDBO();

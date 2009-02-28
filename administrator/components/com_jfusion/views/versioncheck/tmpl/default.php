@@ -49,7 +49,7 @@ if (version_compare(phpversion(), $this->JFusionVersion->php[0]->data()) == -1){
 <td><?php echo phpversion();?></td>
 <td><?php echo $this->JFusionVersion->php[0]->data();?></td></tr>
 
-<?
+<?php
 $version =& new JVersion;
 $joomla_version = $version->getShortVersion();
 //remove any letters from the version

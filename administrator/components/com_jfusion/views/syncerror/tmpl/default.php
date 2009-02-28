@@ -51,14 +51,14 @@ JHTML::_('behavior.modal', 'a.modal');
 <input type="hidden" name="syncid" value="<?php echo $this->syncid;?>" />
 
 <div id="ajax_bar"><?php echo JText::_('APPLY_ACTION_ALL_CONFLICTS'); ?>
-<?php 
+<?php
 $action = $this->syncdata['action'];
 if($action=="slave") {
 	$user = JText::_('MASTER');
 	$conflict = JText::_('SLAVE');
 } else {
 	$user = JText::_('SLAVE');
-	$conflict = JText::_('MASTER');	
+	$conflict = JText::_('MASTER');
 }
 ?>
 <select name="default_value" default="0">
@@ -96,9 +96,9 @@ var default_value = document.forms['adminForm'].elements['default_value'].select
 </tr></thead><tbody>
 
 <?php $row_count = 0;
-if(!isset($this->syncdata['errors'])) $this->syncdata['errors'] = array();
-for ($i=0; $i<count($this->syncdata['errors']); $i++) {
-$error =  $this->syncdata['errors'][$i];
+if(!isset($this->syncerror)) $this->syncerror = array();
+for ($i=0; $i<count($this->syncerror); $i++) {
+$error =  $this->syncerror[$i];
 
 	echo '<tr class="row' . $row_count .'">';
 	if ($row_count == 1){

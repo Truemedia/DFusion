@@ -34,8 +34,11 @@ class jfusionViewsyncerrordetails extends JView {
 	//check to see if the sync has already started
     $syncid = JRequest::getVar('syncid');
     $syncdata = JFusionUsersync::getSyncdata($syncid);
+	$syncerror = JFusionUsersync::getErrorData($syncid);
+
     $this->assignRef('syncdata', $syncdata);
     $this->assignRef('syncid', $syncid);
+	$this->assignRef('syncerror', $syncerror);
     parent::display($tpl);
     }
 }

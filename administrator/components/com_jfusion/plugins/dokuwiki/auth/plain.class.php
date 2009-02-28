@@ -266,13 +266,15 @@ class doku_auth_plain extends doku_auth_basic {
         if(empty($line)) continue;
 
         $row    = split(":",$line,5);
-        $groups = split(",",$row[4]);
+        if(!empty($row[4])){
+	        $groups = split(",",$row[4]);
 
-        $users[$row[0]]['username'] = $row[0];
-        $users[$row[0]]['pass'] = $row[1];
-        $users[$row[0]]['name'] = urldecode($row[2]);
-        $users[$row[0]]['mail'] = $row[3];
-        $users[$row[0]]['grps'] = $groups;
+	        $users[$row[0]]['username'] = $row[0];
+    	    $users[$row[0]]['pass'] = $row[1];
+        	$users[$row[0]]['name'] = urldecode($row[2]);
+	        $users[$row[0]]['mail'] = $row[3];
+    	    $users[$row[0]]['grps'] = $groups;
+        }
       }
       return $users;
     }

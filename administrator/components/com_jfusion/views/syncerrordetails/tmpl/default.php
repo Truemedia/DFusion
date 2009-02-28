@@ -40,13 +40,11 @@ defined('_JEXEC') or die('Restricted access');
 
 <?php
 
-//check to see if the sync has already started
-$syncid = JRequest::getVar('syncid', '', 'GET');
-$syncdata = JFusionUsersync::getSyncdata($syncid);
+$syncdata = $this->syncdata;
 
 //get the error
 $errorid = JRequest::getVar('errorid', '', 'GET');
-$error =  $syncdata['errors'][$errorid];
+$error =  $this->syncerror[$errorid];
 
 //display the userlist info
 debug::show($error['user']['jname'], 'User from Plugin',1);

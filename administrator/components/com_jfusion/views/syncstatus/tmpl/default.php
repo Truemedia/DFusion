@@ -10,6 +10,13 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+/**
+* 	Load debug library
+*/
+//require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
+//debug::show($this->syncdata, JText::_('SERVER') . ' ' . JText::_('CONFIGURATION'),1);
+//return;
+
 //check to see if there is anything to output
 if (!$this->syncdata['slave_data']){
 	echo JText::_('SYNC_NODATA');
