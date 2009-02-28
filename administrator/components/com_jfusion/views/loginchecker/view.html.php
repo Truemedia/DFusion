@@ -29,11 +29,5 @@ class jfusionViewLoginChecker extends JView {
 
         $this->assignRef('toolbar', $toolbar);
         parent::display($tpl);
-
     }
-
 }
-?>
-
-
-

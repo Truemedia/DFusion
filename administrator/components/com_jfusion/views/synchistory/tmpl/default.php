@@ -132,6 +132,12 @@ function get_formatted_timediff($then, $now = false)
 
 
 $row_count = 0;
+
+if(empty($rows)){
+	$rows = array();
+    JError::raiseWarning(500, JText::_('NO_USERSYNC_DATA'));
+}
+
 foreach ($this->rows as $record) {
 echo '<tr class="row' . $row_count .'">';
 if ($row_count == 1){
@@ -141,9 +147,7 @@ if ($row_count == 1){
 }
 
 $syncdata = unserialize(base64_decode($record->syncdata));
-
-
-	?>
+?>
 
 <td><input type="checkbox" name="syncid[<?php echo $record->syncid; ?>]" /></td>
 <td><?php echo $record->syncid; ?></td>
@@ -165,16 +169,11 @@ if(is_array($syncdata['slave_data'])){
 		$total_error = $total_error + $slave['error'];
 	}
 }
-
 echo '<td>' . $total_error . '</td>';?>
-
 
 <td><a class="modal" rel="{handler: 'iframe', size: {x: 650, y: 375}}" href="index.php?option=com_jfusion&task=syncstatus&syncid=<?php echo $record->syncid; ?>"><?php echo JText::_('CLICK_FOR_MORE_DETAILS'); ?></a></td>
 </tr>
 
-
-
 <?php } ?>
-
 
 </tbody></table></form><br/><br/><br/>

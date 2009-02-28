@@ -24,7 +24,3 @@ class jfusionViewLogoutCheckerResult extends JView {
             parent::display($tpl);
     }
 }
-
-
-
-

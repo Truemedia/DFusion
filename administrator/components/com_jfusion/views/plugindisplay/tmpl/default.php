@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 //display the paypal donation button
 JFusionFunction::displayDonate();
+
 $images = 'components'.DS.'com_jfusion'.DS.'images'.DS;
 ?>
 <style type="text/css"> .icon-32-addusers{
@@ -48,8 +49,6 @@ radioObj[i].checked = true;
 <form method="post" action="index2.php" name="adminForm">
 <input type="hidden" name="option" value="com_jfusion" />
 <input type="hidden" name="task" value="" />
-
-
 
 <?php echo $this->toolbar; ?>
 <table><tr><td width="100px">
@@ -271,5 +270,3 @@ if(!$masterSet) {
 </td><td>
 <?php echo JText::_('LEGEND_DEFAULT_USERGROUP'); ?>
 </td></tr></table>
-
-

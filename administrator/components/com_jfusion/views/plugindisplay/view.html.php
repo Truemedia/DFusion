@@ -43,7 +43,3 @@ class jfusionViewplugindisplay extends JView {
         }
     }
 }
-
-
-
-

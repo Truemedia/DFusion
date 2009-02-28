@@ -24,5 +24,4 @@ class jfusionViewWrapper extends JView {
     {
         parent::display($tpl);
     }
-
 }

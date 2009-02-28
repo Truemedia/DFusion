@@ -26,7 +26,6 @@ class jfusionViewwizard extends JView {
         $bar->appendButton('Standard', 'forward', JText::_('NEXT'), 'wizardresult', false, false );
         $bar->appendButton('Standard', 'cancel', JText::_('CANCEL'), 'plugindisplay', false, false );
         $toolbar = $bar->render();
-
         $jname = JRequest::getVar('jname', '', 'POST', 'STRING' );
 
         if ($jname) {
@@ -35,13 +34,7 @@ class jfusionViewwizard extends JView {
             $this->assignRef('toolbar', $toolbar);
             parent::display($tpl);
         } else {
-        JError::raiseWarning(500, JText::_('NONE_SELECTED'));
+        	JError::raiseWarning(500, JText::_('NONE_SELECTED'));
         }
-
     }
-
 }
-?>
-
-
-

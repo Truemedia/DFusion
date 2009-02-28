@@ -51,6 +51,4 @@ return;
 <?php echo $this->parameters; ?>
 
 <input type="hidden" name="jname" value="<?php echo $this->jname; ?>">
-
 </form>
-

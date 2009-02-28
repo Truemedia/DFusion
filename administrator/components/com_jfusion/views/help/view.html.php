@@ -23,11 +23,5 @@ class jfusionViewHelp extends JView {
     {
             //print out results to user
             parent::display($tpl);
-
     }
 }
-
-?>
-
-
-

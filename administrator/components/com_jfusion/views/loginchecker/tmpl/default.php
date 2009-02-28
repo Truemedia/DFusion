@@ -79,4 +79,3 @@ radioObj[i].checked = true;
 </td>
 </tr></table>
 </form>
-

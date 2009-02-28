@@ -10,10 +10,8 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-
 //use an output buffer, in order for cookies to be passed onto the header
 ob_start();
-
 
 JFusionFunction::displayDonate();
 
@@ -21,7 +19,6 @@ JFusionFunction::displayDonate();
 * 	Load debug library
 */
 require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
-
 
 /**
 * Output information about the server for future support queries
@@ -37,7 +34,6 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 <div style="border: 0pt none ; margin: 0pt; padding: 0pt 5px; width: 800px; float: left;">
 
 <?php
-
 //get the submitted joomla id
 $JoomlaId = JRequest::getVar('JoomlaId');
 $options['group'] = 'USERS';
@@ -90,4 +86,3 @@ $options['group'] = 'USERS';
 echo '</div>';
 ob_end_flush();
 return;
-

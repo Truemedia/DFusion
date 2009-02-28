@@ -21,14 +21,10 @@ class jfusionViewsyncerrordetails extends JView {
 
     function display($tpl = null)
     {
-
-
 	/**
-	* 	Load usersync library
+	* 	Load usersync and debug library
 	*/
 	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
-
-	//Load debug library
 	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
 
 	//check to see if the sync has already started
@@ -42,4 +38,3 @@ class jfusionViewsyncerrordetails extends JView {
     parent::display($tpl);
     }
 }
-

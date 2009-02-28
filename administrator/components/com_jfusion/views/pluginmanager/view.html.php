@@ -41,6 +41,4 @@ class jfusionViewpluginmanager extends JView {
             JError::raiseWarning(500, JText::_('NO_JFUSION_TABLE'));
         }
     }
-
 }
-?>

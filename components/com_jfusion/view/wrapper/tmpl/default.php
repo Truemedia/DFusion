@@ -65,4 +65,3 @@ align="top" frameborder="0" class="wrapper">
 <?php echo JText::_('OLD_BROWSER');?>
 </iframe>
 </div>
-

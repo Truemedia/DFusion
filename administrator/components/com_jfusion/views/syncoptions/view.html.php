@@ -65,4 +65,3 @@ class jfusionViewsyncoptions extends JView {
         }
     }
 }
-

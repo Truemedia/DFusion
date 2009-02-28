@@ -23,9 +23,4 @@ class jfusionViewsyncstatus extends JView {
     {
     	parent::display($tpl);
     }
-
 }
-
-
-
-

@@ -63,4 +63,3 @@ JFusionFunction::displayDonate();
 </h3><font size="2">
 <?php echo JText::_('HELP_BUGS_TEXT'); ?>
 </font><br/><br/><br/>
-

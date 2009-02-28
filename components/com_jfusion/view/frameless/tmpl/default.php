@@ -10,134 +10,131 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-        $application = JFactory::getApplication();
-        $uri		= JURI::getInstance();
+$application = JFactory::getApplication();
+$uri		= JURI::getInstance();
 
-        //Get the base URL and make sure we have a ? delimiter
-        $Itemid = JRequest::getVar('Itemid');
-        if ($Itemid) {
-            $baseURL	= JRoute::_(JURI::base() .'index.php?option=com_jfusion&Itemid=' . $Itemid);
-        } else {
-            $baseURL	= JRoute::_('index.php?option=com_jfusion&view=frameless&jname='.$this->jname);
-        }
+//Get the base URL and make sure we have a ? delimiter
+$Itemid = JRequest::getVar('Itemid');
+if ($Itemid) {
+	$baseURL	= JRoute::_(JURI::base() .'index.php?option=com_jfusion&Itemid=' . $Itemid);
+} else {
+    $baseURL	= JRoute::_('index.php?option=com_jfusion&view=frameless&jname='.$this->jname);
+}
 
-        //Get the full URL, making note of the query
-        $query	= $uri->getQuery();
-        $url	= $uri->current();
-        $fullURL = $url.'?'.$query;
+//Get the full URL, making note of the query
+$query	= $uri->getQuery();
+$url	= $uri->current();
+$fullURL = $url.'?'.$query;
 
-        //Get the integrated URL
-        $JFusionParam = JFusionFactory::getParams($this->jname);
-        $integratedURL =$JFusionParam->get('source_url');
+//Get the integrated URL
+$JFusionParam = JFusionFactory::getParams($this->jname);
+$integratedURL =$JFusionParam->get('source_url');
 
-        // Get the output from the JFusion plugin
-        $JFusionPlugin = JFusionFactory::getPublic($this->jname);
+// Get the output from the JFusion plugin
+$JFusionPlugin = JFusionFactory::getPublic($this->jname);
 
-        //backup Joomla's globals
-		$joomla_globals = $GLOBALS;
-		//get the Itemid
-  		$Itemid_joomla = JRequest::getVar('Itemid');
-  		//get the buffer
-        $buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
-        //restore Joomla's globals
-		$GLOBALS = $joomla_globals;
-       //reset the global itemid
-        global $Itemid;
-        $Itemid = $Itemid_joomla;
-        //clear the page title
-		if(!empty($buffer)) {
-        	global $mainframe;
-			$mainframe->setPageTitle('');
-		}
-		
-		//check to see if the Joomla database is still connnected incase the plugin messed it up
-		JFusionFunction::reconnectJoomlaDb();
+//backup Joomla's globals
+$joomla_globals = $GLOBALS;
+//get the Itemid
+$Itemid_joomla = JRequest::getVar('Itemid');
+//get the buffer
+$buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
+//restore Joomla's globals
+$GLOBALS = $joomla_globals;
+//reset the global itemid
+global $Itemid;
+$Itemid = $Itemid_joomla;
 
-		if ($buffer === 0){
-            JError::raiseWarning(500, JText::_('NO_FRAMELESS'));
-            $result = false;
-            return $result;
-		}
+//clear the page title
+if(!empty($buffer)) {
+	global $mainframe;
+	$mainframe->setPageTitle('');
+}
 
-        if (! $buffer ) {
-            JError::raiseWarning(500, JText::_('NO_BUFFER'));
-            $result = false;
-            return $result;
-        }
+//check to see if the Joomla database is still connnected incase the plugin messed it up
+JFusionFunction::reconnectJoomlaDb();
 
-		//we set the backtrack_limit to twice the buffer length just in case!
-		$backtrack_limit = ini_get('pcre.backtrack_limit');
-		ini_set('pcre.backtrack_limit',strlen($buffer)*2);
+if ($buffer === 0){
+	JError::raiseWarning(500, JText::_('NO_FRAMELESS'));
+    $result = false;
+    return $result;
+}
 
-        $pattern	= '#<head[^>]*>(.*)<\/head>.*?<body[^>]*>(.*)<\/body>#si';
-        preg_match($pattern, $buffer, $data);
+if (! $buffer ) {
+	JError::raiseWarning(500, JText::_('NO_BUFFER'));
+    $result = false;
+    return $result;
+}
 
-        // Check if we found something
-        if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
-            if(!empty($buffer)){
-	   			//non html output, return without parsing
-	   			die($buffer);
-			} else {
-				//no output returned
-   			    JError::raiseWarning(500, JText::_('NO_HTML'));
+//we set the backtrack_limit to twice the buffer length just in case!
+$backtrack_limit = ini_get('pcre.backtrack_limit');
+ini_set('pcre.backtrack_limit',strlen($buffer)*2);
+
+$pattern	= '#<head[^>]*>(.*)<\/head>.*?<body[^>]*>(.*)<\/body>#si';
+preg_match($pattern, $buffer, $data);
+
+// Check if we found something
+if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
+	if(!empty($buffer)){
+		//non html output, return without parsing
+	   	die($buffer);
+	} else {
+		//no output returned
+   		JError::raiseWarning(500, JText::_('NO_HTML'));
+	}
+} else {
+	// Add the header information
+    if (isset($data[1]) ) {
+	    $document	= JFactory::getDocument();
+		$regex_header = array();
+		$replace_header = array();
+
+	    //change the page title
+		$pattern = '#<title>(.*?)<\/title>#Si';
+		preg_match($pattern, $data[1], $page_title);
+		$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
+		$regex_header[]	= $pattern;
+		$replace_header[] = '';
+
+		//set meta data to that of softwares
+		$meta = array('keywords','description','robots');
+
+		foreach($meta as $m) {
+			$pattern = '#<meta name=["|\']'.$m.'["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
+			if (preg_match($pattern, $data[1], $page_meta)){
+				if($page_meta[2]) {
+					$document->setMetaData( $m, $page_meta[2] );
+				}
+			$regex_header[]	= $pattern;
+		    $replace_header[] = '';
 			}
-        } else {
-			// Add the header information
-            if (isset($data[1]) ) {
-                $document	= JFactory::getDocument();
-				$regex_header = array();
-				$replace_header = array();
+		}
 
-	            //change the page title
-				$pattern = '#<title>(.*?)<\/title>#Si';
-				preg_match($pattern, $data[1], $page_title);
-				$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
-        		$regex_header[]	= $pattern;
-        		$replace_header[] = '';
+		$pattern = '#<meta name=["|\']generator["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
+    	if(preg_match($pattern, $data[1], $page_generator)) {
+    		if($page_generator[2]) {
+        		$document->setGenerator( $document->getGenerator().', '. $page_generator[2]);
+        	}
+			$regex_header[]	= $pattern;
+			$replace_header[] = '';
+    	}
 
-				//set meta data to that of softwares
-        		$meta = array('keywords','description','robots');
+    	//use Joomla's default
+    	$regex_header[]	= '#<meta http-equiv=["|\']Content-Type["|\'](.*?)>#Si';
+		$replace_header[] = '';
 
-				foreach($meta as $m) {
-	        		$pattern = '#<meta name=["|\']'.$m.'["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
-	        		 if (preg_match($pattern, $data[1], $page_meta)){
-				    	if($page_meta[2]) {
-				    		$document->setMetaData( $m, $page_meta[2] );
-				    	}
-				    	$regex_header[]	= $pattern;
-	       				$replace_header[] = '';
-				    }
-        		}
+    	//remove above set meta data from software's header
+		$data[1] = preg_replace($regex_header, $replace_header, $data[1]);
 
-        		$pattern = '#<meta name=["|\']generator["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
-                if(preg_match($pattern, $data[1], $page_generator)) {
-                	if($page_generator[2]) {
-                		$document->setGenerator( $document->getGenerator().', '. $page_generator[2]);
-                	}
-					$regex_header[]	= $pattern;
-					$replace_header[] = '';
-                }
+		$JFusionPlugin->parseHeader($data[1], $baseURL, $fullURL, $integratedURL);
+    	$document->addCustomTag($data[1]);
+	}
 
-                //use Joomla's default
-                $regex_header[]	= '#<meta http-equiv=["|\']Content-Type["|\'](.*?)>#Si';
-				$replace_header[] = '';
-
-                //remove above set meta data from software's header
-    	        $data[1] = preg_replace($regex_header, $replace_header, $data[1]);
-
-				$JFusionPlugin->parseHeader($data[1], $baseURL, $fullURL, $integratedURL);
-                $document->addCustomTag($data[1]);
-            }
-
-            // Output the body
-            if (isset($data[2]) ) {
-                // 	parse the URL's'
-                $JFusionPlugin->parseBody($data[2], $baseURL, $fullURL, $integratedURL);
-                echo $data[2];
-            }
-			ini_set('pcre.backtrack_limit',$backtrack_limit);
-        }
-
-
-
-
+	// Output the body
+   	if (isset($data[2]) ) {
+    	// parse the URL's'
+        $JFusionPlugin->parseBody($data[2], $baseURL, $fullURL, $integratedURL);
+        echo $data[2];
+	}
+	ini_set('pcre.backtrack_limit',$backtrack_limit);
+}

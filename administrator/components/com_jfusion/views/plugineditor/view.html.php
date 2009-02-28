@@ -30,10 +30,5 @@ class jfusionViewplugineditor extends JView {
     //print out results to user
     $this->assignRef('toolbar', $toolbar);
     parent::display($tpl);
-
     }
-
 }
-?>
-
-

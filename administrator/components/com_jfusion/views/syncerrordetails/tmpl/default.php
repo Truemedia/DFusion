@@ -10,16 +10,11 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-	/**
-	* 	Load usersync library
-	*/
-	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
-
-	/**
-	* 	Load debug library
-	*/
-	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
-
+/**
+* 	Load usersync and debug library
+*/
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.usersync.php');
+require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.debug.php');
 
 ?>
 <style type="text/css">
@@ -34,12 +29,9 @@ defined('_JEXEC') or die('Restricted access');
     vertical-align: center;
 }
 </style>
-
-
 <div id="ajax_bar"><font size="3">Detailed JFusion Error Report</font></div>
 
 <?php
-
 $syncdata = $this->syncdata;
 
 //get the error
@@ -60,5 +52,3 @@ echo '<br/>';
 debug::show($error['conflict']['debug'], 'Debug Info from updateUser() function');
 echo '<br/>';
 debug::show($error['conflict']['userinfo'], 'User Info from updateUser() function');
-
-

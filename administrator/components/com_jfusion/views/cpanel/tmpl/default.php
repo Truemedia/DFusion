@@ -149,10 +149,5 @@ foreach ($this->JFusionCpanel->item as $item) {
 	echo $item->body[0]->data();
 	echo $pane->endPanel();
 }
-
 ?>
 </td></tr></table>
-
-
-
-
