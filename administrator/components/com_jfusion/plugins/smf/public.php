@@ -83,10 +83,6 @@ class JFusionPublic_smf extends JFusionPublic{
 			JError::raiseWarning(500, 'Could not find SMF in the specified directory');
 		}
 
-		if ( preg_match('#<\?xml(.*?)\?>#si', $buffer) ){
-        	die($buffer);
-		}
-
 		$document = JFactory::getDocument();
 		$document->addScript(JURI::base().DS.'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'smf'.DS.'js'.DS.'script.js');
 		return $buffer;
@@ -97,20 +93,14 @@ class JFusionPublic_smf extends JFusionPublic{
 		$regex_body		= array();
 		$replace_body	= array();
 
-		//convert relative links with query into absolute links
-		$regex_body[]	= '#'.$integratedURL.'index.php\?(.*?)"#mSis';
-		$replace_body[]	=  $baseURL . '&$1"';
+		$regex_body[]	= '#"'.$integratedURL.'index.php\?(.*?)"#Sise';
+		$replace_body[] = '\'"\'.$this->fixUrl("$1").\'"\'';
 
-		//convert relative links without query into absolute links
-		$regex_body[]	= '#'.$integratedURL.'index.php"#mS';
-		$replace_body[]	= $baseURL. '"';;
+		$regex_body[]	= '#"'.$integratedURL.'index.php"#Sie';
+		$replace_body[]	= '\'"\'.$this->fixUrl().\'"\'';
 
-		//convert links to the same page with anchors
-		$regex_body[]	= '#'.$integratedURL.'index.php\#(.*?)"#mSis';
-		$replace_body[]	= $baseURL.'#$1"';
-
-//	    $regex_body[]	= '#\#(.*?)#mSis';
-//		$replace_body[]	= $fullURL.'#$1';
+		$regex_body[]	= '#"'.$integratedURL.'index.php\#(.*?)"#Sise';
+		$replace_body[]	= '\'"\'.$this->fixUrl("#$1").\'"\'';
 
 		//Jump Related fix
 		$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
@@ -154,6 +144,12 @@ class JFusionPublic_smf extends JFusionPublic{
 			$replace_header[] = 'var smf_scripturl = "$1"; var jf_scripturl = "'.$baseURL.'";';
 		}
 		$buffer = preg_replace($regex_header, $replace_header, $buffer);
+	}
+
+	function fixUrl($q='')
+	{
+		$q = str_replace(';','&',$q);
+		return substr(JURI::base(),0,-1).JFusionFunction::routeURL('index.php?'.$q, JRequest::getVar('Itemid'));
 	}
 
 	function fixJump($content)
