@@ -36,6 +36,7 @@ function jfusionBuildRoute(&$query)
 				}
 			}
 		}
+		if (count($segments)) $segments[count($segments)-1] .= '/';
 	}
 
 	return $segments;

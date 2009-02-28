@@ -195,7 +195,11 @@ class JFusionFunction{
 			$u->setVar('jfile', $u->getPath());
 			$u->setVar('option', 'com_jfusion');
 			$u->setVar('Itemid', $itemid);
-			$query = $u->getQuery(false);
+
+            $query = $u->getQuery(false);
+            $fragment = $u->getFragment();
+            if( isset( $fragment ) ) $query .= '#'.$fragment;
+
 			return JRoute::_('index.php?'.$query);
     	}
     }
@@ -250,14 +254,14 @@ class JFusionFunction{
 */
 
     function updateLookup($userinfo, $joomla_id, $jname = '', $delete = false)
-    {	
+    {
     	//we don't need to update the lookup for internal joomla unless deleting a user
     	if($jname=='joomla_int' && !$delete){
     		return;
     	}
-    	
+
     	$db =& JFactory::getDBO();
-    	
+
  		//check to see if we have been given a joomla id
  		if($joomla_id==0) {
  			$query = "SELECT id FROM #__users WHERE username = ".$db->Quote($userinfo->username);
@@ -274,23 +278,23 @@ class JFusionFunction{
  			$query = "SELECT name FROM #__jfusion WHERE master = 1 OR slave = 1";
  			$db->setQuery($query);
  			$jnames = $db->loadObjectList();
- 			
+
  			foreach($jnames as $jname) {
  				if($jname!="joomla_int") {
 	 				$user =& JFusionFactory::getUser($jname->name);
 	 				$puserinfo = $user->getUser($userinfo->username);
-	 				
+
 	 				if($delete) {
 	 					$queries[] = "(id = $joomla_id AND jname = ".$db->Quote($jname->name).")";
 	 				} else {
 	 					$queries[] = "(".$db->Quote($puserinfo->userid).",".$db->Quote($puserinfo->username).", $joomla_id, ".$db->Quote($jname->name).")";
 	 				}
-	 				
+
 	 				unset($user);
 	 				unset($puserinfo);
  				}
  			}
- 			
+
  			if(!empty($queries)){
  				if($delete) {
  					$query = "DELETE FROM #__jfusion_users_plugin WHERE ".implode(' OR ',$queries);
@@ -306,12 +310,12 @@ class JFusionFunction{
  			if($delete) {
  				$query = "DELETE FROM #__jfusion_users_plugin WHERE id = $joomla_id AND jname = '$jname'";
  			} else {
-	 			$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES ({$db->Quote($userinfo->userid)},{$db->Quote($userinfo->username)},$joomla_id,{$db->Quote($jname)})";	
+	 			$query = "REPLACE INTO #__jfusion_users_plugin (userid,username,id,jname) VALUES ({$db->Quote($userinfo->userid)},{$db->Quote($userinfo->username)},$joomla_id,{$db->Quote($jname)})";
  			}
  		 	$db->setQuery($query);
  			if(!$db->query()) {
  				JError::raiseWarning(0,$db->stderr());
- 			}	
+ 			}
  		}
     }
 
@@ -338,7 +342,7 @@ class JFusionFunction{
 				//we have a joomla id
         		$query = "SELECT username FROM #__users WHERE id = $userid";
         		$db->setQuery($query);
-        		$username = $db->loadResult();        		
+        		$username = $db->loadResult();
         		$joomla_id = $userid;
         	} else {
 				//we have a plugin's id so we need to find Joomla's id
@@ -346,15 +350,15 @@ class JFusionFunction{
         		$db->setQuery($query);
         		$joomla_id = $db->loadResult();
         	}
-        	
+
 			if(!empty($username) && !empty($joomla_id)) {
 	        	//get the plugin's userinfo
 	        	$user =& JFusionFactory::getUser($jname);
 	        	$userinfo = $user->getUser($username);
-	        	
+
 	        	//update the lookup table
 	        	updateLookup($userinfo, $joomla_id, $jname);
-	        	
+
 	        	//return the results
 	        	$result = new stdClass();
 	        	$result->userid = $userinfo->userid;
@@ -363,7 +367,7 @@ class JFusionFunction{
 	        	$result->jname = $jname;
 			}
         }
-        
+
         return $result;
     }
 
@@ -504,11 +508,11 @@ class JFusionFunction{
         $fdb =& JFactory::getDBO();
 		$modified = time();
 
-		$query = "REPLACE INTO #__jfusion_forum_plugin SET 
-					contentid = $contentid, 
-					forumid = $forumid, 
-					threadid = $threadid, 
-					postid = $postid, 
+		$query = "REPLACE INTO #__jfusion_forum_plugin SET
+					contentid = $contentid,
+					forumid = $forumid,
+					threadid = $threadid,
+					postid = $postid,
 					modified = '$modified',
 					jname = '$jname'";
     	$fdb->setQuery($query);
@@ -524,10 +528,10 @@ class JFusionFunction{
     function createJoomlaArticleURL(&$contentitem,$text)
     {
     	require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
-    	
+
     	//we need item id so we can reset it
     	$origItemid = JRequest::getVar('Itemid');
-    	
+
     	//find the itemid of the content item
 		$needles = array(
 			'article'  => (int) $contentitem->id,
@@ -541,14 +545,14 @@ class JFusionFunction{
 
 		$link = JRoute::_(JURI::base().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid);
 		$link = "<a href='$link'>$text</a>";
-		
+
 		//set the original back
 		global $Itemid;
 		$Itemid = $origItemid;
 
 		return $link;
     }
-    
+
 
     /**
      * Pasrses text from bbcode to html or html to bbcode
@@ -631,7 +635,7 @@ class JFusionFunction{
  			$text = str_ireplace(array("<br />","<br>","<br/>"), "\n", $text);
  			$text = preg_replace($searchNS,$replaceNS,$text);
  			$text = preg_replace( '/\p{Z}/u', ' ', $text );
- 			
+
  			if($stripAllHtml) { $text = strip_tags($text); }
     	}
 
@@ -801,5 +805,5 @@ class JFusionFunction{
     	}
 
     	return $avatar;
-    }    	
+    }
 }
