@@ -127,6 +127,11 @@ class JFusionHook
 
 		$view = basename($url);
 
+		if ($view == 'posting.php' && $arrParams['mode'] == 'popup'){
+			global $jfusion_source_url;
+			return $jfusion_source_url . 'posting.php' .$uri->toString(array('query', 'fragment'));
+		}
+
 		//add an excemption for the admincp
 		if(strpos($url, 'adm')) {
 	        global $jfusion_source_url;
