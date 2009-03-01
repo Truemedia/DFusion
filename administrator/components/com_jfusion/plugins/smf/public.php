@@ -37,6 +37,16 @@ class JFusionPublic_smf extends JFusionPublic{
 		return 'index.php?action=reminder';
 	}
 
+	function getPrivateMessageURL()
+	{
+		return 'index.php?action=pm';
+	}
+
+	function getViewNewMessagesURL()
+	{
+		return 'index.php?action=unread';
+	}
+
 	function & getBuffer()
 	{
 		// We're going to want a few globals... these are all set later.
