@@ -357,7 +357,7 @@ class JFusionFunction{
 	        	$userinfo = $user->getUser($username);
 
 	        	//update the lookup table
-	        	updateLookup($userinfo, $joomla_id, $jname);
+	        	JFusionFunction::updateLookup($userinfo, $joomla_id, $jname);
 
 	        	//return the results
 	        	$result = new stdClass();

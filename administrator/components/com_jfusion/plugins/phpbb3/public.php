@@ -218,6 +218,12 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $replace_body[]	= '$this->fixAction("$1","$2","' . $indexURL .'")';
         }
 
+		global $JFusionRedirectParse;
+		if($JFusionRedirectParse == true){
+	        $regex_body[]	= '#<a href\=\"(.*?)\"\>Return to the previous page\<\/a\>\<\/p\>#me';
+   	        $replace_body[]	= '$this->fixRedirectURL("$1")';
+		}
+
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
     }
 
@@ -301,8 +307,12 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
       function fixRedirect($url){
 
-		//detect the redirect value
+		//get some base vars
+    	$params = JFusionFactory::getParams('joomla_int');
+		$sefmode = $params->get('sefmode');
 		$redirect = JRequest::getVar('redirect');
+        $Itemid = JRequest::getVar('Itemid');
+
       	//split up the timeout from url
 		$parts = explode(';url=', $url);
 
@@ -311,67 +321,53 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 			$parts[1] = $redirect;
 		}
 
-    	//get the correct URL to joomla
-    	$params = JFusionFactory::getParams('joomla_int');
-		$source_url = $params->get('source_url');
-
-      	//check to see if the URL is in SEF
-		if (strpos($parts[1],'index.php/')){
-		    $query = explode('index.php/', $parts[1]);
-    		$redirect_url = $source_url . 'index.php/' . $query[1];
-		} elseif (strpos($parts[1],'component/')) {
-		    $query = explode('component/', $parts[1]);
-    		$redirect_url = $source_url . 'component/' . $query[1];
-		} else {
-			//parse the non-SEF URL
-			$uri = new JURI($parts[1]);
-
-			//set the URL with the jFusion params to correct any domain mistakes
-			//set the jfusion references for Joomla
-        	$Itemid = JRequest::getVar('Itemid');
-        	if ($Itemid){
-				$uri->setVar('Itemid', $Itemid);
-        	}
-			$uri->setVar('option', 'com_jfusion');
-
-			$redirect_url = $source_url . 'index.php'.$uri->toString(array('query', 'fragment'));
-			$redirect_url = urldecode(JRoute::_($redirect_url, true));
-	    }
-
-       //let's do a test to see if the url exists as some redirects are corrupted by phpBB when using SEF
-	   //if it does not, then reconstruct the url for the main page of the board
-      	$exists = (($ftest = @fopen($redirect_url, 'r')) === false) ? false : @fclose($ftest);
-
-		if(!$exists)
-		{
-			//get the current base
-			$base = JURI::base();
-
-			//do we have a sid?
-			if(strpos($url,'sid,')){
-				$redirect_url = preg_replace('#url=(.*)\/sid,(.*)\/#mS',"$base/index.php?sid=$2",$url);
-			} else {
-				$redirect_url = $base;
+		if($sefmode == 0){
+		    $url_parts = explode('?', $parts[1],2);
+		    //get the filename
+		    $jfile = basename($url_parts[0]);
+		    //parse all other vars
+			$var_parts = preg_split('/\/\&|\/|&|\?/', $url_parts[1]);
+			$url_variables = array();
+			foreach ($var_parts as $part){
+				$vars =preg_split('/,|=/', $part);
+				if(isset($vars[1])){
+					$url_variables[] = $vars[0] .'='.$vars[1];
+				}
 			}
+			$redirectURL = substr(JURI::base(),0,-1) . JRoute::_('index.php?option=com_jfusion&Itemid='.$Itemid.'&jfile='.$jfile.'&'.implode('&',$url_variables));
 
-			//Create the URL
-			$uri = new JURI($redirect_url);
-
-			//set the jfusion references for Joomla
-        	$Itemid = JRequest::getVar('Itemid');
-        	if ($Itemid){
-				$uri->setVar('Itemid', $Itemid);
-        	}
-			$uri->setVar('option', 'com_jfusion');
-
-			$redirect_url = 'index.php'.$uri->toString(array('query', 'fragment'));
-			$redirect_url = urldecode(JRoute::_($redirect_url, true));
+			//trigger redirect parsing in the body
+			global $JFusionRedirectParse;
+			$JFusionRedirectParse = true;
+        	return '<meta http-equiv="refresh" content="'.$parts[0].';url=' . $redirectURL .'">';
 		}
-
-      	//reconstruct the redirect meta tag
-        return '<meta http-equiv="refresh" content="'.$parts[0].';url=' . $redirect_url .'">';
       }
 
+      function fixRedirectURL($url){
+
+		//get some base vars
+    	$params = JFusionFactory::getParams('joomla_int');
+		$sefmode = $params->get('sefmode');
+		$redirect = JRequest::getVar('redirect');
+        $Itemid = JRequest::getVar('Itemid');
+
+		if($sefmode == 0){
+		    $url_parts = explode('?', $url,2);
+		    //get the filename
+		    $jfile = basename($url_parts[0]);
+		    //parse all other vars
+			$var_parts = preg_split('/\/\&|\/|&|\?/', $url_parts[1]);
+			$url_variables = array();
+			foreach ($var_parts as $part){
+				$vars =preg_split('/,|=/', $part);
+				if(isset($vars[1])){
+					$url_variables[] = $vars[0] .'='.$vars[1];
+				}
+			}
+			$redirectURL = substr(JURI::base(),0,-1) . JRoute::_('index.php?option=com_jfusion&Itemid='.$Itemid.'&jfile='.$jfile.'&'.implode('&',$url_variables));
+        	return '<a href="' . $redirectURL . '">Return to the previous page</a></p>';
+		}
+      }
 
 	/************************************************
 	 * For JFusion Search Plugin
