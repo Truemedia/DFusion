@@ -130,28 +130,18 @@ class JFusionAdmin{
             $JFusionPlugin = JFusionFactory::getAdmin($jname);
             $tablename = $JFusionPlugin->getTablename();
 
-            // lets check if the table exists (HJW: if an integration has a seperate table for  backoffice users
-            // we cannot test if we can read data from the usertable because it can be empty. So here is a function that
-            // works even if the table is empty)
-            $conf =& JFactory::getConfig();
-            $params = JFusionFactory::getParams($jname);
-            $database = $params->get('database_name');
-            $prefix = $params->get('database_prefix');
-            $query = "SHOW TABLES FROM $database";
-            $db->setQuery($query);
-            $tablesresult = $db->loadObjectlist();
-            foreach($tablesresult as $table) {
-                foreach($table as $row) {
-                    if ($row == $prefix.$tablename) {
-                        $status['config'] = 1;
-                        $status['message'] = JText::_('GOOD_CONFIG');
-                        return $status;
-                    }
-                }
-            }
-            $status['config'] = 0;
-            $status['message'] = JText::_('NO_TABLE');
-            return $status;
+            // lets check if the table exists, now using the Joomla API
+			$table_list = $db->getTableList();
+			$table_prefix = $db->getPrefix();
+			if (array_search($table_prefix . $tablename,$table_list) == false) {
+	            $status['config'] = 0;
+    	        $status['message'] = JText::_('NO_TABLE');
+        	    return $status;
+			} else {
+                $status['config'] = 1;
+                $status['message'] = JText::_('GOOD_CONFIG');
+                return $status;
+			}
         }
     }
 

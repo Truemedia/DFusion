@@ -133,8 +133,8 @@ function get_formatted_timediff($then, $now = false)
 
 $row_count = 0;
 
-if(empty($rows)){
-	$rows = array();
+if(empty($this->rows)){
+	$this->rows = array();
     JError::raiseWarning(500, JText::_('NO_USERSYNC_DATA'));
 }
 

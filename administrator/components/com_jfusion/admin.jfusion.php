@@ -38,9 +38,15 @@ $controller   = new $classname( );
 $task = JRequest::getVar( 'task');
 if (!$task) {$task = 'cpanel';}
 
-$controller->execute( $task );
+$tasklist = $controller->getTasks();
+if(in_array($task,$tasklist)){
+	//excute the task
+	$controller->execute($task);
+} else {
+	//run the task as a view
+    JRequest::setVar('view', $task);
+	$controller->display();
+}
 
 // Redirect if set by the controller
 $controller->redirect();
-
-
