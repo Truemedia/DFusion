@@ -83,8 +83,8 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 	{
 		//check to make sure the frameless hook is installed
 		$db =& JFusionFactory::getDatabase($this->getJname());
-		$query = "SELECT active FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin'";
-		$db->setQuery($query);
+		$q = "SELECT active FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin'";
+		$db->setQuery($q);
 		$active = $db->loadResult();
 		if($active!='1') {
 			JError::raiseWarning(500, JText::_('VB_FRAMELESS_HOOK_NOT_INSTALLED'));
@@ -171,6 +171,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			,'doublemonth1'
 			,'doublemonth2'
 			,'eastercache'
+			,'editor_css'
 			,'eventcache'
 			,'eventdate'
 			,'eventids'
@@ -188,6 +189,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			,'forumpermissioncache'
 			,'forumperms'
 			,'forumrules'
+			,'forumshown'
 			,'frmjmpsel'
 			,'gobutton'
 			,'goodwords'
@@ -278,6 +280,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			,'spacer_close'
 			,'spacer_open'
 			,'strikes'
+			,'style'
 			,'stylecount'
 			,'stylevar'
 			,'subscribecounters'
@@ -383,10 +386,13 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
 	{
+
+		$js  = "var vbSourceURL = '$integratedURL';\n";
+		
 		//we need to find and change the call to vb's yahoo connection file to our own customized one
 		//that adds the source url to the ajax calls
 		$yuiURL = JURI::base() . 'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname();
-		$buffer = preg_replace('#\<script type="text\/javascript" src="(.*?)(connection-min.js|connection.js)\?v=(.*?)"\>#mS',"<script type=\"text/javascript\">var vbSourceURL = '$integratedURL'; </script> <script type=\"text/javascript\" src=\"$yuiURL/yui/connection/connection-min.js?v=$3\">",$buffer);
+		$buffer = preg_replace('#\<script type="text\/javascript" src="(.*?)(connection-min.js|connection.js)\?v=(.*?)"\>#mS',"<script type=\"text/javascript\">$js</script> <script type=\"text/javascript\" src=\"$yuiURL/yui/connection/connection-min.js?v=$3\">",$buffer);
 
 		//convert relative links into absolute links
 		$url_search = '#(src="|background="|href="|url\("|url\(\'?)(?!http)(.*?)("\)|\'?\)|")#mS';
@@ -756,7 +762,7 @@ function fixCSS($css)
 			//add vb framless container
 			if($sv == 'body'){
 				$selectors[$sk] = '#framelessVb';
-			} else {
+			} elseif(strpos($sv,'wysiwyg')===false) {
 				$selectors[$sk] = "#framelessVb $sv";
 			}
 		}

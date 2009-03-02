@@ -83,17 +83,19 @@
 	function global_start()
 	{
 		//lets rewrite the img urls now while we can
-		global $stylevar;
+		global $stylevar,$vbulletin;
 
+	   //check for trailing slash
+        $DS = (substr($vbulletin->options['bburl'], -1) == '/') ? "" : "/";
+		
 		foreach($stylevar as $k => $v) {
 			if(strstr($k,'imgdir')) {
-				$stylevar[$k] = _JFUSION_SOURCE_URL . $v;
+				$stylevar[$k] = $vbulletin->options['bburl'] . $DS . $v;
 			}
 		}
-		
 		return true;
 	}
-
+	
 	function header_redirect()
  	{
  		//reworks the URL for header redirects ie header('Location: $url');
@@ -268,7 +270,9 @@
 	    jimport('joomla.plugin.helper');
 	    jimport('joomla.utilities.arrayhelper');
 	    jimport('joomla.environment.uri');
+	    jimport('joomla.environment.request');
 	    jimport('joomla.user.user');
+	    
 	    // JText cannot be loaded with jimport since it's not in a file called text.php but in methods
 	    JLoader::register('JText' , JPATH_BASE.DS.'libraries'.DS.'joomla'.DS.'methods.php');
 
