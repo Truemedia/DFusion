@@ -84,7 +84,7 @@ class JFusionAdmin_dokuwiki extends JFusionAdmin {
     function getUserCount()
     {
         $share = Dokuwiki::getInstance();
-        $userlist = $this->getUserList();
+//        $userlist = $this->getUserList();
         return $share->auth->getUserCount();
     }
 
