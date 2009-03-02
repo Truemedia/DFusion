@@ -69,7 +69,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 //			if ( JRequest::getVar('jfile') == 'fetch.php' ) $index_file = $source_path.DS.'lib'.DS.'exe'.DS.'fetch.php';
 //			if ( JRequest::getVar('jfile') == 'feed.php' ) $index_file = $source_path .DS.'feed.php';
 		}
-
+		if ( JRequest::getVar('media') ) JRequest::setVar('media',str_replace(':', '-', JRequest::getVar('media')));
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
 
 		if ( ! is_file($index_file) ) {
@@ -113,9 +113,9 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 		$regex_body[]	= '#href=["|\']/(lib/exe/fetch.php)(.*?)["|\']#mS';
 		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
-		$regex_body[]	= '#href=["|\']/(_media/)(.*?)["|\']#mS';
+/*		$regex_body[]	= '#href=["|\']/(_media/)(.*?)["|\']#mS';
 		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
-
+*/
 		$regex_body[] = '#href=["|\'](?!\w{0,10}://|\w{0,10}:|\#)/(.*?)["|\']#mSie';
 		$replace_body[]	= '\'href="\'.$this->fixUrl("$1").\'"\'';
 
@@ -149,10 +149,8 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 	function fixUrl($q='')
 	{
-		//disable joomla :/- encoding and remove
-		$order		= array(':','%3A','-');
-		$replace	= array('__CO__','__CO__','__MI__');
-		$q = str_replace($order, $replace, $q);
+		$q = urldecode($q);
+		$q = str_replace(':', ';', $q);
 		if ( strpos($q,'_detail/') === 0 || strpos($q,'lib/exe/detail.php') === 0 ) {
 			if( strpos($q,'_detail/') === 0 ) {
 				$q = substr($q,strlen('_detail/'));
@@ -163,8 +161,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			if ( strpos($q,'?') === 0 ) {
 				$url = JFusionFunction::routeURL('detail.php'.$q, JRequest::getVar('Itemid'));
 			} else {
-				$q = ltrim( $q , '/' );
-				$q = str_replace('?','&',$q);
+				$this->trimUrl($q);
 				$url = JFusionFunction::routeURL('detail.php?media='.$q, JRequest::getVar('Itemid'));
 			}
 		} else if ( strpos($q,'_media/') === 0 || strpos($q,'lib/exe/fetch.php') === 0 ) {
@@ -177,8 +174,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			if ( strpos($q,'?') === 0 ) {
 				$url = JFusionFunction::routeURL('fetch.php'.$q, JRequest::getVar('Itemid'));
 			} else {
-				$q = ltrim( $q , '/' );
-				$q = str_replace('?','&',$q);
+				$this->trimUrl($q);
 				$url = JFusionFunction::routeURL('fetch.php?media='.$q, JRequest::getVar('Itemid'));
 			}
 		} else if ( strpos($q,'doku.php') === 0 ) {
@@ -186,23 +182,24 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			if ( strpos($q,'?') === 0 ) {
 				$url = JFusionFunction::routeURL('doku.php'.$q, JRequest::getVar('Itemid'));
 			} else {
-				$q = ltrim( $q , '/' );
-				$q = str_replace('?','&',$q);
+				$this->trimUrl($q);
 				if ( strlen($q) ) $url = JFusionFunction::routeURL('doku.php?id='.$q, JRequest::getVar('Itemid'));
 				else $url = JFusionFunction::routeURL('doku.php', JRequest::getVar('Itemid'));
 			}
 		} else {
-			$q = str_replace('?','&',$q);
+			$this->trimUrl($q);
 			if ( strlen($q) ) $url = JFusionFunction::routeURL('doku.php?id='.$q, JRequest::getVar('Itemid'));
 			else $url = JFusionFunction::routeURL('', JRequest::getVar('Itemid'));
 		}
-		//disable joomla :/- encoding and readd them
-		$order   = array('__CO__','__MI__');
-		$replace = array(':','-');
-		$url = str_replace($order, $replace, $url);
-
 		if ( $url ) return substr(JURI::base(),0,-1).$url;
 		return $q;
+	}
+
+	function trimUrl( &$url ) {
+		$url = ltrim( $url , '/' );
+		$order   = array('/','?');
+		$replace = array(';','&');
+		$url = str_replace($order, $replace, $url);
 	}
 
 	function replaceForm( &$data ) {
@@ -311,17 +308,3 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		return "doku.php?id=" . $post;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
