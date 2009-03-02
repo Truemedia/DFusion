@@ -91,6 +91,7 @@ function startJoomla()
 
     // JText cannot be loaded with jimport since it's not in a file called text.php but in methods
     JLoader::register('JText' , JPATH_BASE.DS.'libraries'.DS.'joomla'.DS.'methods.php');
+    JLoader::register('JRoute' , JPATH_BASE.DS.'libraries'.DS.'joomla'.DS.'methods.php');
 
     $mainframe = &JFactory::getApplication('site');
     $GLOBALS['mainframe'] =& $mainframe;
