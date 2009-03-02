@@ -202,14 +202,24 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	        $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
-			require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-			$params = JFusionFactory::getParams('joomla_int');
-			$sefmode = $params->get('sefmode');
-			if($sefmode == 1){
+			//require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
+			//$params = JFusionFactory::getParams('joomla_int');
+			//$sefmode = $params->get('sefmode');
+			//if($sefmode == 1){
 		        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
-		        $regex_body[]	= '#href="(.*?)'.JURI::base().'(.*?)"(.*?)>#me';
-        	    $replace_body[]	= '$this->fixURL("$1" . "'.JURI::base().'"."$2","$3")';
-			}
+		       // $regex_body[]	= '#href="(.*?)'.JURI::base().'(.*?)"(.*?)>#me';
+        	   // $replace_body[]	= '$this->fixURL("$1" . "'.JURI::base().'"."$2","$3")';
+			//}
+
+            //fix anchors
+	        $regex_body[]	= '#\"\#(.*?)\"#mS';
+	        if(!empty($_SERVER['QUERY_STRING'])){
+	        	$current_url = JURI::current() . '?'. $_SERVER['QUERY_STRING'];
+	        } else {
+	        	$current_url = JURI::current();
+	        }
+            $replace_body[]	= '"'.$current_url.'#$1"';
+
 
 			//fix for form actions
 	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
@@ -240,7 +250,16 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
     }
 
-      function fixAction($url, $extra, $baseURL){
+      function fixAction($url, $extra, $baseURL)
+      {
+
+		if(strpos($url,'quickmod')){
+			$replacement = 'action="'.$url . '"' . $extra . '>';
+
+			return $replacement;
+		}
+
+
       	$url = htmlspecialchars_decode($url);
         $config =& JFactory::getConfig();
         $sef = $config->getValue( 'config.sef' );

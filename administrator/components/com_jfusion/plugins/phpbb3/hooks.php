@@ -49,11 +49,13 @@ class JFusionHook
 	*/
 	function append_sid($hook, $url, $params = false, $is_amp = true, $session_id = false)
 	{
-		global $_SID, $_EXTRA_URL;
 
+		global $_SID, $_EXTRA_URL;
 		$arrParams = array();
 		$arrExtra  = array();
 		$anchor    = '';
+
+      	//JError::raiseWarning(500, '1:'. htmlentities(print_r($url, true)) . ' AND ' .htmlentities(print_r($params, true)) . ' AND ' . htmlentities(print_r($_EXTRA_URL, true)));
 
 		// Assign sid if session id is not specified
 		if ($session_id === false) {
@@ -155,14 +157,16 @@ class JFusionHook
         }
 		$uri->setVar('option', 'com_jfusion');
 
-		$url = urldecode('index.php'.$uri->toString(array('query', 'fragment')));
 
+		$url = urldecode('index.php'.$uri->toString(array('query', 'fragment')));
 		//phpbb 3.0.4 now can handle SEF urls, return a non-sef url if it contains a bracket
 		if (strpos($url,'{')){
-			return JURI::Base() . $url;
+			$url = JURI::Base() . $url;
 		} else {
-			return JRoute::_($url, $is_amp);
+			$url = JRoute::_($url, $is_amp);
 		}
+		//JError::raiseWarning(500, '2: ' . htmlentities(print_r($url, true)) );
+		return $url;
 	}
 
 	/**

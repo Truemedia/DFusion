@@ -86,7 +86,9 @@ function startJoomla()
     jimport('joomla.plugin.helper');
     jimport('joomla.utilities.arrayhelper');
     jimport('joomla.environment.uri');
+    jimport('joomla.environment.request');
     jimport('joomla.user.user');
+
     // JText cannot be loaded with jimport since it's not in a file called text.php but in methods
     JLoader::register('JText' , JPATH_BASE.DS.'libraries'.DS.'joomla'.DS.'methods.php');
 
