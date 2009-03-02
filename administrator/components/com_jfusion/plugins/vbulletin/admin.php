@@ -256,7 +256,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			phpcode = ".$db->Quote($php).",
 			product = 'vbulletin',
 			active = 1,
-			executionorder = 5";
+			executionorder = 1";
 		$db->setQuery($query);
 		if (!$db->query()) {
 			JError::raiseWarning(500,$db->stderr());
@@ -324,7 +324,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			phpcode = ".$db->Quote($php).",
 			product = 'vbulletin',
 			active = 1,
-			executionorder = 5";
+			executionorder = 1";
 		$db->setQuery($query);
 		if (!$db->query()) {
 			JError::raiseWarning(500,$db->stderr());
@@ -408,7 +408,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 				phpcode = ".$db->Quote($php).",
 				product = 'vbulletin',
 				active = 1,
-				executionorder = 5";
+				executionorder = 1";
 			$db->setQuery($query);
 			if (!$db->query()) {
 				JError::raiseWarning(500,$db->stderr());

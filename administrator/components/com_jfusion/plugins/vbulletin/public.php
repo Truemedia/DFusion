@@ -155,6 +155,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			,'curpostidkey'
 			,'currentdepth'
 			,'customfields'
+			,'datastore_fetch'
 			,'date1'
 			,'date2'
 			,'datenow'

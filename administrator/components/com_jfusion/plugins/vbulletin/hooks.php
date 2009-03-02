@@ -10,8 +10,6 @@
  $GLOBALS["vbulletin"] =& $vbulletin;
  $GLOBALS["db"] =& $db;
 
- //function exec_postvar_call_back()
-
  //execute a hook
  class executeJFusionHook
  {
