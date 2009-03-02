@@ -642,6 +642,7 @@ class JFusionCurl{
         // domain if not present. We can extract the domain from the post_url passed to this function
         if ((strpos($form_action,$ssl_string) === false) && !$curl_options['relpath']) {
            $tmpurl = JFusionCurl::parseUrl($curl_options['post_url']);
+           if ( substr($tmpurl[4],-1) != '/' && substr($form_action,0,1) != '/' ) $tmpurl[4] .= '/';
            $form_action = $ssl_string.$tmpurl[4].$form_action;
         }
         if ($curl_options['relpath']){$form_action = $curl_options['post_url'].$form_action;}

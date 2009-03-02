@@ -182,14 +182,15 @@ class JFusionUser_magento extends JFusionUser{
         $instance['password_salt'] = $hashArr[1];
         $instance['activation'] = '';
         if ($magento_user['confirmation']['value']){$instance['activation'] = $magento_user['confirmation']['value']; }
-        $instance['registerDate'] = $magento_user['created_at']['value'];
-        $instance['lastvisitDate'] = $magento_user['updated_at']['value'];
+//        $instance['registerDate'] = $magento_user['created_at']['value'];
+//        $instance['lastvisitDate'] = $magento_user['updated_at']['value'];
         if ($instance['activation']) {
             $instance['block'] = 1;
         } else {
         	$instance['block'] = 0;
         }
-        return (object) $instance;
+        $instance1 = (object) $instance;
+        return $instance1;
     }
 
     function updateUser($userinfo, $overwrite) {
@@ -346,10 +347,10 @@ $db->Execute('BEGIN TRANSACTION');
     }
     // the basic userrecord is created, now update/create the eav records
     for ($i=0;$i< count($user); $i++) {
-      if ($user[$i][backend_type] == 'static'){
-        if (isset($user[$i][value])){
+      if ($user[$i]['backend_type'] == 'static'){
+        if (isset($user[$i]['value'])){
           $query= 'UPDATE #__customer_entity' .
-              ' SET '.$user[$i][attribute_code].'= '.$db->Quote($user[$i][value]).
+              ' SET '.$user[$i]['attribute_code'].'= '.$db->Quote($user[$i][value]).
               ' WHERE entity_id = '.$entity_id;
               $db->Execute($query);
           if ($db->_errorNum != 0){
@@ -359,28 +360,28 @@ $db->Execute('BEGIN TRANSACTION');
           }
         }
       } else {
-        if (isset($user[$i][value])){
-           $query = 'SELECT value FROM #__customer_entity'.'_'.$user[$i][backend_type].
+        if (isset($user[$i]['value'])){
+           $query = 'SELECT value FROM #__customer_entity'.'_'.$user[$i]['backend_type'].
               ' WHERE entity_id = '.$entity_id.' AND entity_type_id = '.$this->getMagentoEntityTypeID('customer').
-              ' AND attribute_id = '.$user[$i][attribute_id] ;
+              ' AND attribute_id = '.$user[$i]['attribute_id'] ;
               $db->Execute($query);
               $result = $db->loadresult();
           if ($result){
             // we do not update an empty value, but remove the record instead
-            if ($user[$i][value]==''){
-              $query= 'DELETE FROM #__customer_entity'.'_'.$user[$i][backend_type].
+            if ($user[$i]['value']==''){
+              $query= 'DELETE FROM #__customer_entity'.'_'.$user[$i]['backend_type'].
                   ' WHERE entity_id = '.$entity_id.' AND entity_type_id = '.$this->getMagentoEntityTypeID('customer').
-                  ' AND attribute_id = '.$user[$i][attribute_id] ;
+                  ' AND attribute_id = '.$user[$i]['attribute_id'] ;
             } else {
-              $query= 'UPDATE #__customer_entity'.'_'.$user[$i][backend_type].
-                  ' SET value = '.$db->Quote($user[$i][value]).
+              $query= 'UPDATE #__customer_entity'.'_'.$user[$i]['backend_type'].
+                  ' SET value = '.$db->Quote($user[$i]['value']).
                   ' WHERE entity_id = '.$entity_id.' AND entity_type_id = '.$this->getMagentoEntityTypeID('customer').
-                  ' AND attribute_id = '.$user[$i][attribute_id] ;
+                  ' AND attribute_id = '.$user[$i]['attribute_id'] ;
             }
           } else  { // must create
-            $query= 'INSERT INTO #__customer_entity'.'_'.$user[$i][backend_type].
+            $query= 'INSERT INTO #__customer_entity'.'_'.$user[$i]['backend_type'].
               ' (value, attribute_id, entity_id, entity_type_id) VALUES ('.
-            $db->Quote($user[$i][value]).', '.$user[$i][attribute_id].', '.
+            $db->Quote($user[$i]['value']).', '.$user[$i]['attribute_id'].', '.
             $entity_id.', '.$this->getMagentoEntityTypeID('customer').')';
           }
               $db->Execute($query);
