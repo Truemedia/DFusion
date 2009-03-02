@@ -431,7 +431,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
     function getHookPHP($plugin, $itemid = false)
     {
     	if($plugin=="frameless") {
-			$php = "if(defined('_JEXEC')){\n";
+			$php = "if(defined('_JEXEC') || isset(\$_GET['jfusion'])){\n"; 
     	} elseif($plugin=="redirect") {
     		$php = "if(!defined('_JEXEC')){\n";
 
