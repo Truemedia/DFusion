@@ -128,6 +128,12 @@ if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
 
 		$JFusionPlugin->parseHeader($data[1], $baseURL, $fullURL, $integratedURL);
     	$document->addCustomTag($data[1]);
+
+		$pathway = $JFusionPlugin->getPathWay();
+		if ( is_array($pathway) ) {
+			$breadcrumbs = & $mainframe->getPathWay();
+    		foreach($pathway as $path) $breadcrumbs->addItem($path->title, substr(JURI::base(),0,-1).JFusionFunction::routeURL($path->url, JRequest::getVar('Itemid')));
+    	}
 	}
 
 	// Output the body
