@@ -91,6 +91,8 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		//change the current directory back to Joomla. 5*60
 		chdir(JPATH_SITE);
 
+		$this->setPathWay();
+
 		// Log an error if we could not include the file
 		if (!$rs) {
 			JError::raiseWarning(500, 'Could not find DokuWiki in the specified directory');
@@ -306,5 +308,33 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 	function getSearchResultLink($post)
 	{
 		return "doku.php?id=" . $post;
+	}
+
+	function setPathWay()
+	{
+		$mainframe = &JFactory::getApplication('site');
+		$breadcrumbs = & $mainframe->getPathWay();
+
+		if ( JRequest::getVar('id') ) {
+			$bread = explode(';', JRequest::getVar('id'));
+			$url = '';
+			$breads = array();
+			$i=0;
+			foreach($bread as $key ) {
+				if ($url) $url .= ';'.$key;
+				else $url = $key;
+
+				$breads[$i]['text'] = $key;
+				$breads[$i]['url'] = $url;
+				$i++;
+			}
+
+			if ( JRequest::getVar('media') || JRequest::getVar('do') ) {
+				if ( JRequest::getVar('media') ) $add = JRequest::getVar('media');
+				else  $add = JRequest::getVar('do');
+				$breads[count($breads)-1]['text'] = $breads[count($breads)-1]['text']. ' ( '.$add.' )';
+			}
+			foreach($breads as $key ) $breadcrumbs->addItem($key['text'], substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$key['url'], JRequest::getVar('Itemid')));
+		}
 	}
 }
