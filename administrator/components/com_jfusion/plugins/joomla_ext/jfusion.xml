@@ -76,10 +76,6 @@
       <option value="1">YES</option>
       <option value="0">NO</option>
     </param>
-    <param name="ssl_verifyhost" type="list" default="1" label="" description="CURL_VERIFYHOST">
-      <option value="1">YES</option>
-      <option value="0">NO</option>
-    </param>
     <param name="@spacer" type="spacer" default="" label="" description="" />
   <param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
   <param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
