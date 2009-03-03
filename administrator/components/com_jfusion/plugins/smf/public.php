@@ -112,18 +112,18 @@ class JFusionPublic_smf extends JFusionPublic{
 		//$replace_body[]	= '\'"\'.$this->fixUrl("#$1").\'"\'';
 
 		//Jump Related fix
-		$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
-		$replace_body[]	= '$this->fixJump("$1")';
+		//$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
+		//$replace_body[]	= '$this->fixJump("$1")';
 
-		$regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
-		$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
+		//$regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
+		//$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
 
 		//todo: Fix quickreply ( Quote )
-//		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
-//		$replace_body[]	= '<a $1>';
+		//$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
+		//$replace_body[]	= '<a $1>';
 
-		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
-		$replace_body[]	= '<a $1 onclick="jfusion_doQuote$2>';
+		//$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
+		//$replace_body[]	= '<a $1 onclick="jfusion_doQuote$2>';
 
 		$buffer = preg_replace($regex_body, $replace_body, $buffer);
 	}
@@ -161,9 +161,10 @@ class JFusionPublic_smf extends JFusionPublic{
 			//we can just append both variables
 			$url = $baseURL . $q;
 		} else {
-			//TODO split up url into vars and set jfile
+			//non sef URls
+			$q = str_replace('?', '&amp;', $q);
+			$url = $baseURL . '&amp;jfile=' .$q;
 		}
-			$url = $baseURL . $q;
 		return $url;
 	}
 
