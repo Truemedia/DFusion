@@ -230,7 +230,7 @@ class JFusionUser_magento extends JFusionUser{
         $db = JFusionFactory::getDatabase($this->getJname());
         $params = JFusionFactory::getParams($this->getJname());
         $update_activation = $params->get('update_activation');
-
+ 
         $status = array();
         $status['debug'] = array();
         $status['error'] = array();
