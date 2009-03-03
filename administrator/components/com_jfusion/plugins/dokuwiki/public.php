@@ -310,7 +310,6 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 	function getPathWay()
 	{
-		$mainframe = &JFactory::getApplication('site');
 		if ( JRequest::getVar('id') ) {
 			$bread = explode(';', JRequest::getVar('id'));
 			$url = '';
