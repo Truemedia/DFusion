@@ -44,7 +44,7 @@ class JFusionDokuWikiHook
         $session =& JFactory::getSession();
         $session->close();
 */
-	if ( $event->data['preact']['save'] ) {
+	if ( is_array($event->data['preact']) ) {
 		header('Location: '.substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'], JRequest::getVar('Itemid')));
 	} else {
 		header('Location: '.substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'].'&do='.$event->data['preact'], JRequest::getVar('Itemid')));
