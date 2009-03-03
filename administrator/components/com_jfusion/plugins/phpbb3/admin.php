@@ -486,5 +486,18 @@ return;
       	    //there was an error saving the parameters
            	JError::raiseWarning(0,$db->stderr());
         }
+
+        //remove the file as well to allow for updates of the auth mod content
+        $params = JFusionFactory::getParams($this->getJname());
+        $path = $params->get('source_path');
+        if (substr($path, -1) == DS) {
+            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
+        } else {
+            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
+        }
+		if (file_exists($auth_file)){
+			jimport('joomla.filesystem.file');
+			JFile::delete($auth_file);
+		}
     }
 }
