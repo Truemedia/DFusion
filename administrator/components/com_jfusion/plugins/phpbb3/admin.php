@@ -174,41 +174,10 @@ class JFusionAdmin_phpbb3 extends JFusionAdmin{
         }
     }
 
-    function enable_redirect_mod()
-    {
-    	$error = 0;
-    	//check to see if a path is defined
-        $params = JFusionFactory::getParams($this->getJname());
-		$joomla_params = JFusionFactory::getParams('joomla_int');
-        $path = $params->get('source_path');
-        if(empty($path)){
-        	$error = 1;
-        	$reason = JText::_('SET_PATH_FIRST');
-        }
-        //check for trailing slash and generate file path
-        if (substr($path, -1) == DS) {
-            $common_file = $path . 'common.php';
-        } else {
-            $common_file = $path .DS. 'common.php';
-        }
-        //see if the common.php file exists
-		if (!file_exists($common_file) && $error == 0){
-        	$error = 1;
-        	$reason = JText::_('NO_FILE_FOUND');
-		}
-		if($error == 0) {
-			//get the joomla path from the file
-			jimport('joomla.filesystem.file');
-			$file_data = JFile::read($common_file);
-	      	preg_match_all('/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms',$file_data,$matches);
-
-			//remove any old code
-			if(!empty($matches[1][0])){
-		      	$search = '/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms';
-		      	$file_data = preg_replace($search,'',$file_data);
-
-			}
-
+	function generateRedirectCode()
+	{
+        	$params = JFusionFactory::getParams($this->getJname());
+        	$joomla_params = JFusionFactory::getParams('joomla_int');
     		$cookie_name = $params->get('cookie_prefix');
 		    $joomla_url = $joomla_params->get('source_url');
     		$joomla_itemid = $params->get('redirect_itemid');
@@ -253,49 +222,57 @@ if(!defined(\'_JEXEC\') && !defined(\'ADMIN_START\') && $_GET[\'jfile\'] != \'fi
 }
 //JFUSION REDIRECT END
 ';
+	return $redirect_code;
+	}
+
+    function enable_redirect_mod()
+    {
+    	$error = 0;
+    	$error = 0;
+    	$reason = '';
+    	$mod_file = $this->getModFile('common.php',$error,$reason);
+
+		if($error == 0) {
+			//get the joomla path from the file
+			jimport('joomla.filesystem.file');
+			$file_data = JFile::read($mod_file);
+	      	preg_match_all('/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms',$file_data,$matches);
+
+			//remove any old code
+			if(!empty($matches[1][0])){
+		      	$search = '/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms';
+		      	$file_data = preg_replace($search,'',$file_data);
+
+			}
+
+			$redirect_code = $this->generateRedirectCode();
 
 	      	$search = '/\<\?php/si';
 			$replace = '<?php' . $redirect_code;
 	      	$file_data = preg_replace($search,$replace,$file_data);
-			JFile::write($common_file, $file_data);
+			JFile::write($mod_file, $file_data);
 		}
     }
 
     function disable_redirect_mod()
     {
     	$error = 0;
-    	//check to see if a path is defined
-        $params = JFusionFactory::getParams($this->getJname());
-        $path = $params->get('source_path');
-        if(empty($path)){
-        	$error = 1;
-        	$reason = JText::_('SET_PATH_FIRST');
-        }
-        //check for trailing slash and generate file path
-        if (substr($path, -1) == DS) {
-            $common_file = $path . 'common.php';
-        } else {
-            $common_file = $path .DS. 'common.php';
-        }
-        //see if the common.php file exists
-		if (!file_exists($common_file) && $error == 0){
-        	$error = 1;
-        	$reason = JText::_('NO_FILE_FOUND');
-		}
+    	$reason = '';
+    	$mod_file = $this->getModFile('common.php',$error,$reason);
+
 		if($error == 0) {
 			//get the joomla path from the file
 			jimport('joomla.filesystem.file');
-			$file_data = JFile::read($common_file);
+			$file_data = JFile::read($mod_file);
 	      	$search = '/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/si';
 	      	$file_data = preg_replace($search,'',$file_data);
-			JFile::write($common_file, $file_data);
+			JFile::write($mod_file, $file_data);
 		}
 
     }
 
-    function show_redirect_mod()
+    function getModFile($filename, &$error,&$reason)
     {
-    	$error = 0;
     	//check to see if a path is defined
         $params = JFusionFactory::getParams($this->getJname());
         $path = $params->get('source_path');
@@ -305,28 +282,19 @@ if(!defined(\'_JEXEC\') && !defined(\'ADMIN_START\') && $_GET[\'jfile\'] != \'fi
         }
         //check for trailing slash and generate file path
         if (substr($path, -1) == DS) {
-            $common_file = $path . 'common.php';
+            $mod_file = $path . $filename;
         } else {
-            $common_file = $path .DS. 'common.php';
+            $mod_file = $path .DS. $filename;
         }
-        //see if the common.php file exists
-		if (!file_exists($common_file) && $error == 0){
+        //see if the file exists
+		if (!file_exists($mod_file) && $error == 0){
         	$error = 1;
         	$reason = JText::_('NO_FILE_FOUND');
 		}
-		if($error == 0) {
-			//get the joomla path from the file
-			jimport('joomla.filesystem.file');
-			$file_data = JFile::read($common_file);
-	      	preg_match_all('/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms',$file_data,$matches);
+		return $mod_file;
+    }
 
-			//compare it with our joomla path
-			if(empty($matches[1][0])){
-	        	$error = 1;
-	        	$reason = JText::_('MOD_NOT_ENABLED');
-			}
-		}
-
+	function outputJavascript(){
 ?>
 <script language="javascript" type="text/javascript">
 <!--
@@ -340,8 +308,31 @@ return;
 
 //-->
 </script>
-
 <?php
+	}
+
+    function show_redirect_mod()
+    {
+    	$error = 0;
+    	$reason = '';
+    	$mod_file = $this->getModFile('common.php',$error,$reason);
+
+		if($error == 0) {
+			//get the joomla path from the file
+			jimport('joomla.filesystem.file');
+			$file_data = JFile::read($mod_file);
+	      	preg_match_all('/\/\/JFUSION REDIRECT START(.*)\/\/JFUSION REDIRECT END/ms',$file_data,$matches);
+
+			//compare it with our joomla path
+			if(empty($matches[1][0])){
+	        	$error = 1;
+	        	$reason = JText::_('MOD_NOT_ENABLED');
+			}
+		}
+
+		//add the javascript to enable buttons
+		$this->outputJavascript();
+
 		if ($error == 0){
 			//return success
 			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('REDIRECTION_MOD') . ' ' . JText::_('ENABLED');
@@ -360,29 +351,13 @@ return;
     function show_auth_mod()
     {
     	$error = 0;
-    	//check to see if a path is defined
-        $params = JFusionFactory::getParams($this->getJname());
-        $path = $params->get('source_path');
-        if(empty($path)){
-        	$error = 1;
-        	$reason = JText::_('SET_PATH_FIRST');
-        }
-        //check for trailing slash and generate file path
-        if (substr($path, -1) == DS) {
-            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
-        } else {
-            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
-        }
-        //see if the auth mod file exists
-		if (!file_exists($auth_file) && $error == 0){
-        	$error = 1;
-        	$reason = JText::_('NO_FILE_FOUND');
-		}
+    	$reason = '';
+    	$mod_file = $this->getModFile('includes' .DS. 'auth' .DS. 'auth_jfusion.php',$error,$reason);
 
 		if($error == 0) {
 			//get the joomla path from the file
 			jimport('joomla.filesystem.file');
-			$file_data = JFile::read($auth_file);
+			$file_data = JFile::read($mod_file);
 	      	preg_match_all('/define\(\'JPATH_BASE\'\,(.*)\)/',$file_data,$matches);
 
 			//compare it with our joomla path
@@ -404,22 +379,9 @@ return;
 	        }
 	    }
 
+		//add the javascript to enable buttons
+		$this->outputJavascript();
 
-?>
-<script language="javascript" type="text/javascript">
-<!--
-function auth_mod(action) {
-var form = document.adminForm;
-form.customcommand.value = action;
-form.action.value = 'apply';
-submitform('saveconfig');
-return;
-}
-
-//-->
-</script>
-
-<?php
 		if ($error == 0){
 			//return success
 			$output = '<img src="components/com_jfusion/images/check_good.png" height="20px" width="20px">' . JText::_('AUTHENTICATION_MOD') . ' ' . JText::_('ENABLED');
@@ -434,14 +396,9 @@ return;
 
     function enable_auth_mod()
     {
-    	//check to see if a path is defined
-        $params = JFusionFactory::getParams($this->getJname());
-        $path = $params->get('source_path');
-        if (substr($path, -1) == DS) {
-            $auth_file = $path . 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
-        } else {
-            $auth_file = $path .DS. 'includes' .DS. 'auth' .DS. 'auth_jfusion.php';
-        }
+    	$error = 0;
+    	$reason = '';
+    	$auth_file = $this->getModFile('includes' .DS. 'auth' .DS. 'auth_jfusion.php',$error,$reason);
 
         //see if the auth mod file exists
 		if (!file_exists($auth_file)){
