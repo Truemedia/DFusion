@@ -190,7 +190,7 @@ class JFusionJplugin{
 		$curl_options['input_password_id']	= $params->get('input_password_id');
 		$curl_options['secure']				= $params->get('secure');
 		$curl_options['httponly']			= $params->get('httponly');
-		$curl_options['verifyhost']			= $params->get('ssl_verifyhost');
+		$curl_options['verifyhost']			= 0;//$params->get('ssl_verifyhost');
         $status=JFusionCurl::RemoteLogin($curl_options);
         return $status;
     }
@@ -217,7 +217,7 @@ class JFusionJplugin{
 	 	$curl_options['leavealone']			= $params->get('leavealone');
 		$curl_options['secure']				= $params->get('secure');
 		$curl_options['httponly']			= $params->get('httponly');
-		$curl_options['verifyhost']			= $params->get('ssl_verifyhost');
+		$curl_options['verifyhost']			= 0;//$params->get('ssl_verifyhost');
         $status = JFusionCurl::RemoteLogout($curl_options);
         return $status;
      }

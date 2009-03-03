@@ -17,12 +17,15 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
  * @package JFusion_Magento
  */
 class JFusionUser_magento extends JFusionUser{
-    /* Magento does not have usernames. The user is identified by an 'identity_id' that is found through
-     *  the users e-mail address.
+
+
+
+    /* Magento does not have usernames.
+     *  The user is identified by an 'identity_id' that is found through the users e-mail address.
      *  To make it even more difficult for us, there is no simple tablecontaining all userdata, but
      *  the userdata is arranged in tables for different variable types.
      *  User attributes are identified by fixed attribute ID's in these tables
-      *
+     *
      *  The usertables are:
      *  customer_entity
      *  customer_address_entity
@@ -38,6 +41,35 @@ class JFusionUser_magento extends JFusionUser{
      *  customer_entity_varchar
     *
      */
+
+  function connect_to_api(&$proxi,&$sessionID){
+   $status = array();
+   $status['debug'] = array();
+   $status['error'] = array();
+
+   $params = JFusionFactory::getParams($this->getJname());
+   $apipath = $params->get('source_url').'index.php/api/?wsdl';
+   $apiuser = '';
+
+   $apikey  = '';
+   $apiuser = $params->get('apiuser');
+   $apikey = $params->get('apikey');
+   if (!$apiuser || !$apikey ){
+     $status['error'][] = 'Could not login to Magento API (empty apiuser and/or apikey)';
+     return $status;
+   }
+
+   try {
+     $proxi = new SoapClient($apipath);
+     $sessionId = $proxi->login($apiuser, $apikey);
+     $status['debug'][] = 'Logged into Magento API as '.$apiuser.' using key, message:'.$apikey;
+     return $status;
+   }
+   catch (Soapfault $fault){
+     $status['error'][] = 'Could not login to Magento API as '.$apiuser.' using key '.$apikey.',message:'.$fault->faultstring;
+     return $status;
+   }
+ }
 
 
   /*
@@ -187,7 +219,7 @@ class JFusionUser_magento extends JFusionUser{
         if ($instance['activation']) {
             $instance['block'] = 1;
         } else {
-        	$instance['block'] = 0;
+          $instance['block'] = 0;
         }
         $instance1 = (object) $instance;
         return $instance1;
@@ -203,32 +235,32 @@ class JFusionUser_magento extends JFusionUser{
         $status['debug'] = array();
         $status['error'] = array();
 
-		//check to see if a valid $userinfo object was passed on
-		if(!is_object($userinfo)){
-			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
-			return $status;
-		}
+    //check to see if a valid $userinfo object was passed on
+    if(!is_object($userinfo)){
+      $status['error'][] = JText::_('NO_USER_DATA_FOUND');
+      return $status;
+    }
 
         //find out if the user already exists
         $existinguser = $this->getUser($userinfo->email);
 
         if (!empty($existinguser)) {
             //a matching user has been found
-			$status['debug'][] = JText::_('USER_DATA_FOUND');
+      $status['debug'][] = JText::_('USER_DATA_FOUND');
             if (!empty($userinfo->password_clear) && strlen($userinfo->password_clear) != 32) {
-            	//we can update the password but first find out if we need to
-              	if($existinguser->password_salt) {
-                  	$existingpassword = md5($existinguser->password_salt.$userinfo->password_clear);
-              	} else {
-                  	$existingpassword = md5($userinfo->password_clear);
-              	}
-              	if ($existingpassword != $existinguser->password) {
-	              	$this->updatePassword($userinfo, $existinguser, $status);
-              	} else {
-                  	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
-              	}
+              //we can update the password but first find out if we need to
+                if($existinguser->password_salt) {
+                    $existingpassword = md5($existinguser->password_salt.$userinfo->password_clear);
+                } else {
+                    $existingpassword = md5($userinfo->password_clear);
+                }
+                if ($existingpassword != $existinguser->password) {
+                  $this->updatePassword($userinfo, $existinguser, $status);
+                } else {
+                    $status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ':' .  JText::_('PASSWORD_VALID');
+                }
               } else {
-                	$status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
+                  $status['debug'][] = JText::_('SKIPPED_PASSWORD_UPDATE') . ': ' . JText::_('PASSWORD_UNAVAILABLE');
               }
 
 
@@ -257,7 +289,7 @@ class JFusionUser_magento extends JFusionUser{
             return $status;
 
         } else {
-			$status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
+      $status['debug'][] = JText::_('NO_USER_FOUND_CREATING_ONE');
             //we need to create a new user
             $this->createUser($userinfo, $status);
             if (empty($status['error'])) {
@@ -272,11 +304,11 @@ class JFusionUser_magento extends JFusionUser{
     }
 
     function destroySession($userinfo, $options){
-		return JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
+    return JFusionJplugin::destroySession($userinfo, $options,$this->getJname());
      }
 
     function createSession($userinfo, $options){
-		return JFusionJplugin::createSession($userinfo, $options,$this->getJname());
+    return JFusionJplugin::createSession($userinfo, $options,$this->getJname());
     }
 
         function getRandomString($len, $chars=null){
@@ -427,12 +459,12 @@ $db->Execute('BEGIN TRANSACTION');
        $this->fillMagentouser($magento_user,'email',$userinfo->email);
        $parts = explode(' ', $userinfo->name);
        $this->fillMagentouser($magento_user,'firstname',$parts[0]);
-    	if (count($parts)>1){
+      if (count($parts)>1){
          $this->fillMagentouser($magento_user,'lastname',$parts[(count($parts)-1)]);
-    	} else {
-    		 // Magento needs Firstname AND Lastname, so add a dot when lastname is empty
-    		$this->fillMagentouser($magento_user,'lastname','.');
-    	}
+      } else {
+         // Magento needs Firstname AND Lastname, so add a dot when lastname is empty
+        $this->fillMagentouser($magento_user,'lastname','.');
+      }
        $middlename='';
        for ($i=1;$i< (count($parts)-1); $i++) {
            $middlename= $middlename.' '.$parts[$i];
@@ -494,14 +526,132 @@ $db->Execute('BEGIN TRANSACTION');
 
     function inactivateUser($userinfo, &$existinguser, &$status) {
         $magento_user = $this->getMagentoDataObjectRaw('customer');
-         $password_salt = $this->getRandomString(2);
-      $this->fillMagentouser($magento_user,'confirmation',$userinfo->activation);
+        $password_salt = $this->getRandomString(2);
+        $this->fillMagentouser($magento_user,'confirmation',$userinfo->activation);
         $errors = $this->update_create_Magentouser($magento_user,$existinguser->userid);
         if ($errors) {
             $status['error'][] = JText::_('ACTIVATION_UPDATE_ERROR') . $db->stderr();
         } else {
           $status['debug'][] = JText::_('ACTIVATION_UPDATE'). ': ' . $existinguser->activation . ' -> ' . $userinfo->activation;
         }
-     }
+    }
 
+    function deleteUser($userinfo) {
+      //setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+        //set the userid
+        //check to see if a valid $userinfo object was passed on
+        if(!is_object($userinfo)){
+           $status['error'][] = JText::_('NO_USER_DATA_FOUND');
+           return $status;
+        }
+
+
+        $existinguser = $this->getUser($userinfo->email);
+        if (!empty($existinguser)) {
+            $user_id = $existinguser->userid;
+            // this can be complicated so we are going to use the Magento customer API
+            // for the time being. Speed is not a great issue here
+
+            // connect to host
+            $sessionId = '';
+            $status = $this->connect_to_api ($proxi,$sessionId);
+            if ($status['error']){ return $status;}
+            try {
+                 $result= $proxi->call($sessionId, "customer.delete",$user_id);
+            }
+            catch (Soapfault $fault){
+                   $status['error'][] = "Magento API: Could not delete user with id $user_id , message: ".$fault->faultstring;
+            }
+            try {
+                 $proxi->endSession($sessionId);
+            }
+            catch (Soapfault $fault){
+                 $status['error'][] = "Magento API: Could not end this session, message: ".$fault->faultstring;
+
+            }
+        }
+        return $status;
+
+
+
+/*
+work in progress
+        //retreive the database object
+        $db = & JFusionFactory::getDatabase($this->getJname());
+
+        //set the userid
+        $user_id = $userinfo->userid;
+
+
+
+
+
+For the time being we only set the userinactive. It is far to complicated
+to delete the user automatically without any interaction with the shopowner.
+The user can have current and past salesorders and a lot more stuff that
+should be retained due to tax regulations, laws etc.
+
+
+
+    // SHOULD WE REALLY WANT TO DELETE A CUSTOMER WITH AN ENTRY IN THE SALES_ORDER TABLE?
+    // I don't think so, even if marked active
+    $query = 'SELECT entity_id FROM #__sales_order WHERE customer_id = ' . $user_id;
+    $db->setQuery($query);
+    if($db->query()) {
+      $result = $db->loadObject();
+      if($results){
+        $status["error"][] = "User $user_id NOT deleted, user has an entry in the sales_order table!";
+        return $status;
+      }
+    }
+
+
+
+
+    // lets start with the customers wishlists
+    // find the wishlists
+    $query = 'SELECT wishlist_id FROM #__wishlist WHERE customer_id = ' . $user_id;
+    $db->setQuery($query);
+    if($db->query()) {
+      if($results = $db->loadObjectList()){
+        foreach($results as $row){
+          // delete the wishlist items
+          $query = 'DELETE FROM #__wishlist_item WHERE wishlist_id ='.$row->wishlist_id;
+          $db->setQuery($query);
+          if(!$db->query()){
+              $status["error"][] = "Error Could not delete wishlistitems of wishlist {$row->wishlist_id} from user $user_id: {$db->stderr()}";
+          } else {
+            $status["debug"][] = "Deleted wishlistitems of wishlist {$row->wishlist_id} items from user $user_id.";
+          }
+        }
+        // delete wishlists
+        $query = 'DELETE FROM #__wishlist WHERE customer_id = ' . $user_id;
+        $db->setQuery($query);
+        if(!$db->query()){
+            $status["error"][] = "Error Could not delete wishlists from user $user_id: {$db->stderr()}";
+        } else {
+          $status["debug"][] = "Deleted wishlists from user $user_id.";
+        }
+      }
+    } elseif($db->stderr()) {
+        $status["error"][] = "Error Could not retrieve wishlists of user $user_id: {$db->stderr()}";
+    }
+
+    // remove tag relations
+    $query = 'DELETE FROM #__tag_relation WHERE customer_id = ' . $user_id;
+    $db->setQuery($query);
+    if(!$db->query()){
+        $status["error"][] = "Error Could not delete tagrelations from user $user_id: {$db->stderr()}";
+    } else {
+      $status["debug"][] = "Deleted tagrelations from user $user_id.";
+    }
+
+*/
+
+
+    }
 }
+?>
