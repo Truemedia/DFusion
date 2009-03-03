@@ -322,7 +322,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 
 				$path = new stdClass();
 				$path->title = $key;
-				$path->url = substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$url, JRequest::getVar('Itemid'));
+				$path->url = 'doku.php?id='.$url;
 				$pathway[] = $path;
 			}
 
