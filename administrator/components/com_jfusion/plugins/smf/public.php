@@ -101,14 +101,15 @@ class JFusionPublic_smf extends JFusionPublic{
 		$regex_body		= array();
 		$replace_body	= array();
 
-		$regex_body[]	= '#"'.$integratedURL.'index.php\?(.*?)"#Sise';
-		$replace_body[] = '\'"\'.$this->fixUrl("$1").\'"\'';
+		$regex_body[]	= '#"'.$integratedURL.'index.php(.*?)"#Sise';
+		$replace_body[] = '\'"\'.$this->fixUrl("index.php$1","'.$baseURL.'").\'"\'';
 
-		$regex_body[]	= '#"'.$integratedURL.'index.php"#Sie';
-		$replace_body[]	= '\'"\'.$this->fixUrl().\'"\'';
+		//mariusvr: commented out the three lines and added a single regex
+		//$regex_body[]	= '#"'.$integratedURL.'index.php"#Sie';
+		//$replace_body[]	= '\'"\'.$this->fixUrl().\'"\'';
 
-		$regex_body[]	= '#"'.$integratedURL.'index.php\#(.*?)"#Sise';
-		$replace_body[]	= '\'"\'.$this->fixUrl("#$1").\'"\'';
+		//$regex_body[]	= '#"'.$integratedURL.'index.php\#(.*?)"#Sise';
+		//$replace_body[]	= '\'"\'.$this->fixUrl("#$1").\'"\'';
 
 		//Jump Related fix
 		$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
@@ -154,10 +155,16 @@ class JFusionPublic_smf extends JFusionPublic{
 		$buffer = preg_replace($regex_header, $replace_header, $buffer);
 	}
 
-	function fixUrl($q='')
+	function fixUrl($q='',$baseURL)
 	{
-		$q = str_replace(';','&',$q);
-		return substr(JURI::base(),0,-1).JFusionFunction::routeURL('index.php?'.$q, JRequest::getVar('Itemid'));
+		if (substr($baseURL, -1) == '/') {
+			//we can just append both variables
+			$url = $baseURL . $q;
+		} else {
+			//TODO split up url into vars and set jfile
+		}
+			$url = $baseURL . $q;
+		return $url;
 	}
 
 	function fixJump($content)

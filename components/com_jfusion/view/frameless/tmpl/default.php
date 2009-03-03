@@ -10,18 +10,33 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+//initialise some vars
 $application = JFactory::getApplication();
 $uri		= JURI::getInstance();
+$params = JFusionFactory::getParams('joomla_int');
+$joomla_url = $params->get('source_url');
 
-//Get the base URL and make sure we have a ? delimiter
+//Get the base URL to the specific JFusion plugin
 $Itemid = JRequest::getVar('Itemid');
-if ($Itemid) {
-	$baseURL	= JRoute::_(JURI::base() .'index.php?option=com_jfusion&Itemid=' . $Itemid);
+$baseURL	= JRoute::_('index.php?option=com_jfusion&Itemid=' . $Itemid);
+if(!strpos($baseURL,'?')){
+	$baseURL .= '/';
+}
+if (substr($joomla_url, -1) == '/') {
+	if ($baseURL[0] == '/') {
+		$baseURL = substr($joomla_url,0,-1) . $baseURL;
+	} else {
+		$baseURL = $joomla_url . $baseURL;
+	}
 } else {
-    $baseURL	= JRoute::_('index.php?option=com_jfusion&view=frameless&jname='.$this->jname);
+	if ($baseURL[0] == '/') {
+		$baseURL = $joomla_url . $baseURL;
+	} else {
+		$baseURL = $joomla_url . '/' . $baseURL;
+	}
 }
 
-//Get the full URL, making note of the query
+//Get the full current URL
 $query	= $uri->getQuery();
 $url	= $uri->current();
 $fullURL = $url.'?'.$query;
