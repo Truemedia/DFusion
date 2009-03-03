@@ -6,7 +6,7 @@
 			<option value="image_block">Gallery2 Imageblock</option>
 			<option value="sidebar">Gallery2 Sidebar</option>
 		</param>
-		<param name="" type="helptext" default="Default settings for all Views" />
+		<param name=" " type="helptext" default="Default settings for all Views" />
 		<param name="@spacer" type="spacer" default="" label="Default" description="" />
 		<param name="g2_align" type="list" default="center" label="Alignment" description="Should it be left, right or in the middle.">
 			<option value="left">left</option>

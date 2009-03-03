@@ -63,7 +63,7 @@
 		</param>
 
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name="" type="helptext" default="JOOMLA_VISUAL_DEFAULT" />
+		<param name=" " type="helptext" default="JOOMLA_VISUAL_DEFAULT" />
 		<param name="default_plugin" type="JFusionPlugins" default="" label="DEFAULT_JFUSION_PLUGIN"/>
 		<param name="link_mode" type="list" default="direct" label="LINK_MODE">
 			<option value="wrapper">LINK_MODE_0</option>
