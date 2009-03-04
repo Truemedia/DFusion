@@ -59,6 +59,8 @@ $GLOBALS = $joomla_globals;
 //reset the global itemid
 global $Itemid;
 $Itemid = $Itemid_joomla;
+//reset Itemid
+JRequest::setVar('Itemid',$Itemid_joomla);
 
 //clear the page title
 if(!empty($buffer)) {
