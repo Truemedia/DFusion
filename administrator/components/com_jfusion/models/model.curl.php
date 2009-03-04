@@ -598,14 +598,17 @@ class JFusionCurl{
         } while ($i<$frmcount);
 
         if ($myfrm == -1) {
-            $i = 0;
-            $helpthem = 'I found';
-            do {
-           	 if (isset($result[$i]['form_data']['id'])){
-                $helpthem = $helpthem.' -- Name='.$result[$i]['form_data']['name'].' &ID='.$result[$i]['form_data']['id'];
-           	 }
-              $i +=1;
-            } while ($i<$frmcount);
+        	$helpthem = '';
+            if ($frmcount >0) {
+            	$i = 0;
+            	$helpthem = 'I found';
+            	do {
+           	 		if (isset($result[$i]['form_data']['id'])){
+                		$helpthem = $helpthem.' -- Name='.$result[$i]['form_data']['name'].' &ID='.$result[$i]['form_data']['id'];
+           	 		}
+              		$i +=1;
+            	} while ($i<$frmcount);
+            }	
       		$status['error'][] = JText::_('CURL_NO_LOGINFORM')." ".$helpthem;
            	return $status;
         }
