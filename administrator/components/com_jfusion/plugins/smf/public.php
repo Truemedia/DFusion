@@ -37,16 +37,6 @@ class JFusionPublic_smf extends JFusionPublic{
 		return 'index.php?action=reminder';
 	}
 
-	function getPrivateMessageURL()
-	{
-		return 'index.php?action=pm';
-	}
-
-	function getViewNewMessagesURL()
-	{
-		return 'index.php?action=unread';
-	}
-
 	function & getBuffer()
 	{
 		// We're going to want a few globals... these are all set later.
@@ -58,6 +48,8 @@ class JFusionPublic_smf extends JFusionPublic{
 
 		// Required to avoid a warning about a license violation even though this is not the case
 		global $forum_version;
+
+		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
 
 		// Get the path
 		$params = JFusionFactory::getParams($this->getJname());
@@ -90,7 +82,6 @@ class JFusionPublic_smf extends JFusionPublic{
 		if (!$rs) {
 			JError::raiseWarning(500, 'Could not find SMF in the specified directory');
 		}
-
 		$document = JFactory::getDocument();
 		$document->addScript(JURI::base().DS.'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'smf'.DS.'js'.DS.'script.js');
 		return $buffer;
@@ -104,26 +95,19 @@ class JFusionPublic_smf extends JFusionPublic{
 		$regex_body[]	= '#"'.$integratedURL.'index.php(.*?)"#Sise';
 		$replace_body[] = '\'"\'.$this->fixUrl("index.php$1","'.$baseURL.'").\'"\'';
 
-		//mariusvr: commented out the three lines and added a single regex
-		//$regex_body[]	= '#"'.$integratedURL.'index.php"#Sie';
-		//$replace_body[]	= '\'"\'.$this->fixUrl().\'"\'';
-
-		//$regex_body[]	= '#"'.$integratedURL.'index.php\#(.*?)"#Sise';
-		//$replace_body[]	= '\'"\'.$this->fixUrl("#$1").\'"\'';
-
 		//Jump Related fix
-		//$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
-		//$replace_body[]	= '$this->fixJump("$1")';
+		$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
+		$replace_body[]	= '$this->fixJump("$1")';
 
-		//$regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
-		//$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
+		$regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
+		$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
 
 		//todo: Fix quickreply ( Quote )
-		//$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
-		//$replace_body[]	= '<a $1>';
+//		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
+//		$replace_body[]	= '<a $1>';
 
-		//$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
-		//$replace_body[]	= '<a $1 onclick="jfusion_doQuote$2>';
+		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
+		$replace_body[]	= '<a $1 onclick="jfusion_doQuote$2>';
 
 		$buffer = preg_replace($regex_body, $replace_body, $buffer);
 	}
@@ -134,6 +118,13 @@ class JFusionPublic_smf extends JFusionPublic{
 
 		if ( ! $regex_header || ! $replace_header )
 		{
+			$params = JFusionFactory::getParams('joomla_int');
+			$joomla_url = $params->get('source_url');
+
+			$baseURLnoSef = 'index.php?option=com_jfusion&Itemid=' . JRequest::getVar('Itemid');
+			if (substr($joomla_url, -1) == '/') $baseURLnoSef = $joomla_url . $baseURLnoSef;
+			else $baseURLnoSef = $joomla_url . '/' . $baseURLnoSef;
+
 			// Define our preg arrays
 			$regex_header		= array();
 			$replace_header	= array();
@@ -150,20 +141,28 @@ class JFusionPublic_smf extends JFusionPublic{
 			$replace_header[]	= 'href="'.$integratedURL.'$3"';
 
 			$regex_header[] = '#var smf_scripturl = ["|\'](.*?)["|\'];#mS';
-			$replace_header[] = 'var smf_scripturl = "$1"; var jf_scripturl = "'.$baseURL.'";';
+			$replace_header[] = 'var smf_scripturl = "$1"; var jf_scripturl = "'.$baseURLnoSef.'";';
 		}
 		$buffer = preg_replace($regex_header, $replace_header, $buffer);
 	}
 
 	function fixUrl($q='',$baseURL)
 	{
-		if (substr($baseURL, -1) == '/') {
-			//we can just append both variables
-			$url = $baseURL . $q;
-		} else {
+        //SMF uses semi-colons to seperate vars as well. Convert these to normal ampersands
+        $q = str_replace(';','&',$q);
+        if (substr($baseURL, -1) != '/'){
 			//non sef URls
-			$q = str_replace('?', '&amp;', $q);
+			$q = str_replace('?', 	'&amp;', $q);
 			$url = $baseURL . '&amp;jfile=' .$q;
+        } else {
+			$params = JFusionFactory::getParams('joomla_int');
+			$sefmode = $params->get('sefmode');
+			if ($sefmode==1) {
+				$url =  JFusionFunction::routeURL($q, JRequest::getVar('Itemid'));
+			} else {
+				//we can just append both variables
+				$url = $baseURL . $q;
+			}
 		}
 		return $url;
 	}

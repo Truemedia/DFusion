@@ -117,12 +117,12 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
 */
 		$regex_body[] = '#href=["|\'](?!\w{0,10}://|\w{0,10}:|\#)/(.*?)["|\']#mSie';
-		$replace_body[]	= '\'href="\'.$this->fixUrl("$1").\'"\'';
+		$replace_body[]	= '\'href="\'.$this->fixUrl("$1","'.$baseURL.'").\'"\'';
 
 //		$regex_body[] = '#href=["|\'][./|/](.*?)["|\']#mSie';
 //		$replace_body[]	= 'href="'.$integratedURL.'$1"';
 
-		$this->replaceForm($buffer);
+		$this->replaceForm($buffer,$baseURL);
 
 		$regex_body[] = '#(src)=["|\'][./|/](.*?)["|\']#mS';
 		$replace_body[]	= '$1="'.$integratedURL.'$2"';
@@ -147,7 +147,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$buffer = preg_replace($regex_header, $replace_header, $buffer);
 	}
 
-	function fixUrl($q='')
+	function fixUrl($q='',$baseURL)
 	{
 		$q = urldecode($q);
 		$q = str_replace(':', ';', $q);
@@ -159,10 +159,10 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			}
 
 			if ( strpos($q,'?') === 0 ) {
-				$url = JFusionFunction::routeURL('detail.php'.$q, JRequest::getVar('Itemid'));
+				$url = 'detail.php'.$q;
 			} else {
 				$this->trimUrl($q);
-				$url = JFusionFunction::routeURL('detail.php?media='.$q, JRequest::getVar('Itemid'));
+				$url = 'detail.php?media='.$q;
 			}
 		} else if ( strpos($q,'_media/') === 0 || strpos($q,'lib/exe/fetch.php') === 0 ) {
 			if( strpos($q,'_media/') === 0 ) {
@@ -172,27 +172,41 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			}
 
 			if ( strpos($q,'?') === 0 ) {
-				$url = JFusionFunction::routeURL('fetch.php'.$q, JRequest::getVar('Itemid'));
+				$url = 'fetch.php'.$q;
 			} else {
 				$this->trimUrl($q);
-				$url = JFusionFunction::routeURL('fetch.php?media='.$q, JRequest::getVar('Itemid'));
+				$url = 'fetch.php?media='.$q;
 			}
 		} else if ( strpos($q,'doku.php') === 0 ) {
 			$q = substr($q,strlen('doku.php'));
 			if ( strpos($q,'?') === 0 ) {
-				$url = JFusionFunction::routeURL('doku.php'.$q, JRequest::getVar('Itemid'));
+				$url = 'doku.php'.$q;
 			} else {
 				$this->trimUrl($q);
-				if ( strlen($q) ) $url = JFusionFunction::routeURL('doku.php?id='.$q, JRequest::getVar('Itemid'));
-				else $url = JFusionFunction::routeURL('doku.php', JRequest::getVar('Itemid'));
+				if ( strlen($q) ) $url = 'doku.php?id='.$q;
+				else $url = 'doku.php';
 			}
 		} else {
 			$this->trimUrl($q);
-			if ( strlen($q) ) $url = JFusionFunction::routeURL('doku.php?id='.$q, JRequest::getVar('Itemid'));
-			else $url = JFusionFunction::routeURL('', JRequest::getVar('Itemid'));
+			if ( strlen($q) ) $url = 'doku.php?id='.$q;
+			else $url = 'doku.php';
 		}
-		if ( $url ) return substr(JURI::base(),0,-1).$url;
-		return $q;
+
+        if (substr($baseURL, -1) != '/'){
+			//non sef URls
+			$url = str_replace('?', '&amp;', $url);
+			$url = $baseURL . '&amp;jfile=' .$url;
+        } else {
+			$params = JFusionFactory::getParams('joomla_int');
+			$sefmode = $params->get('sefmode');
+			if ($sefmode==1) {
+				$url =  JFusionFunction::routeURL($url, JRequest::getVar('Itemid'));
+			} else {
+				//we can just append both variables
+				$url = $baseURL . $url;
+			}
+		}
+		return $url;
 	}
 
 	function trimUrl( &$url ) {
@@ -202,7 +216,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$url = str_replace($order, $replace, $url);
 	}
 
-	function replaceForm( &$data ) {
+	function replaceForm( &$data ,$baseURL) {
 		$pattern = '#<form(.*?)action=["|\']/(.*?)["|\'](.*?)>(.*?)</form>#mSsi';
 		$getData = '';
 		if (JRequest::getVar('Itemid')) $getData .= '<input name="Itemid" value="'.JRequest::getVar('Itemid').'" type="hidden">';
@@ -216,7 +230,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 			$method = '#method=["|\']post["|\']#mS';
 			$is_get = true;
 			if ( preg_match($method,$links[1][$key]) || preg_match($method,$links[3][$key]) ) $is_get = false;
-			$value = $this->fixUrl($links[2][$key]);
+			$value = $this->fixUrl($links[2][$key],$baseURL);
 
 			if( $is_get && substr($value, -1) != DS ) $links[4][$key] = $getData.$links[4][$key];
 			$data = str_replace($links[0][$key], '<form'.$links[1][$key].'action="'.$value.'"'.$links[3][$key].'>'.$links[4][$key].'</form>', $data);
