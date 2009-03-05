@@ -132,135 +132,48 @@ function append_sid($hook, $url, $params = false, $is_amp = true, $session_id = 
 }
 
 	/**
-	* Function that parses the phpBB3 URLs
-	*/
-	function append_sid_old($hook, $url, $params = false, $is_amp = true, $session_id = false)
-	{
-
-		global $_SID, $_EXTRA_URL;
-		$arrParams = array();
-		$arrExtra  = array();
-		$anchor    = '';
-
-      	//JError::raiseWarning(500, '1:'. htmlentities(print_r($url, true)) . ' AND ' .htmlentities(print_r($params, true)) . ' AND ' . htmlentities(print_r($_EXTRA_URL, true)));
-
-		// Assign sid if session id is not specified
-		if ($session_id === false) {
-			$session_id = $_SID;
-		}
-
-		//Clean the url and the params first
-		if($is_amp)
-		{
-			$url  = str_replace( '&amp;', '&', $url );
-			if(!is_array($params)) {
-				$params = str_replace( '&amp;', '&', $params );
-			}
-		}
-
-		// Process the parameters array
-		if (is_array($params))
-		{
-			foreach ($params as $key => $item)
-			{
-				if ($item === NULL)
-				{
-					continue;
-				}
-
-				if ($key == '#')
-				{
-					$anchor = '#' . $item;
-					continue;
-				}
-
-				$arrParams[$key] = $item;
-			}
-		}
-		else
-		{
-			if(strpos($params, '#') !== false)
-			{
-				list($params, $anchor) = explode('#', $params, 2);
-				$anchor = '#' . $anchor;
-			}
-
-			parse_str($params, $arrParams);
-		}
-
-		//Process the extra array
-		if(!empty($_EXTRA_URL))
-		{
-			$extra_url = str_replace( '&amp;', '&', $_EXTRA_URL);
-			$extra = implode('&', $extra_url);
-			parse_str($extra, $arrExtra);
-		}
-
-		//Create the URL
-		$uri = new JURI($url);
-
-		$query = $uri->getQuery(true);
-		$query = $query + $arrParams + $arrExtra;
-
-		$uri->setQuery($query);
-
-		//Set session id variable
-		if($session_id) {
-			$uri->setVar('sid', $session_id);
-		}
-
-		//Set fragment
-		if($anchor) {
-			$uri->setFragment($anchor);
-		}
-
-		$view = basename($url);
-
-		if ($view == 'posting.php' && $arrParams['mode'] == 'popup'){
-			global $jfusion_source_url;
-			return $jfusion_source_url . 'posting.php' .$uri->toString(array('query', 'fragment'));
-		}
-
-		//add an excemption for the admincp
-		if(strpos($url, 'adm')) {
-	        global $jfusion_source_url;
-	        return $jfusion_source_url . 'adm/index.php?sid=' . $session_id;
-		}
-
-		//add an excemption for editing profiles
-		if($arrParams['i'] == 'profile' || $arrParams['i'] == 'prefs' ||$arrParams['i'] == 'zebra') {
-				$view = 'ucp.php';
-		}
-
-		//set the jfile param if needed
-        if(!empty($view)){
-			$uri->setVar('jfile', $view);
-        }
-
-        //set the jfusion references for Joomla
-        $Itemid = JRequest::getVar('Itemid');
-        if ($Itemid){
-			$uri->setVar('Itemid', $Itemid);
-        }
-		$uri->setVar('option', 'com_jfusion');
-
-
-		$url = urldecode('index.php'.$uri->toString(array('query', 'fragment')));
-		//phpbb 3.0.4 now can handle SEF urls, return a non-sef url if it contains a bracket
-		if (strpos($url,'{')){
-			$url = JURI::Base() . $url;
-		} else {
-			$url = JRoute::_($url, $is_amp);
-		}
-		//JError::raiseWarning(500, '2: ' . htmlentities(print_r($url, true)) );
-		return $url;
-	}
-
-	/**
-	* Function not implemented
+	* Function that allows for the user object to contain the correct url
 	*/
 	function phpbb_user_session_handler($hook)
 	{
+		//we need to change the $user->page array as it does not detect some POST values
+		global $user;
+
+		//set our current phpBB3 filename
+        $jfile = JRequest::getVar('jfile');
+        if(empty($jfile)){
+        	$jfile = 'index.php';
+        }
+		$user->page['page_name'] = $jfile;
+
+		//parse our GET variables
+		$get_vars = $_GET;
+
+		//Some params where changed to POST therefore we need to include some of those
+		$post_include = array('i','mode');
+		$post_vars = $_POST;
+		foreach ($post_include as $value){
+			if(!empty($post_vars[$value]) && empty($get_vars[$value])){
+				$get_vars[$value] = $post_vars[$value];
+			}
+		}
+		//unset Joomla vars
+		unset($get_vars['option'],$get_vars['Itemid'],$get_vars['jFusion_Route'],$get_vars['jfile']);
+
+        $safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$query_array = array();
+		foreach ($get_vars as $key => $value){
+			$query_array[] = $safeHtmlFilter->clean($key, gettype($key)) . '=' . $safeHtmlFilter->clean($value, gettype($value));
+		}
+
+		$query_string = implode('&',$query_array);
+		$user->page['query_string'] = $query_string;
+		if(empty($query_string)){
+			$user->page['page'] = $jfile;
+		} else {
+			$user->page['page'] = $jfile . '?' . $query_string;
+		}
+		//JError::raiseWarning(500, htmlentities(print_r($user->page, true)) );
 	}
 
 	/**
