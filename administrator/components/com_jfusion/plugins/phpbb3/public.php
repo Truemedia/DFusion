@@ -88,12 +88,12 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         $params = JFusionFactory::getParams($this->getJname());
         $source_path = $params->get('source_path');
 
-        //Allow for admin redirects in the hooks
-        //global $jfusion_source_url;
-        //$jfusion_source_url = $params->get('source_url');
-
         //get the filename
         $jfile = JRequest::getVar('jfile');
+        if (!$jfile) {
+            //use the default index.php
+            $jfile = 'index.php';
+        }
 
         //redirect directly to admincp if needed
         if ($jfile == 'adm/index.php') {
@@ -105,35 +105,6 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         if ($jfile == 'file.php') {
             $url ="Location: " . $params->get('source_url') . 'download/file.php?' . $_SERVER['QUERY_STRING'] ;
             header($url);
-        }
-
-        //add check for thread subscriptions
-        $subscribe = JRequest::getVar('e');
-        if($subscribe){
-            $jfile = 'viewtopic.php';
-            $_GET['p'] = $subscribe;
-            $_REQUEST['p'] = $subscribe;
-            $_POST['p'] = $subscribe;
-        }
-
-        //add check for search function
-        $submit = JRequest::getVar('submit');
-        if($submit == 'Search'){
-            $jfile = 'search.php';
-        }
-
-        //add check for quick mod tools function
-        $quickmod = JRequest::getVar('quickmod');
-        if($quickmod == 1){
-            $jfile = 'mcp.php';
-			$_GET['mode'] = 'quickmod';
-            $_REQUEST['mode'] = 'quickmod';
-            $_POST['mode'] = 'quickmod';
-        }
-
-        if (!$jfile) {
-            //use the default index.php
-            $jfile = 'index.php';
         }
 
         //combine the path and filename
@@ -202,7 +173,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
 			//fix for form actions
-	        $regex_body[]	= '#\<form(.*?)actionaction="(.*?)"(.*?)>#me';
+	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
             $replace_body[]	= '$this->fixAction("$1","$2","' . $baseURL .'")';
         }
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
@@ -231,7 +202,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
       function fixAction($url, $extra, $baseURL)
       {
-            JError::raiseWarning(500, $url);
+            //JError::raiseWarning(500, $url);
       	$url = htmlspecialchars_decode($url);
         $Itemid = JRequest::getVar('Itemid');
 
