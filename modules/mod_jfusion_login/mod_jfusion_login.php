@@ -61,7 +61,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 
     //now find out from which plugin the avatars need to be displayed
     $PluginName = $params->get('JFusionPlugin');
-    if ($PluginName != 'joomla_int') {
+    if (!empty($PluginName) && $PluginName != 'joomla_int') {
         $JFusionPlugin = JFusionFactory::getForum($PluginName);
         $userlookup = JFusionFunction::lookupUser($PluginName, $user->get('id'));
 
@@ -77,7 +77,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
                 }
                
                 if(empty($avatar)) {
-					$avatar = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
+					$avatar = "administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 				}	
             }
 
@@ -102,7 +102,7 @@ if (file_exists($model_file) && file_exists($factory_file)) {
             if ($avatarSrc!='jfusion') {
                 $avatar = JFusionFunction::getAltAvatar($avatarSrc, $user->get('id'));
             } else {
-                $avatar = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";;
+                $avatar = "administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";;
             }
         } else {
             $avatar = false;

@@ -801,7 +801,7 @@ class JFusionFunction{
     		$email = $db->loadResult();
     		$avatar = "http://www.gravatar.com/avatar.php?gravatar_id=".md5( strtolower($email) )."&size=40";
     	} else {
-    		$avatar = false;
+			$avatar = "administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";    		
     	}
 
     	return $avatar;
