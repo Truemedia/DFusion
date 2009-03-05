@@ -200,6 +200,45 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 		return 'href="'. $url . '"';
 	}
 
+
+    function fixRedirect($url, $baseURL)
+    {
+		//JError::raiseWarning(500, $url);
+        //split up the timeout from url
+        $parts = explode(';url=', $url);
+        $timeout = $parts[0];
+		$uri = new JURI($parts[1]);
+		$jfile = $uri->getPath();
+		$jfile = basename($jfile);
+		$query = $uri->getQuery(false);
+
+        if (substr($baseURL, -1) != '/'){
+        	//non-SEF mode
+			$redirectURL = $baseURL . '&amp;jfile=' .$jfile;
+			if(!empty($query)){
+				$redirectURL .= '&amp;' .$query;
+			}
+        } else {
+			//check to see what SEF mode is selected
+            $params = JFusionFactory::getParams($this->getJname());
+            $sefmode = $params->get('sefmode');
+	        if ($sefmode==1) {
+	        	//extensive SEF parsing was selected
+			  	$redirectURL =  JFusionFunction::routeURL($q, JRequest::getVar('Itemid'));
+			} else {
+				//simple SEF mode, we can just combine both variables
+				$redirectURL = $baseURL . $jfile;
+				if(!empty($query)){
+					$redirectURL .= '?' .$query;
+				}
+			}
+		}
+        $return = '<meta http-equiv="refresh" content="'.$timeout.';url=' . $redirectURL .'">';
+		//JError::raiseWarning(500, htmlentities($return));
+        return $return;
+      }
+
+
       function fixAction($url, $extra, $baseURL)
       {
             //JError::raiseWarning(500, $url);
@@ -258,6 +297,11 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             //convert relative links into absolute links
            $regex_header[]	= '#(href="|src=")./(.*?")#mS';
            $replace_header[]	= '$1'.$integratedURL.'$2"';
+
+           //fix for URL redirects
+           $regex_header[]	= '#<meta http-equiv="refresh" content="(.*?)"(.*?)>#me';
+		   $replace_header[]	= '$this->fixRedirect("$1","'.$baseURL.'")';
+
         }
         $buffer = preg_replace($regex_header, $replace_header, $buffer);
     }
