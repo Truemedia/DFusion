@@ -40,6 +40,12 @@
 	    <param name=" " type="helptext" default="DEFAULT_USERPOSTGROUP_DESCR"/>
     	<param name="userpostgroup" type="JFusionUserpostgroups" description="DEFAULT_USERPOSTGROUP" label="DEFAULT_USERPOSTGROUP" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="SEFMODE_DESCR"/>
+		<param name="sefmode" type="list" default="0" label="" description="SEFMODE">
+			<option value="1"><![CDATA[yourdomain.com/index.php/menu_name/filename.php/option1,value1/option2,value2]]></option>
+			<option value="0"><![CDATA[yourdomain.com/index.php/menu_name/filename.php?option1=value1&option2=value2]]></option>
+		</param>
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="SMF_DUAL_TEXT" />
 		<param name=" " type="helptext" default="SMF_VISUAL_TEXT" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />

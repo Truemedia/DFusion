@@ -18,26 +18,20 @@ function jfusionBuildRoute(&$query)
 		unset($query['jfile']);
 	}
 
-	//change all other variables into SEF
-	require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-	$params = JFusionFactory::getParams('joomla_int');
-	$sefmode = $params->get('sefmode');
-	if($sefmode == 1){
-		foreach($query as $key => $value){
-			if($key != 'option' && $key != 'Itemid'){
-				if(is_array($value)){
-					foreach($value as $array_key => $array_value){
-						$segments[] = $key .'['.$array_key.'],' . $array_value;
-						unset($query[$key]);
-					}
-				} else {
-					$segments[] = $key .',' . $value;
+	foreach($query as $key => $value){
+		if($key != 'option' && $key != 'Itemid'){
+			if(is_array($value)){
+				foreach($value as $array_key => $array_value){
+					$segments[] = $key .'['.$array_key.'],' . $array_value;
 					unset($query[$key]);
 				}
+			} else {
+				$segments[] = $key .',' . $value;
+				unset($query[$key]);
 			}
 		}
-		if (count($segments)) $segments[count($segments)-1] .= '/';
 	}
+	if (count($segments)) $segments[count($segments)-1] .= '/';
 
 	return $segments;
 }
@@ -48,7 +42,7 @@ function jfusionParseRoute($segments)
 	$vars['jFusion_Route'] = serialize($segments);
 
 	if(isset($segments[0])){
-		if(!strpos($segments[0],',') & !strpos($segments[0],'&')){
+		if(!strpos($segments[0],',') && !strpos($segments[0],'&')){
 	    	$vars['jfile'] 		= $segments[0];
 	    	unset($segments[0]);
 		}

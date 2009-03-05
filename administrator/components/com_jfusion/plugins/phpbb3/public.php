@@ -198,34 +198,21 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             $regex_body		= array();
             $replace_body	= array();
 
+            //fix anchors
+	        $regex_body[]	= '#\"\#(.*?)\"#mS';
+            $replace_body[]	= '"'.$fullURL.'#$1"';
+
+			//parse URLS
+			$regex_body[]	= '#href="\.\/(.*?)"#me';
+			$replace_body[] = '$this->fixUrl("$1","'.$baseURL.'")';
+
             //convert relative links from images into absolute links
 	        $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
             $replace_body[]	= '$1'.$integratedURL.'$2$3';
 
-			//require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.DS.'model.factory.php');
-			//$params = JFusionFactory::getParams('joomla_int');
-			//$sefmode = $params->get('sefmode');
-			//if($sefmode == 1){
-		        //some urls such as PM related ones have items appended to it after the url has been parsed by append_sid()
-		       // $regex_body[]	= '#href="(.*?)'.JURI::base().'(.*?)"(.*?)>#me';
-        	   // $replace_body[]	= '$this->fixURL("$1" . "'.JURI::base().'"."$2","$3")';
-			//}
-
-            //fix anchors
-	        $regex_body[]	= '#\"\#(.*?)\"#mS';
-	        if(!empty($_SERVER['QUERY_STRING'])){
-	        	$current_url = JURI::current() . '?'. $_SERVER['QUERY_STRING'];
-	        } else {
-	        	$current_url = JURI::current();
-	        }
-            $replace_body[]	= '"'.$current_url.'#$1"';
-
-
 			//fix for form actions
 	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
-			$uri		= JURI::getInstance();
-			$indexURL	= JURI::base() .'index.php';
-            $replace_body[]	= '$this->fixAction("$1","$2","' . $indexURL .'")';
+            $replace_body[]	= '$this->fixAction("$1","$2","' . $baseURL .'")';
         }
 
 		global $JFusionRedirectParse;
@@ -237,28 +224,30 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
         $buffer = preg_replace($regex_body, $replace_body, $buffer);
     }
 
-    function fixURL($url, $extra){
-  		//check to see if the URL is in SEF
-		if (strpos($url,',')){
-			//else do a regex to fix the SEF url
-        	$url = preg_replace('#(/&amp\;|/\?\|?|&amp;)(.*?)\=#mS', '/$2,', $url);
-        	$url = preg_replace('#(\?)(.*?)\=#mS', '/$2,', $url);
+	function fixUrl($q='',$baseURL)
+	{
+        if (substr($baseURL, -1) != '/'){
+			$url = $baseURL . '&amp;jfile=' .$q;
+        } else {
+            $params = JFusionFactory::getParams($this->getJname());
+            $sefmode = $params->get('sefmode');
+	        if ($sefmode==1) {
+			  	$url =  JFusionFunction::routeURL($q, JRequest::getVar('Itemid'));
+			} else {
+				//we can just append both variables
+				$url = $baseURL . $q;
+			}
 		}
-
-		//return the string unchanged
-		return 'href="' . $url . '"' . $extra . '>';
-
-    }
+		return 'href="'. $url . '"';
+	}
 
       function fixAction($url, $extra, $baseURL)
       {
 
 		if(strpos($url,'quickmod')){
 			$replacement = 'action="'.$url . '"' . $extra . '>';
-
 			return $replacement;
 		}
-
 
       	$url = htmlspecialchars_decode($url);
         $config =& JFactory::getConfig();
@@ -276,7 +265,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 					$jfile = $part;
 				}
 			}
-			$baseURL = substr(JURI::base(),0,-1) . JRoute::_('index.php?option=com_jfusion&Itemid='.$Itemid.'&jfile='.$jfile);
+			$baseURL = $baseURL.$jfile;
 			$replacement = 'action="'.$baseURL . '"' . $extra . '>';
 	    } else {
 	      	$url_details = parse_url($url);
@@ -318,13 +307,13 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
            //fix for URL redirects
            $regex_header[]	= '#<meta http-equiv="refresh" content="(.*?)"(.*?)>#me';
-		   $replace_header[]	= '$this->fixRedirect("$1")';
+		   $replace_header[]	= '$this->fixRedirect("$1","'.$baseURL.'")';
 
         }
         $buffer = preg_replace($regex_header, $replace_header, $buffer);
     }
 
-      function fixRedirect($url){
+      function fixRedirect($url,$baseURL){
 
 		//get some base vars
     	$params = JFusionFactory::getParams('joomla_int');
@@ -353,7 +342,14 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 					$url_variables[] = $vars[0] .'='.$vars[1];
 				}
 			}
-			$redirectURL = substr(JURI::base(),0,-1) . JRoute::_('index.php?option=com_jfusion&Itemid='.$Itemid.'&jfile='.$jfile.'&'.implode('&',$url_variables));
+			if (substr($baseURL, -1) == '/') {
+				//we can just append both variables
+				$redirectURL = $baseURL . $jfile.'?'.implode('&',$url_variables);;
+			} else {
+				//non sef URls
+				$q = str_replace('?', '&amp;', $q);
+				$redirectURL = $baseURL . '&amp;jfile=' . $jfile.'&'.implode('&',$url_variables);
+			}
 
 			//trigger redirect parsing in the body
 			global $JFusionRedirectParse;

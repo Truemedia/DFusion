@@ -97,8 +97,8 @@ class JFusionAdmin{
         //for joomla_int check to see if params are set
         if ($jname == 'joomla_int') {
             $params = JFusionFactory::getParams($jname);
-            $sefmode = $params->get('sefmode');
-            if ($sefmode == 0 || $sefmode ==1) {
+            $autoregister = $params->get('autoregister');
+            if ($autoregister == 0 || $autoregister ==1) {
                 $status['config'] = 1;
                 $status['message'] = JText::_('GOOD_CONFIG');
                 return $status;
