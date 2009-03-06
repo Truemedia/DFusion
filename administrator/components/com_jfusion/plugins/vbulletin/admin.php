@@ -197,7 +197,7 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 		$js .= "<!--\n";
 		$js .= "function toggleHook(action) {\n";
 		$js .= "var form = document.adminForm;\n";
-		$js .= "if(action=='enable_redirect' && form.itemid_redirect_id0.value=='0') {\n";
+		$js .= "if((action=='enable_redirect' || action=='enable_frameless') && (isNaN(form.itemid_redirect_id0.value)==true || form.itemid_redirect_id0.value=='0')) {\n";
 		$js .= "alert('".JText::_('VB_REDIRECT_HOOK_ITEMID_EMPTY')."');\n";
 		$js .= "return false;\n";
 		$js .= "}\n";
@@ -249,18 +249,26 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 				JError::raiseWarning(500,$db->stderr());
 			}
 		}
-		$php = $this->getHookPHP('frameless');
-		$query = "INSERT INTO #__plugin SET
-			title = 'JFusion Frameless Integration Plugin',
-			hookname = 'init_startup',
-			phpcode = ".$db->Quote($php).",
-			product = 'vbulletin',
-			active = 1,
-			executionorder = 1";
-		$db->setQuery($query);
-		if (!$db->query()) {
-			JError::raiseWarning(500,$db->stderr());
-		}
+		
+		$params = JRequest::getVar('params');
+   		$itemid = $params['itemid_redirect'];
+
+   		if(!empty($itemid) && is_numeric($itemid)) { 
+			$php = $this->getHookPHP('frameless',$itemid);
+			$query = "INSERT INTO #__plugin SET
+				title = 'JFusion Frameless Integration Plugin',
+				hookname = 'init_startup',
+				phpcode = ".$db->Quote($php).",
+				product = 'vbulletin',
+				active = 1,
+				executionorder = 1";
+			$db->setQuery($query);
+			if (!$db->query()) {
+				JError::raiseWarning(500,$db->stderr());
+			}
+   		} else {
+			JError::raiseWarning(500,JText::_('VB_REDIRECT_HOOK_ITEMID_EMPTY'));
+   		}
    	}
 
    	function disable_frameless()
@@ -434,19 +442,30 @@ class JFusionAdmin_vbulletin extends JFusionAdmin{
 			$php = "if(defined('_JEXEC') || isset(\$_GET['jfusion'])){\n"; 
     	} elseif($plugin=="redirect") {
     		$php = "if(!defined('_JEXEC')){\n";
-
-    		///get the visual integration mode
-    		jimport('joomla.application.menu');
-			$JMenu =& new JMenu;
-			$menu = $JMenu->getInstance('site');
-    		$params =& $menu->getParams($itemid);
-    		$mode = $params->get('visual_integration','frameless');
-
-    		$url = str_replace('/administrator','',JURI::base());
-    		$php .= "define('BASEURL','{$url}index.php?option=com_jfusion&Itemid=$itemid');\n";
-    		$php .= "define('INTEGRATION_MODE','$mode');\n";
     	}
 
+  		$url = JFusionFunction::getJoomlaURL();
+    	$params = JFusionFactory::getParams($this->getJname());
+    	$sefmode = $params->get('sefmode',0);
+    	
+    	$config =& JFactory::getConfig();
+		$sef = $config->getValue('config.sef');
+		
+    	if($sef==1) {
+    		jimport('joomla.application.menu');
+			$JMenu =& new JMenu;
+			$menu =& $JMenu->getInstance('site');
+    		$items =& $menu->getMenu();
+    		$item =& $items[$itemid];
+    		$url = $url."index.php/".$item->alias."/";
+    	} else {
+    		$url = $url."index.php?option=com_jfusion&Itemid=$itemid";
+    	}
+    	
+    	$php .= "define('SEFENABLED','$sef');\n";
+    	$php .= "define('SEFMODE','$sefmode');\n";
+    	$php .= "define('JOOMLABASEURL','$url');\n";    	
+    	
     	$hookPath = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php';
 
 		$php .= "define('HOOK_FILE','$hookPath');\n";

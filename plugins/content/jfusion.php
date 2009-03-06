@@ -159,7 +159,7 @@ class plgContentJfusion extends JPlugin
 		
 		if($view=="article" || $this->params->get('always_show_link',false)) {
 			$numPosts = $JFusionPlugin->getReplyCount($existingthread);
-			$post = ($numPosts==1) ? "POST" : "POSTS";
+			$post = ($numPosts==1) ? "REPLY" : "REPLIES";
 			
 			$threadid =& $existingthread->threadid;		
 			$urlstring_pre = JFusionFunction::routeURL($JFusionPlugin->getThreadURL($threadid), $itemid);

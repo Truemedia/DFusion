@@ -45,9 +45,9 @@ class JFusionDokuWikiHook
         $session->close();
 */
 	if ( is_array($event->data['preact']) ) {
-		header('Location: '.substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'], JRequest::getVar('Itemid')));
+		header('Location: '.substr(JFusionFunction::getJoomlaURL(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'], JRequest::getVar('Itemid')));
 	} else {
-		header('Location: '.substr(JURI::base(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'].'&do='.$event->data['preact'], JRequest::getVar('Itemid')));
+		header('Location: '.substr(JFusionFunction::getJoomlaURL(),0,-1).JFusionFunction::routeURL('doku.php?id='.$event->data['id'].'&do='.$event->data['preact'], JRequest::getVar('Itemid')));
 	}
 	exit();
   }

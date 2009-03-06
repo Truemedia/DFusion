@@ -1,5 +1,5 @@
 <?php
- /**
+/**
  * @version 1.1.0
  * @author JFusion development team
  * @copyright Copyright (C) 2008 JFusion. All rights reserved.
@@ -7,12 +7,12 @@
  */
 
 //force required variables into global scope
- $GLOBALS["vbulletin"] =& $vbulletin;
- $GLOBALS["db"] =& $db;
+$GLOBALS["vbulletin"] =& $vbulletin;
+$GLOBALS["db"] =& $db;
 
- //execute a hook
- class executeJFusionHook
- {
+//execute a hook
+class executeJFusionHook
+{
 	var $vars;
 
 	function executeJFusionHook($hook,&$vars)
@@ -28,15 +28,41 @@
 		if($this->vars=="redirect" && !isset($_GET['noredirect']) && !defined('_JEXEC')) {
 			//only redirect if in the main forum
 			$s = $_SERVER['PHP_SELF'];
-			if(strpos($s,'login.php')===false && strpos($s,'admincp')===false && strpos($s,'modcp')===false && strpos($s,'archive')===false && strpos($s,'printthread.php')===false) {
-				$filename = substr($s,strrpos($s,'/')+1);
+
+			if(strpos($s,'login.php')===false
+			&& strpos($s,'ajax.php')===false
+			&& strpos($s,'cron.php')===false
+			&& strpos($s,'image.php')===false
+			&& strpos($s,'printthread.php')===false
+			&& strpos($s,'misc.php')===false
+			&& strpos($s,'admincp')===false
+			&& strpos($s,'modcp')===false
+			&& strpos($s,'archive')===false) {
+				$filename = basename($s);
 				$query = $_SERVER["QUERY_STRING"];
-				$url = BASEURL."&jfile={$filename}";
-				$url .= (empty($query)) ? '' : "&{$query}";
+				if(SEFENABLED) {
+					if(SEFMODE==1) {
+						$url = JOOMLABASEURL."jfile,$filename/";
+
+						if(!empty($query)) {
+							$q = explode('&',$query);
+							foreach($q as $k => $v) {
+								$url .= "$k,$v/";
+							}
+						}
+					} else {
+						$url = JOOMLABASEURL . $filename;
+						$url .= (empty($query)) ? '' : "?$query";
+					}
+				} else {
+					$url = JOOMLABASEURL."&jfile={$filename}";
+					$url .= (empty($query)) ? '' : "&{$query}";
+				}
+
 				header("Location: $url");
 				exit;
 			}
-		} 
+		}
 			
 		//add our custom hooks into vbulletin's hook cache
 		global $vbulletin;
@@ -50,31 +76,31 @@
 		return true;
 	}
 
- 	function getHooks($plugin)
+	function getHooks($plugin)
 	{
 		//we need to set up the hooks
 		if($plugin=="frameless") {
-			//retrieve the hooks that jFusion will use to make vB work framelessly			
+			//retrieve the hooks that jFusion will use to make vB work framelessly
 			$hookNames = array("global_start","global_complete","header_redirect","redirect_generic","logout_process");
 		} elseif($plugin=="duallogin") {
-			//retrieve the hooks that vBulletin will use to login to Joomla			
+			//retrieve the hooks that vBulletin will use to login to Joomla
 			$hookNames = array("login_verify_success","logout_process");
 			define('DUALLOGIN',1);
 		} else {
 			$hookNames = array();
 		}
 
-	 	$hooks = array();
+		$hooks = array();
 
-	 	foreach($hookNames as $h)
-	 	{
-	 		if($h=="global_complete") $toPass = '$vars =& $output; ';
-	 		elseif($h=="redirect_generic") $toPass = '$vars = array(); $vars["url"] =& $url; $vars["js_url"] =& $js_url; $vars["formfile"] =& $formfile;';
-	 		elseif($h=="header_redirect") $toPass = '$vars =& $url;';
+		foreach($hookNames as $h)
+		{
+			if($h=="global_complete") $toPass = '$vars =& $output; ';
+			elseif($h=="redirect_generic") $toPass = '$vars = array(); $vars["url"] =& $url; $vars["js_url"] =& $js_url; $vars["formfile"] =& $formfile;';
+			elseif($h=="header_redirect") $toPass = '$vars =& $url;';
 			else $toPass = '$vars = null;';
 
-	 		$hooks[$h] = 'include_once(\'' . HOOK_FILE . '\'); ' . $toPass . ' $jFusionHook = new executeJFusionHook(\'' . $h . '\',$vars);';
-	 	}
+			$hooks[$h] = 'include_once(\'' . HOOK_FILE . '\'); ' . $toPass . ' $jFusionHook = new executeJFusionHook(\'' . $h . '\',$vars);';
+		}
 		return $hooks;
 	}
 
@@ -83,9 +109,9 @@
 		//lets rewrite the img urls now while we can
 		global $stylevar,$vbulletin;
 
-	   //check for trailing slash
-        $DS = (substr($vbulletin->options['bburl'], -1) == '/') ? "" : "/";
-		
+		//check for trailing slash
+		$DS = (substr($vbulletin->options['bburl'], -1) == '/') ? "" : "/";
+
 		foreach($stylevar as $k => $v) {
 			if(strstr($k,'imgdir')) {
 				$stylevar[$k] = $vbulletin->options['bburl'] . $DS . $v;
@@ -93,75 +119,77 @@
 		}
 		return true;
 	}
-	
-	function header_redirect()
- 	{
- 		//reworks the URL for header redirects ie header('Location: $url');
 
- 		if(defined('_JFUSION_DEBUG')) {
+	function header_redirect()
+	{
+		//reworks the URL for header redirects ie header('Location: $url');
+
+		if(defined('_JFUSION_DEBUG')) {
 			$debug = array();
 			$debug['url'] = $this->vars;
 			$debug['function'] = 'header_redirect';
 		}
- 		//set the jfusion references for Joomla if we do not have a jfusion url
- 		if(!strstr($this->vars["url"],'jfile')) {
-	 		//set the jfusion references for Joomla
-			$Itemid = JRequest::getVar('Itemid');
-			if ($Itemid) $query = "index.php?option=com_jfusion&Itemid=$Itemid&jfile=";
-			else $query = $query = "index.php?option=com_jfusion&jname=". _JFUSION_JNAME . "&jfile=";
 
-			$vBquery = str_replace(JURI::root(),"",$this->vars);
-			$vBquery = str_replace("?","&",$vBquery);
+		$url = basename($this->vars);
 
-	 		$this->vars = JRoute::_(JURI::root().$query.$vBquery);
-
-			if(defined('_JFUSION_DEBUG')) {
-				$debug['parsed'] = $this->vars;
+		if (SEFENABLED!='1') {
+			//non sef URls
+			$url = JOOMLABASEURL . '&amp;jfile=' .$url;
+		} else {
+			if (SEFMODE==1) {
+	
+				$url =  JFusionFunction::routeURL($url, JRequest::getVar('Itemid'));
+			} else {
+				//we can just append both variables
+				$url = JOOMLABASEURL . $url;
 			}
- 		}
+		}
 
- 		if(defined('_JFUSION_DEBUG')) {
+		$this->vars = $url;
+		
+		if(defined('_JFUSION_DEBUG')) {
+			$debug['parsed'] = $this->vars;
 			$_SESSION["jfvbdebug"][] = $debug;
 		}
-		
+
 		return true;
- 	}
+	}
 
-  	function redirect_generic()
- 	{
- 		//reworks the URL for generic redirects that use JS or html meta header
+	function redirect_generic()
+	{
+		//reworks the URL for generic redirects that use JS or html meta header
 
- 		if(defined('_JFUSION_DEBUG')) {
+		if(defined('_JFUSION_DEBUG')) {
 			$debug = array();
 			$debug['url'] = $this->vars["url"];
 			$debug['function'] = 'redirect_generic';
 		}
 
- 		//set the jfusion references for Joomla if we do not have a jfusion url
- 		if(!strstr($this->vars["url"],'com_jfusion')) {
+		$url = basename($this->vars["url"]);
 
-			$Itemid = JRequest::getVar('Itemid');
-			if ($Itemid) $query = "index.php?option=com_jfusion&Itemid=$Itemid&jfile=";
-			else $query = "index.php?option=com_jfusion&jname=". _JFUSION_JNAME . "&jfile=";
-
-			$vBquery = str_replace(JURI::root(),"",$this->vars["url"]);
-			$vBquery = str_replace("?","&",$vBquery);
-
-	 		$this->vars["url"] = JRoute::_(JURI::base(). $query . $vBquery);
-	 		$this->vars["js_url"] = addslashes_js($this->vars["url"]);
-	 		$this->vars["formfile"] = $this->vars["url"];
-
-	 		if(defined('_JFUSION_DEBUG')) {
-				$debug['parsed'] = $this->vars['url'];
+		if (SEFENABLED!==1){
+			//non sef URls
+			$url = JOOMLABASEURL . '&amp;jfile=' .$url;
+		} else {
+			if (SEFMODE==1) {
+				$url =  JFusionFunction::routeURL($url, JRequest::getVar('Itemid'));
+			} else {
+				//we can just append both variables
+				$url = JOOMLABASEURL . $url;
 			}
- 		}
+		}
 
- 	 	if(defined('_JFUSION_DEBUG')) {
+		$this->vars["url"] = $url;
+		$this->vars["js_url"] = addslashes_js($this->vars["url"]);
+		$this->vars["formfile"] = $this->vars["url"];
+
+		if(defined('_JFUSION_DEBUG')) {
+			$debug['parsed'] = $this->vars['url'];
 			$_SESSION["jfvbdebug"][] = $debug;
 		}
-		
+
 		return true;
- 	}
+	}
 
 	function global_complete()
 	{
@@ -180,24 +208,24 @@
 		}
 
 		//echo the output and return an exception to allow Joomla to continue
- 		echo trim($this->vars,"\n\r\t.");
- 		Throw new Exception("vBulletin exited.");
- 	}
+		echo trim($this->vars,"\n\r\t.");
+		Throw new Exception("vBulletin exited.");
+	}
 
 	function logout_process()
 	{
 		if(defined('_JFUSION_JNAME')) {
 			//we are in frameless mode and need to kill the cookies to prevent getting stuck logged in
 			global $vbulletin;
-	
+
 			JFusionFunction::addCookie(COOKIE_PREFIX.'userid' , 0, 0, $vbulletin->options['cookiepath'], $vbulletin->options['cookiedomain'], true);
 			JFusionFunction::addCookie(COOKIE_PREFIX.'password' , 0, 0, $vbulletin->options['cookiepath'], $vbulletin->options['cookiedomain'], true);
-	
+
 			//prevent global_complete from recreating the cookies
 			$vbulletin->userinfo['userid'] = 0;
 			$vbulletin->userinfo['password'] = 0;
 		}
-	
+
 		if(defined('DUALLOGIN')) {
 			if(!defined('_JEXEC')) {
 				$mainframe = $this->startJoomla();
@@ -205,15 +233,15 @@
 				global $mainframe;
 				define('_VBULLETIN_JFUSION_HOOK',true);
 			}
-			
+
 			// logout any joomla users
-		    $mainframe->logout();
-	
-		    // clean up session
-		    $session =& JFactory::getSession();
-		    $session->close();
+			$mainframe->logout();
+
+			// clean up session
+			$session =& JFactory::getSession();
+			$session->close();
 		}
-		
+
 		return true;
 	}
 
@@ -237,7 +265,7 @@
 			global $mainframe;
 			define('_VBULLETIN_JFUSION_HOOK',true);
 		}
-		
+
 		// do the login
 		$credentials = array('username' => $vbulletin->userinfo['username'], 'password' => $vbulletin->userinfo['password'],'password_salt' => $vbulletin->userinfo['salt']);
 		$options = array('entry_url' => JURI::root().'index.php?option=com_user&task=login');
@@ -257,27 +285,27 @@
 		define('DS', DIRECTORY_SEPARATOR);
 		if(!defined('JPATH_BASE')) define('JPATH_BASE', '..');
 
-	    // load joomla libraries
-	    require_once(JPATH_BASE.DS.'includes'.DS.'defines.php' );
-	    require_once(JPATH_LIBRARIES.DS.'loader.php');
-	    jimport('joomla.base.object');
-	    jimport('joomla.factory');
-	    jimport('joomla.filter.filterinput');
-	    jimport('joomla.error.error');
-	    jimport('joomla.event.dispatcher');
-	    jimport('joomla.plugin.helper');
-	    jimport('joomla.utilities.arrayhelper');
-	    jimport('joomla.environment.uri');
-	    jimport('joomla.environment.request');
-	    jimport('joomla.user.user');
-	    
-	    // JText cannot be loaded with jimport since it's not in a file called text.php but in methods
-	    JLoader::register('JText' , JPATH_BASE.DS.'libraries'.DS.'joomla'.DS.'methods.php');
+		// load joomla libraries
+		require_once(JPATH_BASE.DS.'includes'.DS.'defines.php' );
+		require_once(JPATH_LIBRARIES.DS.'loader.php');
+		jimport('joomla.base.object');
+		jimport('joomla.factory');
+		jimport('joomla.filter.filterinput');
+		jimport('joomla.error.error');
+		jimport('joomla.event.dispatcher');
+		jimport('joomla.plugin.helper');
+		jimport('joomla.utilities.arrayhelper');
+		jimport('joomla.environment.uri');
+		jimport('joomla.environment.request');
+		jimport('joomla.user.user');
+		 
+		// JText cannot be loaded with jimport since it's not in a file called text.php but in methods
+		JLoader::register('JText' , JPATH_BASE.DS.'libraries'.DS.'joomla'.DS.'methods.php');
 		JLoader::register('JRoute' , JPATH_BASE.DS.'libraries'.DS.'joomla'.DS.'methods.php');
 
-	    $mainframe = &JFactory::getApplication('site');
-	    $GLOBALS['mainframe'] =& $mainframe;
-	    return $mainframe;
+		$mainframe = &JFactory::getApplication('site');
+		$GLOBALS['mainframe'] =& $mainframe;
+		return $mainframe;
 	}
 }
 ?>

@@ -115,23 +115,17 @@ class JFusionForum_phpbb3 extends JFusionForum
         return array('unread' => 0, 'total' => 0);
     }
 
-    function getQuery($usedforums, $result_order, $result_limit, $display_limit)
-    {
-
-        //set a WHERE query if a forum list was passed through
-        if ($usedforums) {
-            $where = ' WHERE a.forum_id IN (' . $usedforums .')';
-        } else {
-            $where = '';
-        }
-
-        $query = array(0 => array(0 => "SELECT a.topic_id , a.topic_first_poster_name, a.topic_poster, a.topic_title, a.topic_time, left(b.post_text,$display_limit), a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts`  as b ON a.topic_first_post_id = b.post_id " . $where . " ORDER BY a.topic_last_post_time ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT b.post_id , a.topic_last_poster_name, a.topic_last_poster_id, a.topic_last_post_subject, a.topic_last_post_time, left(b.post_text,$display_limit), a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_last_post_id = b.post_id " . $where . " ORDER BY a.topic_last_post_time ".$result_order." LIMIT 0,".$result_limit.";"),
-        1 => array(0 => "SELECT a.topic_id , a.topic_first_poster_name, a.topic_poster, a.topic_title, a.topic_time, left(b.post_text,$display_limit), a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts`  as b ON a.topic_first_post_id = b.post_id " . $where . " ORDER BY a.topic_time ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT b.post_id , a.topic_last_poster_name, a.topic_last_poster_id, a.topic_last_post_subject, a.topic_last_post_time, left(b.post_text,$display_limit), a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_last_post_id = b.post_id " . $where . " ORDER BY a.topic_time ".$result_order." LIMIT 0,".$result_limit.";"),
-        2 => array(0 => "SELECT a.post_id , b.username, a.poster_id, a.post_subject, a.post_time, left(a.post_text, $display_limit), a.topic_id  FROM `#__posts` as a INNER JOIN #__users as b ON a.poster_id = b.user_id " . $where . " ORDER BY a.post_time ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT a.post_id , b.username, a.poster_id, a.post_subject, a.post_time, left(a.post_text, $display_limit), a.topic_id  FROM `#__posts` as a INNER JOIN #__users as b ON a.poster_id = b.user_id " . $where . " ORDER BY a.post_time ".$result_order." LIMIT 0,".$result_limit.";")
-        );
+    function getActivityQuery($usedforums, $result_order, $result_limit, $display_limit)
+    {      
+		$where = (!empty($usedforums)) ? ' WHERE a.forum_id IN (' . $usedforums .')' : '';
+		$end = $result_order." LIMIT 0,".$result_limit;
+		
+		$query = array(
+			LAT => "SELECT a.topic_id AS threadid, a.topic_last_post_id AS postid, a.topic_first_poster_name AS username, a.topic_poster AS userid, a.topic_title AS subject, a.topic_time AS dateline, a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_first_post_id = b.post_id $where ORDER BY a.topic_last_post_time $end",
+			LCT => "SELECT a.topic_id AS threadid, a.topic_first_post_id AS postid, a.topic_first_poster_name AS username, a.topic_poster AS userid, a.topic_title AS subject, left(b.post_text, $display_limit) AS body, a.topic_time AS dateline, a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_first_post_id = b.post_id $where ORDER BY a.topic_time $end", 
+			LCP => "SELECT a.topic_id AS threadid, a.topic_last_post_id AS postid, a.topic_last_poster_name AS username, a.topic_last_poster_id AS userid, b.post_subject AS subject, left(b.post_text, $display_limit) AS body, b.post_time AS dateline, a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_last_post_id = b.post_id $where ORDER BY b.post_time $end"
+		);        
+        
         return $query;
     }
 
@@ -592,7 +586,7 @@ class JFusionForum_phpbb3 extends JFusionForum
                 }
     	           
 				if(empty($avatarSrc)) {
-					$avatarSrc = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
+					$avatarSrc = JFusionFunction::getJoomlaURL()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 				}
 				
 				$size = @getimagesize($avatarSrc);
@@ -691,7 +685,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 	function getReplyCount(&$existingthread)
 	{
 		$db =& JFusionFactory::getDatabase($this->getJname());
-		$query = "SELECT COUNT(*) AS c FROM #__posts WHERE topic_id = {$existingthread->threadid} AND post_id != {$existingthread->postid}";
+		$query = "SELECT topic_replies FROM #__topics WHERE topic_id = {$existingthread->threadid}";
 		$db->setQuery($query);
 		$result = $db->loadResult();
 		return $result;

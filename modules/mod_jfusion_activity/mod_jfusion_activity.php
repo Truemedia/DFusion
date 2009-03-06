@@ -33,9 +33,8 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 	$config['mode'] = intval($params->get('mode'));
 	$config['linktype'] = intval($params->get('linktype'));
 	$config['display_body'] = intval($params->get('display_body'));
-	$config['lxt_type'] = intval($params->get('linktype'));
+	$config['new_window'] = intval($params->get('new_window'));
 	$config['forum_mode'] = $params->get('forum_mode', 0);
-	//$config['selected_forums'] = $params->get('selected_forums');
 	$config['display_limit'] = intval($params->get('display_limit'));
 	$config['display_limit_subject'] = intval($params->get('display_limit_subject'));
 	$config['result_limit'] = intval($params->get('result_limit'));
@@ -58,30 +57,23 @@ if (file_exists($model_file) && file_exists($factory_file)) {
 	
 	$pluginParamValue = $params->get('JFusionPluginParam');
 	$pluginParamValue = unserialize(base64_decode($pluginParamValue));
+	$jname = $pluginParamValue['jfusionplugin'];
 	
-	if(is_array($pluginParamValue)) {
-		$outputAll = array();
-		foreach($pluginParamValue as $jname => $value) {
-			$pluginParam = new JParameter('');
-			$pluginParam->loadArray($value);
-			$view = $pluginParam->get('view', 'auto');
-			
-			$output = "";
-			if($title = $pluginParam->get('title', NULL)) {
-				$output = "<h4>".$pluginParam->get('title', $jname)."</h4>\n";
-			}
-			if($view == 'auto') {
-				$output .= modjfusionActivityHelper::renderPluginAuto($jname, $config, $params);
-			} else {
-				$output .= modjfusionActivityHelper::renderPluginMode($jname, $config, $view, $pluginParam);
-			}
-			$outputAll[] = $output;
+	if(!empty($jname)) {
+		$pluginParam = new JParameter('');
+		$pluginParam->loadArray($pluginParamValue);
+		$view = $pluginParam->get('view', 'auto');
+
+		$output = "";
+		if($title = $pluginParam->get('title', NULL)) {
+			$output = "<h4>".$pluginParam->get('title', $jname)."</h4>\n";
 		}
-		
-		//Output each List
-		foreach($outputAll as $value) {
-			echo $value;
+		if($view == 'auto') {
+			$output .= modjfusionActivityHelper::renderPluginAuto($jname, $config, $params);
+		} else {
+			$output .= modjfusionActivityHelper::renderPluginMode($jname, $config, $view, $pluginParam);
 		}
+		echo $output;
 	} else {
 	    echo JText::_('NO_PLUGIN');
 	}

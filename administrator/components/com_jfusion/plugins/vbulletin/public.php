@@ -10,6 +10,7 @@
 // no direct access
 defined('_JEXEC' ) or die('Restricted access' );
 
+global $name, $baseURL, $fullURL, $integratedURL, $vbsefmode;
 /**
  * JFusion Public Class for vBulletin
  * For detailed descriptions on these functions please check the model.abstractpublic.php
@@ -330,10 +331,6 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 				global $$g;
 			}
 
-			//constants needed in vbulletin hooks
-			define('_JFUSION_JNAME', $this->getJname());
-			define('_JFUSION_SOURCE_PATH', $source_path);
-			define('_JFUSION_SOURCE_URL', $source_url);
 			//define('_JFUSION_DEBUG',1);
 
 			if(defined('_JFUSION_DEBUG')) {
@@ -354,8 +351,17 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			return $buffer;
 	}
 
-	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
+	function parseBody(&$buffer, $localBaseURL, $localFullURL, $localIntegratedURL)
 	{
+		global $name, $baseURL, $fullURL, $integratedURL, $vbsefmode;
+		$name = $this->getJname();
+		$baseURL = $localBaseURL;
+		$fullURL = $localFullURL;
+		$integratedURL = $localIntegratedURL;
+
+		$params = JFusionFactory::getParams($name);
+		$vbsefmode = $params->get('sefmode',0);
+		
 		//fix for form actions
 		//cannot use preg_replace here because it adds unneeded slashes which messes up JS
 		$action_search	= '#action="(.*?)"(.*?)>#mS';
@@ -385,15 +391,25 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		}
 	}
 
-	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
+	function parseHeader(&$buffer, $localBaseURL, $localFullURL, $localIntegratedURL)
 	{
+		global $name, $baseURL, $fullURL, $integratedURL, $vbsefmode;
+		$name = $this->getJname();
+		$baseURL = $localBaseURL;
+		$fullURL = $localFullURL;
+		$integratedURL = $localIntegratedURL;
 
-		$js  = "var vbSourceURL = '$integratedURL';\n";
+		$params = JFusionFactory::getParams($name);
+		$vbsefmode = $params->get('sefmode',0);
+
+		$js  = "<script type=\"text/javascript\">\n";
+		$js .= "var vbSourceURL = '$integratedURL';\n";
+		$js .= "</script>\n";
 		
 		//we need to find and change the call to vb's yahoo connection file to our own customized one
 		//that adds the source url to the ajax calls
-		$yuiURL = JURI::base() . 'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname();
-		$buffer = preg_replace('#\<script type="text\/javascript" src="(.*?)(connection-min.js|connection.js)\?v=(.*?)"\>#mS',"<script type=\"text/javascript\">$js</script> <script type=\"text/javascript\" src=\"$yuiURL/yui/connection/connection-min.js?v=$3\">",$buffer);
+		$yuiURL = JFusionFunction::getJoomlaURL().'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname();
+		$buffer = preg_replace('#\<script type="text\/javascript" src="(.*?)(connection-min.js|connection.js)\?v=(.*?)"\>#mS',"$js <script type=\"text/javascript\" src=\"$yuiURL/yui/connection/connection-min.js?v=$3\">",$buffer);
 
 		//convert relative links into absolute links
 		$url_search = '#(src="|background="|href="|url\("|url\(\'?)(?!http)(.*?)("\)|\'?\)|")#mS';
@@ -528,6 +544,8 @@ function fixAction($matches)
 
 function fixURL($matches)
 {
+	global $name, $baseURL, $integratedURL, $vbsefmode;
+
 	$url = $matches[1];
 	$extra = $matches[2];
 
@@ -574,76 +592,54 @@ function fixURL($matches)
 		return $replacement;
 	}
 
+	
 	//admincp, mocp, archive, or printthread
 	if (strpos($url,'admincp')!==false || strpos($url,'modcp')!==false || strpos($url,'archive')!==false || strpos($url,'printthread.php')!==false) {
-		$replacement = 'href="' . _JFUSION_SOURCE_URL . $url . "\" $extra>";
+		$replacement = 'href="' . $integratedURL . $url . "\" $extra>";
 		if(defined('_JFUSION_DEBUG')) {
 			$debug['parsed'] = $replacement;
 		}
 		return $replacement;
 	}
+	
 
 	//if the plugin is set as a slave, find the master and replace register/lost password urls
 	if (strpos($url,'register.php')!==false) {
 		$master = JFusionFunction::getMaster();
-		if(!empty($master) && $master->name!=_JFUSION_JNAME) {
+		if(!empty($master) && $master->name!=$name) {
 			$master =& JFusionFactory::getPublic($master->name);
 			$url =  $master->getRegistrationURL();
-			$replacement =  'href="' . JRoute::_($url) . "\" $extra>";
-			if(defined('_JFUSION_DEBUG')) {
-				$debug['parsed'] = $replacement;
-			}
-			return $replacement;
 		}
 	}
 
 	if (strpos($url,'login.php?do=lostpw')!==false) {
 		$master = JFusionFunction::getMaster();
-		if(!empty($master) && $master->name!=_JFUSION_JNAME) {
+		if(!empty($master) && $master->name!=$name) {
 			$master =& JFusionFactory::getPublic($master->name);
 			$url =  $master->getLostPasswordURL();
-			$replacement = 'href="' . JRoute::_($url) . "\" $extra>";
-			if(defined('_JFUSION_DEBUG')) {
-				$debug['parsed'] = $replacement;
-			}
-			return $replacement;
 		}
 	}
 
+	
 	//is this only an anchor?
 	if(strpos($url, '#') === 0) {
 		//reconstruct the URL using current query
 		$url = $_SERVER['REQUEST_URI'].$url;
 	}
-
-	$uri = new JURI($url);
-
-	//get the jfile if it is not already set
-	$jfile = $uri->getVar('jfile',false);
-	if($jfile===false) {
-		$filename = $uri->getPath();
-		$break = explode('/', $filename);
-		$file = $break[count($break) - 1];
-
-		//set the jfile param if needed
-		if(empty($file) || strpos($file,'.php') === false){
-			$file = "index.php";
+	
+	
+	if (substr($baseURL, -1) != '/'){
+		//non sef URls
+		$url = str_replace('?', '&amp;', $url);
+		$url = $baseURL . '&amp;jfile=' .$url;
+	} else {
+		if ($vbsefmode==1) {
+			$url =  JFusionFunction::routeURL($url, JRequest::getVar('Itemid'));
+		} else {
+			//we can just append both variables
+			$url = $baseURL . $url;
 		}
-
-		$uri->setVar('jfile', $file);
 	}
-
-	//set the jfusion references for Joomla
-	$Itemid = JRequest::getVar('Itemid');
-	if ($Itemid){
-		$uri->setVar('Itemid', $Itemid);
-	}
-
-	$uri->setVar('option', 'com_jfusion');
-
-	$url = 'index.php'.$uri->toString(array('query', 'fragment'));
-
-	$url = urldecode(JRoute::_($url, true));
 
 	//set the correct url and close the a tag
 	$replacement = 'href="'.$url . '"' . $extra . '>';
@@ -658,11 +654,12 @@ function fixURL($matches)
 
 function fixInclude($matches)
 {
+	global $integratedURL;
 	$pre = $matches[1];
 	$url = $matches[2];
 	$post = $matches[3];
 
-	$replacement = $pre . _JFUSION_SOURCE_URL . $url . $post;
+	$replacement = $pre . $integratedURL . $url . $post;
 
 	if(defined('_JFUSION_DEBUG')) {
 		$debug = array();

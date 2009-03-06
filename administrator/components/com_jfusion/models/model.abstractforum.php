@@ -99,7 +99,7 @@ class JFusionForum
      * Returns the an array with SQL statements used by the activity module
      * @return array
      */
-    function getQuery($usedforums, $result_order, $result_limit, $display_limit)
+    function getActivityQuery($usedforums, $result_order, $result_limit, $display_limit)
     {
         return 0;
     }

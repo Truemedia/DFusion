@@ -40,22 +40,17 @@ class JFusionForum_smf extends JFusionForum
         return  'index.php?action=profile&u='.$uid;
     }
 
-    function getQuery($usedforums, $result_order, $result_limit)
+    function getActivityQuery($usedforums, $result_order, $result_limit, $display_limit)
     {
-        if ($usedforums) {
-            $where = ' WHERE a.ID_BOARD IN (' . $usedforums .')';
-        } else {
-            $where = '';
-        }
-
-        $query = array(0 => array(0 => "SELECT a.ID_TOPIC , c.posterName, c.ID_MEMBER, c.subject, c.posterTime, left(c.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_LAST_MSG = b.ID_MSG INNER JOIN `#__messages` as c ON a.ID_FIRST_MSG = c.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";" ,
-		1 => "SELECT b.ID_MSG, b.posterName, b.ID_MEMBER, b.subject, b.posterTime, a.ID_TOPIC, left(b.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_LAST_MSG = b.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";"  ),
-        1 => array(0 => "SELECT a.ID_TOPIC , b.posterName, b.ID_MEMBER, b.subject, b.posterTime, left(b.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";",
-        1 => "SELECT a.ID_TOPIC , c.posterName, c.ID_MEMBER, c.subject, c.posterTime, left(c.body, $result_limit) FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG INNER JOIN `#__messages` as c ON a.ID_LAST_MSG = c.ID_MSG " . $where . " ORDER BY b.posterTime  ".$result_order." LIMIT 0,".$result_limit.";"),
-        2 => array(0 => "SELECT a.ID_MSG , a.posterName, a.ID_MEMBER, a.subject, a.posterTime, left(a.body, $result_limit), a.ID_TOPIC  FROM `#__messages` as a " . $where . " ORDER BY a.posterTime ".$result_order." LIMIT 0,".$result_limit.";" ,
-        1 => "SELECT a.ID_MSG , a.posterName, a.ID_MEMBER, a.subject, a.posterTime, left(a.body, $result_limit), a.ID_TOPIC  FROM `#__messages` as a " . $where . " ORDER BY a.posterTime ".$result_order." LIMIT 0,".$result_limit.";")
-        );
-
+        $where = (!empty($usedforums)) ? ' WHERE a.ID_BOARD IN (' . $usedforums .')' : '';
+		$end = $result_order." LIMIT 0,".$result_limit;
+		
+		$query = array(
+			LAT => "SELECT a.ID_TOPIC AS threadid, a.ID_LAST_MSG AS postid, b.posterName AS username, b.ID_MEMBER AS userid, b.subject AS subject, b.posterTime AS dateline FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG INNER JOIN `#__messages` AS c ON a.ID_LAST_MSG = c.ID_MSG $where ORDER BY c.posterTime $end",
+			LCT => "SELECT a.ID_TOPIC AS threadid, b.ID_MSG AS postid, b.posterName AS username, b.ID_MEMBER AS userid, b.subject AS subject, left(b.body, $display_limit) AS body, b.posterTime AS dateline FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG $where ORDER BY b.posterTime $end", 
+			LCP => "SELECT a.ID_TOPIC AS threadid, b.ID_MSG AS postid, b.posterName AS username, b.ID_MEMBER AS userid, b.subject AS subject, left(b.body, $display_limit) AS body, b.posterTime AS dateline FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_LAST_MSG = b.ID_MSG $where ORDER BY b.posterTime $end"
+		);
+        
         return $query;
 
     }
@@ -109,7 +104,7 @@ class JFusionForum_smf extends JFusionForum
 				$attachment = $db->loadObject();
 				// See if the user has a specific attachment ment for an avatar
 				if($attachment->ID_THUMB == 0 && $attachment->ID_MESSAGE == 0 && empty($result->avatar))   {
-					$url = JURI::base()."index.php?option=com_jfusion&Itemid=2&action=dlattach;attach=".$attachment->ID_ATTACH.";type=avatar";
+					$url = JFusionFunction::getJoomlaURL()."index.php?option=com_jfusion&Itemid=2&action=dlattach;attach=".$attachment->ID_ATTACH.";type=avatar";
 
 				// If user didnt, check to see if the avatar specified in the first query is a url. If so use it.
 				} else if(preg_match("/http(s?):\/\//",$result->avatar)){
@@ -453,7 +448,7 @@ class JFusionForum_smf extends JFusionForum
 	function getReplyCount(&$existingthread)
 	{
 		$db =& JFusionFactory::getDatabase($this->getJname());
-		$query = "SELECT COUNT(*) AS c FROM #__messages WHERE ID_TOPIC = {$existingthread->threadid} AND ID_MSG != {$existingthread->postid}";
+		$query = "SELECT numReplies FROM #__topics WHERE ID_TOPIC = {$existingthread->threadid}";
 		$db->setQuery($query);
 		$result = $db->loadResult();
 		return $result;
@@ -505,7 +500,7 @@ class JFusionForum_smf extends JFusionForum
                 }
     	           
 				if(empty($avatarSrc)) {
-					$avatarSrc = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
+					$avatarSrc = JFusionFunction::getJoomlaURL()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 				}
 				
 				$size = @getimagesize($avatarSrc);
@@ -626,4 +621,13 @@ class JFusionForum_smf extends JFusionForum
 
 		return $text;
 	}
+	
+    function getThread($threadid)
+    {
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$query = "SELECT ID_TOPIC AS threadid, ID_BOARD AS forumid, ID_FIRST_MSG AS postid FROM #__topics WHERE ID_TOPIC = $threadid";
+		$db->setQuery($query);
+		$results = $db->loadObject();
+		return $results;
+    }
 }

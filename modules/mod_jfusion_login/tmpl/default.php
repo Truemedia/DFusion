@@ -71,7 +71,7 @@ if($size[0]>60) {
 	<?php JHTML::_('script', 'openid.js'); ?>
 <?php endif; ?>
 
-<form action="<?php echo JRoute::_(JURI::Base().'index.php', true, $params->get('usesecure')); ?>" method="post" name="login" id="form-login" >
+<form action="<?php echo JRoute::_(JFusionFunction::getJoomlaURL().'index.php', true, $params->get('usesecure')); ?>" method="post" name="login" id="form-login" >
 	<?php echo $params->get('pretext'); ?>
 	<p id="form-login-username">
 		<label for="modlgn_username"><?php echo JText::_('USERNAME') ?></label><br />

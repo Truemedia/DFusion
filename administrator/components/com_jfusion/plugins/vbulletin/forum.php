@@ -337,7 +337,7 @@ class JFusionForum_vbulletin extends JFusionForum
 	function getReplyCount(&$existingthread)
 	{
 		$db =& JFusionFactory::getDatabase($this->getJname());
-		$query = "SELECT COUNT(*) AS c FROM #__post WHERE threadid = {$existingthread->threadid} AND postid != {$existingthread->postid}";
+		$query = "SELECT replycount FROM #__thread WHERE threadid = {$existingthread->threadid}";
 		$db->setQuery($query);
 		$result = $db->loadResult();
 		return $result;
@@ -380,7 +380,7 @@ class JFusionForum_vbulletin extends JFusionForum
                 }
     	           
 				if(empty($avatarSrc)) {
-					$avatarSrc = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
+					$avatarSrc = JFusionFunction::getJoomlaURL()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 				}
 				
 				$size = @getimagesize($avatarSrc);
@@ -499,20 +499,15 @@ class JFusionForum_vbulletin extends JFusionForum
         }
     }
 
-	function getQuery($usedforums, $result_order, $result_limit, $display_limit)
-	{
-		if ($usedforums) {
-			$where = ' WHERE forumid IN (' . $usedforums .')';
-		} else {
-			$where = '';
-		}
+	function getActivityQuery($usedforums, $result_order, $result_limit, $display_limit)
+	{	
+		$where = (!empty($usedforums)) ? ' WHERE a.forumid IN (' . $usedforums .')' : '';
+		$end = $result_order." LIMIT 0,".$result_limit;
 		
-		$query = array(0 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";",
-		1 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.lastpost  ".$result_order." LIMIT 0,".$result_limit.";"),
-		1 => array(0 => "SELECT a.threadid , b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";",
-		1 => "SELECT a.threadid,  b.username, b.userid, b.title, b.dateline, left(b.pagetext, $display_limit), a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid " . $where . " ORDER BY a.dateline  ".$result_order." LIMIT 0,".$result_limit.";"),
-		2 => array(0 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid, a.forumid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";",
-		1 => "SELECT a.postid , a.username, a.userid, a.title, a.dateline, a.pagetext, a.threadid,  a.forumid FROM `#__post` as a INNER JOIN `#__thread` as b ON a.threadid = b.threadid " . $where . " ORDER BY a.dateline ".$result_order." LIMIT 0,".$result_limit.";")
+		$query = array(
+			LAT => "SELECT a.threadid, a.lastpostid AS postid, b.username, b.userid, a.title AS subject, b.dateline, a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid $where ORDER BY a.lastpost $end",
+			LCT => "SELECT a.threadid, b.postid, b.username, b.userid, a.title AS subject, b.dateline, left(b.pagetext, $display_limit) AS body, a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid $where ORDER BY a.dateline $end", 
+			LCP => "SELECT a.threadid, b.postid, b.username, b.userid, b.title AS subject, b.dateline, left(b.pagetext, $display_limit) AS body, a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid $where ORDER BY b.dateline $end"
 		);
 		
 		return $query;
@@ -555,15 +550,7 @@ class JFusionForum_vbulletin extends JFusionForum
     	$forumPerms = array();
     	if(is_array($results)) {
     		foreach($results as $k => $r) {
-    			if(is_array($r)) {
-    				if(count($r)==7) {
-    					$forumid = $r[6];
-    				} else {
-    					$forumid = $r[7];
-    				}
-    			} elseif(is_object($r)) {
-    				$forumid = $r->$idKey;
-    			}
+   				$forumid = $r->$idKey;
 
     			if(!array_key_exists($forumid,$forumPerms)) {
     				$query = "SELECT forumpermissions FROM #__forumpermission WHERE usergroupid = '{$groupPerms->gid}' AND forumid = '{$forumid}'";

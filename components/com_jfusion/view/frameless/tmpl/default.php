@@ -13,28 +13,10 @@ defined('_JEXEC') or die('Restricted access');
 //initialise some vars
 $application = JFactory::getApplication();
 $uri		= JURI::getInstance();
-$params = JFusionFactory::getParams('joomla_int');
-$joomla_url = $params->get('source_url');
 
 //Get the base URL to the specific JFusion plugin
-$Itemid = JRequest::getVar('Itemid');
-$baseURL	= JRoute::_('index.php?option=com_jfusion&Itemid=' . $Itemid);
-if(!strpos($baseURL,'?')){
-	$baseURL .= '/';
-}
-if (substr($joomla_url, -1) == '/') {
-	if ($baseURL[0] == '/') {
-		$baseURL = substr($joomla_url,0,-1) . $baseURL;
-	} else {
-		$baseURL = $joomla_url . $baseURL;
-	}
-} else {
-	if ($baseURL[0] == '/') {
-		$baseURL = $joomla_url . $baseURL;
-	} else {
-		$baseURL = $joomla_url . '/' . $baseURL;
-	}
-}
+$Itemid_joomla = JRequest::getVar('Itemid');
+$baseURL = JFusionFunction::getPluginURL($Itemid_joomla);
 
 //Get the full current URL
 $query	= $uri->getQuery();
@@ -50,16 +32,14 @@ $JFusionPlugin = JFusionFactory::getPublic($this->jname);
 
 //backup Joomla's globals
 $joomla_globals = $GLOBALS;
-//get the Itemid
-$Itemid_joomla = JRequest::getVar('Itemid');
 //get the buffer
 $buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
 //restore Joomla's globals
 $GLOBALS = $joomla_globals;
-//reset the global itemid
+//reset the global $Itemid so that modules are not repeated
 global $Itemid;
 $Itemid = $Itemid_joomla;
-//reset Itemid
+//reset Itemid so that it can be obtained via getVar
 JRequest::setVar('Itemid',$Itemid_joomla);
 
 //clear the page title
@@ -149,7 +129,7 @@ if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
 		$pathway = $JFusionPlugin->getPathWay();
 		if ( is_array($pathway) ) {
 			$breadcrumbs = & $mainframe->getPathWay();
-    		foreach($pathway as $path) $breadcrumbs->addItem($path->title, substr(JURI::base(),0,-1).JFusionFunction::routeURL($path->url, JRequest::getVar('Itemid')));
+    		foreach($pathway as $path) $breadcrumbs->addItem($path->title, substr(JFusionFunction::getJoomlaURL(),0,-1).JFusionFunction::routeURL($path->url, JRequest::getVar('Itemid')));
     	}
 	}
 
@@ -159,5 +139,10 @@ if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
         $JFusionPlugin->parseBody($data[2], $baseURL, $fullURL, $integratedURL);
         echo $data[2];
 	}
+	
+	//set the base href
+	$document->setBase($baseURL);
+	
+	//restore the backtrack_limit
 	ini_set('pcre.backtrack_limit',$backtrack_limit);
 }

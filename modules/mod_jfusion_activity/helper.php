@@ -24,21 +24,21 @@ class modjfusionActivityHelper {
 	            }
 	
 	            //define some other JFusion specific parameters
-	            $query = $forum->getQuery($selectedforumssql, $config['result_order'], 
-	                                      $config['result_limit'], $config['display_limit']);
-	
+	            $query = $forum->getActivityQuery($selectedforumssql, $config['result_order'], $config['result_limit'], $config['display_limit']);
+				
 	            // load
-	            $db->setQuery($query[$config['mode']][$config['lxt_type']]);
-	            $result = $db->loadRowList();
-	
+	            $db->setQuery($query[$config['mode']]);
+	            $result = $db->loadObjectList();
 	            $forum->filterForumList($result);
 	            //reorder the keys for the for loop
-	            $result = array_values($result);
+	            if(is_array($result)) {
+	            	$result = array_values($result);	
+	            }
 	            
 	            if ($config['debug']) {
-	                $debug = "Query mode:" . $mode . '<br><br>SQL Query:' . $query[$mode][$lxt_type] .'<br><br>Results:<br>' ;
+	                $debug = "Query mode:" . $mode . '<br><br>SQL Query:' . $query[$mode][$linktype] .'<br><br>Results:<br>' ;
 	                for ($i=0; $i<count($result); $i++) {
-	                    $debug .= 'id:'. $result[$i][0] . '   username:'. $result[$i][1] . '  subject:'. $result[$i][3] . '<br>';
+	                    $debug .= 'id:'. $result[$i]->userid . '   username:'. $result[$i]->username . '  subject:'. $result[$i]->subject . '<br>';
 	                }
 	                die($debug);
 	            } else {
@@ -57,28 +57,28 @@ class modjfusionActivityHelper {
 							//cleanup the strings for output
 			                $safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
 			                foreach ($result[$i] as $key => $value){
-				            	$result[$i][$key] =  $safeHtmlFilter->clean($value, gettype($value));
+				            	$result[$i]->$key =  $safeHtmlFilter->clean($value, gettype($value));
 				            }
 	
 				            //process user info
 	                        if ($config['showuser']) {
 	                            if ($config['userlink']) {
 	                            	if($config['userlink_software']!='' && $config['userlink_software'] != 'jfusion' && $config["userlink_software"]!='custom') {
-	                            		$user_url = JFusionFunction::getAltProfileURL($config['userlink_software'],$result[$i][1]);
+	                            		$user_url = JFusionFunction::getAltProfileURL($config['userlink_software'],$result[$i]->username);
 	                            	} elseif ($config['userlink_software']=='custom' && !empty($config['userlink_custom'])) {
-										$userlookup = JFusionFunction::lookupUser($jname,$result[$i][2],false,$result[$i][1]);
+										$userlookup = JFusionFunction::lookupUser($jname,$result[$i]->userid,false,$result[$i]->username);
 										$user_url = $config['userlink_custom'].$userlookup->id;
 									} else {
 	                            		$user_url = false;
 	                            	}
 	                            	
 	                            	if($user_url === false) {
-	                            		$user_url = JFusionFunction::routeURL($forum->getProfileURL($result[$i][2], $result[$i][1]), $config['itemid']);
+	                            		$user_url = JFusionFunction::routeURL($forum->getProfileURL($result[$i]->userid, $result[$i]->username), $config['itemid']);
 	                            	}
 	                            	
-									$user = '<a href="'. $user_url . '" target="' . $config['new_window'] . '">'.$result[$i][1].'</a>';
+									$user = '<a href="'. $user_url . '" target="' . $config['new_window'] . '">'.$result[$i]->username.'</a>';
 	                            } else {
-									$user = $result[$i][1];
+									$user = $result[$i]->username;
 	                            }
 	                            $user = " - <b>".$user."</b> ";
 	                        }
@@ -86,7 +86,7 @@ class modjfusionActivityHelper {
 	                        //process date info
 	                        if($config['showdate']) {
 	                        	jimport('joomla.utilities.date');
-	                        	$JDate =  new JDate($result[$i][4]);
+	                        	$JDate =  new JDate($result[$i]->dateline);
 	                        	$JDate->setOffset($config['tz_offset']);
 	                        	$date = $JDate->toFormat($config['date_format']);
 	                        } else {
@@ -94,9 +94,9 @@ class modjfusionActivityHelper {
 	                        }
 	
 	                        //process subject or body info
-	                        $subject = ($config['display_body'] == 0 && empty($result[$i][3]) ||
+	                        $subject = ($config['display_body'] == 0 && empty($result[$i]->subject) ||
 	                        $config['display_body'] == 1 && $config['mode'] == LCP ||
-	                        $config['display_body'] == 2) ? $result[$i][5] : $result[$i][3];
+	                        $config['display_body'] == 2) ? $result[$i]->body : $result[$i]->subject;
 	
 	                        //make sure that a message is always shown
 							if (empty($subject)) {
@@ -108,15 +108,25 @@ class modjfusionActivityHelper {
 	
 	                        //combine all info into an urlstring
 	                        if ($config['linktype'] == LINKPOST) {
-								$urlstring_pre = JFusionFunction::routeURL($forum->getPostURL($result[$i][6], $result[$i][0]), $config['itemid']);
+								$urlstring_pre = JFusionFunction::routeURL($forum->getPostURL($result[$i]->threadid, $result[$i]->postid), $config['itemid']);
 	    	                    $urlstring = '<a href="'. $urlstring_pre . '" target="' . $config['new_window'] . '">'. $subject.'</a>';
 	                        } else {
-	                        	$urlstring_pre = JFusionFunction::routeURL($forum->getThreadURL($result[$i][0]), $config['itemid']);
+	                        	$urlstring_pre = JFusionFunction::routeURL($forum->getThreadURL($result[$i]->threadid), $config['itemid']);
 	                        	$urlstring = '<a href="'. $urlstring_pre . '" target="' . $config['new_window'] . '">' .$subject.'</a>';
 	                        }
 	
+	                        if($config['mode'] == LAT) {
+	                        	$existingthread = $forum->getThread($result[$i]->threadid);
+	                        	$count = (!empty($existingthread)) ? $forum->getReplyCount($existingthread) : 0;
+	                        	$post = ($count==1) ? "REPLY" : "REPLIES";
+	                        	$body = " [$count ".JText::_($post)."]";
+	                        } else {
+	                        	//gotta make it presentable
+	                        	$body = " - " . strip_tags($forum->prepareText($result[$i]->body,true));
+	                        }
+	                        
 	                        //put it all together for output
-	                        $output .= '<li>'. $urlstring . '<b>'.$user.'</b>'.$date.'</li>';
+	                        $output .= '<li><i>'. $urlstring . '</i><b>'.$user.'</b>'.$date.$body.'</li>';
 	
 	                    }
 	                $output .= "</ul>";

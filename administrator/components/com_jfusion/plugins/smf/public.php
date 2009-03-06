@@ -83,7 +83,7 @@ class JFusionPublic_smf extends JFusionPublic{
 			JError::raiseWarning(500, 'Could not find SMF in the specified directory');
 		}
 		$document = JFactory::getDocument();
-		$document->addScript(JURI::base().DS.'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'smf'.DS.'js'.DS.'script.js');
+		$document->addScript(JFusionFunction::getJoomlaURL().DS.'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'smf'.DS.'js'.DS.'script.js');
 		return $buffer;
 	}
 

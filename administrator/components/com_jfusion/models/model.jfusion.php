@@ -525,7 +525,7 @@ class JFusionFunction{
      * @param $text string to place as the link
      * @return link
      */
-    function createJoomlaArticleURL(&$contentitem,$text)
+    function createJoomlaArticleURL(&$contentitem,$text,$jname='')
     {
     	require_once JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php';
 
@@ -543,7 +543,7 @@ class JFusionFunction{
 			$itemid = $item->id;
 		};
 
-		$link = JRoute::_(JURI::base().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid);
+		$link = JFusionFunction::getJoomlaURL().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid;
 		$link = "<a href='$link'>$text</a>";
 
 		//set the original back
@@ -590,7 +590,7 @@ class JFusionFunction{
  				$replace[] = "[*]$1";
 
  				$search[] = "#<img.*?src=['|\"](?!\w{0,10}://)(.*?)['|\"].*?>#sie";
- 				$replace[] = "'[img]'.JRoute::_(JURI::base().\"$1\").'[/img]'";
+ 				$replace[] = "'[img]'.JRoute::_(JFusionFunction::getJoomlaURL().\"$1\").'[/img]'";
 
  				$search[] = "#<img.*?src=['|\"](.*?)['|\"].*?>#sim";
  				$replace[] = "[img]$1[/img]";
@@ -599,7 +599,7 @@ class JFusionFunction{
  				$replace[] = "[email=$1]$2[/email]";
 
 				$search[] = "#<a .*?href=['|\"](?!\w{0,10}://|\#)(.*?)['|\"].*?>(.*?)</a>#sie";
- 				$replace[] = "'[url='.JRoute::_(JURI::base().\"$1\").']$2[/url]'";
+ 				$replace[] = "'[url='.JRoute::_(JFusionFunction::getJoomlaURL().\"$1\").']$2[/url]'";
 
  				$search[] = "#<a .*?href=['|\"](.*?)['|\"].*?>(.*?)<\/a>#si";
  				$replace[] = "[url=$1]$2[/url]";
@@ -806,4 +806,54 @@ class JFusionFunction{
 
     	return $avatar;
     }
+    
+    /**
+     * Gets the source_url from the joomla_int plugin
+     * @return Joomla's source URL
+     */
+    function getJoomlaURL() 
+    {
+		static $joomla_source_url;
+		
+		if(empty($joomla_source_url)) {
+			$params =& JFusionFactory::getParams('joomla_int');
+			$joomla_source_url = $params->get('source_url');
+		}
+		
+		return $joomla_source_url;
+    }
+    
+    /**
+     * Gets the base url of a specific menu item
+     * @param $itemid int id of the menu item
+     * @return parsed base URL of the menu item
+     */
+    function getPluginURL($itemid)
+    {
+    	$joomla_url = JFusionFunction::getJoomlaURL(); //can't use $this here as this function is called directly
+		$baseURL	= JRoute::_('index.php?option=com_jfusion&Itemid=' . $itemid);
+		if(!strpos($baseURL,'?')){
+			$baseURL .= '/';
+		}
+		
+		$juri = new JURI($joomla_url);
+		$path = $juri->getPath();
+		$baseURL = str_replace($path,'',$baseURL);
+		
+		if (substr($joomla_url, -1) == '/') {
+			if ($baseURL[0] == '/') {
+				$baseURL = substr($joomla_url,0,-1) . $baseURL;
+			} else {
+				$baseURL = $joomla_url . $baseURL;
+			}
+		} else {
+			if ($baseURL[0] == '/') {
+				$baseURL = $joomla_url . $baseURL;
+			} else {
+				$baseURL = $joomla_url . '/' . $baseURL;
+			}
+		}
+		
+		return $baseURL;
+	}
 }

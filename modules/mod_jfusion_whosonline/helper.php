@@ -86,7 +86,7 @@ class modjfusionWhosOnlineHelper {
 		    	            }
 		    	            
 							if(empty($avatar)) {
-								$avatar = JURI::base()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
+								$avatar = JFusionFunction::getJoomlaURL()."administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
 							}
 								
 							$size = @getimagesize($avatar);
