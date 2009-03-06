@@ -116,7 +116,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 /*		$regex_body[]	= '#href=["|\']/(_media/)(.*?)["|\']#mS';
 		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
 */
-		$regex_body[] = '#href=["|\'](?!\w{0,10}://|\w{0,10}:|\#)/(.*?)["|\']#mSie';
+		$regex_body[] = '#href=["|\'](?!\w{0,10}://|\w{0,10}:)(.*?)["|\']#mSie';
 		$replace_body[]	= '\'href="\'.$this->fixUrl("$1","'.$baseURL.'").\'"\'';
 
 //		$regex_body[] = '#href=["|\'][./|/](.*?)["|\']#mSie';
@@ -151,6 +151,13 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 	{
 		$q = urldecode($q);
 		$q = str_replace(':', ';', $q);
+
+		if ( strpos($q,'#') === 0 ) {
+			return $fullURL . $q;
+		} else {
+			$q = ltrim( $q , '/' );
+		}
+
 		if ( strpos($q,'_detail/') === 0 || strpos($q,'lib/exe/detail.php') === 0 ) {
 			if( strpos($q,'_detail/') === 0 ) {
 				$q = substr($q,strlen('_detail/'));
