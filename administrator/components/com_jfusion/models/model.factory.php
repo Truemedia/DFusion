@@ -238,6 +238,7 @@ class JFusionFactory{
 
             if (is_array($params)) {
                 foreach($params as $key => $value) {
+					if(is_array($value))$value = implode(",",$value);
                     $parametersInstance->set($key, $value );
                 }
             }
