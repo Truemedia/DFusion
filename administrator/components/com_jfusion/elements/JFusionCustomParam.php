@@ -30,11 +30,11 @@ class JElementJFusionCustomParam extends JElement
 		if ($jname){
 			//load the custom param output
             $JFusionPlugin = JFusionFactory::getAdmin($jname);
-            if(method_exists($JFusionPlugin,$value)){
-	            $output = $JFusionPlugin->{$value}();
+            if(method_exists($JFusionPlugin,$name)){
+	            $output = $JFusionPlugin->{$name}($name, $value, $node, $control_name);
     	        return $output;
             } else {
-				return 'Undefined function:'.$value.' in plugin:' . $jname;
+				return 'Undefined function:'.$name.' in plugin:' . $jname;
             }
         } else {
             return 'Programming error: You must define global $jname before the JParam object can be rendered';

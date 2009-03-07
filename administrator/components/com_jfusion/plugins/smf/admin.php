@@ -274,7 +274,7 @@ return;
 <?php
 	}
 
-    function show_redirect_mod()
+    function show_redirect_mod($name, $value, $node, $control_name)
     {
     	$error = 0;
     	$reason = '';

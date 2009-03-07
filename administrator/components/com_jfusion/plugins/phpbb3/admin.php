@@ -311,7 +311,7 @@ return;
 <?php
 	}
 
-    function show_redirect_mod()
+    function show_redirect_mod($name, $value, $node, $control_name)
     {
     	$error = 0;
     	$reason = '';
@@ -348,7 +348,7 @@ return;
     }
 
 
-    function show_auth_mod()
+    function show_auth_mod($name, $value, $node, $control_name)
     {
     	$error = 0;
     	$reason = '';
