@@ -801,28 +801,28 @@ class JFusionFunction{
     		$email = $db->loadResult();
     		$avatar = "http://www.gravatar.com/avatar.php?gravatar_id=".md5( strtolower($email) )."&size=40";
     	} else {
-			$avatar = "administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";    		
+			$avatar = "administrator".DS."components".DS."com_jfusion".DS."images".DS."noavatar.png";
     	}
 
     	return $avatar;
     }
-    
+
     /**
      * Gets the source_url from the joomla_int plugin
      * @return Joomla's source URL
      */
-    function getJoomlaURL() 
+    function getJoomlaURL()
     {
 		static $joomla_source_url;
-		
+
 		if(empty($joomla_source_url)) {
 			$params =& JFusionFactory::getParams('joomla_int');
 			$joomla_source_url = $params->get('source_url');
 		}
-		
+
 		return $joomla_source_url;
     }
-    
+
     /**
      * Gets the base url of a specific menu item
      * @param $itemid int id of the menu item
@@ -835,11 +835,13 @@ class JFusionFunction{
 		if(!strpos($baseURL,'?')){
 			$baseURL .= '/';
 		}
-		
+
 		$juri = new JURI($joomla_url);
 		$path = $juri->getPath();
-		$baseURL = str_replace($path,'',$baseURL);
-		
+		if($path != '/'){
+			$baseURL = str_replace($path,'',$baseURL);
+		}
+
 		if (substr($joomla_url, -1) == '/') {
 			if ($baseURL[0] == '/') {
 				$baseURL = substr($joomla_url,0,-1) . $baseURL;
@@ -853,7 +855,7 @@ class JFusionFunction{
 				$baseURL = $joomla_url . '/' . $baseURL;
 			}
 		}
-		
+
 		return $baseURL;
 	}
 }
