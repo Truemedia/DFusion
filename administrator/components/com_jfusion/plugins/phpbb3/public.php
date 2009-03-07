@@ -296,7 +296,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
             //convert relative links into absolute links
            $regex_header[]	= '#(href="|src=")./(.*?")#mS';
-           $replace_header[]	= '$1'.$integratedURL.'$2"';
+           $replace_header[]	= '$1'.$integratedURL.'$2';
 
            //fix for URL redirects
            $regex_header[]	= '#<meta http-equiv="refresh" content="(.*?)"(.*?)>#me';
