@@ -46,7 +46,6 @@
 			<option value="0"><![CDATA[yourdomain.com/index.php/menu_name/filename.php?option1=value1&option2=value2]]></option>
 		</param>
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
-		<param name=" " type="helptext" default="SMF_DUAL_TEXT" />
 		<param name=" " type="helptext" default="SMF_VISUAL_TEXT" />
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
 		<param name=" " type="helptext" default="AUTO_UPDATE_DESCR"/>
