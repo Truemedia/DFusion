@@ -39,17 +39,18 @@ class JFusionPublic_smf extends JFusionPublic{
 
 	function & getBuffer()
 	{
-		if (JRequest::getVar('action')=='register') {
+		if (JRequest::getVar('action')=='register' || JRequest::getVar('action')=='reminder') {
 			$master = JFusionFunction::getMaster();
-			if( $master->name != $this->getJname() ) {
-				$JFusionMaster = JFusionFactory::getPublic($master->name);
-				$params = JFusionFactory::getParams($master->name);
-				$source_url = $params->get('source_url');
-				$source_url = rtrim ( $source_url , '/' );
-				var_dump($JFusionMaster->getRegistrationURL());
+			$JFusionMaster = JFusionFactory::getPublic($master->name);
+			$params = JFusionFactory::getParams($master->name);
+			$source_url = $params->get('source_url');
+			$source_url = rtrim ( $source_url , '/' );
+			if ( JRequest::getVar('action')=='register' ) {
 				header('Location: '.$source_url.JRoute::_($JFusionMaster->getRegistrationURL()));
-				die();
+			} else {
+				header('Location: '.$source_url.JRoute::_($JFusionMaster->getLostPasswordURL()));
 			}
+			die();
 		}
 		// We're going to want a few globals... these are all set later.
 		global $time_start, $maintenance, $msubject, $mmessage, $mbname, $language;
