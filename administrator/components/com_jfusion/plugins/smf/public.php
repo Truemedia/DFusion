@@ -112,9 +112,14 @@ class JFusionPublic_smf extends JFusionPublic{
 		$regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
 		$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
 
-		//todo: Fix quickreply ( Quote )
-//		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
-//		$replace_body[]	= '<a $1>';
+		if ( substr( $baseURL,-1 ) == '/' ) {
+			$regex_body[] = '#href="(.*?)action=logout(.*?)"#mSsi';
+			$replace_body[] = 'href="$1action=logout$2&option=com_jfusion&Itemid='.JRequest::getVar('Itemid').'"';
+		}
+
+		//fix for form actions
+		$regex_body[]	= '#action="(.*?)"(.*?)>#me';
+		$replace_body[]	= '$this->fixAction("$1","$2","' . $baseURL .'")';
 
 		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
 		$replace_body[]	= '<a $1 onclick="jfusion_doQuote$2>';
@@ -175,6 +180,73 @@ class JFusionPublic_smf extends JFusionPublic{
 			}
 		}
 		return $url;
+	}
+
+	function fixUrl($q='',$baseURL)
+	{
+        //SMF uses semi-colons to seperate vars as well. Convert these to normal ampersands
+        $q = str_replace(';','&',$q);
+        if (substr($baseURL, -1) != '/'){
+			//non sef URls
+			$q = str_replace('?', 	'&amp;', $q);
+			$url = $baseURL . '&amp;jfile=' .$q;
+        } else {
+			$params = JFusionFactory::getParams($this->getJname());
+			$sefmode = $params->get('sefmode');
+			if ($sefmode==1) {
+				$url =  JFusionFunction::routeURL($q, JRequest::getVar('Itemid'));
+			} else {
+				//we can just append both variables
+				$url = $baseURL . $q;
+			}
+		}
+		return $url;
+	}
+
+	function fixAction($url, $extra, $baseURL)
+	{
+		//JError::raiseWarning(500, $url);
+		$url = htmlspecialchars_decode($url);
+		$Itemid = JRequest::getVar('Itemid');
+
+		if (substr($baseURL, -1) != '/'){
+			//non-SEF mode
+		  	$url_details = parse_url($url);
+		  	$url_variables = array();
+			parse_str($url_details['query'], $url_variables);
+		 	$jfile = basename($url_details['path']);
+		  	//set the correct action and close the form tag
+			$replacement = 'action="'.$baseURL . '"' . $extra . '>';
+			$replacement .= '<input type="hidden" name="jfile" value="'. $jfile . '">';
+			$replacement .= '<input type="hidden" name="Itemid" value="'.$Itemid . '">';
+		  	$replacement .= '<input type="hidden" name="option" value="com_jfusion">';
+		} else {
+			//check to see what SEF mode is selected
+		    $params = JFusionFactory::getParams($this->getJname());
+		    $sefmode = $params->get('sefmode');
+		    if ($sefmode==1) {
+		    	//extensive SEF parsing was selected
+			  	$url =  JFusionFunction::routeURL($url, $Itemid);
+				$replacement = 'action="'.$url . '"' . $extra . '>';
+				return $replacement;
+			} else {
+				//simple SEF mode
+		      	$url_details = parse_url($url);
+			  	$url_variables = array();
+				parse_str($url_details['query'], $url_variables);
+		 		$jfile = basename($url_details['path']);
+				$replacement = 'action="'.$baseURL . $jfile.'"' . $extra . '>';
+			}
+		}
+		unset($url_variables['option'],$url_variables['jfile'],$url_variables['Itemid']);
+
+		//add any other variables
+		if(is_array($url_variables)){
+	 		foreach ($url_variables as $key => $value){
+				$replacement .=  '<input type="hidden" name="'. $key .'" value="'.$value . '">';
+  			}
+		}
+  		return $replacement;
 	}
 
 	function fixJump($content)
