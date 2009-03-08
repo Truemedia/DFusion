@@ -49,8 +49,6 @@ class JFusionPublic_smf extends JFusionPublic{
 		// Required to avoid a warning about a license violation even though this is not the case
 		global $forum_version;
 
-		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
-
 		// Get the path
 		$params = JFusionFactory::getParams($this->getJname());
 		$source_path = $params->get('source_path');
@@ -155,7 +153,7 @@ class JFusionPublic_smf extends JFusionPublic{
 			$q = str_replace('?', 	'&amp;', $q);
 			$url = $baseURL . '&amp;jfile=' .$q;
         } else {
-			$params = JFusionFactory::getParams('joomla_int');
+			$params = JFusionFactory::getParams($this->getJname());
 			$sefmode = $params->get('sefmode');
 			if ($sefmode==1) {
 				$url =  JFusionFunction::routeURL($q, JRequest::getVar('Itemid'));
