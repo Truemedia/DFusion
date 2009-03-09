@@ -859,20 +859,30 @@ class JFusionFunction{
 		return $baseURL;
 	}
 	
+	/**
+	 * Gets the user based on the identifier set in the plugin's params
+	 * @param $jname
+	 * @param $identifier
+	 * @return unknown_type
+	 */
 	function getUserByIdentifier($jname,&$identifier)
 	{
-		$params =& JFusionFactory::getParams($jname);
-		$user =& JFusionFactory::getUser($jname);
-		$login_identifier = $params->get('login_identifier',1);
-		if ($login_identifier > 1){
-			$userinfo = $user->getUser($identifier->email,$jname);
-      
-			//didn't find anything using the email, let's try the username if set to either
-			if($login_identifier==3 && empty($MasterUser)) {
+		if(!empty($jname) && !empty($identifier)) {
+			$params =& JFusionFactory::getParams($jname);
+			$user =& JFusionFactory::getUser($jname);
+			$login_identifier = $params->get('login_identifier',1);
+			if ($login_identifier > 1){
+				$userinfo = $user->getUser($identifier->email,$jname);
+	      
+				//didn't find anything using the email, let's try the username if set to either
+				if($login_identifier==3 && empty($userinfo)) {
+					$userinfo = $user->getUser($identifier->username,$jname);
+				}
+			} else {
 				$userinfo = $user->getUser($identifier->username,$jname);
 			}
 		} else {
-			$userinfo = $user->getUser($identifier->username,$jname);
+			$userinfo = '';
 		}
 		
 		return $userinfo;
