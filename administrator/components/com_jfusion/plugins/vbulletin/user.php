@@ -57,11 +57,30 @@ class JFusionUser_vbulletin extends JFusionUser{
 		}
 	}
 
-    function &getUser($username)
+    function &getUser($identifier, $jname = '', $overwrite_identifier = 0)
     {
+		//decide what can be used as a login credential
+		if($overwrite_identifier == 0) {
+		$login_identifier = $this->params->get('login_identifier',1);
+		} else {
+			$login_identifier = $overwrite_identifier;
+		}
+		
+		if ($login_identifier == 1){
+			$identifier_type = 'username';
+		} elseif ($login_identifier == 3){
+			if(strpos($identifier, '@')) {
+				$identifier_type = 'email';
+			} else {
+				$identifier_type = 'username';
+			}
+		} else {
+			$identifier_type = 'email';
+		}
+    	
         // Get user info from database
         $db = JFusionFactory::getDatabase($this->getJname());
-        $query = 'SELECT userid, username, username as name, usergroupid, displaygroupid, customtitle, usertitle, posts, email, password, salt as password_salt  FROM #__user WHERE username=' . $db->Quote($username);
+        $query = 'SELECT userid, username, username as name, usergroupid, displaygroupid, customtitle, usertitle, posts, email, password, salt as password_salt  FROM #__user WHERE ' . $identifier_type . ' = ' . $db->Quote($identifier);
         $db->setQuery($query );
         $result = $db->loadObject();
 
@@ -188,8 +207,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 	        $userid = $userinfo->userid;
 
 	        if ($userid && !empty($userid) && ($userid > 0)) {
-
-				$existinguser = $this->getUser($userinfo->username);
+				$existinguser = $this->getUser($userinfo->username,'',1);
 	        	$vbLicense = $this->params->get('source_license','');
 
 				if (isset($options['remember'])) {
@@ -532,7 +550,7 @@ class JFusionUser_vbulletin extends JFusionUser{
 			}
 
             //return the good news
-            $status['userinfo'] = $this->getUser($userinfo->username);
+            $status['userinfo'] = $this->getUser($userinfo->username,'',1);
             $status['debug'][] = JText::_('USER_CREATION') .'. '. JText::_('USERID') . $userdmid;
 	    } else {
     		foreach ($userdm->errors AS $index => $error)

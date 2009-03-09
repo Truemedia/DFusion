@@ -46,7 +46,7 @@ class JFusionUser_mybb extends JFusionUser{
             return 'mybb';
         }
 
-        function deleteUser($username)
+        function deleteUser($userinfo)
         {
             //TODO: create a function that deletes a user
         }

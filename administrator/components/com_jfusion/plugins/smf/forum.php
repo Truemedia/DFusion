@@ -48,7 +48,7 @@ class JFusionForum_smf extends JFusionForum
 		$query = array(
 			LAT => "SELECT a.ID_TOPIC AS threadid, a.ID_LAST_MSG AS postid, b.posterName AS username, b.ID_MEMBER AS userid, b.subject AS subject, b.posterTime AS dateline FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG INNER JOIN `#__messages` AS c ON a.ID_LAST_MSG = c.ID_MSG $where ORDER BY c.posterTime $end",
 			LCT => "SELECT a.ID_TOPIC AS threadid, b.ID_MSG AS postid, b.posterName AS username, b.ID_MEMBER AS userid, b.subject AS subject, left(b.body, $display_limit) AS body, b.posterTime AS dateline FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_FIRST_MSG = b.ID_MSG $where ORDER BY b.posterTime $end", 
-			LCP => "SELECT a.ID_TOPIC AS threadid, b.ID_MSG AS postid, b.posterName AS username, b.ID_MEMBER AS userid, b.subject AS subject, left(b.body, $display_limit) AS body, b.posterTime AS dateline FROM `#__topics` as a INNER JOIN `#__messages` as b ON a.ID_LAST_MSG = b.ID_MSG $where ORDER BY b.posterTime $end"
+			LCP => "SELECT ID_TOPIC AS threadid, ID_MSG AS postid, posterName AS username, ID_MEMBER AS userid, subject AS subject, left(body, $display_limit) AS body, posterTime AS dateline FROM `#__messages` " . str_replace('a.ID_BOARD','ID_BOARD',$where) . " ORDER BY posterTime $end"
 		);
         
         return $query;

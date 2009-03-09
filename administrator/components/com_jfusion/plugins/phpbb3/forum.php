@@ -123,7 +123,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		$query = array(
 			LAT => "SELECT a.topic_id AS threadid, a.topic_last_post_id AS postid, a.topic_first_poster_name AS username, a.topic_poster AS userid, a.topic_title AS subject, a.topic_time AS dateline, a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_first_post_id = b.post_id $where ORDER BY a.topic_last_post_time $end",
 			LCT => "SELECT a.topic_id AS threadid, a.topic_first_post_id AS postid, a.topic_first_poster_name AS username, a.topic_poster AS userid, a.topic_title AS subject, left(b.post_text, $display_limit) AS body, a.topic_time AS dateline, a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_first_post_id = b.post_id $where ORDER BY a.topic_time $end", 
-			LCP => "SELECT a.topic_id AS threadid, a.topic_last_post_id AS postid, a.topic_last_poster_name AS username, a.topic_last_poster_id AS userid, b.post_subject AS subject, left(b.post_text, $display_limit) AS body, b.post_time AS dateline, a.forum_id as forum_specific_id FROM `#__topics` as a INNER JOIN `#__posts` as b ON a.topic_last_post_id = b.post_id $where ORDER BY b.post_time $end"
+			LCP => "SELECT topic_id AS threadid, post_id AS postid, post_username AS username, poster_id AS userid, post_subject AS subject, left(post_text, $display_limit) AS body, post_time AS dateline, forum_id as forum_specific_id FROM `#__posts` " . str_replace('a.forum_id','forum_id',$where) . " ORDER BY post_time $end"
 		);        
         
         return $query;

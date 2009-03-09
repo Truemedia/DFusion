@@ -584,19 +584,8 @@ class JFusionJplugin{
       return $status;
     }
 
-    //find out if the user already exists
-    $login_identifier = $params->get('login_identifier');
-    if ($login_identifier > 1){
-      $existinguser = $this->getUser($userinfo->email,$jname);
-      
-      //didn't find anything using the email, let's try the username if set to either
-      if($login_identifier==3 && empty($existinguser)) {
-      	$existinguser = $this->getUser($userinfo->username,$jname);
-      }
-    } else {
-      $existinguser = $this->getUser($userinfo->username,$jname);
-    }
-
+    //get the user based on an identifier if the plugin supports it
+	$existinguser = JFusionFunction::getUserByIdentifier($jname,$userinfo);
 
         if (!empty($existinguser)) {
           $changed = false;

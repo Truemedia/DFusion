@@ -507,7 +507,7 @@ class JFusionForum_vbulletin extends JFusionForum
 		$query = array(
 			LAT => "SELECT a.threadid, a.lastpostid AS postid, b.username, b.userid, a.title AS subject, b.dateline, a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid $where ORDER BY a.lastpost $end",
 			LCT => "SELECT a.threadid, b.postid, b.username, b.userid, a.title AS subject, b.dateline, left(b.pagetext, $display_limit) AS body, a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.firstpostid = b.postid $where ORDER BY a.dateline $end", 
-			LCP => "SELECT a.threadid, b.postid, b.username, b.userid, b.title AS subject, b.dateline, left(b.pagetext, $display_limit) AS body, a.forumid FROM `#__thread` as a INNER JOIN `#__post` as b ON a.lastpostid = b.postid $where ORDER BY b.dateline $end"
+			LCP => "SELECT threadid, postid, username, userid, title AS subject, dateline, left(pagetext, $display_limit) AS body, forumid FROM `#__post` " . str_replace('a.forumid','forumid',$where) . " ORDER BY dateline $end"
 		);
 		
 		return $query;

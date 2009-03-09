@@ -858,4 +858,23 @@ class JFusionFunction{
 
 		return $baseURL;
 	}
+	
+	function getUserByIdentifier($jname,&$identifier)
+	{
+		$params =& JFusionFactory::getParams($jname);
+		$user =& JFusionFactory::getUser($jname);
+		$login_identifier = $params->get('login_identifier',1);
+		if ($login_identifier > 1){
+			$userinfo = $user->getUser($identifier->email,$jname);
+      
+			//didn't find anything using the email, let's try the username if set to either
+			if($login_identifier==3 && empty($MasterUser)) {
+				$userinfo = $user->getUser($identifier->username,$jname);
+			}
+		} else {
+			$userinfo = $user->getUser($identifier->username,$jname);
+		}
+		
+		return $userinfo;
+	}
 }

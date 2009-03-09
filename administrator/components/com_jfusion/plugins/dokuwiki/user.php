@@ -127,7 +127,7 @@ class JFusionUser_dokuwiki extends JFusionUser {
         return 'dokuwiki';
     }
 
-    function deleteUser($username)
+    function deleteUser($userinfo)
     {
 //  		$user[$username] = $username;
 //        $share = Dokuwiki::getInstance();

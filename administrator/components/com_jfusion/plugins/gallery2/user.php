@@ -245,8 +245,9 @@ class JFusionUser_gallery2 extends JFusionUser {
 		return 'gallery2';
 	}
 
-	function deleteUser($username)
+	function deleteUser($userinfo)
 	{
+		$username = $userinfo->username;
 		require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.
 		DS.'gallery2'.DS.'gallery2.php');
 		jFusion_g2BridgeCore::loadGallery2Api(true);

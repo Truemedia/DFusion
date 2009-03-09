@@ -96,7 +96,6 @@ class JFusionUser{
         $update_block = $params->get('update_block');
         $update_activation = $params->get('update_activation');
         $update_email = $params->get('update_email');
-        $login_identifier = $params->get('login_identifier');
 
         $status = array();
         $status['debug'] = array();
@@ -107,12 +106,9 @@ class JFusionUser{
 			$status['error'][] = JText::_('NO_USER_DATA_FOUND');
 			return $status;
 		}
-        //find out if the user already exists
-        if ( $login_identifier == 2 ) {
-        	$existinguser = $this->getUser($userinfo->email);
-        } else {
-        	$existinguser = $this->getUser($userinfo->username);
-        }
+		
+		//get the user based on an identifier if the plugin supports it
+		$existinguser = JFusionFunction::getUserByIdentifier($this->getJname(),$userinfo);
 
         if (!empty($existinguser)) {
         	$changed = false;

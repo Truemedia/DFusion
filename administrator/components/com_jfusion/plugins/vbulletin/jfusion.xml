@@ -30,13 +30,20 @@
 		<param name="database_password" type="text" size="20" default="" description="DATABASE_PASSWORD"/>
 		<param name="database_prefix" type="text" size="20" default="" description="DATABASE_PREFIX"/>
 		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />		
 		<param name="source_url" type="text" size="40" default="http://www.yourdomain.com/mybb/" description="SOURCE_URL" />
 		<param name="sefmode" type="list" default="0" label="" description="SEFMODE">
 			<option value="1"><![CDATA[yourdomain.com/index.php/menu_name/filename.php/option1,value1/option2,value2]]></option>
 			<option value="0"><![CDATA[yourdomain.com/index.php/menu_name/filename.php?option1=value1&option2=value2]]></option>
 		</param>		
-		<param name="source_path" type="text" size="100" default="" description="SOURCE_PATH" />
 		<param name="source_license" type="text" size="10" default="XXXXXXXXX" description="SOURCE_LICENSE" />
+		<param name="@spacer" type="spacer" default="" label=""	description="" />
+		<param name=" " type="helptext" default="LOGIN_IDENTIFIER_DESCR"/>
+		<param name="login_identifier" type="list" default="0" description="LOGIN_IDENTIFIER">
+			<option value="1">USERNAME</option>
+			<option value="2">EMAIL</option>
+			<option value="3">USERNAME_OR_EMAIL</option>
+		</param>		
 		<param name="@spacer" type="spacer" default="" label="" description="" />
 		<param name=" " type="helptext" default="DEFAULT_USERGROUP_DESCR"/>
 		<param name="usergroup" type="JFusionUsergroups" description="DEFAULT_USERGROUP" label="DEFAULT_USERGROUP" />

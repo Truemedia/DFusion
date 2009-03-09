@@ -66,13 +66,13 @@ class executeJFusionHook
 			
 		//add our custom hooks into vbulletin's hook cache
 		global $vbulletin;
-
+	
 		if ($vbulletin->options['enablehooks'] AND !defined('DISABLE_HOOKS')){
 			if (!empty($vbulletin->pluginlist) AND is_array($vbulletin->pluginlist)){
 				$vbulletin->pluginlist = array_merge($vbulletin->pluginlist, $this->getHooks($this->vars));
 			}
 		}
-
+		
 		return true;
 	}
 
@@ -81,10 +81,10 @@ class executeJFusionHook
 		//we need to set up the hooks
 		if($plugin=="frameless") {
 			//retrieve the hooks that jFusion will use to make vB work framelessly
-			$hookNames = array("global_start","global_complete","header_redirect","redirect_generic","logout_process");
+			$hookNames = array("global_start","global_complete","global_setup_complete","header_redirect","redirect_generic","logout_process");
 		} elseif($plugin=="duallogin") {
 			//retrieve the hooks that vBulletin will use to login to Joomla
-			$hookNames = array("login_verify_success","logout_process");
+			$hookNames = array("login_verify_success","logout_process","global_setup_complete");
 			define('DUALLOGIN',1);
 		} else {
 			$hookNames = array();
@@ -117,9 +117,19 @@ class executeJFusionHook
 				$stylevar[$k] = $vbulletin->options['bburl'] . $DS . $v;
 			}
 		}
+		
 		return true;
 	}
 
+	function global_setup_complete()
+	{
+		//If Joomla SEF is enabled, the dash in the logout hash gets converted to a colon which must be corrected
+		global $vbulletin;
+		$vbulletin->GPC['logouthash'] = str_replace(':','-',$vbulletin->GPC['logouthash']);
+
+		return true;
+	}	
+	
 	function header_redirect()
 	{
 		//reworks the URL for header redirects ie header('Location: $url');
