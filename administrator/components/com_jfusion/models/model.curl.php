@@ -657,7 +657,7 @@ class JFusionCurl{
          	if (substr($form_action,0,1) != "/") {
             	$form_action = '/'.$form_action;
          	}
-            $tmpurl   = parseUrl($curl_options['post_url']);
+            $tmpurl   = JFusionCurl::parseUrl($curl_options['post_url']);
             $pathinfo = pathinfo($tmpurl[6]);
             $form_action = $ssl_string.$tmpurl[4].$pathinfo[dirname].'/'.$form_action;
             break;
