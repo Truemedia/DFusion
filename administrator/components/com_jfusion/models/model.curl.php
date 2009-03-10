@@ -56,15 +56,15 @@ class JFusionCurlHtmlFormParser {
                 $this->button_counter = 0;
 
                 #form details
-                preg_match("/<form.*name=[\"']?([\w\s-]*)[\"']?[\s>]/i", $form, $form_name);
+                preg_match("/<form.*?name=[\"']?([\w\s-]*)[\"']?[\s>]/i", $form, $form_name);
             if ($form_name) {$this->_return[$this->_counter]['form_data']['name'] = preg_replace("/[\"'<>]/", "", $form_name[1]);}
-                preg_match("/<form.*action=\"(.*?)\"|'(.*?)'?[\s]>/is", $form, $action);
+                preg_match("/<form.*?action=\"(.*?)\"|'(.*?)'?[\s]>/is", $form, $action);
             if ($action) {$this->_return[$this->_counter]['form_data']['action'] = preg_replace("/[\"'<>]/", "", $action[1]);}
-                preg_match("/<form.*method=[\"']?([\w\s]*)[\"']?[\s>]/i", $form, $method);
+                preg_match("/<form.*?method=[\"']?([\w\s]*)[\"']?[\s>]/i", $form, $method);
             if ($method) {$this->_return[$this->_counter]['form_data']['method'] = preg_replace("/[\"'<>]/", "", $method[1]);}
-                preg_match("/<form.*enctype=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $form, $enctype);
+                preg_match("/<form.*?enctype=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $form, $enctype);
             if ($enctype) {$this->_return[$this->_counter]['form_data']['enctype'] = preg_replace("/[\"'<>]/", "", $enctype[1]);}
-                preg_match("/<form.*id=[\"']?([\w\s-]*)[\"']?[\s>]/i", $form, $id);
+                preg_match("/<form.*?id=[\"']?([\w\s-]*)[\"']?[\s>]/i", $form, $id);
             if ($id) {$this->_return[$this->_counter]['form_data']['id'] = preg_replace("/[\"'<>]/", "", $id[1]);}
 
                 # form elements: input type = hidden
@@ -641,16 +641,52 @@ class JFusionCurl{
 
         // now construct the action parameter
 
-        // websites provide a full url (easy), or a relative url to the post directory. We have to add in the
-        // domain if not present. We can extract the domain from the post_url passed to this function
-        if ((strpos($form_action,$ssl_string) === false) && !$curl_options['relpath']) {
-           $tmpurl = JFusionCurl::parseUrl($curl_options['post_url']);
-           if ( substr($tmpurl[4],-1) != '/' && substr($form_action,0,1) != '/' ) $tmpurl[4] .= '/';
-           $form_action = $ssl_string.$tmpurl[4].$form_action;
-        }
-        if ($curl_options['relpath']){$form_action = $curl_options['post_url'].$form_action;}
-        // now try to find the fieldnames for the username and password entries
-        // as far as I have seen, matching user or name will do together with pass:
+		// by now we know that post_url is correctly formatted. 
+		// There are two possible incarnations of post_url, 
+		// 1. a path (including empty)  directory structure
+		// 2. a path (including empy) including a trailing filename
+		// cases 0 and 3 will always be formatted corrcetly so
+		// our only concern is to havew a forwardslash in case 1 below between post_url and form_action
+	
+		// lets add a / in front of form_action, so we only have to worry about a trailing slash
+		// of post_url in case 1
+		
+		
+         // we have 4 possible options:
+         // case 0 Form action is without httpo.. and relpath = 0 , special case
+         // case 1 Form action is without http.. and relpath = 1 , just construct the action
+         // case 2 form_action is a full url, eg http..... and relpath = 0 This is easy, we do nothing at all
+         // case 3 form_action is a full url, eg http..... and relpath = 1 special case
+
+         $rel = (int)($curl_options['relpath']);
+         if (substr($form_action,0,strlen($ssl_string))== $ssl_string) $hashttp = 2; else $hashttp = 0;
+
+
+         switch($rel+$hashttp) {
+           case 0:
+ 		 	#add a / in front of form_action
+         	if (substr($form_action,0,1) != "/") {
+            	$form_action = '/'.$form_action;
+         	}
+            $tmpurl   = parseUrl($curl_options['post_url']);
+            $pathinfo = pathinfo($tmpurl[6]);
+            $form_action = $ssl_string.$tmpurl[4].$pathinfo[dirname].'/'.$form_action;
+            break;
+           case 1:
+  		 	#add a / in front of form_action
+         	if (substr($form_action,0,1) != "/") {
+            	$form_action = '/'.$form_action;
+         	}
+            $curl_options['post_url']=rtrim($curl_options['post_url'],'/');
+            $form_action = $curl_options['post_url'].$form_action;
+            break;
+           case 2:
+               //do nothing at all
+            break;
+           case 3:
+               // reserved, maybe something pops up, then we use this
+           break;
+         }
 
         $input_username_name="";
         for ($i = 0; $i <= $elements_count-1; $i++) {
@@ -742,7 +778,7 @@ class JFusionCurl{
         curl_close($ch);
 
         #we have to set the cookies now
-    $status['debug'][] = JText::_('CURL_LOGIN_FINISHED');
+    	$status['debug'][] = JText::_('CURL_LOGIN_FINISHED');
         $status=JFusionCurl::setmycookies($status,$cookies_to_set,$curl_options['cookiedomain'],$curl_options['cookiepath'],$curl_options['expires'],$curl_options['secure'],$curl_options['httponly']);
         $cookies_to_set_index=0;
         return $status;

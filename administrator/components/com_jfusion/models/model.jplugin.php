@@ -160,37 +160,39 @@ class JFusionJplugin{
         $cookies_to_set = array();
         $cookies = array();
         $cookie  = array();
-    $curl_options = array();
-    $status = array();
+    	$curl_options = array();
+    	$status = array();
         $status['error'] = '';
-         $status['debug'] = '';
+        $status['debug'] = '';
         $cookies_to_set_index = 0;
         $params = JFusionFactory::getParams($jname);
+    	$source_url = $params->get('source_url');
+		$login_url = $params->get('login_url');
 
-    $source_url = $params->get('source_url');
-        #prevent usererror by not supplying trailing backslash
-        if (!(substr($source_url,-1) == "/")) {
+        #prevent usererror by not supplying trailing forwardslash
+        if (substr($source_url,-1) != "/") {
            $source_url = $source_url."/";
         }
+        #prevent usererror by preventing a heading forwardslash
+        ltrim($login_url,'/');
 
-
-    $curl_options['post_url']      = $source_url.$params->get('login_url');
-    $curl_options['formid']        = $params->get('loginform_id');
-    $curl_options['username']      = $userinfo->username;
-    $curl_options['password']      = $userinfo->password_clear;
-     $curl_options['integrationtype']  = $params->get('integrationtype');
-     $curl_options['relpath']      = $params->get('relpath');
-     $curl_options['hidden']        = $params->get('hidden');
-    $curl_options['buttons']      = $params->get('buttons');
-    $curl_options['override']      = $params->get('override');
-     $curl_options['cookiedomain']    = $params->get('cookie_domain');
-     $curl_options['cookiepath']      = $params->get('cookie_path');
-     $curl_options['expires']      = $params->get('cookie_expires');
-      $curl_options['input_username_id']  = $params->get('input_username_id');
-    $curl_options['input_password_id']  = $params->get('input_password_id');
-    $curl_options['secure']        = $params->get('secure');
-    $curl_options['httponly']      = $params->get('httponly');
-    $curl_options['verifyhost']      = 0;//$params->get('ssl_verifyhost');
+    	$curl_options['post_url']      	= $source_url.$login_url;
+    	$curl_options['formid']        	= $params->get('loginform_id');
+    	$curl_options['username']      	= $userinfo->username;
+    	$curl_options['password']      	= $userinfo->password_clear;
+     	$curl_options['integrationtype']= $params->get('integrationtype');
+     	$curl_options['relpath']      	= $params->get('relpath');
+     	$curl_options['hidden']        	= $params->get('hidden');
+    	$curl_options['buttons']      	= $params->get('buttons');
+    	$curl_options['override']      	= $params->get('override');
+     	$curl_options['cookiedomain']   = $params->get('cookie_domain');
+     	$curl_options['cookiepath']     = $params->get('cookie_path');
+     	$curl_options['expires']      	= $params->get('cookie_expires');
+      	$curl_options['input_username_id']  = $params->get('input_username_id');
+    	$curl_options['input_password_id']  = $params->get('input_password_id');
+    	$curl_options['secure']        	= $params->get('secure');
+    	$curl_options['httponly']      	= $params->get('httponly');
+    	$curl_options['verifyhost']     = 0;//$params->get('ssl_verifyhost');
         $status=JFusionCurl::RemoteLogin($curl_options);
         return $status;
     }
@@ -204,49 +206,49 @@ class JFusionJplugin{
         $cookies_to_set = array();
         $cookies = array();
         $cookie  = array();
-    $curl_options = array();
-    $status = array();
+    	$curl_options = array();
+    	$status = array();
         $status['error'] = '';
-         $status['debug'] = '';
+        $status['debug'] = '';
         $cookies_to_set_index = 0;
 
         $params = JFusionFactory::getParams($jname);
-    $curl_options['post_url']      = $params->get('source_url').$params->get('logout_url');
-     $curl_options['cookiedomain']    = $params->get('cookie_domain');
-     $curl_options['cookiepath']      = $params->get('cookie_path');
-     $curl_options['leavealone']      = $params->get('leavealone');
-    $curl_options['secure']        = $params->get('secure');
-    $curl_options['httponly']      = $params->get('httponly');
-    $curl_options['verifyhost']      = 0;//$params->get('ssl_verifyhost');
+    	$curl_options['post_url']      = $params->get('source_url').$params->get('logout_url');
+     	$curl_options['cookiedomain']    = $params->get('cookie_domain');
+     	$curl_options['cookiepath']      = $params->get('cookie_path');
+     	$curl_options['leavealone']      = $params->get('leavealone');
+    	$curl_options['secure']        = $params->get('secure');
+    	$curl_options['httponly']      = $params->get('httponly');
+    	$curl_options['verifyhost']      = 0;//$params->get('ssl_verifyhost');
         $status = JFusionCurl::RemoteLogout($curl_options);
         return $status;
      }
 
 
     function getUser($identifier,$jname){
-    $params = JFusionFactory::getParams($jname);
+    	$params = JFusionFactory::getParams($jname);
         $db = & JFusionFactory::getDatabase($jname);
 
-    //decide what can be used as a login credential
-    $login_identifier = $params->get('login_identifier',1);
-    if ($login_identifier == 1){
-      $identifier_type = 'b.username';
-//      $identifier = $this->filterUsername($identifier);
-    } elseif ($login_identifier == 3){
-      if(strpos($identifier, '@')) {
-        $identifier_type = 'b.email';
-      } else {
-        $identifier_type = 'b.username';
-//        $identifier = $this->filterUsername($identifier);
-      }
-    } else {
-      $identifier_type = 'b.email';
-    }
+    	//decide what can be used as a login credential
+    	$login_identifier = $params->get('login_identifier',1);
+    	if ($login_identifier == 1){
+      		$identifier_type = 'b.username';
+//      	$identifier = $this->filterUsername($identifier);
+    	} elseif ($login_identifier == 3){
+      		if(strpos($identifier, '@')) {
+        		$identifier_type = 'b.email';
+      		} else {
+        		$identifier_type = 'b.username';
+//        		$identifier = $this->filterUsername($identifier);
+      		}
+    	} else {
+      		$identifier_type = 'b.email';
+    	}
 
-    if ($jname == 'joomla_int') {
-      //first check the JFusion user table
-      $db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier_type . '=' . $db->Quote($identifier));
-      $result = $db->loadObject();
+    	if ($jname == 'joomla_int') {
+      		//first check the JFusion user table
+      		$db->setQuery('SELECT a.id as userid, a.activation, b.username, a.name, a.password, a.email, a.block FROM #__users as a INNER JOIN #__jfusion_users as b ON a.id = b.id WHERE '. $identifier_type . '=' . $db->Quote($identifier));
+      		$result = $db->loadObject();
 
       if (!$result) {
         //check directly in the joomla user table
