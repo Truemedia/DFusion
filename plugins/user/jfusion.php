@@ -264,7 +264,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 				//apply the cleartext password to the user object
 				$SlaveUser['userinfo']->password_clear = $user['password'];
 				
-				JFusionFunction::updateLookup($SlaveUser['userinfo'], $slave->name, $JoomlaUser['userinfo']->userid);
+				JFusionFunction::updateLookup($SlaveUser['userinfo'], $JoomlaUser['userinfo']->userid, $slave->name);//@todo - change the order of the parameters
 				
 				if (!isset($options['group']) && $slave->dual_login == 1 && $JFusionActivePlugin != $slave->name) {
 					$SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);
@@ -345,6 +345,17 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 		$result = true;
 		return $result;
 	}
+
+	function onBeforeStoreUser($olduser, $isnew) {
+		
+		global $JFusionActive;
+		
+		if (! $JFusionActive) {
+			// Recover old data from user before to save it. The purpose is to provide it to the plugins if needed
+			$session = & JFactory::getSession ();
+			$session->set ( 'olduser', $olduser );
+		}
+	}
 	
 	function onAfterStoreUser($user, $isnew, $succes, $msg)
 	{
@@ -375,9 +386,16 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 			
 			//check to see if we need to update the master
 			$master = JFusionFunction::getMaster();
+			
+			// Recover the old data of the user to manage to find correct username and/or email if it has been changed by the user or admin in Joomla
+			// Needed for some plugins (Magento for example)
+			$session = & JFactory::getSession ();
+			$JoomlaUser->olduserinfo = (object) $session->get ( 'olduser' );
+			$session->clear ( 'olduser' );
+					
 			if($master->name != 'joomla_int'){
 				$JFusionMaster = JFusionFactory::getUser($master->name);
-				$MasterUser = $JFusionMaster->updateUser($JoomlaUser,1);
+				$MasterUser = $JFusionMaster->updateUser($JoomlaUser, 1);
 				if (!empty($MasterUser['error'])) {
 					JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $MasterUser['error'],1);
 				}
@@ -387,7 +405,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 			$slaves = JFusionFunction::getPlugins();
 			foreach($slaves as $slave) {
 				$JFusionSlave = JFusionFactory::getUser($slave->name);
-				$SlaveUser = $JFusionSlave->updateUser($JoomlaUser,1);
+				$SlaveUser = $JFusionSlave->updateUser($JoomlaUser, 1);
 				if (!empty($SlaveUser['error'])) {
 					JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('UPDATE'), $SlaveUser['error'],1);
 				}
