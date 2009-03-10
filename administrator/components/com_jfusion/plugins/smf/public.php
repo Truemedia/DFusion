@@ -185,27 +185,6 @@ class JFusionPublic_smf extends JFusionPublic{
 		return $url;
 	}
 
-	function fixUrl($q='',$baseURL)
-	{
-        //SMF uses semi-colons to seperate vars as well. Convert these to normal ampersands
-        $q = str_replace(';','&',$q);
-        if (substr($baseURL, -1) != '/'){
-			//non sef URls
-			$q = str_replace('?', 	'&amp;', $q);
-			$url = $baseURL . '&amp;jfile=' .$q;
-        } else {
-			$params = JFusionFactory::getParams($this->getJname());
-			$sefmode = $params->get('sefmode');
-			if ($sefmode==1) {
-				$url =  JFusionFunction::routeURL($q, JRequest::getVar('Itemid'));
-			} else {
-				//we can just append both variables
-				$url = $baseURL . $q;
-			}
-		}
-		return $url;
-	}
-
 	function fixAction($url, $extra, $baseURL)
 	{
 		//JError::raiseWarning(500, $url);
