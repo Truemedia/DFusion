@@ -641,17 +641,6 @@ class JFusionCurl{
 
         // now construct the action parameter
 
-		// by now we know that post_url is correctly formatted. 
-		// There are two possible incarnations of post_url, 
-		// 1. a path (including empty)  directory structure
-		// 2. a path (including empy) including a trailing filename
-		// cases 0 and 3 will always be formatted corrcetly so
-		// our only concern is to havew a forwardslash in case 1 below between post_url and form_action
-	
-		// lets add a / in front of form_action, so we only have to worry about a trailing slash
-		// of post_url in case 1
-		
-		
          // we have 4 possible options:
          // case 0 Form action is without httpo.. and relpath = 0 , special case
          // case 1 Form action is without http.. and relpath = 1 , just construct the action
