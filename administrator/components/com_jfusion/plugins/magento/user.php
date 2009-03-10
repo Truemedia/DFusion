@@ -276,7 +276,7 @@ class JFusionUser_magento extends JFusionUser {
 				$this->update_create_Magentouser($magento_user, $existinguser->userid);
 			}
 			
-			if(isset($userinfo->olduserinfo->email) && ($userinfo->olduserinfo->email != $userinfo->email){
+			if(isset($userinfo->olduserinfo->email) && ($userinfo->olduserinfo->email != $userinfo->email)){
 				$this->updateUsername ( $userinfo, $existinguser, $status );
 			}
 			
@@ -558,7 +558,8 @@ class JFusionUser_magento extends JFusionUser {
 
 	function activateUser($userinfo, &$existinguser, &$status) {
 		$magento_user = $this->getMagentoDataObjectRaw ( 'customer' );
-		$this->fillMagentouser ( $magento_user, 'is_active', 1 );
+		//$password_salt = $this->getRandomString ( 2 );//removed
+		$this->fillMagentouser ( $magento_user, 'is_active', 1 );// replace confirmation by is_active and provide a correct value
 		$errors = $this->update_create_Magentouser ( $magento_user, $existinguser->userid );
 		if ($errors) {
 			$status ['error'] [] = JText::_ ( 'ACTIVATION_UPDATE_ERROR' ) . $db->stderr ();
@@ -570,6 +571,7 @@ class JFusionUser_magento extends JFusionUser {
 
 	function inactivateUser($userinfo, &$existinguser, &$status) {
 		$magento_user = $this->getMagentoDataObjectRaw ( 'customer' );
+		//$password_salt = $this->getRandomString ( 2 );//removed
 		$this->fillMagentouser ( $magento_user, 'is_active', 0 );
 		$errors = $this->update_create_Magentouser ( $magento_user, $existinguser->userid );
 		if ($errors) {
