@@ -65,23 +65,42 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 		//convert the user array into a user object
 		$userinfo = (object) $user;
 		
+		/*
+		 *   we do not want Joomla deleting the master
+		 *   as the master should handle user management
+		 *   
+		    
 		//delete the master user if it is not Joomla
 		$master = JFusionFunction::getMaster();
 		
 		if($master->name != 'joomla_int'){
 			$JFusionMaster = JFusionFactory::getUser($master->name);
-			$status = $JFusionMaster->deleteUser($userinfo);
+			$MasterUser =& $JFusionMaster->getUser($userinfo->username);
+			if(!empty($MasterUser)) {
+				$status = $JFusionMaster->deleteUser($MasterUser);	
+			} else {
+				$status = array();
+				$status['error'] = JText::_("NO_USER_DATA_FOUND");
+			}
+			
 			if(!empty($status['error'])){
 				//could not delete user
 				JFusionFunction::raiseWarning($master->name . ' ' .JText::_('USER') . ' ' .JText::_('DELETE'), $status['error'],1);
 			}
 		}
+		*/
 		
 		//delete the user in the slave plugins
 		$slaves = JFusionFunction::getPlugins();
 		foreach($slaves as $slave) {
 			$JFusionSlave = JFusionFactory::getUser($slave->name);
-			$status = $JFusionSlave->deleteUser($userinfo);
+			$slaveUser =& $JFusionSlave->getUser($userinfo->username);			
+			if(!empty($slaveUser)) {
+				$status = $JFusionSlave->deleteUser($slaveUser);	
+			} else {
+				$status = array();
+				$status['error'] = JText::_("NO_USER_DATA_FOUND");
+			}
 			if(!empty($status['error'])){
 				//could not delete user
 				JFusionFunction::raiseWarning($slave->name . ' ' .JText::_('USER') . ' ' .JText::_('DELETE'), $status['error'],1);

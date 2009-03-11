@@ -86,6 +86,9 @@ class JFusionUsersync{
         $serialized = $db->loadResult();
         $syncdata = unserialize(base64_decode($serialized));
 
+        //get the errors and append it
+        $syncdata['errors'] = JFusionUsersync::getErrorData($syncid);
+        
         return $syncdata;
     }
 
@@ -145,7 +148,7 @@ class JFusionUsersync{
 					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' . $error['user_jname'] . ' ' . JText::_('USER') . ' ' . $error['user_username'] . '<br/>';
 				} else {
 					//delete success
-					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' . $error['user_jname'] . ' ' . JText::_('USER') . ' ' . $error['user_username'] . '<br/>';
+					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCCESS'). ' ' . JText::_('DELETING'). ' ' . $error['user_jname'] . ' ' . JText::_('USER') . ' ' . $error['user_username'] . '<br/>';
 					JFusionFunction::updateLookup($userinfo, 0, $error['conflict_jname'],true);
 				}
 			} elseif ($error['action'] == '4') {
@@ -165,7 +168,7 @@ class JFusionUsersync{
 					echo '<img src="components/com_jfusion/images/error.png" width="32" height="32">' . JText::_('ERROR'). ' ' . JText::_('DELETING'). ' ' . $error['conflict_jname'] . ' ' . JText::_('USER') . ' ' . $error['conflict_username'] . '<br/>';
 				} else {
 					//delete success
-					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCESS'). ' ' . JText::_('DELETING'). ' ' . $error['conflict_jname'] . ' ' . JText::_('USER') . ' ' . $error['conflict_username'] . '<br/>';
+					echo '<img src="components/com_jfusion/images/updated.png" width="32" height="32">' . JText::_('SUCCESS'). ' ' . JText::_('DELETING'). ' ' . $error['conflict_jname'] . ' ' . JText::_('USER') . ' ' . $error['conflict_username'] . '<br/>';
 					JFusionFunction::updateLookup($userinfo, 0, $error['conflict_jname'],true);
 				}
 			}
@@ -235,7 +238,8 @@ class JFusionUsersync{
                             $sync_error['user']['userlist'] = $userlist[$j];
 
                             //save the error for later
-                            $sync_error_array[] = $sync_error;
+                            $sync_error_array[] = $sync_error;                           
+                            $syncdata['slave_data'][$i]['error'] += 1;
 
                         } else {
                             //update the lookup table
@@ -275,7 +279,7 @@ class JFusionUsersync{
        		echo '<h2>' . JText::_('USERSYNC') . ' ' . JText::_('COMPLETED') . '</h2><br/>';
 
 			//show error resolve options if there are any errors
-			if (!empty($syncdata['errors'])){
+			if (!empty($sync_error_array)){
 				echo '<h2><a href="index.php?option=com_jfusion&task=syncerror&syncid=' . $syncdata['syncid'] . '">' . JText::_('SYNC_CONFLICT') . '</a></h2>';
 			}
         }
