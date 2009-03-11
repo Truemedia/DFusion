@@ -121,7 +121,7 @@ class modjfusionWhosOnlineHelper {
 		if(method_exists($forum, "renderWhosOnlineModule")) {
 			return $forum->renderWhosOnlineModule($config, $view, $pluginParam);
 		}
-		return JText::_('NOT IMPLEMENTED YET');
+		return JText::_('NOT_IMPLEMENTED_YET');
 	}
 }
 ?>

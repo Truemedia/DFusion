@@ -144,7 +144,7 @@ class modjfusionActivityHelper {
 		if(method_exists($forum, "renderActivityModule")) {
 			return $forum->renderActivityModule($config, $view, $pluginParam);
 		}
-		return JText::_('NOT IMPLEMENTED YET');
+		return JText::_('NOT_IMPLEMENTED_YET');
 	}
 }
 ?>

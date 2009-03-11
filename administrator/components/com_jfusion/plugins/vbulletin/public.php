@@ -82,6 +82,9 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function & getBuffer($jPluginParam)
 	{
+		global $vbsefmode, $vbJname, $vbsefenabled;
+		//define('_JFUSION_DEBUG',1);		
+		
 		//check to make sure the frameless hook is installed
 		$db =& JFusionFactory::getDatabase($this->getJname());
 		$q = "SELECT active FROM #__plugin WHERE hookname = 'init_startup' AND title = 'JFusion Frameless Integration Plugin'";
@@ -91,12 +94,20 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			JError::raiseWarning(500, JText::_('VB_FRAMELESS_HOOK_NOT_INSTALLED'));
 			return null;
 		}
+		//have to clear this as it shows up in some text boxes
+		unset($q);
 		
-		// Get the path
+		// Get some params
 		$params = JFusionFactory::getParams($this->getJname());
+		$vbsefmode = $params->get('sefmode',0);
 		$source_path = $params->get('source_path');
 		$source_url = $params->get('source_url');
+    	$config =& JFactory::getConfig();
+		$vbsefenabled = $config->getValue('config.sef');
 
+		//get the jname to be used in the hook file
+		$vbJname = $this->getJname();
+				
 		//get the filename
 		$jfile = JRequest::getVar('jfile');
 
@@ -258,7 +269,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			,'postorder'
 			,'postparent'
 			,'postusername'
-			,'previewpost'
+			,'previewpost'			
 			,'project_forums'
 			,'project_types'
 			,'querystring'
@@ -331,12 +342,10 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 				global $$g;
 			}
 
-			//define('_JFUSION_DEBUG',1);
-
 			if(defined('_JFUSION_DEBUG')) {
 				$_SESSION["jfvbdebug"] = array();
 			}
-
+			
 			try {
 				include_once($index_file);
 			}
@@ -347,20 +356,21 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 			//change the current directory back to Joomla.
 			chdir(JPATH_SITE);
-
+			
 			return $buffer;
 	}
 
 	function parseBody(&$buffer, $localBaseURL, $localFullURL, $localIntegratedURL)
 	{
-		global $name, $baseURL, $fullURL, $integratedURL, $vbsefmode;
+		global $name, $baseURL, $fullURL, $integratedURL, $vbsefmode, $vbsefenabled;
 		$name = $this->getJname();
 		$baseURL = $localBaseURL;
 		$fullURL = $localFullURL;
 		$integratedURL = $localIntegratedURL;
-
 		$params = JFusionFactory::getParams($name);
 		$vbsefmode = $params->get('sefmode',0);
+    	$config =& JFactory::getConfig();
+		$vbsefenabled = $config->getValue('config.sef');
 		
 		//fix for form actions
 		//cannot use preg_replace here because it adds unneeded slashes which messes up JS
@@ -378,7 +388,7 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 		//convert relative links from images and js files into absolute links
 		$include_search = '#(src="|background="|url\(\'|window.open\(\'?)(?!http)(.*?)("|\'?\)|\')#mS';
 		$buffer = preg_replace_callback($include_search, 'fixInclude', $buffer);
-
+		
 		//we need to fix the cron.php file
 		$buffer = preg_replace('#src="(.*)cron.php(.*)>#mS','src="'.$integratedURL.'cron.php$2>',$buffer);
 
@@ -393,15 +403,16 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 
 	function parseHeader(&$buffer, $localBaseURL, $localFullURL, $localIntegratedURL)
 	{
-		global $name, $baseURL, $fullURL, $integratedURL, $vbsefmode;
+		global $name, $baseURL, $fullURL, $integratedURL, $vbsefmode, $vbsefenabled;
 		$name = $this->getJname();
 		$baseURL = $localBaseURL;
 		$fullURL = $localFullURL;
 		$integratedURL = $localIntegratedURL;
-
 		$params = JFusionFactory::getParams($name);
 		$vbsefmode = $params->get('sefmode',0);
-
+    	$config =& JFactory::getConfig();
+		$vbsefenabled = $config->getValue('config.sef');
+		
 		$js  = "<script type=\"text/javascript\">\n";
 		$js .= "var vbSourceURL = '$integratedURL';\n";
 		$js .= "</script>\n";
@@ -428,6 +439,187 @@ class JFusionPublic_vbulletin extends JFusionPublic{
 			$buffer = str_replace($css,$newCss,$buffer);
 		}
 	}
+	
+	function getPathWay()
+	{
+		$mainframe = &JFactory::getApplication('site');
+		$db =& JFusionFactory::getDatabase($this->getJname());
+		$pathway = array();
+		
+		//let's get the jfile
+		$jfile = JRequest::getVar('jfile');
+
+		//we are viewing a forum
+		if(JRequest::getVar('f',false)!==false) {
+			$fid = JRequest::getVar('f');
+			$query = "SELECT title, parentlist, parentid from #__forum WHERE forumid = $fid";
+			$db->setQuery($query);
+			$forum = $db->loadObject();
+			
+			if($forum->parentid!='-1') {
+				$parents = array_reverse(explode(',',$forum->parentlist));
+				foreach($parents as $p){
+					if($p!="-1") {
+						$query = "SELECT title from #__forum WHERE forumid = $p";
+						$db->setQuery($query);
+						$title = $db->loadResult();
+						$crumb = new stdClass();
+						$crumb->title = $title;
+						$crumb->url = "forumdisplay.php?f=$p";
+						$pathway[] = $crumb;						
+					}
+				}
+			} else {
+				$crumb = new stdClass();
+				$crumb->title = $forum->title;
+				$crumb->url = "forumdisplay.php?f=$fid";
+				$pathway[] = $crumb;
+			}
+		} elseif (JRequest::getVar('t',false)!==false) {
+			$tid = JRequest::getVar('t');
+			$query = "SELECT t.title AS thread, f.title AS forum, f.forumid, f.parentid, f.parentlist FROM #__thread AS t JOIN #__forum AS f ON t.forumid = f.forumid WHERE t.threadid = $tid";
+			$db->setQuery($query);
+			$result = $db->loadObject();
+			
+			if($result->parentid!='-1') {
+				$parents = array_reverse(explode(',',$result->parentlist));
+				foreach($parents as $p){
+					if($p!="-1") {
+						$query = "SELECT title from #__forum WHERE forumid = $p";
+						$db->setQuery($query);
+						$title = $db->loadResult();
+						$crumb = new stdClass();
+						$crumb->title = $title;
+						$crumb->url = "forumdisplay.php?f=$p";
+						$pathway[] = $crumb;						
+					}
+				}
+			} else {
+				$crumb = new stdClass();
+				$crumb->title = $result->forum;
+				$crumb->url = "forumdisplay.php?f=$result->forumid";
+				$pathway[] = $crumb;
+			}
+
+			$crumb = new stdClass();
+			$crumb->title = $result->thread;
+			$crumb->url = "showthread.php?t=$tid";
+			$pathway[] = $crumb;
+		} elseif(JRequest::getVar('p',false)!==false) {
+			$pid = JRequest::getVar('p');
+			$query = "SELECT t.title AS thread, f.title AS forum, f.forumid, f.parentid, f.parentlist FROM #__thread AS t JOIN #__forum AS f JOIN #__post AS p ON t.forumid = f.forumid AND t.threadid = p.threadid WHERE p.postid = $pid";
+			$db->setQuery($query);
+			$result = $db->loadObject();
+			
+			if($result->parentid!='-1') {
+				$parents = array_reverse(explode(',',$result->parentlist));
+				foreach($parents as $p){
+					if($p!="-1") {
+						$query = "SELECT title from #__forum WHERE forumid = $p";
+						$db->setQuery($query);
+						$title = $db->loadResult();
+						$crumb = new stdClass();
+						$crumb->title = $title;
+						$crumb->url = "forumdisplay.php?f=$p";
+						$pathway[] = $crumb;						
+					}
+				}
+			} else {
+				$crumb = new stdClass();
+				$crumb->title = $result->forum;
+				$crumb->url = "forumdisplay.php?f=$result->forumid";
+				$pathway[] = $crumb;
+			}
+
+			$crumb = new stdClass();
+			$crumb->title = $result->thread;
+			$crumb->url = "showthread.php?t=$tid";
+			$pathway[] = $crumb;			
+		} elseif (JRequest::getVar('u',false)!==false) {
+			if($jfile=="member.php") {
+				// we are viewing a member's profile
+				$uid = JRequest::getVar('u');
+				$crumb = new stdClass();
+				$crumb->title = 'Members List';
+				$crumb->url = 'memberslist.php';
+				$pathway[] = $crumb;
+				
+				$query = "SELECT username FROM #__user WHERE userid = $uid";
+				$db->setQuery($query);
+				$username = $db->loadResult();
+				$crumb = new stdClass();
+				$crumb->title = "$username's Profile";
+				$crumb->url = "member.php?u=$uid";
+				$pathway[] = $crumb;				
+			}
+		} elseif($jfile=="search.php") {
+			$crumb = new stdClass();
+			$crumb->title = "Search";
+			$crumb->url = "search.php";
+			$pathway[] = $crumb;
+
+			if(JRequest::getVar('do',false) !== false) {
+				$do = JRequest::getVar('do');
+				if($do=="getnew") {
+					$crumb = new stdClass();
+					$crumb->title = "New Posts";
+					$crumb->url = "search.php?do=getnew";
+					$pathway[] = $crumb;					
+				} elseif($do=="getdaily") {
+					$crumb = new stdClass();
+					$crumb->title = "Today's Posts";
+					$crumb->url = "search.php?do=getdaily";
+					$pathway[] = $crumb;					
+				}
+			}
+		} elseif($jfile=="private.php") {
+			$crumb = new stdClass();
+			$crumb->title = "User Control Panel";
+			$crumb->url = "usercp.php";
+			$pathway[] = $crumb;	
+			
+			$crumb = new stdClass();
+			$crumb->title = "Private Messages";
+			$crumb->url = "private.php";
+			$pathway[] = $crumb;	
+		} elseif($jfile=="usercp.php") {
+			$crumb = new stdClass();
+			$crumb->title = "User Control Panel";
+			$crumb->url = "usercp.php";
+			$pathway[] = $crumb;				
+		} elseif($jfile=="profile.php") {
+			$crumb = new stdClass();
+			$crumb->title = "User Control Panel";
+			$crumb->url = "usercp.php";
+			$pathway[] = $crumb;	
+			
+			if(JRequest::getVar('do',false) !== false) {
+				$crumb = new stdClass();
+				$crumb->title = "Your Profile";
+				$crumb->url = "profile.php?do=editprofile";
+				$pathway[] = $crumb;	
+			}
+		} elseif($jfile=="moderation.php") {
+			$crumb = new stdClass();
+			$crumb->title = "User Control Panel";
+			$crumb->url = "usercp.php";
+			$pathway[] = $crumb;	
+			
+			if(JRequest::getVar('do',false) !== false) {
+				$crumb = new stdClass();
+				$crumb->title = "Moderator Tasks";
+				$crumb->url = "moderation.php";
+				$pathway[] = $crumb;	
+			}			
+		} elseif($jfile=="memberlist.php") {
+			$crumb = new stdClass();
+			$crumb->title = "Members List";
+			$crumb->url = "memberslist.php";
+			$pathway[] = $crumb;
+		}
+
+		return $pathway;
+	}	
 
 
 	/************************************************
@@ -544,11 +736,13 @@ function fixAction($matches)
 
 function fixURL($matches)
 {
-	global $name, $baseURL, $integratedURL, $vbsefmode;
+	global $name, $baseURL, $integratedURL, $vbsefmode, $vbsefenabled;
 
 	$url = $matches[1];
 	$extra = $matches[2];
 
+	
+	
 	if(defined('_JFUSION_DEBUG')) {
 		$debug = array();
 		$debug['original'] = $matches[0];
@@ -557,41 +751,21 @@ function fixURL($matches)
 		$debug['function'] = 'fixURL';
 	}
 
-	//Clean the url and the params first
-	$url  = str_replace( '&amp;', '&', $url );
-
+	//Clean the url
+	$url = str_replace( '&amp;', '&', $url );
+	if((string) strpos($url, '#') === (string)0 && strlen($url) != 1) {
+		$url = $_SERVER['REQUEST_URI'].$url;
+	}
+	
 	//we need to make some exceptions
-
-	/*
-	 //url is already parsed
-	 if(strpos($url, 'jfile=')!==false) {
-		$url = preg_replace('#.*jfile=(.*?\.php).*#mS', '$1', $url);
-		$replacement = 'href="'.$url . '"' . $extra . '>';
-		if(defined('_JFUSION_DEBUG')) {
-		$debug['parsed'] = $replacement;
-		}
-		return $replacement;
-		}
-		*/
-
-	//absolute url
-	if(strpos($url,'http')!==false) {
+	//absolute url, already parsed URL, JS function, or jumpto
+	if(strpos($url,'http')!==false || strpos($url,$_SERVER['REQUEST_URI'])!==false || ((string) strpos($url, '#') === (string)0 && strlen($url) == 1)) {
 		$replacement = "href=\"$url\" $extra>";
 		if(defined('_JFUSION_DEBUG')) {
 			$debug['parsed'] = $replacement;
 		}
 		return $replacement;
 	}
-
-	//js function
-	if($url=="#") {
-		$replacement = "href=\"#\" $extra>";
-		if(defined('_JFUSION_DEBUG')) {
-			$debug['parsed'] = $replacement;
-		}
-		return $replacement;
-	}
-
 	
 	//admincp, mocp, archive, or printthread
 	if (strpos($url,'admincp')!==false || strpos($url,'modcp')!==false || strpos($url,'archive')!==false || strpos($url,'printthread.php')!==false) {
@@ -621,19 +795,12 @@ function fixURL($matches)
 	}
 
 	
-	//is this only an anchor?
-	if(strpos($url, '#') === 0) {
-		//reconstruct the URL using current query
-		$url = $_SERVER['REQUEST_URI'].$url;
-	}
-	
-	
-	if (substr($baseURL, -1) != '/'){
+	if (empty($vbsefenabled)){
 		//non sef URls
 		$url = str_replace('?', '&amp;', $url);
 		$url = $baseURL . '&amp;jfile=' .$url;
 	} else {
-		if ($vbsefmode==1) {
+		if ($vbsefmode) {
 			$url =  JFusionFunction::routeURL($url, JRequest::getVar('Itemid'));
 		} else {
 			//we can just append both variables

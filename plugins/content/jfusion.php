@@ -246,62 +246,21 @@ class plgContentJfusion extends JPlugin
 		}
 
 		if($empty) {
-			$defaultCSS = "
-				<style type=\"text/css\">
-
-				.jfDbThreadLink{
-					font-size:12px;
-					margin:5px;
-				}
-				.jfDbPostArea{
-					width:100%;
-					margin:10px;
-
-				}
-				.jfDbPostHeader{
-					font-size:11px;
-					color:#000000;
-					font-weight:bold;
-				}
-				.jfDbPostBody{
-					border:1px solid #eee;
-					min-height: 90px;
-				}
-				.jfDbPostTitle{
-					color:#000000;
-					float:left;
-					margin-right:4px;
-				}
-				.jfDbNoPostMsg{
-					font-weight:bold;
-				}
-				.jfDbPostUser{
-
-				}
-				.jfDbUserAvatar{
-					float:left;
-					margin-right:5px;
-				}
-				.jfDbPostDate{
-					font-size:9px;
-				}
-				.jfDbPostText{
-					margin-top:5px;
-				}
-
-				.jfDbQuickReply textarea{
-					width:100%;
-					height: 100px;
-				}
-
-				.jfDbQuickReply .inputbox{
-					width:100%;
-				}
-				
-				.jfDbQuickReplyHeader{
-					font-weight:bold;
-				}
-				</style>";
+			$defaultCSS  = "<style type=\"text/css\">\n";
+			$defaultCSS .= ".jfDbThreadLink { font-size:12px; margin:5px; }\n";
+			$defaultCSS .= ".jfDbPostArea { 	width:100%; margin:10px; }\n";
+			$defaultCSS .= ".jfDbPostHeader { font-size:11px; color:#000000; font-weight:bold; }\n";
+			$defaultCSS .= ".jfDbPostBody { border:1px solid #eee; min-height: 90px; }\n";
+			$defaultCSS .= ".jfDbPostTitle { color:#000000; float:left; margin-right:4px; }\n";
+			$defaultCSS .= ".jfDbNoPostMsg { font-weight:bold; }\n";
+			$defaultCSS .= ".jfDbPostUser { }\n";
+			$defaultCSS .= ".jfDbUserAvatar { float:left; margin-right:5px; }\n";
+			$defaultCSS .= ".jfDbPostDate { font-size:9px; }\n";
+			$defaultCSS .= ".jfDbPostText { margin-top:5px; }\n";
+			$defaultCSS .= ".jfDbQuickReply textarea { width:100%; height: 100px; }\n";
+			$defaultCSS .= ".jfDbQuickReply .inputbox { width:100%; }\n";
+			$defaultCSS .= ".jfDbQuickReplyHeader { font-weight:bold; }\n";
+			$defaultCSS .= "</style>";
 			$document =& JFactory::getDocument();
 			$document->addCustomTag($defaultCSS);
 		}

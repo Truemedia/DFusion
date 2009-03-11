@@ -12,6 +12,9 @@ wzzip -a administrator/components/com_jfusion/packages/jfusion_mod_login.zip mod
 wzzip -rP administrator/components/com_jfusion/packages/jfusion_mod_whosonline.zip modules/mod_jfusion_whosonline language/en-GB/en-GB.mod_jfusion_whosonline.ini
 wzzip -a administrator/components/com_jfusion/packages/jfusion_mod_whosonline.zip modules/mod_jfusion_whosonline/mod_jfusion_whosonline.xml
 
+wzzip -rP administrator/components/com_jfusion/packages/jfusion_mod_user_activity.zip modules/mod_jfusion_user_activity language/en-GB/en-GB.mod_jfusion_user_activity.ini
+wzzip -a administrator/components/com_jfusion/packages/jfusion_mod_user_activity.zip modules/mod_jfusion_user_activity/mod_jfusion_user_activity.xml
+
 wzzip -rP administrator/components/com_jfusion/packages/jfusion_plugin_auth.zip plugins/authentication
 wzzip -a administrator/components/com_jfusion/packages/jfusion_plugin_auth.zip plugins/authentication/jfusion.xml
 

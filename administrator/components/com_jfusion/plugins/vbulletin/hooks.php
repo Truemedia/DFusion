@@ -81,7 +81,7 @@ class executeJFusionHook
 		//we need to set up the hooks
 		if($plugin=="frameless") {
 			//retrieve the hooks that jFusion will use to make vB work framelessly
-			$hookNames = array("global_start","global_complete","global_setup_complete","header_redirect","redirect_generic","logout_process");
+			$hookNames = array("global_start","global_complete","global_setup_complete","header_redirect","redirect_generic","logout_process","member_profileblock_fetch_unwrapped");
 		} elseif($plugin=="duallogin") {
 			//retrieve the hooks that vBulletin will use to login to Joomla
 			$hookNames = array("login_verify_success","logout_process","global_setup_complete");
@@ -97,6 +97,7 @@ class executeJFusionHook
 			if($h=="global_complete") $toPass = '$vars =& $output; ';
 			elseif($h=="redirect_generic") $toPass = '$vars = array(); $vars["url"] =& $url; $vars["js_url"] =& $js_url; $vars["formfile"] =& $formfile;';
 			elseif($h=="header_redirect") $toPass = '$vars =& $url;';
+			elseif($h=="member_profileblock_fetch_unwrapped") $toPass = '$vars =& $prepared;';
 			else $toPass = '$vars = null;';
 
 			$hooks[$h] = 'include_once(\'' . HOOK_FILE . '\'); ' . $toPass . ' $jFusionHook = new executeJFusionHook(\'' . $h . '\',$vars);';
@@ -117,15 +118,26 @@ class executeJFusionHook
 				$stylevar[$k] = $vbulletin->options['bburl'] . $DS . $v;
 			}
 		}
-		
+
 		return true;
 	}
 
 	function global_setup_complete()
 	{
 		//If Joomla SEF is enabled, the dash in the logout hash gets converted to a colon which must be corrected
-		global $vbulletin;
+		global $vbulletin,$show,$vbsefenabled,$vbsefmode;
 		$vbulletin->GPC['logouthash'] = str_replace(':','-',$vbulletin->GPC['logouthash']);
+		
+		//if sef is enabled, we need to rewrite the nojs link
+		if($vbsefenabled==1) {
+			if($vbsefmode==1) {
+				$show['nojs_link']  = $_SERVER['REQUEST_URI'];
+				$show['nojs_link'] .= (substr($_SERVER['REQUEST_URI'], -1) != '/') ? '/nojs,1/' : 'nojs,1/'; 
+			} else {
+				$jfile = (JRequest::getVar('jfile',false)) ? JRequest::getVar('jfile') : 'index.php';
+				$show['nojs_link'] = "$jfile"."?nojs=1";
+			}
+		}
 
 		return true;
 	}	
@@ -147,7 +159,6 @@ class executeJFusionHook
 			$url = JOOMLABASEURL . '&amp;jfile=' .$url;
 		} else {
 			if (SEFMODE==1) {
-	
 				$url =  JFusionFunction::routeURL($url, JRequest::getVar('Itemid'));
 			} else {
 				//we can just append both variables
@@ -203,7 +214,7 @@ class executeJFusionHook
 
 	function global_complete()
 	{
-		global $vbulletin;
+		global $vbulletin, $vbJname;
 
 		//create cookies to allow direct login into vb frameless
 		if($vbulletin->userinfo['userid'] != 0 && empty($vbulletin->GPC[COOKIE_PREFIX . 'userid'])) {
@@ -217,6 +228,26 @@ class executeJFusionHook
 			JFusionFunction::addCookie(COOKIE_PREFIX.'password' , md5($vbulletin->userinfo['password'] . COOKIE_SALT ), $expire, $vbulletin->options['cookiepath'], $vbulletin->options['cookiedomain'], true);
 		}
 
+		
+		//we need to update the session table
+		$vdb =& JFusionFactory::getDatabase($vbJname);
+		if(!empty($vdb)) {
+			$vars =& $vbulletin->session->vars;
+			if($vbulletin->session->created) {	
+				$bypass = ($vars[bypass]) ? 1 : 0; 			
+				$query = "INSERT IGNORE INTO #__session 
+							(sessionhash, userid, host, idhash, lastactivity, location, styleid, languageid, loggedin, inforum, inthread, incalendar, badlocation, useragent, bypass, profileupdate) VALUES 
+							({$vdb->Quote($vars[dbsessionhash])},$vars[userid],{$vdb->Quote($vars[host])},{$vdb->Quote($vars[idhash])},$vars[lastactivity],{$vdb->Quote($vars[location])},$vars[styleid],$vars[languageid],
+							$vars[loggedin],$vars[inforum],$vars[inthread],$vars[incalendar],$vars[badlocation],{$vdb->Quote($vars[useragent])},$bypass,$vars[profileupdate])";
+			} else {
+				$query = "UPDATE #__session SET lastactivty = $vars[lastactivity], inforum = $vars[inforum], inthread = $vars[inthread], incalendar = $vars[incalendar], badlocation = $vars[badlocation]
+							WHERE sessionhash = {$vdb->Quote($vars[dbsessionhash])}";
+			}
+			
+			$vdb->setQuery($query);
+			$vdb->query();
+		}
+		
 		//echo the output and return an exception to allow Joomla to continue
 		echo trim($this->vars,"\n\r\t.");
 		Throw new Exception("vBulletin exited.");
@@ -224,7 +255,9 @@ class executeJFusionHook
 
 	function logout_process()
 	{
-		if(defined('_JFUSION_JNAME')) {
+		global $vbJname;
+		
+		if(!empty($vbJname)) {
 			//we are in frameless mode and need to kill the cookies to prevent getting stuck logged in
 			global $vbulletin;
 
@@ -255,6 +288,15 @@ class executeJFusionHook
 		return true;
 	}
 
+	function member_profileblock_fetch_unwrapped()
+	{
+		global $vbsefmode,$vbsefenabled;
+		if($vbsefenabled && $vbsefmode) {
+			$uid = JRequest::getVar('u');
+			if(!empty($this->vars[profileurl])) $this->vars[profileurl] = str_replace("member.php?u=$uid",'',$this->vars[profileurl]);
+		}
+	}
+	
 	/**
 	 * This login portion of this script was originally created for phpBB and customized for vBulletin
 	 * Original Copyright:

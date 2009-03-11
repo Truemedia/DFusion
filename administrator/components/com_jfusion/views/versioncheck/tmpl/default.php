@@ -159,6 +159,7 @@ getVersionNumber(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'com_j
 getVersionNumber(JPATH_SITE .DS.'plugins'.DS.'authentication'.DS.'jfusion.xml',JText::_('AUTHENTICATION') .' ' . JText::_('PLUGIN') ,$this->JFusionVersion->auth[0]->data() ,$row_count, $up2date);
 getVersionNumber(JPATH_SITE .DS.'plugins'.DS.'user'.DS.'jfusion.xml',JText::_('USER') . ' ' . JText::_('PLUGIN'),$this->JFusionVersion->user[0]->data() ,$row_count, $up2date);
 getVersionNumber(JPATH_SITE .DS.'modules'.DS.'mod_jfusion_activity'.DS.'mod_jfusion_activity.xml',JText::_('ACTIVITY') . ' ' . JText::_('MODULE'),$this->JFusionVersion->activity[0]->data() ,$row_count, $up2date);
+getVersionNumber(JPATH_SITE .DS.'modules'.DS.'mod_jfusion_user_activity'.DS.'mod_jfusion_user_activity.xml',JText::_('USER') . ' ' . JText::_('ACTIVITY') . ' ' . JText::_('MODULE'),$this->JFusionVersion->useractivity[0]->data() ,$row_count, $up2date);
 getVersionNumber(JPATH_SITE .DS.'modules'.DS.'mod_jfusion_whosonline'.DS.'mod_jfusion_whosonline.xml',JText::_('WHOSONLINE') . ' ' . JText::_('MODULE'),$this->JFusionVersion->whosonline[0]->data() ,$row_count, $up2date);
 getVersionNumber(JPATH_SITE .DS.'modules'.DS.'mod_jfusion_login'.DS.'mod_jfusion_login.xml',JText::_('LOGIN') .' ' . JText::_('MODULE'),$this->JFusionVersion->login[0]->data() ,$row_count, $up2date);
 getVersionNumber(JPATH_SITE .DS.'plugins'.DS.'search'.DS.'jfusion.xml',JText::_('SEARCH') .' ' . JText::_('PLUGIN'),$this->JFusionVersion->search[0]->data() ,$row_count, $up2date);
