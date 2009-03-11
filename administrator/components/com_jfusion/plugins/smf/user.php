@@ -64,7 +64,30 @@ class JFusionUser_smf extends JFusionUser {
 
     function deleteUser($userinfo)
     {
-        //TODO: create a function that deletes a user
+    	//setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+        $db = JFusionFactory::getDatabase($this->getJname());
+
+		$query = 'DELETE FROM #__members WHERE memberName = '.$db->quote($userinfo->username);
+		$db->setQuery($query);
+        if (!$db->query()) {
+       		$status['error'][] = JText::_('USER_DELETION_ERROR') . ' ' .  $db->stderr();
+        } else {
+	        //update the stats
+        	$query = 'UPDATE #__settings SET value = value - 1 	WHERE variable = \'totalMembers\' ';
+        	$db->setQuery($query);
+        	if (!$db->query()) {
+	            //return the error
+            	$status['error'][] = JText::_('USER_CREATION_ERROR')  . ' ' .  $db->stderr();
+	            return;
+        	}
+			$status['error'] = false;
+			$status['debug'][] = JText::_('USER_DELETION'). ' ' . $userinfo->username;
+		}
+		return $status;
     }
 
     function destroySession($userinfo, $options){

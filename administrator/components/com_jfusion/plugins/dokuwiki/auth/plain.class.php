@@ -164,6 +164,7 @@ class doku_auth_plain extends doku_auth_basic {
      *  @return  int             the number of users deleted
      */
     function deleteUsers($users) {
+		$this->_loadUserData();
       	if (!is_array($this->users) || empty($this->users)) return 0;
 
       	$the_users = $this->users;
@@ -179,7 +180,10 @@ class doku_auth_plain extends doku_auth_basic {
       	$file = $this->auth_file();
       	if (!$this->io ) $this->io = new JFusionDokuwiki_Io();
       	if ($this->io->deleteFromFile($file,$pattern,true)) {
-        	foreach ($deleted as $user) unset($the_users[$user]);
+        	foreach ($deleted as $user) {
+        		unset($the_users[$user]);
+        		unset($this->users[$user]);
+        	}
         	return count($deleted);
       	}
 

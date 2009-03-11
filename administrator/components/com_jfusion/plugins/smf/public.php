@@ -168,7 +168,7 @@ class JFusionPublic_smf extends JFusionPublic{
 	{
         //SMF uses semi-colons to seperate vars as well. Convert these to normal ampersands
         $q = str_replace(';','&',$q);
-        if (substr($baseURL, -1) != '/'){
+        if (substr($baseURL, -1) != '/') {
 			//non sef URls
 			$q = str_replace('?', 	'&amp;', $q);
 			$url = $baseURL . '&amp;jfile=' .$q;

@@ -121,7 +121,6 @@ class JFusionUser_dokuwiki extends JFusionUser {
         return false;
     }
 
-
     function getJname()
     {
         return 'dokuwiki';
@@ -129,10 +128,20 @@ class JFusionUser_dokuwiki extends JFusionUser {
 
     function deleteUser($userinfo)
     {
-//  		$user[$username] = $username;
-//        $share = Dokuwiki::getInstance();
-//        $d = $share->auth->deleteUsers($user);
-	    //TODO: create a function that deletes a user
+    	//setup status array to hold debug info and errors
+        $status = array();
+        $status['debug'] = array();
+        $status['error'] = array();
+
+  		$user[$userinfo->username] = $userinfo->username;
+        $share = Dokuwiki::getInstance();
+        if (!$share->auth->deleteUsers($user)) {
+       		$status['error'][] = JText::_('USER_DELETION_ERROR') . ' ' . 'No User Deleted';
+        } else {
+			$status['error'] = false;
+			$status['debug'][] = JText::_('USER_DELETION'). ' ' . $userinfo->username;
+		}
+		return $status;
     }
 
     function destroySession($userinfo, $options){
