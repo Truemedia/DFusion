@@ -242,6 +242,13 @@ class JFusionUsersync{
                             $syncdata['slave_data'][$i]['error'] += 1;
 
                         } else {
+                        	//output results for extended view
+							if ($status['action'] == 'created') {
+								echo '<img src="components/com_jfusion/images/created.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('CREATED') . '<br/>';
+                            } else {
+								echo '<img src="components/com_jfusion/images/updated.png">' . JText::_('USERNAME') . ':' . $userlist[$j]->username . ',  ' . JText::_('UPDATED') . '<br/>';
+                            }   
+                                                    	
                             //update the lookup table
                             if($action=="master") {
     	                      	JFusionFunction::updateLookup($userinfo,0,$jname);
