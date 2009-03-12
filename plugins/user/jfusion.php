@@ -99,7 +99,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 				$status = $JFusionSlave->deleteUser($slaveUser);	
 			} else {
 				$status = array();
-				$status['error'] = JText::_("NO_USER_DATA_FOUND");
+				$status['error'] = JText::_("NO_USER_DATA_FOUND") . ' : ' . $slave->name;
 			}
 			if(!empty($status['error'])){
 				//could not delete user
@@ -283,7 +283,7 @@ require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'models'.D
 				//apply the cleartext password to the user object
 				$SlaveUser['userinfo']->password_clear = $user['password'];
 				
-				JFusionFunction::updateLookup($SlaveUser['userinfo'], $JoomlaUser['userinfo']->userid, $slave->name);//@todo - change the order of the parameters
+				JFusionFunction::updateLookup($SlaveUser['userinfo'], $JoomlaUser['userinfo']->userid, $slave->name);
 				
 				if (!isset($options['group']) && $slave->dual_login == 1 && $JFusionActivePlugin != $slave->name) {
 					$SlaveSession = $JFusionSlave->createSession($SlaveUser['userinfo'], $options);
