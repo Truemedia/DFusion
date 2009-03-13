@@ -62,13 +62,13 @@ class JFusionCurlHtmlFormParser {
             if ($action) {$this->_return[$this->_counter]['form_data']['action'] = preg_replace("/[\"'<>]/", "", $action[1]);}
                 preg_match("/<form.*?method=[\"']?([\w\s]*)[\"']?[\s>]/i", $form, $method);
             if ($method) {$this->_return[$this->_counter]['form_data']['method'] = preg_replace("/[\"'<>]/", "", $method[1]);}
-                preg_match("/<form.*?enctype=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $form, $enctype);
+                preg_match("/<form.*?enctype=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/i", $form, $enctype);
             if ($enctype) {$this->_return[$this->_counter]['form_data']['enctype'] = preg_replace("/[\"'<>]/", "", $enctype[1]);}
                 preg_match("/<form.*?id=[\"']?([\w\s-]*)[\"']?[\s>]/i", $form, $id);
             if ($id) {$this->_return[$this->_counter]['form_data']['id'] = preg_replace("/[\"'<>]/", "", $id[1]);}
 
                 # form elements: input type = hidden
-                if ( preg_match_all("/<input.*type=[\"']?hidden[\"']?.*>/iU", $form, $hiddens) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']hidden[\"'][^<>]+>/iU", $form, $hiddens) ) {
                     foreach ( $hiddens[0] as $hidden ) {
                         $this->_return[$this->_counter]['form_elements'][$this->_getName($hidden)] =
                               array(
@@ -79,7 +79,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                 # form elements: input type = text
-                if ( preg_match_all("/<input.*type=[\"']?text[\"']?.*>/iU", $form, $texts) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']text[\"'][^<>]+>/iU", $form, $texts) ) {
                     foreach ( $texts[0] as $text ) {
                         $this->_return[$this->_counter]['form_elements'][$this->_getName($text)] =
                               array(
@@ -92,7 +92,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                 # form elements: input type = password
-                if ( preg_match_all("/<input.*type=[\"']?password[\"']?.*>/iU", $form, $passwords) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']password[\"'][^<>]+>/iU", $form, $passwords) ) {
                     foreach ( $passwords[0] as $password ) {
                         $this->_return[$this->_counter]['form_elements'][$this->_getName($password)] =
                               array(
@@ -115,7 +115,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                 # form elements: input type = checkbox
-                if ( preg_match_all("/<input.*type=[\"']?checkbox[\"']?.*>/iU", $form, $checkboxes) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']checkbox[\"'][^<>]+>/iU", $form, $checkboxes) ) {
                     foreach ( $checkboxes[0] as $checkbox ) {
                         if ( preg_match("/checked/i", $checkbox) ) {
                             $this->_return[$this->_counter]['form_elements'][$this->_getName($checkbox)] =
@@ -134,7 +134,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                 # form elements: input type = radio
-                if ( preg_match_all("/<input.*type=[\"']?radio[\"']?.*>/iU", $form, $radios) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']radio[\"'][^<>]+>/iU", $form, $radios) ) {
                     foreach ( $radios[0] as $radio ) {
                         if ( preg_match("/checked/i", $radio) ) {
                             $this->_return[$this->_counter]['form_elements'][$this->_getName($radio)] =
@@ -147,7 +147,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                  # form elements: input type = submit
-                if ( preg_match_all("/<input.*type=[\"']?submit[\"']?.*>/iU", $form, $submits) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']submit[\"'][^<>]+>/iU", $form, $submits) ) {
                     foreach ( $submits[0] as $submit ) {
                         $this->_return[$this->_counter]['buttons'][$this->button_counter] =
                               array(
@@ -160,7 +160,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                 # form elements: input type = button
-                if ( preg_match_all("/<input.*type=[\"']?button[\"']?.*>/iU", $form, $buttons) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']button[\"'][^<>]+>/iU", $form, $buttons) ) {
                     foreach ( $buttons[0] as $button ) {
                         $this->_return[$this->_counter]['buttons'][$this->button_counter] =
                               array(
@@ -173,7 +173,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                 # form elements: input type = reset
-                if ( preg_match_all("/<input.*type=[\"']?reset[\"']?.*>/iU", $form, $resets) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']reset[\"'][^<>]+>/iU", $form, $resets) ) {
                     foreach ( $resets[0] as $reset ) {
                         $this->_return[$this->_counter]['buttons'][$this->button_counter] =
                               array(
@@ -186,7 +186,7 @@ class JFusionCurlHtmlFormParser {
                 }
 
                 # form elements: input type = image
-                if ( preg_match_all("/<input.*type=[\"']?image[\"']?.*>/iU", $form, $images) ) {
+                if ( preg_match_all("/<input[^<>]+type=[\"']image[\"'][^<>]+>/iU", $form, $images) ) {
                     foreach ( $images[0] as $image ) {
                         $this->_return[$this->_counter]['buttons'][$this->button_counter] =
                               array(
@@ -245,7 +245,8 @@ class JFusionCurlHtmlFormParser {
     function _getName( $string ) {
         if (preg_match("/name=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $string, $match) ) {
            #preg_match("/name=[\"']?([\w\s]*)[\"']?[\s>]/i", $string, $match) ) { -- did not work as expected
-            $val_match = preg_replace("/\"'/", "", trim($match[1]));
+            $val_match = trim($match[1]);
+            $val_match = trim($val_match,"\"\'");
             unset($string);
             return trim($val_match,'"');
         }
@@ -254,10 +255,7 @@ class JFusionCurlHtmlFormParser {
     function _getValue( $string ) {
         if ( preg_match("/value=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $string, $match) ) {
             $val_match = trim($match[1]);
-
-            if ( strstr($val_match, '"') ) {
-                $val_match = str_replace('"', '', $val_match);
-            }
+            $val_match = trim($val_match,"\"\'");
             unset($string);
             return $val_match;
         }
@@ -266,7 +264,8 @@ class JFusionCurlHtmlFormParser {
     function _getId( $string ) {
         if (preg_match("/id=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $string, $match) ) {
            #preg_match("/name=[\"']?([\w\s]*)[\"']?[\s>]/i", $string, $match) ) { -- did not work as expected
-            $val_match = preg_replace("/\"'/", "", trim($match[1]));
+            $val_match = trim($match[1]);
+            $val_match = trim($val_match,"\"\'");
             unset($string);
             return $val_match;
         }
@@ -274,8 +273,8 @@ class JFusionCurlHtmlFormParser {
 
     function _getClass( $string ) {
         if (preg_match("/class=(\"([^\"]*)\"|'([^']*)'|[^>\s]*)([^>]*)?>/is", $string, $match) ) {
-           #preg_match("/name=[\"']?([\w\s]*)[\"']?[\s>]/i", $string, $match) ) { -- did not work as expected
-            $val_match = preg_replace("/\"'/", "", trim($match[1]));
+            $val_match = trim($match[1]);
+            $val_match = trim($val_match,"\"\'");
             unset($string);
             return $val_match;
         }
