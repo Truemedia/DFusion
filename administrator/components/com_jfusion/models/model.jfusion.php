@@ -56,37 +56,39 @@ class JFusionFunction{
     	return $jfusion_slaves;
     }
 
-    /**
-* By default, returns the JFusion plugin of the software that is currently the slave of user management, minus the joomla_int plugin.
-* If activity, search, or discussion is passed in, returns the plugins with that feature enabled
-* @param array $jname Array list of slave JFusion plugin names
-*/
-
-    function getPlugins($criteria = 'slaves')
-    {
-    	if($criteria = 'slaves') {
-	        static $jfusion_plugins;
-	        if (!isset($jfusion_plugins )) {
-		        $db = & JFactory::getDBO();
-	    	    $query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
-		        $db->setQuery($query );
-	    	    $jfusion_plugins = $db->loadObjectList();
-	        }
-	        return $jfusion_plugins;
-    	} else {
-    		if( $criteria = 'activity') {
-   				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND activity = 1 AND name NOT LIKE \'joomla_int\')';
-	    	} elseif( $criteria = 'search') {
-	    		$query = 'SELECT * from #__jfusion WHERE (status = 1 AND search = 1 AND name NOT LIKE \'joomla_int\')';
-	    	} elseif( $criteria = 'discussion') {
+	/**
+	 * By default, returns the JFusion plugin of the software that is currently the slave of user management, minus the joomla_int plugin.
+	 * If activity, search, or discussion is passed in, returns the plugins with that feature enabled
+	 * @param array $jname Array list of slave JFusion plugin names
+	 */
+	
+	function getPlugins($criteria = 'slaves')
+	{
+		static $jfusion_plugins;
+		if ($criteria = 'slaves') {
+			if (! isset ( $jfusion_plugins )) {
+				$query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
+			}
+		}
+		else {
+			if ($criteria = 'activity') {
+				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND activity = 1 AND name NOT LIKE \'joomla_int\')';
+			}
+			elseif ($criteria = 'search') {
+				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND search = 1 AND name NOT LIKE \'joomla_int\')';
+			}
+			elseif ($criteria = 'discussion') {
 				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND discussion = 1 AND name NOT LIKE \'joomla_int\')';
-	    	}
-
-			$db = & JFactory::getDBO();
-			$db->setQuery($query );
-			$jfusion_plugins = $db->loadObjectList();
-    	}
-    }
+			}
+		}
+		
+		if ($query) {
+			$db = & JFactory::getDBO ();
+			$db->setQuery ( $query );
+			$jfusion_plugins = $db->loadObjectList ();
+			return $jfusion_plugins;
+		}
+	}
 
 
     /**
@@ -477,22 +479,20 @@ class JFusionFunction{
 
     function displayDonate(){
     	?>
-<table class="adminform"><tr><td style="width:90%;"><font size="3"><b><?php echo JText::_('DONATION_MESSAGE'); ?></b></font></td><td style="width:10%; text-align:right;">
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-<input type="hidden" name="cmd" value="_donations"/>
-<input type="hidden" name="business" value="webmaster@jfusion.org"/>
-<input type="hidden" name="item_name" value="jfusion.org"/>
-<input type="hidden" name="no_shipping" value="0"/>
-<input type="hidden" name="no_note" value="1"/>
-<input type="hidden" name="currency_code" value="AUD"/>
-<input type="hidden" name="tax" value="0"/>
-<input type="hidden" name="lc" value="AU"/>
-<input type="hidden" name="bn" value="PP-DonationsBF"/>
-<input type="image" src="components/com_jfusion/images/donate.png" name="submit" alt="PayPal donation button."/>
-<img alt="" border="0" src="https://www.paypal.com/en_AU/i/scr/pixel.gif" width="1" height="1"/>
-</form></td></tr></table>
-
-    	<?php
+<table class="adminform">
+	<tr>
+		<td style="width: 90%;"><font size="3"><b><?php echo JText::_('DONATION_MESSAGE'); ?></b></font></td>
+		<td style="width: 10%; text-align: right;">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_donations" /> <input type="hidden"
+			name="business" value="webmaster@jfusion.org" /> <input type="hidden" name="item_name" value="jfusion.org" /> <input type="hidden"
+			name="no_shipping" value="0" /> <input type="hidden" name="no_note" value="1" /> <input type="hidden" name="currency_code" value="AUD" /> <input
+			type="hidden" name="tax" value="0" /> <input type="hidden" name="lc" value="AU" /> <input type="hidden" name="bn" value="PP-DonationsBF" /> <input
+			type="image" src="components/com_jfusion/images/donate.png" name="submit" alt="PayPal donation button." /> <img alt="" border="0"
+			src="https://www.paypal.com/en_AU/i/scr/pixel.gif" width="1" height="1" /></form>
+		</td>
+	</tr>
+</table>
+<?php
 
     }
 
