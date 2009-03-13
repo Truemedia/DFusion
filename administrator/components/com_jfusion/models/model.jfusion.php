@@ -64,25 +64,25 @@ class JFusionFunction{
 	
 	function getPlugins($criteria = 'slaves')
 	{
-		static $jfusion_plugins;
-		if ($criteria = 'slaves') {
+		if ($criteria == 'slaves') {
+			static $jfusion_plugins;
 			if (! isset ( $jfusion_plugins )) {
 				$query = 'SELECT * from #__jfusion WHERE (slave = 1 AND status = 1 AND name NOT LIKE \'joomla_int\')';
 			}
 		}
 		else {
-			if ($criteria = 'activity') {
+			if ($criteria == 'activity') {
 				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND activity = 1 AND name NOT LIKE \'joomla_int\')';
 			}
-			elseif ($criteria = 'search') {
+			elseif ($criteria == 'search') {
 				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND search = 1 AND name NOT LIKE \'joomla_int\')';
 			}
-			elseif ($criteria = 'discussion') {
+			elseif ($criteria == 'discussion') {
 				$query = 'SELECT * from #__jfusion WHERE (status = 1 AND discussion = 1 AND name NOT LIKE \'joomla_int\')';
 			}
 		}
 		
-		if ($query) {
+		if (!empty($query)) {
 			$db = & JFactory::getDBO ();
 			$db->setQuery ( $query );
 			$jfusion_plugins = $db->loadObjectList ();
@@ -543,7 +543,7 @@ class JFusionFunction{
 			$itemid = $item->id;
 		};
 
-		$link = JFusionFunction::getJoomlaURL().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid;
+		$link = JRoute::_(JFusionFunction::getJoomlaURL().'index.php?option=com_content&view=article&id=' . $contentitem->id.'&Itemid='.$itemid);
 		$link = "<a href='$link'>$text</a>";
 
 		//set the original back

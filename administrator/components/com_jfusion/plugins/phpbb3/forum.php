@@ -250,7 +250,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 		}
 		
 		//the user information
-		$query = "SELECT username, username_clean, user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
+		$query = "SELECT username, username_clean, user_colour, user_permissions, user_posts FROM #__users WHERE user_id = '$userid'";
 		$jdb->setQuery($query);		
 		$phpbbUser = $jdb->loadObject();
 		
@@ -338,6 +338,14 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$status['error'] = $jdb->stderr();
 			return;
 		}
+		
+		//update the user post count
+		$query = "UPDATE #__users SET user_posts = " . $phpbbUser->user_post + 1;
+		$jdb->setQuery($query);
+		if(!$db->query()) {
+			$status['error'] = $jdb->stderr();
+		}
+		
 		
 		if(!empty($topicid) && !empty($postid)) {
 			//save the threadid to the lookup table
@@ -434,7 +442,7 @@ class JFusionForum_phpbb3 extends JFusionForum
 			$jdb->setQuery($query);
 			$topic = $jdb->loadObject();			
 			//the user information
-			$query = "SELECT username, user_colour, user_permissions FROM #__users WHERE user_id = '$userid'";
+			$query = "SELECT username, user_colour, user_permissions, user_posts FROM #__users WHERE user_id = '$userid'";
 			$jdb->setQuery($query);		
 			$phpbbUser = $jdb->loadObject();
 			
@@ -505,7 +513,14 @@ class JFusionForum_phpbb3 extends JFusionForum
 			if(!$jdb->updateObject('#__forums', $forum_stats, 'forum_id' )) {
 				$status['error'] = $jdb->stderr();
 				return $status;
-			}		
+			}
+
+			//update the user post count
+			$query = "UPDATE #__users SET user_posts = " . $phpbbUser->user_post + 1;
+			$jdb->setQuery($query);
+			if(!$db->query()) {
+				$status['error'] = $jdb->stderr();
+			}
 		}
 		return $status;	
 	}	

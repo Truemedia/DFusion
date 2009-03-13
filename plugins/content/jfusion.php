@@ -271,7 +271,20 @@ class plgContentJfusion extends JPlugin
     	$forumid = $this->params->get("default_forum",false);
 		$sectionPairs = $this->params->get("pair_sections",false);
 		$categoryPairs = $this->params->get("pair_categories",false);
-	
+		//section and category id of content
+		$secid =& $contentitem->sectionid;
+		$catid =& $contentitem->catid;
+
+		//check to see if we have an uncategorized article
+		if(empty($secid) && empty($catid)) {
+			//does the admin want a thread generated?
+			if($this->params->get('include_static',false)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
 		//first we need to check to see if we at least one forum to work with
 		if($forumid || $sectionPairs || $categoryPairs) {
 	    	//check to see if there are sections/categories that are specifically included/excluded
@@ -286,10 +299,6 @@ class plgContentJfusion extends JPlugin
 	
 			$categories =& $this->params->get("exclude_categories");
 			$excludeCategories = empty($categories) ? false : explode(",",$categories);
-
-			//section and category id of content
-			$secid =& $contentitem->sectionid;
-			$catid =& $contentitem->catid;
 	
 			//there are section stipulations on what articles to include
 			if($includeSections) {
