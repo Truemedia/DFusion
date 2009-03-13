@@ -177,11 +177,15 @@ if(!defined(\'_JEXEC\') && strpos($_SERVER[\'QUERY_STRING\'], \'dlattach\') === 
 
 		    $redirect_code .= '
 {
-    $file = $_SERVER["SCRIPT_NAME"];
-    $break = Explode(\'/\', $file);
-    $pfile = $break[count($break) - 1];
-    $jfusion_url = $joomla_url . \'index.php?option=com_jfusion&Itemid=\' . $joomla_itemid . \'&jfile=\'.$pfile. \'&\' . $_SERVER[\'QUERY_STRING\'];
-    header(\'Location: \' . $jfusion_url);
+	$pattern = \'#action=(login|admin|featuresettings|news|packages|detailedversion|serversettings|theme|manageboards|postsettings|managecalendar|managesearch|smileys|manageattachments|viewmembers|membergroups|permissions|regcenter|ban|maintain|reports|viewErrorLog)#\';
+	if ( !preg_match( $pattern , $_SERVER[\'QUERY_STRING\'] ) ) {
+		$file = $_SERVER["SCRIPT_NAME"];
+		$break = explode(\'/\', $file);
+		$pfile = $break[count($break) - 1];
+		$jfusion_url = $joomla_url . \'index.php?option=com_jfusion&Itemid=\' . $joomla_itemid . \'&jfile=\'.$pfile. \'&\' . $_SERVER[\'QUERY_STRING\'];
+		header(\'Location: \' . $jfusion_url);
+		exit;
+	}
 }
 //JFUSION REDIRECT END
 ';
