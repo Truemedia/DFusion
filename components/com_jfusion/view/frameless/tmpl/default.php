@@ -79,10 +79,9 @@ ini_set('pcre.backtrack_limit',strlen($data->buffer)*2);
 
 $pattern	= '#<head[^>]*>(.*)<\/head>.*?<body[^>]*>(.*)<\/body>#si';
 preg_match($pattern, $data->buffer, $temp);
-
 $data->header = $temp[1];
 $data->body = $temp[2];
-unset($temp);
+unset($temp,$data->buffer);
 
 // Check if we found something
 if (!strlen($data->header) || !strlen($data->body)) {
