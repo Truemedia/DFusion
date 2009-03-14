@@ -82,7 +82,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 	 * Functions For Frameless Integration
 	 ***********************************************/
 
-    function & getBuffer($jPluginParam)
+    function getBuffer(&$data)
     {
         // Get the path
         $params = JFusionFactory::getParams($this->getJname());
@@ -139,19 +139,17 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
             include_once($index_file);
         }
         catch(Exception $e) {
-            $buffer = ob_get_contents() ;
+            $data->buffer = ob_get_contents() ;
             ob_end_clean();
         }
 
         //change the current directory back to Joomla.
         chdir(JPATH_SITE);
-
-        return $buffer;
     }
 
 
 
-    function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
+    function parseBody(&$data)
     {
         static $regex_body, $replace_body;
 
@@ -162,21 +160,21 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
             //fix anchors
 	        $regex_body[]	= '#\"\#(.*?)\"#mS';
-            $replace_body[]	= '"'.$fullURL.'#$1"';
+            $replace_body[]	= '"'.$data->fullURL.'#$1"';
 
 			//parse URLS
 			$regex_body[]	= '#href="\.\/(.*?)"#me';
-			$replace_body[] = '$this->fixUrl("$1","'.$baseURL.'")';
+			$replace_body[] = '$this->fixUrl("$1","'.$data->baseURL.'")';
 
             //convert relative links from images into absolute links
 	        $regex_body[]	= '#(src="|background="|url\(\'?)./(.*?)("|\'?\))#mS';
-            $replace_body[]	= '$1'.$integratedURL.'$2$3';
+            $replace_body[]	= '$1'.$data->integratedURL.'$2$3';
 
 			//fix for form actions
 	        $regex_body[]	= '#action="(.*?)"(.*?)>#me';
-            $replace_body[]	= '$this->fixAction("$1","$2","' . $baseURL .'")';
+            $replace_body[]	= '$this->fixAction("$1","$2","' . $data->baseURL .'")';
         }
-        $buffer = preg_replace($regex_body, $replace_body, $buffer);
+        $data->body = preg_replace($regex_body, $replace_body, $data->body);
     }
 
 	function fixUrl($q='',$baseURL)
@@ -285,7 +283,7 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
       	return $replacement;
       }
 
-    function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
+    function parseHeader(&$data)
     {
         static $regex_header, $replace_header;
 
@@ -296,14 +294,14 @@ class JFusionPublic_phpbb3 extends JFusionPublic{
 
             //convert relative links into absolute links
            $regex_header[]	= '#(href="|src=")./(.*?")#mS';
-           $replace_header[]	= '$1'.$integratedURL.'$2';
+           $replace_header[]	= '$1'.$data->integratedURL.'$2';
 
            //fix for URL redirects
            $regex_header[]	= '#<meta http-equiv="refresh" content="(.*?)"(.*?)>#me';
-		   $replace_header[]	= '$this->fixRedirect("$1","'.$baseURL.'")';
+		   $replace_header[]	= '$this->fixRedirect("$1","'.$data->baseURL.'")';
 
         }
-        $buffer = preg_replace($regex_header, $replace_header, $buffer);
+        $data->header = preg_replace($regex_header, $replace_header, $data->header);
     }
 
 
