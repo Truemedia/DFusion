@@ -37,7 +37,7 @@ class JFusionPublic_smf extends JFusionPublic{
 		return 'index.php?action=reminder';
 	}
 
-	function & getBuffer()
+	function getBuffer(&$data)
 	{
 		if (JRequest::getVar('action')=='register' || JRequest::getVar('action')=='reminder') {
 			$master = JFusionFunction::getMaster();
@@ -64,6 +64,8 @@ class JFusionPublic_smf extends JFusionPublic{
 		// Required to avoid a warning about a license violation even though this is not the case
 		global $forum_version;
 
+//        require_once(JPATH_ADMINISTRATOR .DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.$this->getJname().DS.'hooks.php');
+
 		// Get the path
 		$params = JFusionFactory::getParams($this->getJname());
 		$source_path = $params->get('source_path');
@@ -85,7 +87,7 @@ class JFusionPublic_smf extends JFusionPublic{
 		// Get the output
 		ob_start();
 		$rs = include_once($index_file);
-		$buffer = ob_get_contents();
+		$data->buffer = ob_get_contents();
 		ob_end_clean();
 
 		//change the current directory back to Joomla.
@@ -97,16 +99,15 @@ class JFusionPublic_smf extends JFusionPublic{
 		}
 		$document = JFactory::getDocument();
 		$document->addScript(JFusionFunction::getJoomlaURL().DS.'administrator'.DS.'components'.DS.'com_jfusion'.DS.'plugins'.DS.'smf'.DS.'js'.DS.'script.js');
-		return $buffer;
 	}
 
-	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
+	function parseBody(&$data)
 	{
 		$regex_body		= array();
 		$replace_body	= array();
 
-		$regex_body[]	= '#"'.$integratedURL.'index.php(.*?)"#Sise';
-		$replace_body[] = '\'"\'.$this->fixUrl("index.php$1","'.$baseURL.'").\'"\'';
+		$regex_body[]	= '#"'.$data->integratedURL.'index.php(.*?)"#Sise';
+		$replace_body[] = '\'"\'.$this->fixUrl("index.php$1","'.$data->baseURL.'").\'"\'';
 
 		//Jump Related fix
 		$regex_body[]	= '#<select name="jumpto" id="jumpto".*?">(.*?)</select>#mSsie';
@@ -115,25 +116,24 @@ class JFusionPublic_smf extends JFusionPublic{
 		$regex_body[] = '#<input (.*?) window.location.href = \'(.*?)\' \+ this.form.jumpto.options(.*?)>#mSsi';
 		$replace_body[] = '<input $1 window.location.href = jf_scripturl + this.form.jumpto.options$3>';
 
-		if ( substr( $baseURL,-1 ) == '/' ) {
+		if ( substr( $data->baseURL,-1 ) == '/' ) {
 			$regex_body[] = '#href="(.*?)action=logout(.*?)"#mSsi';
 			$replace_body[] = 'href="$1action=logout$2&option=com_jfusion&Itemid='.JRequest::getVar('Itemid').'"';
 		}
 
 		//fix for form actions
 		$regex_body[]	= '#action="(.*?)"(.*?)>#me';
-		$replace_body[]	= '$this->fixAction("$1","$2","' . $baseURL .'")';
+		$replace_body[]	= '$this->fixAction("$1","$2","' . $data->baseURL .'")';
 
 		$regex_body[]	= '#<a (.*?) onclick="doQuote(.*?)>#mSsi';
 		$replace_body[]	= '<a $1 onclick="jfusion_doQuote$2>';
 
-		$buffer = preg_replace($regex_body, $replace_body, $buffer);
+		$data->body = preg_replace($regex_body, $replace_body, $data->body);
 	}
 
-	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
+	function parseHeader(&$data)
 	{
 		static $regex_header, $replace_header;
-
 		if ( ! $regex_header || ! $replace_header )
 		{
 			$params = JFusionFactory::getParams('joomla_int');
@@ -149,26 +149,26 @@ class JFusionPublic_smf extends JFusionPublic{
 
 			//convert relative links into absolute links
 			$regex_header[]	= '#(href|src)=("./|"/)(.*?)"#mS';
-			$replace_header[]	= 'href="'.$integratedURL.'$3"';
+			$replace_header[]	= 'href="'.$data->integratedURL.'$3"';
 
 			//$regex_header[]	= '#(href|src)="(.*)"#mS';
-			//$replace_header[]	= 'href="'.$integratedURL.'$2"';
+			//$replace_header[]	= 'href="'.$data->integratedURL.'$2"';
 
 			//convert relative links into absolute links
 			$regex_header[]	= '#(href|src)=("./|"/)(.*?)"#mS';
-			$replace_header[]	= 'href="'.$integratedURL.'$3"';
+			$replace_header[]	= 'href="'.$data->integratedURL.'$3"';
 
 			$regex_header[] = '#var smf_scripturl = ["|\'](.*?)["|\'];#mS';
 			$replace_header[] = 'var smf_scripturl = "$1"; var jf_scripturl = "'.$baseURLnoSef.'";';
 		}
-		$buffer = preg_replace($regex_header, $replace_header, $buffer);
+		$data->header = preg_replace($regex_header, $replace_header, $data->header);
 	}
 
 	function fixUrl($q='',$baseURL)
 	{
         //SMF uses semi-colons to seperate vars as well. Convert these to normal ampersands
         $q = str_replace(';','&',$q);
-        if (substr($baseURL, -1) != '/') {
+        if (substr($baseURL, -1) != '/'){
 			//non sef URls
 			$q = str_replace('?', 	'&amp;', $q);
 			$url = $baseURL . '&amp;jfile=' .$q;

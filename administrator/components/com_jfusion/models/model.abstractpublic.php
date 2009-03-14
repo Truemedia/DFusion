@@ -29,9 +29,8 @@ class JFusionPublic{
     /**
      * gets the visual html output from the plugin
      */
-    function & getBuffer($jPluginParam)
+    function getBuffer(&$data)
     {
-    	return 0;
     }
 
     /**
@@ -42,7 +41,7 @@ class JFusionPublic{
      * @param string $integratedURL the URL to the integrated software
      * @return object userinfo Object containing the user information
      */
-    function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
+    function parseBody(&$data)
     {
     }
 
@@ -54,7 +53,7 @@ class JFusionPublic{
      * @param string $integratedURL the URL to the integrated software
      * @return object userinfo Object containing the user information
      */
-    function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
+    function parseHeader(&$data)
     {
     }
 

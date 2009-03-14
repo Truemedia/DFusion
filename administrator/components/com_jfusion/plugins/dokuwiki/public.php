@@ -38,7 +38,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		return 'index.php?action=reminder';
 	}*/
 
-	function & getBuffer()
+	function getBuffer(&$data)
 	{
 		// We're going to want a few globals... these are all set later.
 		global $INFO,$ACT,$ID,$QUERY,$USERNAME,$CLEAR,$QUIET,$USERINFO,$DOKU_PLUGINS,$PARSER_MODES,$TOC,$EVENT_HANDLER,$AUTH,$IMG,$JUMPTO;
@@ -86,7 +86,7 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		define('UTF8_CORE', true);
 		define('UTF8_CASE', true);
 		$rs = include_once($index_file);
-		$buffer = ob_get_contents();
+		$data->buffer = ob_get_contents();
 		ob_end_clean();
 		//change the current directory back to Joomla. 5*60
 		chdir(JPATH_SITE);
@@ -95,10 +95,9 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		if (!$rs) {
 			JError::raiseWarning(500, 'Could not find DokuWiki in the specified directory');
 		}
-		return $buffer;
 	}
 
-	function parseBody(&$buffer, $baseURL, $fullURL, $integratedURL)
+	function parseBody(&$data)
 	{
 		static $regex_body, $replace_body;
 
@@ -109,42 +108,42 @@ class JFusionPublic_dokuwiki extends JFusionPublic {
 		$replace_body	= array();
 
 		$regex_body[]	= '#(href)=["|\']/feed.php["|\']#mS';
-		$replace_body[]	= '$1="'.$integratedURL.'feed.php"';
+		$replace_body[]	= '$1="'.$data->integratedURL.'feed.php"';
 
 		$regex_body[]	= '#href=["|\']/(lib/exe/fetch.php)(.*?)["|\']#mS';
-		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
+		$replace_body[]	= 'href="'.$data->integratedURL.'$1$2"';
 /*		$regex_body[]	= '#href=["|\']/(_media/)(.*?)["|\']#mS';
 		$replace_body[]	= 'href="'.$integratedURL.'$1$2"';
 */
 		$regex_body[] = '#href=["|\'](?!\w{0,10}://|\w{0,10}:)(.*?)["|\']#mSie';
-		$replace_body[]	= '\'href="\'.$this->fixUrl("$1","'.$baseURL.'").\'"\'';
+		$replace_body[]	= '\'href="\'.$this->fixUrl("$1","'.$data->baseURL.'").\'"\'';
 
 //		$regex_body[] = '#href=["|\'][./|/](.*?)["|\']#mSie';
 //		$replace_body[]	= 'href="'.$integratedURL.'$1"';
 
-		$this->replaceForm($buffer,$baseURL);
+		$this->replaceForm($data->body,$data->baseURL);
 
 		$regex_body[] = '#(src)=["|\'][./|/](.*?)["|\']#mS';
-		$replace_body[]	= '$1="'.$integratedURL.'$2"';
+		$replace_body[]	= '$1="'.$data->integratedURL.'$2"';
 
-		$buffer = preg_replace($regex_body, $replace_body, $buffer);
+		$data->body = preg_replace($regex_body, $replace_body, $data->body);
 	}
 
-	function parseHeader(&$buffer, $baseURL, $fullURL, $integratedURL)
+	function parseHeader(&$data)
 	{
 		static $regex_header, $replace_header;
 
 		if ( ! $regex_header || ! $replace_header )
 		{
 			// Define our preg arrays
-			$regex_header		= array();
+			$regex_header = array();
 			$replace_header	= array();
 
 			//convert relative links into absolute links
 			$regex_header[]	= '#(href|src)=["|\'][./|/](.*?)["|\']#mS';
-			$replace_header[] = 'href="'.$integratedURL.'$2"';
+			$replace_header[] = 'href="'.$data->integratedURL.'$2"';
 		}
-		$buffer = preg_replace($regex_header, $replace_header, $buffer);
+		$data->header = preg_replace($regex_header, $replace_header, $data->header);
 	}
 
 	function fixUrl($q='',$baseURL)

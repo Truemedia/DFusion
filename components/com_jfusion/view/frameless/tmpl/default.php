@@ -14,18 +14,29 @@ defined('_JEXEC') or die('Restricted access');
 $application = JFactory::getApplication();
 $uri		= JURI::getInstance();
 
+// declare Data object
+$data = new stdClass();
+$data->buffer = null;
+$data->header = null;
+$data->body = null;
+$data->baseURL = null;
+$data->fullURL = null;
+$data->integratedURL = null;
+$data->jPluginParam = $this->jPluginParam;
+$data->Itemid = JRequest::getVar('Itemid');
+
 //Get the base URL to the specific JFusion plugin
 $Itemid_joomla = JRequest::getVar('Itemid');
-$baseURL = JFusionFunction::getPluginURL($Itemid_joomla);
+$data->baseURL = JFusionFunction::getPluginURL($Itemid_joomla);
 
 //Get the full current URL
 $query	= $uri->getQuery();
 $url	= $uri->current();
-$fullURL = $url.'?'.$query;
+$data->fullURL = $url.'?'.$query;
 
 //Get the integrated URL
 $JFusionParam = JFusionFactory::getParams($this->jname);
-$integratedURL =$JFusionParam->get('source_url');
+$data->integratedURL =$JFusionParam->get('source_url');
 
 // Get the output from the JFusion plugin
 $JFusionPlugin = JFusionFactory::getPublic($this->jname);
@@ -33,7 +44,7 @@ $JFusionPlugin = JFusionFactory::getPublic($this->jname);
 //backup Joomla's globals
 $joomla_globals = $GLOBALS;
 //get the buffer
-$buffer =& $JFusionPlugin->getBuffer($this->jPluginParam);
+$JFusionPlugin->getBuffer($data);
 //restore Joomla's globals
 $GLOBALS = $joomla_globals;
 //reset the global $Itemid so that modules are not repeated
@@ -43,7 +54,7 @@ $Itemid = $Itemid_joomla;
 JRequest::setVar('Itemid',$Itemid_joomla);
 
 //clear the page title
-if(!empty($buffer)) {
+if(!empty($data->buffer)) {
 	global $mainframe;
 	$mainframe->setPageTitle('');
 }
@@ -51,13 +62,13 @@ if(!empty($buffer)) {
 //check to see if the Joomla database is still connnected incase the plugin messed it up
 JFusionFunction::reconnectJoomlaDb();
 
-if ($buffer === 0){
+if ($data->buffer === 0){
 	JError::raiseWarning(500, JText::_('NO_FRAMELESS'));
     $result = false;
     return $result;
 }
 
-if (! $buffer ) {
+if (! $data->buffer ) {
 	JError::raiseWarning(500, JText::_('NO_BUFFER'));
     $result = false;
     return $result;
@@ -65,30 +76,34 @@ if (! $buffer ) {
 
 //we set the backtrack_limit to twice the buffer length just in case!
 $backtrack_limit = ini_get('pcre.backtrack_limit');
-ini_set('pcre.backtrack_limit',strlen($buffer)*2);
+ini_set('pcre.backtrack_limit',strlen($data->buffer)*2);
 
 $pattern	= '#<head[^>]*>(.*)<\/head>.*?<body[^>]*>(.*)<\/body>#si';
-preg_match($pattern, $buffer, $data);
+preg_match($pattern, $data->buffer, $temp);
+
+$data->header = $temp[1];
+$data->body = $temp[2];
+unset($temp);
 
 // Check if we found something
-if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
-	if(!empty($buffer)){
+if (!strlen($data->header) || !strlen($data->body)) {
+	if(!empty($data->buffer)){
 		//non html output, return without parsing
-	   	die($buffer);
+	   	die($data->buffer);
 	} else {
 		//no output returned
    		JError::raiseWarning(500, JText::_('NO_HTML'));
 	}
 } else {
 	// Add the header information
-    if (isset($data[1]) ) {
+    if (isset($data->header) ) {
 	    $document	= JFactory::getDocument();
 		$regex_header = array();
 		$replace_header = array();
 
 	    //change the page title
 		$pattern = '#<title>(.*?)<\/title>#Si';
-		preg_match($pattern, $data[1], $page_title);
+		preg_match($pattern, $data->header, $page_title);
 		$mainframe->setPageTitle(html_entity_decode( $page_title[1], ENT_QUOTES, "utf-8" ));
 		$regex_header[]	= $pattern;
 		$replace_header[] = '';
@@ -98,7 +113,7 @@ if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
 
 		foreach($meta as $m) {
 			$pattern = '#<meta name=["|\']'.$m.'["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
-			if (preg_match($pattern, $data[1], $page_meta)){
+			if (preg_match($pattern, $data->header, $page_meta)){
 				if($page_meta[2]) {
 					$document->setMetaData( $m, $page_meta[2] );
 				}
@@ -108,7 +123,7 @@ if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
 		}
 
 		$pattern = '#<meta name=["|\']generator["|\'](.*?)content=["|\'](.*?)["|\'](.*?)>#Si';
-    	if(preg_match($pattern, $data[1], $page_generator)) {
+    	if(preg_match($pattern, $data->header, $page_generator)) {
     		if($page_generator[2]) {
         		$document->setGenerator( $document->getGenerator().', '. $page_generator[2]);
         	}
@@ -121,10 +136,10 @@ if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
 		$replace_header[] = '';
 
     	//remove above set meta data from software's header
-		$data[1] = preg_replace($regex_header, $replace_header, $data[1]);
+		$data->header = preg_replace($regex_header, $replace_header, $data->header);
 
-		$JFusionPlugin->parseHeader($data[1], $baseURL, $fullURL, $integratedURL);
-    	$document->addCustomTag($data[1]);
+		$JFusionPlugin->parseHeader($data);
+    	$document->addCustomTag($data->header);
 
 		$pathway = $JFusionPlugin->getPathWay();
 		if ( is_array($pathway) ) {
@@ -134,15 +149,15 @@ if (count($data) < 3 || !strlen($data[1]) || !strlen($data[2])) {
 	}
 
 	// Output the body
-   	if (isset($data[2]) ) {
+   	if (isset($data->body) ) {
     	// parse the URL's'
-        $JFusionPlugin->parseBody($data[2], $baseURL, $fullURL, $integratedURL);
-        echo $data[2];
+        $JFusionPlugin->parseBody($data);
+        echo $data->body;
 	}
-	
+
 	//set the base href
-	$document->setBase($baseURL);
-	
+	$document->setBase($data->baseURL);
+
 	//restore the backtrack_limit
 	ini_set('pcre.backtrack_limit',$backtrack_limit);
 }
