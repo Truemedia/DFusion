@@ -26,8 +26,7 @@ $data->jPluginParam = $this->jPluginParam;
 $data->Itemid = JRequest::getVar('Itemid');
 
 //Get the base URL to the specific JFusion plugin
-$Itemid_joomla = JRequest::getVar('Itemid');
-$data->baseURL = JFusionFunction::getPluginURL($Itemid_joomla);
+$data->baseURL = JFusionFunction::getPluginURL($data->Itemid);
 
 //Get the full current URL
 $query	= $uri->getQuery();
@@ -49,9 +48,9 @@ $JFusionPlugin->getBuffer($data);
 $GLOBALS = $joomla_globals;
 //reset the global $Itemid so that modules are not repeated
 global $Itemid;
-$Itemid = $Itemid_joomla;
+$Itemid = $data->Itemid;
 //reset Itemid so that it can be obtained via getVar
-JRequest::setVar('Itemid',$Itemid_joomla);
+JRequest::setVar('Itemid',$data->Itemid);
 
 //clear the page title
 if(!empty($data->buffer)) {
