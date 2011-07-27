@@ -1,0 +1,3 @@
+[submodule "administrator/components/com_jfusion/plugins/prestashop"]
+	path = administrator/components/com_jfusion/plugins/prestashop
+	url = git@github.com:Truemedia/JFusion-PrestaShop-plugin.git
