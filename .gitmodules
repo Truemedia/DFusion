@@ -16,3 +16,6 @@
 [submodule "administrator/components/com_jfusion/plugins/eyeos"]
 	path = administrator/components/com_jfusion/plugins/eyeos
 	url = git@github.com:Truemedia/JFusion-eyeos-plugin.git
+[submodule "administrator/components/com_jfusion/plugins/drupal"]
+	path = administrator/components/com_jfusion/plugins/drupal
+	url = git@github.com:Truemedia/JFusion-drupal-plugin.git
