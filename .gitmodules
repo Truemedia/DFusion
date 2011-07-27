@@ -10,3 +10,6 @@
 [submodule "administrator/components/com_jfusion/plugins/portport"]
 	path = administrator/components/com_jfusion/plugins/portport
 	url = git@github.com:Truemedia/JFusion-portport-plugin.git
+[submodule "administrator/components/com_jfusion/plugins/mrbs"]
+	path = administrator/components/com_jfusion/plugins/mrbs
+	url = git@github.com:Truemedia/JFusion-MRBS-plugin.git
