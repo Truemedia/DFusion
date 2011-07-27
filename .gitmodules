@@ -13,3 +13,6 @@
 [submodule "administrator/components/com_jfusion/plugins/mrbs"]
 	path = administrator/components/com_jfusion/plugins/mrbs
 	url = git@github.com:Truemedia/JFusion-MRBS-plugin.git
+[submodule "administrator/components/com_jfusion/plugins/eyeos"]
+	path = administrator/components/com_jfusion/plugins/eyeos
+	url = git@github.com:Truemedia/JFusion-eyeos-plugin.git
