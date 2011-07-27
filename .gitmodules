@@ -4,3 +4,6 @@
 [submodule "administrator/components/com_jfusion/plugins/xenforo"]
 	path = administrator/components/com_jfusion/plugins/xenforo
 	url = git@github.com:Truemedia/JFusion-xenforo-plugin.git
+[submodule "administrator/components/com_jfusion/plugins/vtiger"]
+	path = administrator/components/com_jfusion/plugins/vtiger
+	url = git@github.com:Truemedia/JFusion-vtiger-plugin.git
