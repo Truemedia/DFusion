@@ -7,3 +7,6 @@
 [submodule "administrator/components/com_jfusion/plugins/vtiger"]
 	path = administrator/components/com_jfusion/plugins/vtiger
 	url = git@github.com:Truemedia/JFusion-vtiger-plugin.git
+[submodule "administrator/components/com_jfusion/plugins/portport"]
+	path = administrator/components/com_jfusion/plugins/portport
+	url = git@github.com:Truemedia/JFusion-portport-plugin.git
