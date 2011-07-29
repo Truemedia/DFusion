@@ -2,18 +2,18 @@
 
 /**
  * @file
- * OpenID utility functions.
+ * DFusion utility functions.
  */
 
 /**
  * Diffie-Hellman Key Exchange Default Value.
  *
  * This is used to establish an association between the Relying Party and the
- * OpenID Provider.
+ * DFusion Provider.
  *
  * See RFC 2631: http://www.ietf.org/rfc/rfc2631.txt
  */
-define('OPENID_DH_DEFAULT_MOD', '155172898181473697471232257763715539915724801' .
+define('DFUSION_DH_DEFAULT_MOD', '155172898181473697471232257763715539915724801' .
        '966915404479707795314057629378541917580651227423698188993727816152646631' .
        '438561595825688188889951272158842675419950341258706556549803580104870537' .
        '681476726513255747040765857479291291572334510643245094715007229621094194' .
@@ -22,57 +22,57 @@ define('OPENID_DH_DEFAULT_MOD', '155172898181473697471232257763715539915724801' 
 /**
  * Diffie-Hellman generator; used for Diffie-Hellman key exchange computations.
  */
-define('OPENID_DH_DEFAULT_GEN', '2');
+define('DFUSION_DH_DEFAULT_GEN', '2');
 
 /**
  * SHA-1 hash block size; used for Diffie-Hellman key exchange computations.
  */
-define('OPENID_SHA1_BLOCKSIZE', 64);
+define('DFUSION_SHA1_BLOCKSIZE', 64);
 
 /**
  * Random number generator; used for Diffie-Hellman key exchange computations.
  */
-define('OPENID_RAND_SOURCE', '/dev/urandom');
+define('DFUSION_RAND_SOURCE', '/dev/urandom');
 
 /**
- * OpenID Authentication 2.0 namespace URL.
+ * DFusion Authentication 2.0 namespace URL.
  */
-define('OPENID_NS_2_0', 'http://specs.openid.net/auth/2.0');
+define('DFUSION_NS_2_0', 'http://specs.dfusion.net/auth/2.0');
 
 /**
- * OpenID Authentication 1.1 namespace URL; used for backwards-compatibility.
+ * DFusion Authentication 1.1 namespace URL; used for backwards-compatibility.
  */
-define('OPENID_NS_1_1', 'http://openid.net/signon/1.1');
+define('DFUSION_NS_1_1', 'http://dfusion.net/signon/1.1');
 
 /**
- * OpenID Authentication 1.0 namespace URL; used for backwards-compatibility.
+ * DFusion Authentication 1.0 namespace URL; used for backwards-compatibility.
  */
-define('OPENID_NS_1_0', 'http://openid.net/signon/1.0');
+define('DFUSION_NS_1_0', 'http://dfusion.net/signon/1.0');
 
 /**
- * OpenID namespace used in Yadis documents.
+ * DFusion namespace used in Yadis documents.
  */
-define('OPENID_NS_OPENID', 'http://openid.net/xmlns/1.0');
+define('DFUSION_NS_DFUSION', 'http://dfusion.net/xmlns/1.0');
 
 /**
- * OpenID Simple Registration extension.
+ * DFusion Simple Registration extension.
  */
-define('OPENID_NS_SREG', 'http://openid.net/extensions/sreg/1.1');
+define('DFUSION_NS_SREG', 'http://dfusion.net/extensions/sreg/1.1');
 
 /**
- * OpenID Attribute Exchange extension.
+ * DFusion Attribute Exchange extension.
  */
-define('OPENID_NS_AX', 'http://openid.net/srv/ax/1.0');
+define('DFUSION_NS_AX', 'http://dfusion.net/srv/ax/1.0');
 
 /**
  * Extensible Resource Descriptor documents.
  */
-define('OPENID_NS_XRD', 'xri://$xrd*($v*2.0)');
+define('DFUSION_NS_XRD', 'xri://$xrd*($v*2.0)');
 
 /**
  * Performs an HTTP 302 redirect (for the 1.x protocol).
  */
-function openid_redirect_http($url, $message) {
+function dfusion_redirect_http($url, $message) {
   $query = array();
   foreach ($message as $key => $val) {
     $query[] = $key . '=' . urlencode($val);
@@ -87,19 +87,19 @@ function openid_redirect_http($url, $message) {
 /**
  * Creates a js auto-submit redirect for (for the 2.x protocol)
  */
-function openid_redirect($url, $message) {
+function dfusion_redirect($url, $message) {
   global $language;
   
   $output = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . "\n";
   $output .= '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="' . $language->language . '" lang="' . $language->language . '">' . "\n";
   $output .= "<head>\n";
   $output .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
-  $output .= "<title>" . t('OpenID redirect') . "</title>\n";
+  $output .= "<title>" . t('DFusion redirect') . "</title>\n";
   $output .= "</head>\n";
   $output .= "<body>\n";
-  $elements = drupal_get_form('openid_redirect_form', $url, $message);
+  $elements = drupal_get_form('dfusion_redirect_form', $url, $message);
   $output .= drupal_render($elements);
-  $output .= '<script type="text/javascript">document.getElementById("openid-redirect-form").submit();</script>' . "\n";
+  $output .= '<script type="text/javascript">document.getElementById("dfusion-redirect-form").submit();</script>' . "\n";
   $output .= "</body>\n";
   $output .= "</html>\n";
   print $output;
@@ -107,7 +107,7 @@ function openid_redirect($url, $message) {
   drupal_exit();
 }
 
-function openid_redirect_form($form, &$form_state, $url, $message) {
+function dfusion_redirect_form($form, &$form_state, $url, $message) {
   $form['#action'] = $url;
   $form['#method'] = "post";
   foreach ($message as $key => $value) {
@@ -136,27 +136,27 @@ function openid_redirect_form($form, &$form_state, $url, $message) {
  * @return
  *   An array of service entries.
  */
-function _openid_xrds_parse($raw_xml) {
+function _dfusion_xrds_parse($raw_xml) {
   $services = array();
   try {
     $xml = @new SimpleXMLElement($raw_xml);
-    foreach ($xml->children(OPENID_NS_XRD)->XRD as $xrd) {
-      foreach ($xrd->children(OPENID_NS_XRD)->Service as $service_element) {
+    foreach ($xml->children(DFUSION_NS_XRD)->XRD as $xrd) {
+      foreach ($xrd->children(DFUSION_NS_XRD)->Service as $service_element) {
         $service = array(
           'priority' => $service_element->attributes()->priority ? (int)$service_element->attributes()->priority : PHP_INT_MAX,
           'types' => array(),
-          'uri' => (string)$service_element->children(OPENID_NS_XRD)->URI,
+          'uri' => (string)$service_element->children(DFUSION_NS_XRD)->URI,
           'service' => $service_element,
           'xrd' => $xrd,
         );
         foreach ($service_element->Type as $type) {
           $service['types'][] = (string)$type;
         }
-        if ($service_element->children(OPENID_NS_XRD)->LocalID) {
-          $service['identity'] = (string)$service_element->children(OPENID_NS_XRD)->LocalID;
+        if ($service_element->children(DFUSION_NS_XRD)->LocalID) {
+          $service['identity'] = (string)$service_element->children(DFUSION_NS_XRD)->LocalID;
         }
-        elseif ($service_element->children(OPENID_NS_OPENID)->Delegate) {
-          $service['identity'] = (string)$service_element->children(OPENID_NS_OPENID)->Delegate;
+        elseif ($service_element->children(DFUSION_NS_DFUSION)->Delegate) {
+          $service['identity'] = (string)$service_element->children(DFUSION_NS_DFUSION)->Delegate;
         }
         else {
           $service['identity'] = FALSE;
@@ -174,17 +174,17 @@ function _openid_xrds_parse($raw_xml) {
 /**
  * Select a service element.
  *
- * The procedure is described in OpenID Authentication 2.0, section 7.3.2.
+ * The procedure is described in DFusion Authentication 2.0, section 7.3.2.
  *
  * A new entry is added to the returned array with the key 'version' and the
  * value 1 or 2 specifying the protocol version used by the service.
  *
  * @param $services
- *   An array of service arrays as returned by openid_discovery().
+ *   An array of service arrays as returned by dfusion_discovery().
  * @return
  *   The selected service array, or NULL if no valid services were found.
  */
-function _openid_select_service(array $services) {
+function _dfusion_select_service(array $services) {
   // Extensible Resource Identifier (XRI) Resolution Version 2.0, section 4.3.3:
   // Find the service with the highest priority (lowest integer value). If there
   // is a tie, select a random one, not just the first in the XML document.
@@ -196,15 +196,15 @@ function _openid_select_service(array $services) {
   foreach ($services as $service) {
     if (!empty($service['uri'])) {
       $type_priority = FALSE;
-      if (in_array('http://specs.openid.net/auth/2.0/server', $service['types'])) {
+      if (in_array('http://specs.dfusion.net/auth/2.0/server', $service['types'])) {
         $service['version'] = 2;
         $type_priority = 1;
       }
-      elseif (in_array('http://specs.openid.net/auth/2.0/signon', $service['types'])) {
+      elseif (in_array('http://specs.dfusion.net/auth/2.0/signon', $service['types'])) {
         $service['version'] = 2;
         $type_priority = 2;
       }
-      elseif (in_array(OPENID_NS_1_0, $service['types']) || in_array(OPENID_NS_1_1, $service['types'])) {
+      elseif (in_array(DFUSION_NS_1_0, $service['types']) || in_array(DFUSION_NS_1_1, $service['types'])) {
         $service['version'] = 1;
         $type_priority = 3;
       }
@@ -231,7 +231,7 @@ function _openid_select_service(array $services) {
 /**
  * Determine if the given identifier is an XRI ID.
  */
-function _openid_is_xri($identifier) {
+function _dfusion_is_xri($identifier) {
   // Strip the xri:// scheme from the identifier if present.
   if (stripos($identifier, 'xri://') === 0) {
     $identifier = substr($identifier, 6);
@@ -249,11 +249,11 @@ function _openid_is_xri($identifier) {
 /**
  * Normalize the given identifier.
  *
- * The procedure is described in OpenID Authentication 2.0, section 7.2.
+ * The procedure is described in DFusion Authentication 2.0, section 7.2.
  */
-function openid_normalize($identifier) {
-  $methods = module_invoke_all('openid_normalization_method_info');
-  drupal_alter('openid_normalization_method_info', $methods);
+function dfusion_normalize($identifier) {
+  $methods = module_invoke_all('dfusion_normalization_method_info');
+  drupal_alter('dfusion_normalization_method_info', $methods);
 
   // Execute each method in turn, stopping after the first method accepted
   // the identifier.
@@ -269,10 +269,10 @@ function openid_normalize($identifier) {
 }
 
 /**
- * OpenID normalization method: normalize XRI identifiers.
+ * DFusion normalization method: normalize XRI identifiers.
  */
-function _openid_xri_normalize($identifier) {
-  if (_openid_is_xri($identifier)) {
+function _dfusion_xri_normalize($identifier) {
+  if (_dfusion_is_xri($identifier)) {
     if (stristr($identifier, 'xri://') !== FALSE) {
       $identifier = substr($identifier, 6);
     }
@@ -281,9 +281,9 @@ function _openid_xri_normalize($identifier) {
 }
 
 /**
- * OpenID normalization method: normalize URL identifiers.
+ * DFusion normalization method: normalize URL identifiers.
  */
-function _openid_url_normalize($url) {
+function _dfusion_url_normalize($url) {
   $normalized_url = $url;
 
   if (stristr($url, '://') === FALSE) {
@@ -303,7 +303,7 @@ function _openid_url_normalize($url) {
 /**
  * Create a serialized message packet as per spec: $key:$value\n .
  */
-function _openid_create_message($data) {
+function _dfusion_create_message($data) {
   $serialized = '';
 
   foreach ($data as $key => $value) {
@@ -316,9 +316,9 @@ function _openid_create_message($data) {
 }
 
 /**
- * Encode a message from _openid_create_message for HTTP Post
+ * Encode a message from _dfusion_create_message for HTTP Post
  */
-function _openid_encode_message($message) {
+function _dfusion_encode_message($message) {
   $encoded_message = '';
 
   $items = explode("\n", $message);
@@ -340,7 +340,7 @@ function _openid_encode_message($message) {
  * Convert a direct communication message
  * into an associative array.
  */
-function _openid_parse_message($message) {
+function _dfusion_parse_message($message) {
   $parsed_message = array();
 
   $items = explode("\n", $message);
@@ -356,9 +356,9 @@ function _openid_parse_message($message) {
 }
 
 /**
- * Return a nonce value - formatted per OpenID spec.
+ * Return a nonce value - formatted per DFusion spec.
  */
-function _openid_nonce() {
+function _dfusion_nonce() {
   // YYYY-MM-DDThh:mm:ssZ, plus some optional extra unique characters.
   return gmdate('Y-m-d\TH:i:s\Z') .
     chr(mt_rand(0, 25) + 65) .
@@ -370,7 +370,7 @@ function _openid_nonce() {
 /**
  * Pull the href attribute out of an html link element.
  */
-function _openid_link_href($rel, $html) {
+function _dfusion_link_href($rel, $html) {
   $rel = preg_quote($rel);
   preg_match('|<link\s+rel=["\'](.*)' . $rel . '(.*)["\'](.*)/?>|iUs', $html, $matches);
   if (isset($matches[3])) {
@@ -383,7 +383,7 @@ function _openid_link_href($rel, $html) {
 /**
  * Pull the http-equiv attribute out of an html meta element
  */
-function _openid_meta_httpequiv($equiv, $html) {
+function _dfusion_meta_httpequiv($equiv, $html) {
   preg_match('|<meta\s+http-equiv=["\']' . $equiv . '["\'](.*)/?>|iUs', $html, $matches);
   if (isset($matches[1])) {
     preg_match('|content=["\']([^"]+)["\']|iUs', $matches[1], $content);
@@ -396,67 +396,67 @@ function _openid_meta_httpequiv($equiv, $html) {
 
 /**
  * Sign certain keys in a message
- * @param $association - object loaded from openid_association or openid_server_association table
+ * @param $association - object loaded from dfusion_association or dfusion_server_association table
  *              - important fields are ->assoc_type and ->mac_key
  * @param $message_array - array of entire message about to be sent
  * @param $keys_to_sign - keys in the message to include in signature (without
- *  'openid.' appended)
+ *  'dfusion.' appended)
  */
-function _openid_signature($association, $message_array, $keys_to_sign) {
+function _dfusion_signature($association, $message_array, $keys_to_sign) {
   $signature = '';
   $sign_data = array();
 
   foreach ($keys_to_sign as $key) {
-    if (isset($message_array['openid.' . $key])) {
-      $sign_data[$key] = $message_array['openid.' . $key];
+    if (isset($message_array['dfusion.' . $key])) {
+      $sign_data[$key] = $message_array['dfusion.' . $key];
     }
   }
 
-  $message = _openid_create_message($sign_data);
+  $message = _dfusion_create_message($sign_data);
   $secret = base64_decode($association->mac_key);
-  $signature = _openid_hmac($secret, $message);
+  $signature = _dfusion_hmac($secret, $message);
 
   return base64_encode($signature);
 }
 
-function _openid_hmac($key, $text) {
-  if (strlen($key) > OPENID_SHA1_BLOCKSIZE) {
+function _dfusion_hmac($key, $text) {
+  if (strlen($key) > DFUSION_SHA1_BLOCKSIZE) {
     $key = sha1($key, TRUE);
   }
 
-  $key = str_pad($key, OPENID_SHA1_BLOCKSIZE, chr(0x00));
-  $ipad = str_repeat(chr(0x36), OPENID_SHA1_BLOCKSIZE);
-  $opad = str_repeat(chr(0x5c), OPENID_SHA1_BLOCKSIZE);
+  $key = str_pad($key, DFUSION_SHA1_BLOCKSIZE, chr(0x00));
+  $ipad = str_repeat(chr(0x36), DFUSION_SHA1_BLOCKSIZE);
+  $opad = str_repeat(chr(0x5c), DFUSION_SHA1_BLOCKSIZE);
   $hash1 = sha1(($key ^ $ipad) . $text, TRUE);
   $hmac = sha1(($key ^ $opad) . $hash1, TRUE);
 
   return $hmac;
 }
 
-function _openid_dh_base64_to_long($str) {
+function _dfusion_dh_base64_to_long($str) {
   $b64 = base64_decode($str);
 
-  return _openid_dh_binary_to_long($b64);
+  return _dfusion_dh_binary_to_long($b64);
 }
 
-function _openid_dh_long_to_base64($str) {
-  return base64_encode(_openid_dh_long_to_binary($str));
+function _dfusion_dh_long_to_base64($str) {
+  return base64_encode(_dfusion_dh_long_to_binary($str));
 }
 
-function _openid_dh_binary_to_long($str) {
+function _dfusion_dh_binary_to_long($str) {
   $bytes = array_merge(unpack('C*', $str));
 
   $n = 0;
   foreach ($bytes as $byte) {
-    $n = _openid_math_mul($n, pow(2, 8));
-    $n = _openid_math_add($n, $byte);
+    $n = _dfusion_math_mul($n, pow(2, 8));
+    $n = _dfusion_math_add($n, $byte);
   }
 
   return $n;
 }
 
-function _openid_dh_long_to_binary($long) {
-  $cmp = _openid_math_cmp($long, 0);
+function _dfusion_dh_long_to_binary($long) {
+  $cmp = _dfusion_math_cmp($long, 0);
   if ($cmp < 0) {
     return FALSE;
   }
@@ -467,9 +467,9 @@ function _openid_dh_long_to_binary($long) {
 
   $bytes = array();
 
-  while (_openid_math_cmp($long, 0) > 0) {
-    array_unshift($bytes, _openid_math_mod($long, 256));
-    $long = _openid_math_div($long, pow(2, 8));
+  while (_dfusion_math_cmp($long, 0) > 0) {
+    array_unshift($bytes, _dfusion_math_mod($long, 256));
+    $long = _dfusion_math_div($long, pow(2, 8));
   }
 
   if ($bytes && ($bytes[0] > 127)) {
@@ -484,8 +484,8 @@ function _openid_dh_long_to_binary($long) {
   return $string;
 }
 
-function _openid_dh_xorsecret($shared, $secret) {
-  $dh_shared_str = _openid_dh_long_to_binary($shared);
+function _dfusion_dh_xorsecret($shared, $secret) {
+  $dh_shared_str = _dfusion_dh_long_to_binary($shared);
   $sha1_dh_shared = sha1($dh_shared_str, TRUE);
   $xsecret = "";
   for ($i = 0; $i < strlen($secret); $i++) {
@@ -495,11 +495,11 @@ function _openid_dh_xorsecret($shared, $secret) {
   return $xsecret;
 }
 
-function _openid_dh_rand($stop) {
+function _dfusion_dh_rand($stop) {
   $duplicate_cache = &drupal_static(__FUNCTION__, array());
 
   // Used as the key for the duplicate cache
-  $rbytes = _openid_dh_long_to_binary($stop);
+  $rbytes = _dfusion_dh_long_to_binary($stop);
 
   if (isset($duplicate_cache[$rbytes])) {
     list($duplicate, $nbytes) = $duplicate_cache[$rbytes];
@@ -512,11 +512,11 @@ function _openid_dh_rand($stop) {
       $nbytes = strlen($rbytes);
     }
 
-    $mxrand = _openid_math_pow(256, $nbytes);
+    $mxrand = _dfusion_math_pow(256, $nbytes);
 
     // If we get a number less than this, then it is in the
     // duplicated range.
-    $duplicate = _openid_math_mod($mxrand, $stop);
+    $duplicate = _dfusion_math_mod($mxrand, $stop);
 
     if (count($duplicate_cache) > 10) {
       $duplicate_cache = array();
@@ -526,19 +526,19 @@ function _openid_dh_rand($stop) {
   }
 
   do {
-    $bytes = "\x00" . _openid_get_bytes($nbytes);
-    $n = _openid_dh_binary_to_long($bytes);
+    $bytes = "\x00" . _dfusion_get_bytes($nbytes);
+    $n = _dfusion_dh_binary_to_long($bytes);
     // Keep looping if this value is in the low duplicated range.
-  } while (_openid_math_cmp($n, $duplicate) < 0);
+  } while (_dfusion_math_cmp($n, $duplicate) < 0);
 
-  return _openid_math_mod($n, $stop);
+  return _dfusion_math_mod($n, $stop);
 }
 
-function _openid_get_bytes($num_bytes) {
+function _dfusion_get_bytes($num_bytes) {
   $f = &drupal_static(__FUNCTION__);
   $bytes = '';
   if (!isset($f)) {
-    $f = @fopen(OPENID_RAND_SOURCE, "r");
+    $f = @fopen(DFUSION_RAND_SOURCE, "r");
   }
   if (!$f) {
     // pseudorandom used
@@ -554,18 +554,18 @@ function _openid_get_bytes($num_bytes) {
   return $bytes;
 }
 
-function _openid_response($str = NULL) {
+function _dfusion_response($str = NULL) {
   $data = array();
 
   if (isset($_SERVER['REQUEST_METHOD'])) {
-    $data = _openid_get_params($_SERVER['QUERY_STRING']);
+    $data = _dfusion_get_params($_SERVER['QUERY_STRING']);
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $str = file_get_contents('php://input');
 
       $post = array();
       if ($str !== FALSE) {
-        $post = _openid_get_params($str);
+        $post = _dfusion_get_params($str);
       }
 
       $data = array_merge($data, $post);
@@ -575,7 +575,7 @@ function _openid_response($str = NULL) {
   return $data;
 }
 
-function _openid_get_params($str) {
+function _dfusion_get_params($str) {
   $chunks = explode("&", $str);
 
   $data = array();
@@ -593,13 +593,13 @@ function _openid_get_params($str) {
 /**
  * Extract all the parameters belonging to an extension in a response message.
  *
- * OpenID 2.0 defines a simple extension mechanism, based on a namespace prefix.
+ * DFusion 2.0 defines a simple extension mechanism, based on a namespace prefix.
  *
  * Each request or response can define a prefix using:
  * @code
- *   openid.ns.[prefix] = [extension_namespace]
- *   openid.[prefix].[key1] = [value1]
- *   openid.[prefix].[key2] = [value2]
+ *   dfusion.ns.[prefix] = [extension_namespace]
+ *   dfusion.[prefix].[key1] = [value1]
+ *   dfusion.[prefix].[key2] = [value2]
  *   ...
  * @endcode
  *
@@ -621,13 +621,13 @@ function _openid_get_params($str) {
  *   An associative array containing all the parameters in the response message
  *   that belong to the extension. The keys are stripped from their namespace
  *   prefix.
- * @see http://openid.net/specs/openid-authentication-2_0.html#extensions
+ * @see http://dfusion.net/specs/dfusion-authentication-2_0.html#extensions
  */
-function openid_extract_namespace($response, $extension_namespace, $fallback_prefix = NULL) {
+function dfusion_extract_namespace($response, $extension_namespace, $fallback_prefix = NULL) {
   // Find the namespace prefix.
   $prefix = $fallback_prefix;
   foreach ($response as $key => $value) {
-    if ($value == $extension_namespace && preg_match('/^openid\.ns\.([^.]+)$/', $key, $matches)) {
+    if ($value == $extension_namespace && preg_match('/^dfusion\.ns\.([^.]+)$/', $key, $matches)) {
       $prefix = $matches[1];
       break;
     }
@@ -639,7 +639,7 @@ function openid_extract_namespace($response, $extension_namespace, $fallback_pre
     return $output;
   }
   foreach ($response as $key => $value) {
-    if (preg_match('/^openid\.' . $prefix . '\.(.+)$/', $key, $matches)) {
+    if (preg_match('/^dfusion\.' . $prefix . '\.(.+)$/', $key, $matches)) {
       $local_key = $matches[1];
       $output[$local_key] = $value;
     }
@@ -649,22 +649,22 @@ function openid_extract_namespace($response, $extension_namespace, $fallback_pre
 }
 
 /**
- * Extracts values from an OpenID AX Response.
+ * Extracts values from an DFusion AX Response.
  *
  * The values can be returned in two forms:
- *   - only openid.ax.value.<alias> (for single-valued answers)
- *   - both openid.ax.count.<alias> and openid.ax.value.<alias>.<count> (for both
+ *   - only dfusion.ax.value.<alias> (for single-valued answers)
+ *   - both dfusion.ax.count.<alias> and dfusion.ax.value.<alias>.<count> (for both
  *     single and multiple-valued answers)
  *
  * @param $values
- *   An array as returned by openid_extract_namespace(..., OPENID_NS_AX).
+ *   An array as returned by dfusion_extract_namespace(..., DFUSION_NS_AX).
  * @param $uris
  *   An array of identifier URIs.
  * @return
  *   An array of values.
- * @see http://openid.net/specs/openid-attribute-exchange-1_0.html#fetch_response
+ * @see http://dfusion.net/specs/dfusion-attribute-exchange-1_0.html#fetch_response
  */
-function openid_extract_ax_values($values, $uris) {
+function dfusion_extract_ax_values($values, $uris) {
   $output = array();
   foreach ($values as $key => $value) {
     if (in_array($value, $uris) && preg_match('/^type\.([^.]+)$/', $key, $matches)) {
@@ -686,7 +686,7 @@ function openid_extract_ax_values($values, $uris) {
 /**
  * Determine the available math library GMP vs. BCMath, favouring GMP for performance.
  */
-function _openid_get_math_library() {
+function _dfusion_get_math_library() {
   // Not drupal_static(), because a function is not going to disappear and
   // change the output of this under any circumstances.
   static $library;
@@ -704,10 +704,10 @@ function _openid_get_math_library() {
 }
 
 /**
- * Calls the add function from the available math library for OpenID.
+ * Calls the add function from the available math library for DFusion.
  */
-function _openid_math_add($x, $y) {
-  $library = _openid_get_math_library();
+function _dfusion_math_add($x, $y) {
+  $library = _dfusion_get_math_library();
   switch ($library) {
     case 'gmp':
       return gmp_strval(gmp_add($x, $y));
@@ -717,10 +717,10 @@ function _openid_math_add($x, $y) {
 }
 
 /**
- * Calls the mul function from the available math library for OpenID.
+ * Calls the mul function from the available math library for DFusion.
  */
-function _openid_math_mul($x, $y) {
-  $library = _openid_get_math_library();
+function _dfusion_math_mul($x, $y) {
+  $library = _dfusion_get_math_library();
   switch ($library) {
     case 'gmp':
       return gmp_mul($x, $y);
@@ -730,10 +730,10 @@ function _openid_math_mul($x, $y) {
 }
 
 /**
- * Calls the div function from the available math library for OpenID.
+ * Calls the div function from the available math library for DFusion.
  */
-function _openid_math_div($x, $y) {
-  $library = _openid_get_math_library();
+function _dfusion_math_div($x, $y) {
+  $library = _dfusion_get_math_library();
   switch ($library) {
     case 'gmp':
       return gmp_div($x, $y);
@@ -743,10 +743,10 @@ function _openid_math_div($x, $y) {
 }
 
 /**
- * Calls the cmp function from the available math library for OpenID.
+ * Calls the cmp function from the available math library for DFusion.
  */
-function _openid_math_cmp($x, $y) {
-  $library = _openid_get_math_library();
+function _dfusion_math_cmp($x, $y) {
+  $library = _dfusion_get_math_library();
   switch ($library) {
     case 'gmp':
       return gmp_cmp($x, $y);
@@ -756,10 +756,10 @@ function _openid_math_cmp($x, $y) {
 }
 
 /**
- * Calls the mod function from the available math library for OpenID.
+ * Calls the mod function from the available math library for DFusion.
  */
-function _openid_math_mod($x, $y) {
-  $library = _openid_get_math_library();
+function _dfusion_math_mod($x, $y) {
+  $library = _dfusion_get_math_library();
   switch ($library) {
     case 'gmp':
       return gmp_mod($x, $y);
@@ -769,10 +769,10 @@ function _openid_math_mod($x, $y) {
 }
 
 /**
- * Calls the pow function from the available math library for OpenID.
+ * Calls the pow function from the available math library for DFusion.
  */
-function _openid_math_pow($x, $y) {
-  $library = _openid_get_math_library();
+function _dfusion_math_pow($x, $y) {
+  $library = _dfusion_get_math_library();
   switch ($library) {
     case 'gmp':
       return gmp_pow($x, $y);
@@ -782,10 +782,10 @@ function _openid_math_pow($x, $y) {
 }
 
 /**
- * Calls the mul function from the available math library for OpenID.
+ * Calls the mul function from the available math library for DFusion.
  */
-function _openid_math_powmod($x, $y, $z) {
-  $library = _openid_get_math_library();
+function _dfusion_math_powmod($x, $y, $z) {
+  $library = _dfusion_get_math_library();
   switch ($library) {
     case 'gmp':
       return gmp_powm($x, $y, $z);

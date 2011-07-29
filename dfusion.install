@@ -2,20 +2,20 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the openid module.
+ * Install, update and uninstall functions for the dfusion module.
  */
 
 /**
  * Implements hook_schema().
  */
-function openid_schema() {
-  $schema['openid_association'] = array(
-    'description' => 'Stores temporary shared key association information for OpenID authentication.',
+function dfusion_schema() {
+  $schema['dfusion_association'] = array(
+    'description' => 'Stores temporary shared key association information for DFusion authentication.',
     'fields' => array(
       'idp_endpoint_uri' => array(
         'type' => 'varchar',
         'length' => 255,
-        'description' => 'URI of the OpenID Provider endpoint.',
+        'description' => 'URI of the DFusion Provider endpoint.',
       ),
       'assoc_handle' => array(
         'type' => 'varchar',
@@ -54,18 +54,18 @@ function openid_schema() {
     'primary key' => array('assoc_handle'),
   );
 
-  $schema['openid_nonce'] = array(
-    'description' => 'Stores received openid.response_nonce per OpenID endpoint URL to prevent replay attacks.',
+  $schema['dfusion_nonce'] = array(
+    'description' => 'Stores received dfusion.response_nonce per DFusion endpoint URL to prevent replay attacks.',
     'fields' => array(
       'idp_endpoint_uri' => array(
         'type' => 'varchar',
         'length' => 255,
-        'description' => 'URI of the OpenID Provider endpoint.',
+        'description' => 'URI of the DFusion Provider endpoint.',
       ),
       'nonce' => array(
         'type' => 'varchar',
         'length' => 255,
-        'description' => 'The value of openid.response_nonce.',
+        'description' => 'The value of dfusion.response_nonce.',
       ),
       'expires' => array(
         'type' => 'int',
@@ -86,32 +86,32 @@ function openid_schema() {
 /**
  * Implements hook_requirements().
  */
-function openid_requirements($phase) {
+function dfusion_requirements($phase) {
   $requirements = array();
 
   if ($phase == 'runtime') {
     // Check for the PHP BC Math library.
     if (!function_exists('bcadd') && !function_exists('gmp_add')) {
-      $requirements['openid_math'] = array(
+      $requirements['dfusion_math'] = array(
         'value' => t('Not installed'),
         'severity' => REQUIREMENT_ERROR,
-        'description' => t('OpenID suggests the use of either the <a href="@gmp">GMP Math</a> (recommended for performance) or <a href="@bc">BC Math</a> libraries to enable OpenID associations.', array('@gmp' => 'http://php.net/manual/en/book.gmp.php', '@bc' => 'http://www.php.net/manual/en/book.bc.php')),
+        'description' => t('DFusion suggests the use of either the <a href="@gmp">GMP Math</a> (recommended for performance) or <a href="@bc">BC Math</a> libraries to enable DFusion associations.', array('@gmp' => 'http://php.net/manual/en/book.gmp.php', '@bc' => 'http://www.php.net/manual/en/book.bc.php')),
       );
     }
     elseif (!function_exists('gmp_add')) {
-      $requirements['openid_math'] = array(
+      $requirements['dfusion_math'] = array(
         'value' => t('Not optimized'),
         'severity' => REQUIREMENT_WARNING,
-        'description' => t('OpenID suggests the use of the GMP Math library for PHP for optimal performance. Check the <a href="@url">GMP Math Library documentation</a> for installation instructions.', array('@url' => 'http://www.php.net/manual/en/book.gmp.php')),
+        'description' => t('DFusion suggests the use of the GMP Math library for PHP for optimal performance. Check the <a href="@url">GMP Math Library documentation</a> for installation instructions.', array('@url' => 'http://www.php.net/manual/en/book.gmp.php')),
       );
     }
     else {
-      $requirements['openid_math'] = array(
+      $requirements['dfusion_math'] = array(
         'value' => t('Installed'),
         'severity' => REQUIREMENT_OK,
       );
     }
-    $requirements['openid_math']['title'] = t('OpenID Math library');
+    $requirements['dfusion_math']['title'] = t('DFusion Math library');
   }
 
   return $requirements;
@@ -125,19 +125,19 @@ function openid_requirements($phase) {
 /**
  * Add a table to store nonces.
  */
-function openid_update_6000() {
-  $schema['openid_nonce'] = array(
-    'description' => 'Stores received openid.response_nonce per OpenID endpoint URL to prevent replay attacks.',
+function dfusion_update_6000() {
+  $schema['dfusion_nonce'] = array(
+    'description' => 'Stores received dfusion.response_nonce per DFusion endpoint URL to prevent replay attacks.',
     'fields' => array(
       'idp_endpoint_uri' => array(
         'type' => 'varchar',
         'length' => 255,
-        'description' => 'URI of the OpenID Provider endpoint.',
+        'description' => 'URI of the DFusion Provider endpoint.',
       ),
       'nonce' => array(
         'type' => 'varchar',
         'length' => 255,
-        'description' => 'The value of openid.response_nonce'
+        'description' => 'The value of dfusion.response_nonce'
         ),
       'expires' => array(
         'type' => 'int',
@@ -152,7 +152,7 @@ function openid_update_6000() {
     ),
   );
 
-  db_create_table('openid_nonce', $schema['openid_nonce']);
+  db_create_table('dfusion_nonce', $schema['dfusion_nonce']);
 }
 
 /**
